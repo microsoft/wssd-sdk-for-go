@@ -15,16 +15,17 @@
 package network
 
 import (
-	hcn "github.com/Microsoft/hcsshim/hcn"
+	wssd "github.com/microsoft/wssdagent/rpc/client"
+	networkagent "github.com/microsoft/wssdagent/rpc/networkagent"
 )
 
 type SpecOption func(*Spec) *Spec
 
 type Spec struct {
-	internal *hcn.HostComputeNetwork
+	internal *networkagent.NetworkRequest
 }
 
-func Internal(spec *Spec) *hcn.HostComputeNetwork {
+func Internal(spec *Spec) *networkagent.NetworkRequest {
 	return spec.internal
 }
 
