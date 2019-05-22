@@ -18,42 +18,10 @@ import (
 	"context"
 )
 
-type Service interface {
-	Get(context.Context, string, string) (network.VirtualNetwork, error)
-	CreateOrUpdate(context.Context, string, string, network.VirtualNetwork) (network.VirtualNetwork, error)
-	Delete(context.Context, string, string) (network.VirtualNetwork, error)
+// Client structure
+type BaseClient struct {
 }
 
-type Client struct {
-	group    string
-	internal Service
-}
-
-func NewClient(subID, group string) (*Client, error) {
-	c, err := newClient(subID)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Client{group: group, internal: c}, nil
-}
-
-func (c *Client) Get(ctx context.Context, name string) (*Spec, error) {
-	id, err := c.internal.Get(ctx, c.group, name)
-	if err != nil && errors.IsNotFound(err) {
-		return &Spec{&network.VirtualNetwork{}}, nil
-	} else if err != nil {
-		return nil, err
-	}
-
-	return &Spec{&id}, nil
-}
-
-func (c *Client) Ensure(ctx context.Context, name string, spec *Spec) error {
-	result, err := c.internal.CreateOrUpdate(ctx, c.group, name, *spec.internal)
-	if err != nil {
-		return err
-	}
-	spec.internal = &result
-	return nil
+func New() BaseClient {
+	return BaseClient{}
 }

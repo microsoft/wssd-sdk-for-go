@@ -24,21 +24,21 @@ type Service interface {
 	Delete(context.Context, string, string) (compute.VirtualCompute, error)
 }
 
-type Client struct {
+type VirtualMachineClient struct {
 	group    string
 	internal Service
 }
 
-func NewClient(subID, group string) (*Client, error) {
-	c, err := newClient(subID)
+func NewVirtualMachineClient(subID, group string) (*VirtualMachineClient, error) {
+	c, err := newVirtualMachineClient(subID)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Client{group: group, internal: c}, nil
+	return &VirtualMachineClient{group: group, internal: c}, nil
 }
 
-func (c *Client) Get(ctx context.Context, name string) (*Spec, error) {
+func (c *VirtualMachineClient) Get(ctx context.Context, name string) (*Spec, error) {
 	id, err := c.internal.Get(ctx, c.group, name)
 	if err != nil && errors.IsNotFound(err) {
 		return &Spec{&compute.VirtualCompute{}}, nil
@@ -49,7 +49,7 @@ func (c *Client) Get(ctx context.Context, name string) (*Spec, error) {
 	return &Spec{&id}, nil
 }
 
-func (c *Client) Ensure(ctx context.Context, name string, spec *Spec) error {
+func (c *VirtualMachineClient) Ensure(ctx context.Context, name string, spec *Spec) error {
 	result, err := c.internal.CreateOrUpdate(ctx, c.group, name, *spec.internal)
 	if err != nil {
 		return err

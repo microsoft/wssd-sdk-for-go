@@ -12,15 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package network
+package compute
 
 import ()
 
-type Network interface {
-	Name(string) SpecOption
-	AddressSpace(cidr string) SpecOption
-	Subnet(name, cidr, nsgID, rtID string) SpecOption
-}
-
-type VirtualNetwork struct {
+type VirtualMachine struct {
 }
