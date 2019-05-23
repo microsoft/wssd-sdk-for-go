@@ -16,52 +16,46 @@ package network
 
 import ()
 
-type VirtualNetworkInterface interface {
-	Name(string) SpecOption
-	AddressSpace(cidr string) SpecOption
-	Subnet(name, cidr, nsgID, rtID string) SpecOption
-}
-
-// IpConfiguration
-type IpConfiguration struct {
-	// IpAddress
-	IpAddress *string `json:"ipaddress,omitempty"`
+// IPConfiguration
+type IPConfiguration struct {
+	// IPAddress
+	IPAddress *string `json:"ipaddress,omitempty"`
 	// PrefixLength
 	PrefixLength *string `json:"prefixlength,omitempty"`
-	// SubnetId
-	IpSubnet *IpSubnet `json:"ipsubnet,omitempty"`
+	// SubnetID
+	IPSubnet *IPSubnet `json:"ipsubnet,omitempty"`
 	// VirtualNetworkInterface reference
 	VirtualNetworkInterface *VirtualNetworkInterface `json:",omitempty"`
 }
 
 // VirtualNetwork defines the structure of a VNET
 type VirtualNetworkInterface struct {
-	// Id
-	Id *string `json:"id,omitempty"`
+	// ID
+	ID *string `json:"id,omitempty"`
 	// Name
 	Name *string `json:"name,omitempty"`
-	// VirtualMachineId
-	VirtualMachineId *string `json:"virtualMachineId,omitempty"`
+	// VirtualMAChineID
+	VirtualMAChineID *string `json:"virtualMAChineID,omitempty"`
 	// Tags - Custom resource tags
 	Tags map[string]*string `json:"tags"`
 	// VirtualNetwork reference
-	VirtualNetwork *VirtualNetwork `json:"virtualNetworkId,omitempty"`
-	// IpConfigurations
-	IpConfigurations *[]IpConfiguration `json:"ipConfigurations,omitempty"`
+	VirtualNetwork *VirtualNetwork `json:"virtualNetworkID,omitempty"`
+	// IPConfigurations
+	IPConfigurations *[]IPConfiguration `json:"ipConfigurations,omitempty"`
 	// Type
 	Type *string `json:"type,omitempty"`
-	// Dns
-	DnsSettings *Dns `json:"dnsSettings,omitempty"`
+	// DNS
+	DNSSettings *DNS `json:"dnsSettings,omitempty"`
 	// Routes for the subnet
 	Routes *[]Route `json:"routes,omitempty"`
-	// MacAddress - the macaddress of the network interface
-	MacAddress *string `json:"macAddress,omitempty"`
+	// MACAddress - the macaddress of the network interface
+	MACAddress *string `json:"macAddress,omitempty"`
 	// EnableIPForwarding
 	EnableIPForwarding *bool `json:"enableIPForwarding,omitempty"`
-	// EnableMacSpoofing - enable macspoofing on this nic
-	EnableMacSpoofing *bool `json:"enableMacSpoofing,omitempty"`
-	// EnableDhcpGuard
-	EnableDhcpGuard *bool `json:"enableDhcpGuard,omitempty"`
+	// EnableMACSpoofing - enable macspoofing on this nic
+	EnableMACSpoofing *bool `json:"enableMACSpoofing,omitempty"`
+	// EnableDHCPGuard
+	EnableDHCPGuard *bool `json:"enableDHCPGuard,omitempty"`
 	// EnableRouterAdvertisementGuard
 	EnableRouterAdvertisementGuard *bool `json:"enableRouterAdvertisementGuard,omitempty"`
 }

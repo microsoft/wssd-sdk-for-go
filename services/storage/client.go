@@ -12,26 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package network
+package storage
 
-import ()
+import (
+	"context"
+)
 
-// VirtualNetwork defines the structure of a VNET
-type VirtualNetwork struct {
-	// ID
-	ID *string `json:"ID,omitempty"`
-	// Name
-	Name *string `json:"name,omitempty"`
-	// Type
-	Type *string `json:"type,omitempty"`
-	// AddressSpace
-	AddressSpace *AddressSpace `json:"addressSpace,omitempty"`
-	// MACPool
-	MACPool *MACPool `json:"macPool,omitempty"`
-	// DNS
-	DNSSettings DNS `json:"dnsSettings,omitempty"`
-	// Subnets that could hold ipv4 and ipv6 subnets
-	Subnets *[]Subnet `json:"subnets,omitempty"`
-	// Tags - Custom resource tags
-	Tags map[string]*string `json:"tags"`
+// Client structure
+type BaseClient struct {
+}
+
+func New() BaseClient {
+	return BaseClient{}
 }
