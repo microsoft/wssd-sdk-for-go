@@ -12,54 +12,59 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package network
+package loadbalancer
 
 import (
 	"context"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
 )
 
 // Service interface
 type Service interface {
-	Get(context.Context, string, string) (loadbalancer.LoadBalancer, error)
-	CreateOrUpdate(context.Context, string, string, loadbalancer.LoadBalancer) (loadbalancer.LoadBalancer, error)
-	Delete(context.Context, string, string) (loadbalancer.LoadBalancer, error)
+	Get(context.Context, string) (network.LoadBalancer, error)
+	CreateOrUpdate(context.Context, string, string, network.LoadBalancer) (network.LoadBalancer, error)
+	Delete(context.Context, string, string) (network.LoadBalancer, error)
 }
 
 // LoadBalancerClient structure
 type LoadBalancerClient struct {
 	BaseClient
-	group    string
 	internal Service
 }
 
 // NewLoadBalancerClient method returns new client
-func NewLoadBalancerClient(subID, group string) (*LoadBalancerClient, error) {
-	c, err := newLoadBalancerClient(subID)
+func NewLoadBalancerClient(cloudFQDN string) (*LoadBalancerClient, error) {
+	c, err := newLoadBalancerClient(cloudFQDN)
 	if err != nil {
 		return nil, err
 	}
 
-	return &LoadBalancerClient{group: group, internal: c}, nil
+	return &LoadBalancerClient{internal: c}, nil
 }
 
 // Get methods invokes the client Get method
-func (c *LoadBalancerClient) Get(ctx context.Context, name string) (*Spec, error) {
-	id, err := c.internal.Get(ctx, c.group, name)
+func (c *LoadBalancerClient) Get(ctx context.Context, name string) (network.LoadBalancer, error) {
+	id, err := c.internal.Get(ctx, name)
 	if err != nil && errors.IsNotFound(err) {
-		return &Spec{&loadbalancer.LoadBalancer{}}, nil
+		return &network.LoadBalancer{}, nil
 	} else if err != nil {
 		return nil, err
 	}
 
-	return &Spec{&id}, nil
+	return &id, nil
 }
 
 // Ensure methods invokes create or update on the client
-func (c *LoadBalancerClient) Ensure(ctx context.Context, name string, spec *Spec) error {
-	result, err := c.internal.CreateOrUpdate(ctx, c.group, name, *spec.internal)
+func (c *LoadBalancerClient) CreateOrUpdate(ctx context.Context, name string, id string, lb network.LoadBalancer) (network.LoadBalancer, error) {
+	result, err := c.internal.CreateOrUpdate(ctx, name, id, *lb)
 	if err != nil {
 		return err
 	}
 	spec.internal = &result
 	return nil
+}
+
+// Delete methods invokes delete of the network resource
+func (c *LoadBalancerClient) Delete(ctx context.Context, name string, id string) error {
+	return c.internal.Delete(ctx, name, id)
 }

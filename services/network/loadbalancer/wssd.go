@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package network
+package loadbalancer
 
 import (
 	"context"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
@@ -35,26 +36,32 @@ func newClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, group, name string) (LoadBalancer, error) {
-	return c.LoadBalancerAgentClient.Invoke(ctx, group, name, "")
+func (c *client) Get(ctx context.Context, name string) (network.LoadBalancer, error) {
+	lbrequest := &wssdnetwork.LoadBalancerRequest{Operation: wssdnetwork.Operation_GET}
+	lbresponse, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
+	return nil, err
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg LoadBalancer) (LoadBalancer, error) {
-	f, err := c.LoadBalancerAgentClient.Invoke(ctx, group, name, sg)
+func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg network.LoadBalancer) (network.LoadBalancer, error) {
+	lbrequest := &wssdnetwork.LoadBalancerRequest{Operation: wssdnetwork.Operation_POST}
+	lbresponse, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
 	if err != nil {
-		return LoadBalancer{}, err
+		return network.LoadBalancer{}, err
 	}
 
-	err = f.WaitForCompletionRef(ctx, c.Client)
-	if err != nil {
-		return LoadBalancer{}, err
-	}
-
-	return f.Result(c.LoadBalancersClient)
+	// Convert lbresponse output to LoadBalancer
+	return nil, err
 }
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, name string, id string) error {
-	return c.LoadBalancerAgentClient.Invoke(ctx, group, name, "")
+	lbrequest := &wssdnetwork.LoadBalancerRequest{Operation: wssdnetwork.Operation_DELETE}
+	lbresponse, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
+	if err != nil {
+		return network.LoadBalancer{}, err
+	}
+
+	// Convert lbresponse output to LoadBalancer
+	return nil, err
 }

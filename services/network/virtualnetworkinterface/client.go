@@ -12,53 +12,53 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package network
+package virtualnetworkinterface
 
 import (
 	"context"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
 )
 
 // Service interface
 type Service interface {
-	Get(context.Context, string, string) (network.VirtualNetwork, error)
-	CreateOrUpdate(context.Context, string, string, network.VirtualNetwork) (network.VirtualNetwork, error)
-	Delete(context.Context, string, string) (network.VirtualNetwork, error)
+	Get(context.Context, string) (network.VirtualNetworkInterface, error)
+	CreateOrUpdate(context.Context, string, string, network.VirtualNetworkInterface) (network.VirtualNetworkInterface, error)
+	Delete(context.Context, string, string) (network.VirtualNetworkInterface, error)
 }
 
 // VirtualNetworkInterfaceClient structure
 type VirtualNetworkInterfaceClient struct {
-	group    string
 	internal Service
 }
 
 // NewVirtualNetworkInterfaceClient method returns new client
-func NewVirtualNetworkInterfaceClient(subID, group string) (*VirtualNetworkInterfaceClient, error) {
-	c, err := newVirtualNetworkInterfaceClient(subID)
+func NewVirtualNetworkInterfaceClient(cloudFQDN) (*VirtualNetworkInterfaceClient, error) {
+	c, err := newVirtualNetworkInterfaceClient(cloudFQDN)
 	if err != nil {
 		return nil, err
 	}
 
-	return &VirtualNetworkInterfaceClient{group: group, internal: c}, nil
+	return &VirtualNetworkInterfaceClient{internal: c}, nil
 }
 
 // Get methods invokes the client Get method
-func (c *VirtualNetworkInterfaceClient) Get(ctx context.Context, name string) (*Spec, error) {
-	id, err := c.internal.Get(ctx, c.group, name)
+func (c *VirtualNetworkInterfaceClient) Get(ctx context.Context, name string) (*network.VirtualNetworkInterface, error) {
+	id, err := c.internal.Get(ctx, name)
 	if err != nil && errors.IsNotFound(err) {
-		return &Spec{&network.VirtualNetwork{}}, nil
+		return &network.VirtualNetworkInterface{}, nil
 	} else if err != nil {
 		return nil, err
 	}
 
-	return &Spec{&id}, nil
+	return &id, nil
 }
 
-// Ensure methods invokes create or update on the client
-func (c *VirtualNetworkInterfaceClient) Ensure(ctx context.Context, name string, spec *Spec) error {
-	result, err := c.internal.CreateOrUpdate(ctx, c.group, name, *spec.internal)
-	if err != nil {
-		return err
-	}
-	spec.internal = &result
-	return nil
+// CreateOrUpdate methods invokes create or update on the client
+func (c *VirtualNetworkInterfaceClient) CreateOrUpdate(ctx context.Context, name string, id string, network network.VirtualNetworkInterface) (network.VirtualNetworkInterface, error) {
+	return c.internal.CreateOrUpdate(ctx, name, network)
+}
+
+// Delete methods invokes delete of the network resource
+func (c *VirtualNetworkInterfaceClient) Delete(ctx context.Context, name string, id string) error {
+	return c.internal.Delete(ctx, name, id)
 }

@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package compute
+package virtualmachine
 
 import (
 	"context"
+	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
@@ -35,26 +36,22 @@ func newClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, group, name string) (VirtualMachine, error) {
-	return c.VirtualMachineAgentClient.Invoke(ctx, group, name, "")
+func (c *client) Get(ctx context.Context, group, name string) (compute.VirtualMachine, error) {
+	request := &wssdnetwork.VirtualMachineRequest{Operation: wssdnetwork.Operation_GET}
+	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
+	return nil, err
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg VirtualMachine) (VirtualMachine, error) {
-	f, err := c.VirtualMachineAgentClient.Invoke(ctx, group, name, sg)
-	if err != nil {
-		return VirtualMachine{}, err
-	}
-
-	err = f.WaitForCompletionRef(ctx, c.Client)
-	if err != nil {
-		return VirtualMachine{}, err
-	}
-
-	return f.Result(c.VirtualMachinesClient)
+func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg compute.VirtualMachine) (compute.VirtualMachine, error) {
+	request := &wssdnetwork.VirtualMachineRequest{Operation: wssdnetwork.Operation_POST}
+	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
+	return nil, err
 }
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, name string, id string) error {
-	return c.VirtualMachineAgentClient.Invoke(ctx, group, name, "")
+	request := &wssdnetwork.VirtualMachineRequest{Operation: wssdnetwork.Operation_DELETE}
+	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
+	return nil, err
 }

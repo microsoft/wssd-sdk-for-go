@@ -12,37 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package virtualmachine
+package virtualmachinescaleset
 
 import (
 	"context"
+
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 )
 
 type Service interface {
-	Get(context.Context, string) (compute.VirtualMachine, error)
-	CreateOrUpdate(context.Context, string, string, compute.VirtualMachine) (compute.VirtualMachine, error)
-	Delete(context.Context, string, string) (compute.VirtualMachine, error)
+	Get(context.Context, string) (compute.VirtualMachineScaleSet, error)
+	CreateOrUpdate(context.Context, string, string, compute.VirtualMachineScaleSet) (compute.VirtualMachineScaleSet, error)
+	Delete(context.Context, string, string) (compute.VirtualMachineScaleSet, error)
 }
 
-type VirtualMachineClient struct {
+type VirtualMachineScaleSetClient struct {
 	internal Service
 }
 
-func NewVirtualMachineClient(cloudFQDN string) (*VirtualMachineClient, error) {
-	c, err := newVirtualMachineClient(cloudFQDN)
+func NewVirtualMachineScaleSetClient(cloudFQDN string) (*VirtualMachineScaleSetClient, error) {
+	c, err := newVirtualMachineScaleSetClient(cloudFQDN)
 	if err != nil {
 		return nil, err
 	}
 
-	return &VirtualMachineClient{internal: c}, nil
+	return &VirtualMachineScaleSetClient{internal: c}, nil
 }
 
 // Get methods invokes the client Get method
-func (c *VirtualMachineClient) Get(ctx context.Context, name string) (*network.VirtualMachine, error) {
+func (c *VirtualMachineScaleSetClient) Get(ctx context.Context, name string) (*network.VirtualMachineScaleSet, error) {
 	id, err := c.internal.Get(ctx, name)
 	if err != nil && errors.IsNotFound(err) {
-		return &network.VirtualMachine{}, nil
+		return &network.VirtualMachineScaleSet{}, nil
 	} else if err != nil {
 		return nil, err
 	}
@@ -51,11 +52,11 @@ func (c *VirtualMachineClient) Get(ctx context.Context, name string) (*network.V
 }
 
 // CreateOrUpdate methods invokes create or update on the client
-func (c *VirtualMachineClient) CreateOrUpdate(ctx context.Context, name string, id string, network network.VirtualMachine) (network.VirtualMachine, error) {
+func (c *VirtualMachineScaleSetClient) CreateOrUpdate(ctx context.Context, name string, id string, network network.VirtualMachineScaleSet) (network.VirtualMachineScaleSet, error) {
 	return c.internal.CreateOrUpdate(ctx, name, network)
 }
 
 // Delete methods invokes delete of the network resource
-func (c *VirtualMachineClient) Delete(ctx context.Context, name string, id string) error {
+func (c *VirtualMachineScaleSetClient) Delete(ctx context.Context, name string, id string) error {
 	return c.internal.Delete(ctx, name, id)
 }

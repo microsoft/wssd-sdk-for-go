@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package network
+package virtualnetworkinterface
 
 import (
 	"context"
@@ -36,25 +36,21 @@ func newClient(subID string) (*client, error) {
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (VirtualNetworkInterface, error) {
-	return c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, group, name, "")
+	request := &wssdnetwork.VirtualNetworkInterfaceRequest{Operation: wssdnetwork.Operation_GET}
+	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request, nil)
+	return nil, err
 }
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg VirtualNetworkInterface) (VirtualNetworkInterface, error) {
-	f, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, group, name, sg)
-	if err != nil {
-		return VirtualNetworkInterface{}, err
-	}
-
-	err = f.WaitForCompletionRef(ctx, c.Client)
-	if err != nil {
-		return VirtualNetworkInterface{}, err
-	}
-
-	return f.Result(c.VirtualNetworkInterfacesClient)
+	request := &wssdnetwork.VirtualNetworkInterfaceRequest{Operation: wssdnetwork.Operation_POST}
+	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request, nil)
+	return nil, err
 }
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, name string, id string) error {
-	return c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, group, name, "")
+	request := &wssdnetwork.VirtualNetworkInterfaceRequest{Operation: wssdnetwork.Operation_DELETE}
+	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request, nil)
+	return nil, err
 }

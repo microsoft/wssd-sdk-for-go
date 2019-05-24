@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package virtualnetwork
+package virtualmachinescaleset
 
 import (
 	"context"
-	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
+	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
-	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
+	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
 )
 
 type client struct {
-	wssdnetwork.VirtualNetworkAgentClient
+	wssdcompute.VirtualMachineScaleSetAgentClient
 }
 
 // newClient - creates a client session with the backend wssd agent
 func newClient(subID string) (*client, error) {
-	c, err := wssdclient.GetVirtualNetworkClient(subID)
+	c, err := wssdclient.GetVirtualMachineScaleSetClient(subID)
 	if err != nil {
 		return nil, err
 	}
@@ -36,22 +36,22 @@ func newClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, group, name string) (network.VirtualNetwork, error) {
-	request := &wssdnetwork.VirtualNetworkRequest{Operation: wssdnetwork.Operation_GET}
-	response, err := c.VirtualNetworkAgentClient.Invoke(ctx, request, nil)
+func (c *client) Get(ctx context.Context, group, name string) (compute.VirtualMachineScaleSet, error) {
+	request := &wssdnetwork.VirtualMachineScaleSetRequest{Operation: wssdnetwork.Operation_GET}
+	response, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request, nil)
 	return nil, err
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg network.VirtualNetwork) (VirtualNetwork, error) {
-	request := &wssdnetwork.VirtualNetworkRequest{Operation: wssdnetwork.Operation_POST}
-	response, err := c.VirtualNetworkAgentClient.Invoke(ctx, request, nil)
+func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg compute.VirtualMachineScaleSet) (compute.VirtualMachineScaleSet, error) {
+	request := &wssdnetwork.VirtualMachineScaleSetRequest{Operation: wssdnetwork.Operation_POST}
+	response, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request, nil)
 	return nil, err
 }
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, name string, id string) error {
-	request := &wssdnetwork.VirtualNetworkRequest{Operation: wssdnetwork.Operation_DELETE}
-	response, err := c.VirtualNetworkAgentClient.Invoke(ctx, request, nil)
+	request := &wssdnetwork.VirtualMachineScaleSetRequest{Operation: wssdnetwork.Operation_DELETE}
+	response, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request, nil)
 	return nil, err
 }

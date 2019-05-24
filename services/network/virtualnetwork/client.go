@@ -12,17 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package network
+package virtualnetwork
 
 import (
 	"context"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
 )
 
 // Service interface
 type Service interface {
-	Get(context.Context, string, string) (VirtualNetwork, error)
-	CreateOrUpdate(context.Context, string, string, VirtualNetwork) (VirtualNetwork, error)
-	Delete(context.Context, string, string) (VirtualNetwork, error)
+	Get(context.Context, string) (network.VirtualNetwork, error)
+	CreateOrUpdate(context.Context, string, string, network.VirtualNetwork) (network.VirtualNetwork, error)
+	Delete(context.Context, string, string) (network.VirtualNetwork, error)
 }
 
 // Client structure
@@ -32,29 +33,29 @@ type VirtualNetworkClient struct {
 }
 
 // NewClient method returns new client
-func NewVirtualNetworkClient(subID, group string) (*Client, error) {
-	c, err := newClient(subID)
+func NewVirtualNetworkClient(cloudFQDN) (*Client, error) {
+	c, err := newClient(cloudFQDN)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Client{group: group, internal: c}, nil
+	return &Client{internal: c}, nil
 }
 
 // Get methods invokes the client Get method
-func (c *VirtualNetworkClient) Get(ctx context.Context, name string) (*Spec, error) {
-	id, err := c.internal.Get(ctx, c.group, name)
+func (c *VirtualNetworkClient) Get(ctx context.Context, name string) (*network.VirtualNetwork, error) {
+	id, err := c.internal.Get(ctx, name)
 	if err != nil && errors.IsNotFound(err) {
-		return &Spec{&VirtualNetwork{}}, nil
+		return &network.VirtualNetwork{}, nil
 	} else if err != nil {
 		return nil, err
 	}
 
-	return &Spec{&id}, nil
+	return &id, nil
 }
 
 // CreateOrUpdate methods invokes create or update on the client
-func (c *VirtualNetworkClient) CreateOrUpdate(ctx context.Context, name string, id string, network VirtualNetwork) (VirtualNetwork, error) {
+func (c *VirtualNetworkClient) CreateOrUpdate(ctx context.Context, name string, id string, network network.VirtualNetwork) (network.VirtualNetwork, error) {
 	return c.internal.CreateOrUpdate(ctx, name, network)
 }
 
