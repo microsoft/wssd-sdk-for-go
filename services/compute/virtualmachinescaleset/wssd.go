@@ -27,8 +27,8 @@ type client struct {
 }
 
 // newClient - creates a client session with the backend wssd agent
-func newClient(subID string) (*client, error) {
-	c, err := wssdclient.GetVirtualMachineScaleSetClient(subID)
+func newVirtualMachineScaleSetClient(subID string) (*client, error) {
+	c, err := wssdclient.GetVirtualMachineScaleSetClient(&subID)
 	if err != nil {
 		return nil, err
 	}
@@ -36,22 +36,22 @@ func newClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, group, name string) (compute.VirtualMachineScaleSet, error) {
-	request := &wssdnetwork.VirtualMachineScaleSetRequest{Operation: wssdnetwork.Operation_GET}
-	response, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request, nil)
-	return nil, err
+func (c *client) Get(ctx context.Context, name string) (compute.VirtualMachineScaleSet, error) {
+	request := &wssdcompute.VirtualMachineScaleSetRequest{OperationType: wssdcompute.Operation_GET}
+	_, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request, nil)
+	return compute.VirtualMachineScaleSet{}, err
 }
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg compute.VirtualMachineScaleSet) (compute.VirtualMachineScaleSet, error) {
-	request := &wssdnetwork.VirtualMachineScaleSetRequest{Operation: wssdnetwork.Operation_POST}
-	response, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request, nil)
-	return nil, err
+	request := &wssdcompute.VirtualMachineScaleSetRequest{OperationType: wssdcompute.Operation_POST}
+	_, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request, nil)
+	return compute.VirtualMachineScaleSet{}, err
 }
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, name string, id string) error {
-	request := &wssdnetwork.VirtualMachineScaleSetRequest{Operation: wssdnetwork.Operation_DELETE}
-	response, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request, nil)
-	return nil, err
+	request := &wssdcompute.VirtualMachineScaleSetRequest{OperationType: wssdcompute.Operation_DELETE}
+	_, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request, nil)
+	return err
 }

@@ -23,12 +23,12 @@ import (
 type Service interface {
 	Get(context.Context, string) (network.LoadBalancer, error)
 	CreateOrUpdate(context.Context, string, string, network.LoadBalancer) (network.LoadBalancer, error)
-	Delete(context.Context, string, string) (network.LoadBalancer, error)
+	Delete(context.Context, string, string) error
 }
 
 // LoadBalancerClient structure
 type LoadBalancerClient struct {
-	BaseClient
+	network.BaseClient
 	internal Service
 }
 
@@ -44,24 +44,12 @@ func NewLoadBalancerClient(cloudFQDN string) (*LoadBalancerClient, error) {
 
 // Get methods invokes the client Get method
 func (c *LoadBalancerClient) Get(ctx context.Context, name string) (network.LoadBalancer, error) {
-	id, err := c.internal.Get(ctx, name)
-	if err != nil && errors.IsNotFound(err) {
-		return &network.LoadBalancer{}, nil
-	} else if err != nil {
-		return nil, err
-	}
-
-	return &id, nil
+	return c.internal.Get(ctx, name)
 }
 
 // Ensure methods invokes create or update on the client
 func (c *LoadBalancerClient) CreateOrUpdate(ctx context.Context, name string, id string, lb network.LoadBalancer) (network.LoadBalancer, error) {
-	result, err := c.internal.CreateOrUpdate(ctx, name, id, *lb)
-	if err != nil {
-		return err
-	}
-	spec.internal = &result
-	return nil
+	return c.internal.CreateOrUpdate(ctx, name, id, lb)
 }
 
 // Delete methods invokes delete of the network resource

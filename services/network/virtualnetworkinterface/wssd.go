@@ -17,6 +17,7 @@ package virtualnetworkinterface
 import (
 	"context"
 
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 )
@@ -25,9 +26,9 @@ type client struct {
 	wssdnetwork.VirtualNetworkInterfaceAgentClient
 }
 
-// newClient - creates a client session with the backend wssd agent
-func newClient(subID string) (*client, error) {
-	c, err := wssdclient.GetVirtualNetworkInterfaceClient(subID)
+// newVirtualNetworkInterfaceClient - creates a client session with the backend wssd agent
+func newVirtualNetworkInterfaceClient(subID string) (*client, error) {
+	c, err := wssdclient.GetVirtualNetworkInterfaceClient(&subID)
 	if err != nil {
 		return nil, err
 	}
@@ -35,22 +36,22 @@ func newClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, group, name string) (VirtualNetworkInterface, error) {
-	request := &wssdnetwork.VirtualNetworkInterfaceRequest{Operation: wssdnetwork.Operation_GET}
-	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request, nil)
-	return nil, err
+func (c *client) Get(ctx context.Context, name string) (network.VirtualNetworkInterface, error) {
+	request := &wssdnetwork.VirtualNetworkInterfaceRequest{OperationType: wssdnetwork.Operation_GET}
+	_, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request, nil)
+	return network.VirtualNetworkInterface{}, err
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg VirtualNetworkInterface) (VirtualNetworkInterface, error) {
-	request := &wssdnetwork.VirtualNetworkInterfaceRequest{Operation: wssdnetwork.Operation_POST}
-	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request, nil)
-	return nil, err
+func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg network.VirtualNetworkInterface) (network.VirtualNetworkInterface, error) {
+	request := &wssdnetwork.VirtualNetworkInterfaceRequest{OperationType: wssdnetwork.Operation_POST}
+	_, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request, nil)
+	return network.VirtualNetworkInterface{}, err
 }
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, name string, id string) error {
-	request := &wssdnetwork.VirtualNetworkInterfaceRequest{Operation: wssdnetwork.Operation_DELETE}
-	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request, nil)
-	return nil, err
+	request := &wssdnetwork.VirtualNetworkInterfaceRequest{OperationType: wssdnetwork.Operation_DELETE}
+	_, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request, nil)
+	return err
 }

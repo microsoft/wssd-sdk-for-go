@@ -23,10 +23,11 @@ import (
 type Service interface {
 	Get(context.Context, string) (compute.VirtualMachineScaleSet, error)
 	CreateOrUpdate(context.Context, string, string, compute.VirtualMachineScaleSet) (compute.VirtualMachineScaleSet, error)
-	Delete(context.Context, string, string) (compute.VirtualMachineScaleSet, error)
+	Delete(context.Context, string, string) error
 }
 
 type VirtualMachineScaleSetClient struct {
+	compute.BaseClient
 	internal Service
 }
 
@@ -40,23 +41,16 @@ func NewVirtualMachineScaleSetClient(cloudFQDN string) (*VirtualMachineScaleSetC
 }
 
 // Get methods invokes the client Get method
-func (c *VirtualMachineScaleSetClient) Get(ctx context.Context, name string) (*network.VirtualMachineScaleSet, error) {
-	id, err := c.internal.Get(ctx, name)
-	if err != nil && errors.IsNotFound(err) {
-		return &network.VirtualMachineScaleSet{}, nil
-	} else if err != nil {
-		return nil, err
-	}
-
-	return &id, nil
+func (c *VirtualMachineScaleSetClient) Get(ctx context.Context, name string) (compute.VirtualMachineScaleSet, error) {
+	return c.internal.Get(ctx, name)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
-func (c *VirtualMachineScaleSetClient) CreateOrUpdate(ctx context.Context, name string, id string, network network.VirtualMachineScaleSet) (network.VirtualMachineScaleSet, error) {
-	return c.internal.CreateOrUpdate(ctx, name, network)
+func (c *VirtualMachineScaleSetClient) CreateOrUpdate(ctx context.Context, name string, id string, compute compute.VirtualMachineScaleSet) (compute.VirtualMachineScaleSet, error) {
+	return c.internal.CreateOrUpdate(ctx, name, id, compute)
 }
 
-// Delete methods invokes delete of the network resource
+// Delete methods invokes delete of the compute resource
 func (c *VirtualMachineScaleSetClient) Delete(ctx context.Context, name string, id string) error {
 	return c.internal.Delete(ctx, name, id)
 }

@@ -94,7 +94,7 @@ type WindowsConfiguration struct {
 	// TimeZone
 	TimeZone *string `json:"timeZone,omitempty"`
 	// AdditionalUnattendContent
-	AdditionalUnattendContent *[]AdditionalUnattendContent `json:"additionalUnattendContent,omitempty"`
+	// AdditionalUnattendContent *[]AdditionalUnattendContent `json:"additionalUnattendContent,omitempty"`
 	// SSH
 	SSH *SSHConfiguration `json:"ssh,omitempty"`
 }

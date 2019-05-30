@@ -12,47 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package virtualnetwork
+package virtualharddisk
 
 import (
 	"context"
-	"github.com/microsoft/wssd-sdk-for-go/services/network"
+	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 )
 
 // Service interface
 type Service interface {
-	Get(context.Context, string) (network.VirtualNetwork, error)
-	CreateOrUpdate(context.Context, string, string, network.VirtualNetwork) (network.VirtualNetwork, error)
+	Get(context.Context, string) (storage.VirtualHardDisk, error)
+	CreateOrUpdate(context.Context, string, string, storage.VirtualHardDisk) (storage.VirtualHardDisk, error)
 	Delete(context.Context, string, string) error
 }
 
 // Client structure
-type VirtualNetworkClient struct {
-	network.BaseClient
+type VirtualHardDiskClient struct {
+	storage.BaseClient
 	internal Service
 }
 
 // NewClient method returns new client
-func NewVirtualNetworkClient(cloudFQDN string) (*VirtualNetworkClient, error) {
-	c, err := newVirtualNetworkClient(cloudFQDN)
+func NewVirtualHardDiskClient(cloudFQDN string) (*VirtualHardDiskClient, error) {
+	c, err := newVirtualHardDiskClient(cloudFQDN)
 	if err != nil {
 		return nil, err
 	}
 
-	return &VirtualNetworkClient{internal: c}, nil
+	return &VirtualHardDiskClient{internal: c}, nil
 }
 
 // Get methods invokes the client Get method
-func (c *VirtualNetworkClient) Get(ctx context.Context, name string) (network.VirtualNetwork, error) {
+func (c *VirtualHardDiskClient) Get(ctx context.Context, name string) (storage.VirtualHardDisk, error) {
 	return c.internal.Get(ctx, name)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
-func (c *VirtualNetworkClient) CreateOrUpdate(ctx context.Context, name string, id string, network network.VirtualNetwork) (network.VirtualNetwork, error) {
-	return c.internal.CreateOrUpdate(ctx, name, id, network)
+func (c *VirtualHardDiskClient) CreateOrUpdate(ctx context.Context, name string, id string, storage storage.VirtualHardDisk) (storage.VirtualHardDisk, error) {
+	return c.internal.CreateOrUpdate(ctx, name, id, storage)
 }
 
-// Delete methods invokes delete of the network resource
-func (c *VirtualNetworkClient) Delete(ctx context.Context, name string, id string) error {
+// Delete methods invokes delete of the storage resource
+func (c *VirtualHardDiskClient) Delete(ctx context.Context, name string, id string) error {
 	return c.internal.Delete(ctx, name, id)
 }

@@ -26,9 +26,9 @@ type client struct {
 	wssdcompute.VirtualMachineAgentClient
 }
 
-// newClient - creates a client session with the backend wssd agent
-func newClient(subID string) (*client, error) {
-	c, err := wssdclient.GetVirtualMachineClient(subID)
+// newVirtualMachineClient - creates a client session with the backend wssd agent
+func newVirtualMachineClient(subID string) (*client, error) {
+	c, err := wssdclient.GetVirtualMachineClient(&subID)
 	if err != nil {
 		return nil, err
 	}
@@ -36,22 +36,22 @@ func newClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, group, name string) (compute.VirtualMachine, error) {
-	request := &wssdnetwork.VirtualMachineRequest{Operation: wssdnetwork.Operation_GET}
-	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
-	return nil, err
+func (c *client) Get(ctx context.Context, name string) (compute.VirtualMachine, error) {
+	request := &wssdcompute.VirtualMachineRequest{OperationType: wssdcompute.Operation_GET}
+	_, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
+	return compute.VirtualMachine{}, err
 }
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg compute.VirtualMachine) (compute.VirtualMachine, error) {
-	request := &wssdnetwork.VirtualMachineRequest{Operation: wssdnetwork.Operation_POST}
-	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
-	return nil, err
+	request := &wssdcompute.VirtualMachineRequest{OperationType: wssdcompute.Operation_POST}
+	_, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
+	return compute.VirtualMachine{}, err
 }
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, name string, id string) error {
-	request := &wssdnetwork.VirtualMachineRequest{Operation: wssdnetwork.Operation_DELETE}
-	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
-	return nil, err
+	request := &wssdcompute.VirtualMachineRequest{OperationType: wssdcompute.Operation_DELETE}
+	_, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
+	return err
 }

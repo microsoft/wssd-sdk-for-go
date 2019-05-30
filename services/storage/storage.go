@@ -12,14 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package network
+package storage
 
 import ()
 
-// Client structure
-type BaseClient struct {
+// BaseProperties defines the structure of a Load Balancer
+type BaseProperties struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
 }
 
-func New() BaseClient {
-	return BaseClient{}
+// VirtualHardDisk defines the structure of a VHD
+type VirtualHardDisk struct {
+	BaseProperties
 }

@@ -27,8 +27,8 @@ type client struct {
 }
 
 // newClient - creates a client session with the backend wssd agent
-func newClient(subID string) (*client, error) {
-	c, err := wssdclient.GetLoadBalancerClient(subID)
+func newLoadBalancerClient(subID string) (*client, error) {
+	c, err := wssdclient.GetLoadBalancerClient(&subID)
 	if err != nil {
 		return nil, err
 	}
@@ -37,31 +37,28 @@ func newClient(subID string) (*client, error) {
 
 // Get
 func (c *client) Get(ctx context.Context, name string) (network.LoadBalancer, error) {
-	lbrequest := &wssdnetwork.LoadBalancerRequest{Operation: wssdnetwork.Operation_GET}
-	lbresponse, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
-	return nil, err
+	lbrequest := &wssdnetwork.LoadBalancerRequest{OperationType: wssdnetwork.Operation_GET}
+	_, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
+	return network.LoadBalancer{}, err
 }
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg network.LoadBalancer) (network.LoadBalancer, error) {
-	lbrequest := &wssdnetwork.LoadBalancerRequest{Operation: wssdnetwork.Operation_POST}
-	lbresponse, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
+	lbrequest := &wssdnetwork.LoadBalancerRequest{OperationType: wssdnetwork.Operation_POST}
+	_, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
 	if err != nil {
 		return network.LoadBalancer{}, err
 	}
 
-	// Convert lbresponse output to LoadBalancer
-	return nil, err
+	// Convert _ output to LoadBalancer
+	return network.LoadBalancer{}, err
 }
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, name string, id string) error {
-	lbrequest := &wssdnetwork.LoadBalancerRequest{Operation: wssdnetwork.Operation_DELETE}
-	lbresponse, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
-	if err != nil {
-		return network.LoadBalancer{}, err
-	}
+	lbrequest := &wssdnetwork.LoadBalancerRequest{OperationType: wssdnetwork.Operation_DELETE}
+	_, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
 
-	// Convert lbresponse output to LoadBalancer
-	return nil, err
+	// Convert _ output to LoadBalancer
+	return err
 }
