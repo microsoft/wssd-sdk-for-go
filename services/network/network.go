@@ -119,7 +119,7 @@ type LoadBalancingRule struct {
 	// BackendAddressPoolID
 	BackendAddressPoolID *string `json:"backendAddressPoolID,omitempty"`
 	// Dns
-	Protocol *string `json:"protocol,omitempty"`
+	Protocol TransportProtocol `json:"protocol,omitempty"`
 	// FrontendPort
 	FrontendPort *int32 `json:"frontendPort,omitempty"`
 	// BackendPort
