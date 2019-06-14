@@ -20,8 +20,9 @@ import (
 )
 
 type Service interface {
-	Get(context.Context, string) (compute.VirtualMachine, error)
-	CreateOrUpdate(context.Context, string, string, compute.VirtualMachine) (compute.VirtualMachine, error)
+	List(context.Context) (*[]compute.VirtualMachine, error)
+	Get(context.Context, string) (*compute.VirtualMachine, error)
+	CreateOrUpdate(context.Context, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
 	Delete(context.Context, string, string) error
 }
 
@@ -39,13 +40,18 @@ func NewVirtualMachineClient(cloudFQDN string) (*VirtualMachineClient, error) {
 	return &VirtualMachineClient{internal: c}, nil
 }
 
+// GetAll methods invokes the client Get method
+func (c *VirtualMachineClient) List(ctx context.Context) (*[]compute.VirtualMachine, error) {
+	return c.internal.List(ctx)
+}
+
 // Get methods invokes the client Get method
-func (c *VirtualMachineClient) Get(ctx context.Context, name string) (compute.VirtualMachine, error) {
+func (c *VirtualMachineClient) Get(ctx context.Context, name string) (*compute.VirtualMachine, error) {
 	return c.internal.Get(ctx, name)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
-func (c *VirtualMachineClient) CreateOrUpdate(ctx context.Context, name string, id string, compute compute.VirtualMachine) (compute.VirtualMachine, error) {
+func (c *VirtualMachineClient) CreateOrUpdate(ctx context.Context, name string, id string, compute *compute.VirtualMachine) (*compute.VirtualMachine, error) {
 	return c.internal.CreateOrUpdate(ctx, name, id, compute)
 }
 

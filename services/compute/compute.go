@@ -46,28 +46,20 @@ const (
 	Windows OperatingSystemTypes = "Windows"
 )
 
-type VirtualHardDisk struct {
-	Path *string `json:"path,omitempty"`
-}
-
 type OSDisk struct {
 	// Name
 	Name *string `json:"name,omitempty"`
 	// OsType
 	OsType OperatingSystemTypes `json:"osType,omitempty"`
-	// Vhd
-	Vhd *VirtualHardDisk `json:"vhd,omitempty"`
-	// DiskSizeGB
-	DiskSizeGB *int32 `json:"diskSizeGB,omitempty"`
+	// VhdId reference to virtual hard disk
+	VhdId *string `json:"vhd,omitempty"`
 }
 
 type DataDisk struct {
 	// Name
 	Name *string `json:"name,omitempty"`
-	// Vhd
-	Vhd *VirtualHardDisk `json:"vhd,omitempty"`
-	// DiskSizeGB
-	DiskSizeGB *int32 `json:"diskSizeGB,omitempty"`
+	// VhdId reference to VirtualHardDisk
+	VhdId *string `json:"vhd,omitempty"`
 }
 
 type StorageProfile struct {

@@ -31,4 +31,8 @@ type BaseProperties struct {
 // VirtualHardDisk defines the structure of a VHD
 type VirtualHardDisk struct {
 	BaseProperties
+	// Path
+	Path *string `json:"path,omitempty"`
+	// DiskSizeGB
+	DiskSizeGB *int32 `json:"diskSizeGB,omitempty"`
 }
