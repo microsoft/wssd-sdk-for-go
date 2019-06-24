@@ -1,16 +1,22 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-package create
+package virtualmachine
 
 import (
+	"context"
+	"time"
+
+	log "k8s.io/klog"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
 )
 
 type flags struct {
-	ServerName string
-	FilePath   string
+	Name     string
+	FilePath string
 }
 
 func NewCommand() *cobra.Command {
@@ -25,25 +31,29 @@ func NewCommand() *cobra.Command {
 			return runE(flags)
 		},
 	}
-
-	cmd.Flags().StringVar(&flags.FilePath, "f", "", "configuration file path")
-	cmd.Flags().StringVar(&flags.ServerName, "server", "", "server to which the request has to be sent to")
+	cmd.Flags().StringVar(&flags.FilePath, "config", "", "configuration file path")
+	cmd.MarkFlagRequired("config")
 
 	return cmd
 }
 
 func runE(flags *flags) error {
-	vmconfig, err := virtualmachine.LoadConfig(flags.FilePath)
+	server := viper.GetString("server")
+	vmclient, err := virtualmachine.NewVirtualMachineClient(server)
+	if err != nil {
+		return err
+	}
+	config := flags.FilePath
+	vmconfig, err := virtualmachine.LoadConfig(config)
 	if err != nil {
 		return err
 	}
 
-	vmclient, err := virtualmachine.NewVirtualMachineClient(flags.ServerName)
-	if err != nil {
-		return err
-	}
+	log.Infof("Loaded Configuration [%s]", vmconfig)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	_, err = vmclient.CreateOrUpdate(nil, "", "", vmconfig)
+	_, err = vmclient.CreateOrUpdate(ctx, *(vmconfig.Name), *(vmconfig.ID), vmconfig)
 	if err != nil {
 		return err
 	}

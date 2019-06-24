@@ -18,13 +18,13 @@ func NewCommand() *cobra.Command {
 		Short: "Get all Resources)",
 		Long:  "Get all Resources managed by Wssd Agent",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runE(flags)
+			return runE(cmd, args, flags)
 		},
 	}
 
 	return cmd
 }
 
-func runE(*flags) error {
+func runE(cmd *cobra.Command, args []string, f *flags) error {
 	return nil
 }

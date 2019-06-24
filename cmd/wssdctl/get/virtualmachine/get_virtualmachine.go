@@ -3,7 +3,12 @@
 package virtualmachine
 
 import (
+	"context"
+	"fmt"
+	"time"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
 )
@@ -11,10 +16,6 @@ import (
 type flags struct {
 	// Name of the Virtual Machine to get
 	Name string
-	// ServerName which hosts this virtual machine
-	ServerName string
-	// OutputFormat to display the output yaml/json
-	OutputFormat string
 }
 
 func NewCommand() *cobra.Command {
@@ -31,25 +32,32 @@ func NewCommand() *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the virtual machine")
-	cmd.Flags().StringVar(&flags.ServerName, "server", "", "server to which the request has to be sent to")
 
 	return cmd
 }
 
 func runE(flags *flags) error {
-	vmclient, err := virtualmachine.NewVirtualMachineClient(flags.ServerName)
+	server := viper.GetString("server")
+	vmclient, err := virtualmachine.NewVirtualMachineClient(server)
 	if err != nil {
 		return err
 	}
 
-	if flags.Name != "" {
-		vms, err := vmclient.List(nil)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if len(flags.Name) == 0 {
+		vms, err := vmclient.List(ctx)
 		if err != nil {
 			return err
 		}
+		if vms == nil || len(*vms) == 0 {
+			fmt.Println("No VirtualMachine Resources")
+			return nil
+		}
 		virtualmachine.PrintList(vms)
 	} else {
-		vm, err := vmclient.Get(nil, flags.Name)
+		vm, err := vmclient.Get(ctx, flags.Name)
 		if err != nil {
 			return err
 		}

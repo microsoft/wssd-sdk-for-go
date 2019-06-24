@@ -3,7 +3,11 @@
 package virtualmachine
 
 import (
+	"context"
+	"time"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
 )
@@ -11,8 +15,6 @@ import (
 type flags struct {
 	// Name of the Virtual Machine to get
 	Name string
-	// ServerName which hosts this virtual machine
-	ServerName string
 }
 
 func NewCommand() *cobra.Command {
@@ -21,26 +23,42 @@ func NewCommand() *cobra.Command {
 		Args:    cobra.NoArgs,
 		Use:     "virtualmachine",
 		Aliases: []string{"vm"},
-		Short:   "Delete a specific/all Virtual Machine(s)",
-		Long:    "Delete a specific/all Virtual Machine(s)",
+		Short:   "Delete a specific VirtualMachine",
+		Long:    "Delete a specific VirtualMachine",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},
 	}
 
 	cmd.Flags().StringVar(&flags.Name, "name", "", "name(s) of the virtual machine, comma separated")
-	cmd.Flags().StringVar(&flags.ServerName, "server", "", "server to which the request has to be sent to")
+	cmd.MarkFlagRequired("name")
 
 	return cmd
 }
 
 func runE(flags *flags) error {
-	vmclient, err := virtualmachine.NewVirtualMachineClient(flags.ServerName)
+	server := viper.GetString("server")
+	vmclient, err := virtualmachine.NewVirtualMachineClient(server)
 	if err != nil {
 		return err
 	}
 
-	err = vmclient.Delete(nil, "", flags.Name)
+	vmName := flags.Name
+	vmId := ""
+	if len(vmName) == 0 {
+		config := viper.GetString("config")
+		vmconfig, err := virtualmachine.LoadConfig(config)
+		if err != nil {
+			return err
+		}
+		vmName = *(vmconfig.Name)
+		vmId = *(vmconfig.ID)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err = vmclient.Delete(ctx, vmId, vmId)
 	if err != nil {
 		return err
 	}
