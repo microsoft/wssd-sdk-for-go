@@ -22,6 +22,7 @@ import (
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
+	log "k8s.io/klog"
 )
 
 type client struct {
@@ -40,23 +41,23 @@ func newVirtualMachineClient(subID string) (*client, error) {
 // GetAll
 func (c *client) List(ctx context.Context) (*[]compute.VirtualMachine, error) {
 	request := &wssdcompute.VirtualMachineRequest{
-		OperationType:         wssdcompute.Operation_GET,
-		VirtualMachineSystems: []*wssdcompute.VirtualMachine{},
+		OperationType: wssdcompute.Operation_GET,
 	}
 
-	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
+	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if response.GetResult().Value == false {
-		return nil, errors.New(response.GetError())
-	}
+	// if response.GetResult().Value == false {
+	//	return nil, errors.New(response.GetError())
+	// }
 
 	if len(response.GetVirtualMachineSystems()) == 0 {
 		return nil, nil
 	}
+	log.Infof("[VirtualMachine][List] [%v]", response)
 
 	vms := []compute.VirtualMachine{}
 	for _, v := range response.GetVirtualMachineSystems() {
@@ -77,16 +78,16 @@ func (c *client) Get(ctx context.Context, name string) (*compute.VirtualMachine,
 		Name: name,
 	}
 	request.VirtualMachineSystems = append(request.VirtualMachineSystems, vm)
-	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
+	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if (response.GetResult().Value == false) || len(response.GetVirtualMachineSystems()) == 0 {
+	if len(response.GetVirtualMachineSystems()) == 0 {
 		return nil, errors.New(response.GetError())
-
 	}
+	log.Infof("[VirtualMachine][Get] [%v]", response)
 
 	// Pick the first virtual machine returned
 	return getVirtualMachine(response.GetVirtualMachineSystems()[0]), nil
@@ -96,15 +97,15 @@ func (c *client) Get(ctx context.Context, name string) (*compute.VirtualMachine,
 func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
 	request := &wssdcompute.VirtualMachineRequest{
 		OperationType:         wssdcompute.Operation_POST,
-		VirtualMachineSystems: []*wssdcompute.VirtualMachine{},
+		VirtualMachineSystems: make([]*wssdcompute.VirtualMachine, 0),
 	}
 	request.VirtualMachineSystems = append(request.VirtualMachineSystems, getWssdVirtualMachine(sg))
-	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
+	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
 	}
 
-	if (response.GetResult().Value == false) || len(response.GetVirtualMachineSystems()) == 0 {
+	if len(response.GetVirtualMachineSystems()) == 0 {
 		return nil, errors.New(response.GetError())
 	}
 
@@ -124,14 +125,10 @@ func (c *client) Delete(ctx context.Context, name string, id string) error {
 	}
 
 	request.VirtualMachineSystems = append(request.VirtualMachineSystems, getWssdVirtualMachine(vm))
-	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request, nil)
+	_, err = c.VirtualMachineAgentClient.Invoke(ctx, request)
 
 	if err != nil {
 		return err
-	}
-
-	if response.GetResult().Value == false {
-		return errors.New(response.GetError())
 	}
 
 	return nil
@@ -187,7 +184,7 @@ func getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkProfile) *wssdc
 func getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wssdcompute.OperatingSystemConfiguration {
 	return &wssdcompute.OperatingSystemConfiguration{
 		ComputerName:  *s.ComputerName,
-		Administrator: &wssdcompute.UserConfiguration{Username: *s.AdminUsername, Password: *s.AdminPassword},
+		Administrator: &wssdcompute.UserConfiguration{},
 		Users:         []*wssdcompute.UserConfiguration{},
 		Publickeys:    []*wssdcompute.SSHPublicKey{},
 	}
@@ -244,8 +241,8 @@ func getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfiguration) *compu
 
 func getVirtualMachineOSProfile(o *wssdcompute.OperatingSystemConfiguration) *compute.OSProfile {
 	return &compute.OSProfile{
-		ComputerName:  &o.ComputerName,
-		AdminUsername: &o.Administrator.Username,
-		AdminPassword: &o.Administrator.Password,
+		ComputerName: &o.ComputerName,
+		// AdminUsername: &o.Administrator.Username,
+		// AdminPassword: &o.Administrator.Password,
 	}
 }

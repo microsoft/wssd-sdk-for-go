@@ -19,11 +19,14 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 
+	log "k8s.io/klog"
+
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 )
 
 // Load the virtual machine configuration from the specified path
 func LoadConfig(path string) (*compute.VirtualMachine, error) {
+	log.Infof("[LoadConfig] [%s]", path)
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -42,9 +45,10 @@ func LoadConfig(path string) (*compute.VirtualMachine, error) {
 func Print(vm *compute.VirtualMachine) {
 	str, err := yaml.Marshal(vm)
 	if err != nil {
-		fmt.Println("%v", err)
+		fmt.Printf("%v", err)
+		return
 	}
-	fmt.Println("%s", string(str))
+	fmt.Printf("%s", string(str))
 }
 
 // PrintList
