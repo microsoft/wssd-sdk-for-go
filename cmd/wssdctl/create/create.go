@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/create/virtualmachine"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/create/virtualmachinescaleset"
 )
 
 type CreateFlags struct {
@@ -26,5 +27,6 @@ func NewCommand() *cobra.Command {
 	viper.BindPFlag("config", cmd.PersistentFlags().Lookup("config"))
 
 	cmd.AddCommand(virtualmachine.NewCommand())
+	cmd.AddCommand(virtualmachinescaleset.NewCommand())
 	return cmd
 }

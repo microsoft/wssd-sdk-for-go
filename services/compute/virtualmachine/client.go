@@ -20,8 +20,7 @@ import (
 )
 
 type Service interface {
-	List(context.Context) (*[]compute.VirtualMachine, error)
-	Get(context.Context, string) (*compute.VirtualMachine, error)
+	Get(context.Context, string) (*[]compute.VirtualMachine, error)
 	CreateOrUpdate(context.Context, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
 	Delete(context.Context, string, string) error
 }
@@ -40,13 +39,8 @@ func NewVirtualMachineClient(cloudFQDN string) (*VirtualMachineClient, error) {
 	return &VirtualMachineClient{internal: c}, nil
 }
 
-// GetAll methods invokes the client Get method
-func (c *VirtualMachineClient) List(ctx context.Context) (*[]compute.VirtualMachine, error) {
-	return c.internal.List(ctx)
-}
-
 // Get methods invokes the client Get method
-func (c *VirtualMachineClient) Get(ctx context.Context, name string) (*compute.VirtualMachine, error) {
+func (c *VirtualMachineClient) Get(ctx context.Context, name string) (*[]compute.VirtualMachine, error) {
 	return c.internal.Get(ctx, name)
 }
 

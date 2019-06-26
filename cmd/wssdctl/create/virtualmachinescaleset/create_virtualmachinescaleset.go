@@ -4,8 +4,9 @@ package virtualmachinescaleset
 
 import (
 	"context"
-	"fmt"
 	"time"
+
+	log "k8s.io/klog"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -14,7 +15,8 @@ import (
 )
 
 type flags struct {
-	Name string
+	Name     string
+	FilePath string
 }
 
 func NewCommand() *cobra.Command {
@@ -23,14 +25,14 @@ func NewCommand() *cobra.Command {
 		Args:    cobra.NoArgs,
 		Use:     "virtualmachinescaleset",
 		Aliases: []string{"vmss"},
-		Short:   "Get a specific/all Virtual Machine Scale Set(s)",
-		Long:    "Get a specific/all Virtual Machine Scale Set(s)",
+		Short:   "Create a Virtual Machine",
+		Long:    "Create a Virtual Machine",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},
 	}
-
-	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the virtual machine scale set resource")
+	cmd.Flags().StringVar(&flags.FilePath, "config", "", "configuration file path")
+	cmd.MarkFlagRequired("config")
 
 	return cmd
 }
@@ -41,29 +43,20 @@ func runE(flags *flags) error {
 	if err != nil {
 		return err
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	vmss, err := client.Get(ctx, flags.Name)
+	config := flags.FilePath
+	vmconfig, err := virtualmachinescaleset.LoadConfig(config)
 	if err != nil {
 		return err
 	}
-	// If a single VM was requested
-	if len(flags.Name) > 0 {
-		if vmss == nil || len(*vmss) == 0 {
-			return fmt.Errorf("Unable to find Virtual Machine Scale Set [%s]", flags.Name)
-		}
 
-	} else {
-		if vmss == nil || len(*vmss) == 0 {
-			fmt.Println("No VirtualMachineScaleSet Resources")
-			// Not an error
-			return nil
-		}
+	log.Infof("Loaded Configuration [%s]", vmconfig)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	_, err = client.CreateOrUpdate(ctx, *(vmconfig.Name), *(vmconfig.ID), vmconfig)
+	if err != nil {
+		return err
 	}
 
-	virtualmachinescaleset.PrintList(vmss)
 	return nil
-
 }

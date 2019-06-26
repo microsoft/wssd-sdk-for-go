@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/delete/virtualmachine"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/delete/virtualmachinescaleset"
 )
 
 // DeleteFlags
@@ -23,6 +24,7 @@ func NewCommand() *cobra.Command {
 		Long:  "delete a resource",
 	}
 	cmd.AddCommand(virtualmachine.NewCommand())
+	cmd.AddCommand(virtualmachinescaleset.NewCommand())
 
 	cmd.PersistentFlags().StringVar(&flags.FilePath, "config", "", "configuration file path")
 	viper.BindPFlag("config", cmd.PersistentFlags().Lookup("config"))

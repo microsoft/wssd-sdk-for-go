@@ -8,6 +8,7 @@ import (
 
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/get/all"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/get/virtualmachine"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/get/virtualmachinescaleset"
 )
 
 type Format string
@@ -36,6 +37,7 @@ func NewCommand() *cobra.Command {
 
 	cmd.AddCommand(all.NewCommand())
 	cmd.AddCommand(virtualmachine.NewCommand())
+	cmd.AddCommand(virtualmachinescaleset.NewCommand())
 
 	return cmd
 }
