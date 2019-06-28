@@ -16,7 +16,7 @@ package virtualmachine
 
 import (
 	"context"
-	"errors"
+	"fmt"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
@@ -38,105 +38,74 @@ func newVirtualMachineClient(subID string) (*client, error) {
 	return &client{c}, nil
 }
 
-// GetAll
-func (c *client) List(ctx context.Context) (*[]compute.VirtualMachine, error) {
-	request := &wssdcompute.VirtualMachineRequest{
-		OperationType: wssdcompute.Operation_GET,
-	}
-
-	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
-
-	if err != nil {
-		return nil, err
-	}
-
-	// if response.GetResult().Value == false {
-	//	return nil, errors.New(response.GetError())
-	// }
-
-	if len(response.GetVirtualMachineSystems()) == 0 {
-		return nil, nil
-	}
-	log.Infof("[VirtualMachine][List] [%v]", response)
-
-	vms := []compute.VirtualMachine{}
-	for _, v := range response.GetVirtualMachineSystems() {
-		vms = append(vms, *getVirtualMachine(v))
-	}
-
-	// Pick the first virtual machine returned
-	return &vms, nil
-}
-
 // Get
-func (c *client) Get(ctx context.Context, name string) (*compute.VirtualMachine, error) {
-	request := &wssdcompute.VirtualMachineRequest{
-		OperationType:         wssdcompute.Operation_GET,
-		VirtualMachineSystems: []*wssdcompute.VirtualMachine{},
-	}
-	vm := &wssdcompute.VirtualMachine{
-		Name: name,
-	}
-	request.VirtualMachineSystems = append(request.VirtualMachineSystems, vm)
+func (c *client) Get(ctx context.Context, name string) (*[]compute.VirtualMachine, error) {
+	request := getVirtualMachineRequest(wssdcompute.Operation_GET, name, nil)
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
-
 	if err != nil {
 		return nil, err
-	}
-
-	if len(response.GetVirtualMachineSystems()) == 0 {
-		return nil, errors.New(response.GetError())
 	}
 	log.Infof("[VirtualMachine][Get] [%v]", response)
+	return getVirtualMachineFromResponse(response), nil
 
-	// Pick the first virtual machine returned
-	return getVirtualMachine(response.GetVirtualMachineSystems()[0]), nil
 }
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
-	request := &wssdcompute.VirtualMachineRequest{
-		OperationType:         wssdcompute.Operation_POST,
-		VirtualMachineSystems: make([]*wssdcompute.VirtualMachine, 0),
-	}
-	request.VirtualMachineSystems = append(request.VirtualMachineSystems, getWssdVirtualMachine(sg))
+	request := getVirtualMachineRequest(wssdcompute.Operation_POST, name, sg)
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
 	}
-
-	if len(response.GetVirtualMachineSystems()) == 0 {
-		return nil, errors.New(response.GetError())
-	}
-
-	// Pick the first virtual machine returned
-	return getVirtualMachine(response.GetVirtualMachineSystems()[0]), nil
+	log.Infof("[VirtualMachine][Create] [%v]", response)
+	vms := getVirtualMachineFromResponse(response)
+	return &(*vms)[0], nil
 }
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, name string, id string) error {
-	request := &wssdcompute.VirtualMachineRequest{
-		OperationType:         wssdcompute.Operation_DELETE,
-		VirtualMachineSystems: []*wssdcompute.VirtualMachine{},
-	}
 	vm, err := c.Get(ctx, name)
 	if err != nil {
 		return err
 	}
-
-	request.VirtualMachineSystems = append(request.VirtualMachineSystems, getWssdVirtualMachine(vm))
-	_, err = c.VirtualMachineAgentClient.Invoke(ctx, request)
-
-	if err != nil {
-		return err
+	if len(*vm) == 0 {
+		return fmt.Errorf("Virtual Machine [%s] not found", name)
 	}
 
-	return nil
+	request := getVirtualMachineRequest(wssdcompute.Operation_DELETE, name, &(*vm)[0])
+	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
+	log.Infof("[VirtualMachine][Delete] [%v]", response)
+
+	return err
+}
+
+func getVirtualMachineFromResponse(response *wssdcompute.VirtualMachineResponse) *[]compute.VirtualMachine {
+	vms := []compute.VirtualMachine{}
+	for _, vm := range response.GetVirtualMachineSystems() {
+		vms = append(vms, *(GetVirtualMachine(vm)))
+	}
+
+	return &vms
+}
+
+func getVirtualMachineRequest(opType wssdcompute.Operation, name string, vmss *compute.VirtualMachine) *wssdcompute.VirtualMachineRequest {
+	request := &wssdcompute.VirtualMachineRequest{
+		OperationType:         opType,
+		VirtualMachineSystems: []*wssdcompute.VirtualMachine{},
+	}
+	if vmss != nil {
+		request.VirtualMachineSystems = append(request.VirtualMachineSystems, GetWssdVirtualMachine(vmss))
+	} else if len(name) > 0 {
+		request.VirtualMachineSystems = append(request.VirtualMachineSystems,
+			&wssdcompute.VirtualMachine{
+				Name: name,
+			})
+	}
+	return request
 }
 
 // Conversion functions from compute to wssdcompute
-
-func getWssdVirtualMachine(c *compute.VirtualMachine) *wssdcompute.VirtualMachine {
+func GetWssdVirtualMachine(c *compute.VirtualMachine) *wssdcompute.VirtualMachine {
 	return &wssdcompute.VirtualMachine{
 		Name:    *c.Name,
 		Id:      *c.ID,
@@ -192,7 +161,7 @@ func getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wssdcompute.Ope
 
 // Conversion functions from wssdcompute to compute
 
-func getVirtualMachine(c *wssdcompute.VirtualMachine) *compute.VirtualMachine {
+func GetVirtualMachine(c *wssdcompute.VirtualMachine) *compute.VirtualMachine {
 	return &compute.VirtualMachine{
 		BaseProperties: compute.BaseProperties{
 			Name: &c.Name,

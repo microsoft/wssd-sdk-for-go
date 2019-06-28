@@ -4,7 +4,6 @@ package virtualmachinescaleset
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -14,6 +13,7 @@ import (
 )
 
 type flags struct {
+	// Name of the Virtual Machine to get
 	Name string
 }
 
@@ -23,47 +23,45 @@ func NewCommand() *cobra.Command {
 		Args:    cobra.NoArgs,
 		Use:     "virtualmachinescaleset",
 		Aliases: []string{"vmss"},
-		Short:   "Get a specific/all Virtual Machine Scale Set(s)",
-		Long:    "Get a specific/all Virtual Machine Scale Set(s)",
+		Short:   "Delete a specific VirtualMachine Scale Set",
+		Long:    "Delete a specific VirtualMachine Scale Set",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},
 	}
 
-	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the virtual machine scale set resource")
+	cmd.Flags().StringVar(&flags.Name, "name", "", "name(s) of the virtual machine scale set")
+	cmd.MarkFlagRequired("name")
 
 	return cmd
 }
 
 func runE(flags *flags) error {
 	server := viper.GetString("server")
-	client, err := virtualmachinescaleset.NewVirtualMachineScaleSetClient(server)
+	vmclient, err := virtualmachinescaleset.NewVirtualMachineScaleSetClient(server)
 	if err != nil {
 		return err
+	}
+
+	vmName := flags.Name
+	vmId := ""
+	if len(vmName) == 0 {
+		config := viper.GetString("config")
+		vmconfig, err := virtualmachinescaleset.LoadConfig(config)
+		if err != nil {
+			return err
+		}
+		vmName = *(vmconfig.Name)
+		vmId = *(vmconfig.ID)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	vmss, err := client.Get(ctx, flags.Name)
+	err = vmclient.Delete(ctx, vmId, vmId)
 	if err != nil {
 		return err
 	}
-	// If a single VM was requested
-	if len(flags.Name) > 0 {
-		if vmss == nil || len(*vmss) == 0 {
-			return fmt.Errorf("Unable to find Virtual Machine Scale Set [%s]", flags.Name)
-		}
 
-	} else {
-		if vmss == nil || len(*vmss) == 0 {
-			fmt.Println("No VirtualMachineScaleSet Resources")
-			// Not an error
-			return nil
-		}
-	}
-
-	virtualmachinescaleset.PrintList(vmss)
 	return nil
-
 }

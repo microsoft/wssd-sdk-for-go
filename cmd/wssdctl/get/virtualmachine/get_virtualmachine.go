@@ -31,7 +31,7 @@ func NewCommand() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the virtual machine")
+	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the virtual machine resource")
 
 	return cmd
 }
@@ -46,23 +46,25 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	if len(flags.Name) == 0 {
-		vms, err := vmclient.List(ctx)
-		if err != nil {
-			return err
+	vms, err := vmclient.Get(ctx, flags.Name)
+	if err != nil {
+		return err
+	}
+	// If a single VM was requested
+	if len(flags.Name) > 0 {
+		if vms == nil || len(*vms) == 0 {
+			return fmt.Errorf("Unable to find Virtual Machine [%s]", flags.Name)
 		}
+
+	} else {
 		if vms == nil || len(*vms) == 0 {
 			fmt.Println("No VirtualMachine Resources")
+			// Not an error
 			return nil
 		}
-		virtualmachine.PrintList(vms)
-	} else {
-		vm, err := vmclient.Get(ctx, flags.Name)
-		if err != nil {
-			return err
-		}
-		virtualmachine.Print(vm)
 	}
+
+	virtualmachine.PrintList(vms)
 
 	return nil
 }
