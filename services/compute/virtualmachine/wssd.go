@@ -156,6 +156,7 @@ func getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wssdcompute.Ope
 		Administrator: &wssdcompute.UserConfiguration{},
 		Users:         []*wssdcompute.UserConfiguration{},
 		Publickeys:    []*wssdcompute.SSHPublicKey{},
+		StartupScript: *s.CustomData,
 	}
 }
 
