@@ -59,6 +59,10 @@ func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg 
 	}
 	log.Infof("[VirtualMachine][Create] [%v]", response)
 	vms := getVirtualMachineFromResponse(response)
+	if len(*vms) == 0 {
+		return nil, fmt.Errorf("Creation of Virtual Machine failed to unknown reason.")
+	}
+
 	return &(*vms)[0], nil
 }
 
@@ -151,13 +155,16 @@ func getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkProfile) *wssdc
 }
 
 func getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wssdcompute.OperatingSystemConfiguration {
-	return &wssdcompute.OperatingSystemConfiguration{
+	osconfig := wssdcompute.OperatingSystemConfiguration{
 		ComputerName:  *s.ComputerName,
 		Administrator: &wssdcompute.UserConfiguration{},
 		Users:         []*wssdcompute.UserConfiguration{},
 		Publickeys:    []*wssdcompute.SSHPublicKey{},
-		StartupScript: *s.CustomData,
 	}
+	if s.CustomData != nil {
+		osconfig.StartupScript = *s.CustomData
+	}
+	return &osconfig
 }
 
 // Conversion functions from wssdcompute to compute

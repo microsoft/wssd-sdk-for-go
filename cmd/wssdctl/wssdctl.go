@@ -10,9 +10,10 @@ import (
 	"github.com/spf13/viper"
 	"k8s.io/klog"
 
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/create"
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/delete"
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/get"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/cloud"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/network"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage"
 )
 
 type Flags struct {
@@ -41,9 +42,10 @@ func NewCommand() *cobra.Command {
 	cmd.PersistentFlags().BoolVar(&flags.Verbose, "verbose", false, "Verbose Output")
 	cmd.PersistentFlags().IntVar(&flags.LogLevel, "loglevel", 1, "Logging level")
 
-	cmd.AddCommand(create.NewCommand())
-	cmd.AddCommand(get.NewCommand())
-	cmd.AddCommand(delete.NewCommand())
+	cmd.AddCommand(cloud.NewCommand())
+	cmd.AddCommand(compute.NewCommand())
+	cmd.AddCommand(network.NewCommand())
+	cmd.AddCommand(storage.NewCommand())
 
 	return cmd
 
