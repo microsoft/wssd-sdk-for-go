@@ -22,10 +22,39 @@ import (
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 	log "k8s.io/klog"
+	errors "errors"
 )
 
 type client struct {
 	wssdnetwork.VirtualNetworkAgentClient
+}
+
+func VirtualNetworkTypeToString(vnetType wssdnetwork.VirtualNetworkType) string {
+    names := [...]string{
+        "L2Bridge", 
+        "L2Tunnel", 
+		"Overlay",
+		"Transparent",
+	}
+
+    if vnetType < wssdnetwork.VirtualNetworkType_L2Bridge || vnetType > wssdnetwork.VirtualNetworkType_Transparent {
+      return "Unknown"
+    }
+    return names[vnetType]
+}
+
+func VirtualNetworkTypeFromString(vnNetworkString string) (wssdnetwork.VirtualNetworkType, error) {
+    switch vnNetworkString {
+	case "L2Bridge":
+		return wssdnetwork.VirtualNetworkType_L2Bridge, nil
+	case "L2Tunnel":
+		return wssdnetwork.VirtualNetworkType_L2Tunnel, nil
+	case "Overlay":
+		return wssdnetwork.VirtualNetworkType_Overlay, nil
+	case "Transparent":
+		return wssdnetwork.VirtualNetworkType_Transparent, nil
+	}
+    return -1, errors.New("Unknown network type")
 }
 
 // newClient - creates a client session with the backend wssd agent
@@ -44,9 +73,6 @@ func (c *client) Get(ctx context.Context, name string) (*[]network.VirtualNetwor
 	if err != nil {
 		return nil, err
 	}
-
-	PrintListWssd(response.VirtualNetworks)
-	log.Infof("[VirtualNetwork][Get] [%v]", response)
 	return getVirtualNetworksFromResponse(response), nil
 }
 
@@ -108,6 +134,7 @@ func getVirtualNetworksFromResponse(response *wssdnetwork.VirtualNetworkResponse
 // Conversion functions from network to wssdnetwork
 func GetWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwork {
 
+	vnetType, _ := VirtualNetworkTypeFromString(*c.Type)
 	return &wssdnetwork.VirtualNetwork{
 		Name: *c.BaseProperties.Name,
 		Id:   *c.BaseProperties.ID,
@@ -119,7 +146,7 @@ func GetWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 			Servers: *c.DNSSettings.Servers,
 			Options: *c.DNSSettings.Options,
 		},
-		Type: wssdnetwork.VirtualNetworkType_Transparent, // TODO: we should make this a parameter instead of hardcoding it here
+		Type: vnetType,
 	}
 }
 
@@ -157,10 +184,12 @@ func getWssdNetworkRoutes(routes *[]network.Route) []*wssdnetwork.Route {
 // Conversion function from wssdnetwork to network
 func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 
+	vnetType := VirtualNetworkTypeToString(c.Type)
 	return &network.VirtualNetwork{
 		BaseProperties: network.BaseProperties{
 			Name: &c.Name,
 			ID:   &c.Id,
+			Type: &vnetType,
 		},
 		// TODO: MACPool (it is currently missing from network.VirtualNetwork)
 		Subnets: getNetworkSubnets(c.Ipams),
@@ -170,7 +199,6 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 			Servers: &c.Dns.Servers,
 			Options: &c.Dns.Options,
 		},
-		// TODO: do something with c.VirtualNetworkType
 	}
 }
 
