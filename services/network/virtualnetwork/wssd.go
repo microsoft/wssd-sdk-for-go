@@ -19,10 +19,10 @@ import (
 	"fmt"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
+	errors "errors"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 	log "k8s.io/klog"
-	errors "errors"
 )
 
 type client struct {
@@ -30,21 +30,21 @@ type client struct {
 }
 
 func VirtualNetworkTypeToString(vnetType wssdnetwork.VirtualNetworkType) string {
-    names := [...]string{
-        "L2Bridge", 
-        "L2Tunnel", 
+	names := [...]string{
+		"L2Bridge",
+		"L2Tunnel",
 		"Overlay",
 		"Transparent",
 	}
 
-    if vnetType < wssdnetwork.VirtualNetworkType_L2Bridge || vnetType > wssdnetwork.VirtualNetworkType_Transparent {
-      return "Unknown"
-    }
-    return names[vnetType]
+	if vnetType < wssdnetwork.VirtualNetworkType_L2Bridge || vnetType > wssdnetwork.VirtualNetworkType_Transparent {
+		return "Unknown"
+	}
+	return names[vnetType]
 }
 
 func VirtualNetworkTypeFromString(vnNetworkString string) (wssdnetwork.VirtualNetworkType, error) {
-    switch vnNetworkString {
+	switch vnNetworkString {
 	case "L2Bridge":
 		return wssdnetwork.VirtualNetworkType_L2Bridge, nil
 	case "L2Tunnel":
@@ -54,7 +54,7 @@ func VirtualNetworkTypeFromString(vnNetworkString string) (wssdnetwork.VirtualNe
 	case "Transparent":
 		return wssdnetwork.VirtualNetworkType_Transparent, nil
 	}
-    return -1, errors.New("Unknown network type")
+	return -1, errors.New("Unknown network type")
 }
 
 // newClient - creates a client session with the backend wssd agent
@@ -108,7 +108,7 @@ func (c *client) Delete(ctx context.Context, name string, id string) error {
 
 func getVirtualNetworkRequest(opType wssdnetwork.Operation, name string, network *network.VirtualNetwork) *wssdnetwork.VirtualNetworkRequest {
 	request := &wssdnetwork.VirtualNetworkRequest{
-		OperationType:         opType,
+		OperationType:   opType,
 		VirtualNetworks: []*wssdnetwork.VirtualNetwork{},
 	}
 	if network != nil {
@@ -140,9 +140,9 @@ func GetWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 		Id:   *c.BaseProperties.ID,
 		// TODO: MACPool (it is currently missing from network.VirtualNetwork)
 		Ipams: getWssdNetworkIpams(c.Subnets),
-		Dns:  &wssdnetwork.Dns{
-			Domain: *c.DNSSettings.Domain,
-			Search: *c.DNSSettings.Search,
+		Dns: &wssdnetwork.Dns{
+			Domain:  *c.DNSSettings.Domain,
+			Search:  *c.DNSSettings.Search,
 			Servers: *c.DNSSettings.Servers,
 			Options: *c.DNSSettings.Options,
 		},
@@ -154,10 +154,10 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 	ipam := wssdnetwork.Ipam{}
 
 	for _, subnet := range *subnets {
-		ipam.Subnets = append(ipam.Subnets, &wssdnetwork.Subnet {
-			Name: *subnet.BaseProperties.Name,
-			Id:   *subnet.BaseProperties.ID,
-			Cidr: *subnet.AddressPrefix,
+		ipam.Subnets = append(ipam.Subnets, &wssdnetwork.Subnet{
+			Name:   *subnet.BaseProperties.Name,
+			Id:     *subnet.BaseProperties.ID,
+			Cidr:   *subnet.AddressPrefix,
 			Routes: getWssdNetworkRoutes(subnet.Routes),
 			// TODO: implement something for IPConfigurationReferences
 		})
@@ -170,16 +170,15 @@ func getWssdNetworkRoutes(routes *[]network.Route) []*wssdnetwork.Route {
 	wssdroutes := []*wssdnetwork.Route{}
 
 	for _, route := range *routes {
-		wssdroutes = append(wssdroutes, &wssdnetwork.Route {
-			Nexthop: *route.NextHop,
+		wssdroutes = append(wssdroutes, &wssdnetwork.Route{
+			Nexthop:           *route.NextHop,
 			Destinationprefix: *route.DestinationPrefix,
-			Metric: route.Metric,
+			Metric:            route.Metric,
 		})
 	}
 
 	return wssdroutes
 }
-
 
 // Conversion function from wssdnetwork to network
 func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
@@ -193,9 +192,9 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 		},
 		// TODO: MACPool (it is currently missing from network.VirtualNetwork)
 		Subnets: getNetworkSubnets(c.Ipams),
-		DNSSettings:  network.DNS{
-			Domain: &c.Dns.Domain,
-			Search: &c.Dns.Search,
+		DNSSettings: network.DNS{
+			Domain:  &c.Dns.Domain,
+			Search:  &c.Dns.Search,
 			Servers: &c.Dns.Servers,
 			Options: &c.Dns.Options,
 		},
@@ -207,13 +206,13 @@ func getNetworkSubnets(ipams []*wssdnetwork.Ipam) *[]network.Subnet {
 
 	for _, ipam := range ipams {
 		for _, subnet := range ipam.Subnets {
-			subnets = append(subnets, network.Subnet {
+			subnets = append(subnets, network.Subnet{
 				BaseProperties: network.BaseProperties{
 					Name: &subnet.Name,
 					ID:   &subnet.Id,
 				},
 				AddressPrefix: &subnet.Cidr,
-				Routes: getNetworkRoutes(subnet.Routes),
+				Routes:        getNetworkRoutes(subnet.Routes),
 				// TODO: implement something for IPConfigurationReferences
 			})
 		}
@@ -226,10 +225,10 @@ func getNetworkRoutes(wssdroutes []*wssdnetwork.Route) *[]network.Route {
 	routes := []network.Route{}
 
 	for _, route := range wssdroutes {
-		routes = append(routes, network.Route {
-			NextHop: &route.Nexthop,
+		routes = append(routes, network.Route{
+			NextHop:           &route.Nexthop,
 			DestinationPrefix: &route.Destinationprefix,
-			Metric: route.Metric,
+			Metric:            route.Metric,
 		})
 	}
 
