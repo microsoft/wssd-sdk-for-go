@@ -43,7 +43,7 @@ func newVirtualNetworkInterfaceClient(subID string) (*client, error) {
 // Get
 func (c *client) Get(ctx context.Context, name string) (*[]network.VirtualNetworkInterface, error) {
 	request := getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_GET, name, nil)
-	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request, nil)
+	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +158,7 @@ func GetVirtualNetworkInterface(server string, c *wssdnetwork.VirtualNetworkInte
 
 	vnet, err := getVirtualNetwork(server, c.Networkname)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Virtual Network Interface [%s] is not on a supported network type.\n Inner error: %v", c.Name, err)
 	}
 
 	vnetIntf := &network.VirtualNetworkInterface{
@@ -193,7 +193,7 @@ func getVirtualNetwork(server string, networkName string) (*network.VirtualNetwo
 		return &(*networks)[0], nil
 	}
 
-	return nil, fmt.Errorf("Virtual Network [%s] not found", networkName)
+	return nil, fmt.Errorf("Virtual Network [%s] not found or network type not supported", networkName)
 }
 
 func getNetworkIpConfigs(wssdipconfigs []*wssdnetwork.IpConfiguration) *[]network.IPConfiguration {
