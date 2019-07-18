@@ -58,7 +58,7 @@ func runE(flags *flags) error {
 
 	} else {
 		if networks == nil || len(*networks) == 0 {
-			fmt.Println("No VirtualNetwork Resources")
+			fmt.Println("No Virtual Network Resources")
 			// Not an error
 			return nil
 		}

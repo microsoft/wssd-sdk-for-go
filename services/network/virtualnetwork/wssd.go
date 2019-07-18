@@ -81,7 +81,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, vne
 	request := getVirtualNetworkRequest(wssdnetwork.Operation_POST, name, vnet)
 	response, err := c.VirtualNetworkAgentClient.Invoke(ctx, request)
 	if err != nil {
-		log.Errorf("[Virtual Network] Create failed with error", err)
+		log.Errorf("[Virtual Network] Create failed with error %v", err)
 		return nil, err
 	}
 	log.Infof("[VirtualNetwork][Create] [%v]", response)
