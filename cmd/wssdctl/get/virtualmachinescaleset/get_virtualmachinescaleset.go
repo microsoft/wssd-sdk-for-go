@@ -5,12 +5,13 @@ package virtualmachinescaleset
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachinescaleset"
+
+	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )
 
 type flags struct {
@@ -42,7 +43,7 @@ func runE(flags *flags) error {
 		return err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
 	vmss, err := client.Get(ctx, flags.Name)

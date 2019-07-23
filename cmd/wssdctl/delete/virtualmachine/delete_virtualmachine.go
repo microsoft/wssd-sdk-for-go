@@ -4,12 +4,13 @@ package virtualmachine
 
 import (
 	"context"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
+
+	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )
 
 type flags struct {
@@ -55,7 +56,7 @@ func runE(flags *flags) error {
 		vmId = *(vmconfig.ID)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
 	err = vmclient.Delete(ctx, vmId, vmId)

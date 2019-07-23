@@ -18,12 +18,17 @@ import (
 	"context"
 	"fmt"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
-	"time"
 
 	virtualnetwork "github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 	log "k8s.io/klog"
+
+	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
+)
+
+const (
+
 )
 
 type client struct {
@@ -181,7 +186,7 @@ func getVirtualNetwork(server string, networkName string) (*network.VirtualNetwo
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
 	networks, err := vnetclient.Get(ctx, networkName)
