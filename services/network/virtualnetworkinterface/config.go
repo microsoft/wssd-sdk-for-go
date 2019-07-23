@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package virtualmachine
+package virtualnetworkinterface
 
 import (
 	"fmt"
@@ -21,30 +21,30 @@ import (
 
 	log "k8s.io/klog"
 
-	"github.com/microsoft/wssd-sdk-for-go/services/compute"
-	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
+	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 )
 
 // Load the virtual machine configuration from the specified path
-func LoadConfig(path string) (*compute.VirtualMachine, error) {
+func LoadConfig(path string) (*network.VirtualNetworkInterface, error) {
 	log.Infof("[LoadConfig] [%s]", path)
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	vm := &compute.VirtualMachine{}
+	vnetInterface := &network.VirtualNetworkInterface{}
 
-	err = yaml.Unmarshal(contents, vm)
+	err = yaml.Unmarshal(contents, vnetInterface)
 	if err != nil {
 		return nil, err
 	}
 
-	return vm, nil
+	return vnetInterface, nil
 }
 
 // Print
-func Print(vm *compute.VirtualMachine) {
-	str, err := yaml.Marshal(vm)
+func Print(vnetInterface *network.VirtualNetworkInterface) {
+	str, err := yaml.Marshal(vnetInterface)
 	if err != nil {
 		fmt.Printf("%v", err)
 		return
@@ -53,17 +53,17 @@ func Print(vm *compute.VirtualMachine) {
 }
 
 // PrintList
-func PrintList(vms *[]compute.VirtualMachine) {
-	if vms != nil {
-		for _, vm := range *vms {
-			Print(&vm)
+func PrintList(vnets *[]network.VirtualNetworkInterface) {
+	if vnets != nil {
+		for _, vnetInterface := range *vnets {
+			Print(&vnetInterface)
 		}
 	}
 }
 
 // Print
-func PrintWssd(vnet *wssdcompute.VirtualMachine) {
-	str, err := yaml.Marshal(vnet)
+func PrintWssd(vnetInterface *wssdnetwork.VirtualNetworkInterface) {
+	str, err := yaml.Marshal(vnetInterface)
 	if err != nil {
 		fmt.Printf("%v", err)
 		return
@@ -72,12 +72,12 @@ func PrintWssd(vnet *wssdcompute.VirtualMachine) {
 }
 
 // PrintList
-func PrintListWssd(vms []*wssdcompute.VirtualMachine) {
-	if vms != nil {
-		for _, vm := range vms {
-			PrintWssd(vm)
+func PrintListWssd(vnets []*wssdnetwork.VirtualNetworkInterface) {
+	if vnets != nil {
+		for _, vnetInterface := range vnets {
+			PrintWssd(vnetInterface)
 		}
 	} else {
-		fmt.Printf("No VM to print\n")
+		fmt.Printf("No vNET Interface to print\n")
 	}
 }

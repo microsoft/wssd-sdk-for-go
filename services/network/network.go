@@ -46,6 +46,8 @@ type Route struct {
 	NextHop *string `json:"nexthop,omitempty"`
 	// DestinationPrefix in cidr format
 	DestinationPrefix *string `json:"destinationprefix,omitempty"`
+	// Metric
+	Metric uint32 `json:"metric,omitempty"`
 }
 
 // IPConfigurationReference
@@ -118,7 +120,7 @@ type LoadBalancingRule struct {
 	FrontendIPConfigurationID *string `json:"frontendIPConfigurationID,omitempty"`
 	// BackendAddressPoolID
 	BackendAddressPoolID *string `json:"backendAddressPoolID,omitempty"`
-	// Dns
+	// TransportProtocol
 	Protocol TransportProtocol `json:"protocol,omitempty"`
 	// FrontendPort
 	FrontendPort *int32 `json:"frontendPort,omitempty"`

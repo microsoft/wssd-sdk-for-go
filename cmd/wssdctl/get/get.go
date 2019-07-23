@@ -9,6 +9,8 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/get/all"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/get/virtualmachine"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/get/virtualmachinescaleset"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/get/virtualnetwork"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/get/virtualnetworkinterface"
 )
 
 type Format string
@@ -38,6 +40,8 @@ func NewCommand() *cobra.Command {
 	cmd.AddCommand(all.NewCommand())
 	cmd.AddCommand(virtualmachine.NewCommand())
 	cmd.AddCommand(virtualmachinescaleset.NewCommand())
+	cmd.AddCommand(virtualnetwork.NewCommand())
+	cmd.AddCommand(virtualnetworkinterface.NewCommand())
 
 	return cmd
 }

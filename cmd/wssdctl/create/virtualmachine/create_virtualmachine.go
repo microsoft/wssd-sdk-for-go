@@ -4,7 +4,6 @@ package virtualmachine
 
 import (
 	"context"
-	"time"
 
 	log "k8s.io/klog"
 
@@ -12,6 +11,8 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
+
+	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )
 
 type flags struct {
@@ -50,7 +51,7 @@ func runE(flags *flags) error {
 	}
 
 	log.Infof("Loaded Configuration [%s]", vmconfig)
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
 	_, err = vmclient.CreateOrUpdate(ctx, *(vmconfig.Name), *(vmconfig.ID), vmconfig)
