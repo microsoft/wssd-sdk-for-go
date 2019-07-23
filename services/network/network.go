@@ -47,7 +47,7 @@ type Route struct {
 	// DestinationPrefix in cidr format
 	DestinationPrefix *string `json:"destinationprefix,omitempty"`
 	// Metric
-	Metric int32 `json:"metric,omitempty"`
+	Metric uint32 `json:"metric,omitempty"`
 }
 
 // IPConfigurationReference

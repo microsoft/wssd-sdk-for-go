@@ -86,7 +86,12 @@ func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, vne
 	}
 	log.Infof("[VirtualNetwork][Create] [%v]", response)
 	vnets := getVirtualNetworksFromResponse(response)
-	return &(*vnets)[0], nil
+
+	if len(*vnets) == 0 {
+		return nil, fmt.Errorf("[VirtualNetwork][Create] Unexpected error: Creating a network interface returned no result")
+	}
+
+	return &((*vnets)[0]), nil
 }
 
 // Delete methods invokes create or update on the client

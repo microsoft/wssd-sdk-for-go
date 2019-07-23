@@ -27,9 +27,7 @@ import (
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )
 
-const (
-
-)
+const ()
 
 type client struct {
 	subID string
