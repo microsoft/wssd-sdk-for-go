@@ -124,6 +124,7 @@ func getVirtualNetworkRequest(opType wssdnetwork.Operation, name string, network
 				Name: name,
 			})
 	}
+
 	return request
 }
 
@@ -140,6 +141,7 @@ func getVirtualNetworksFromResponse(response *wssdnetwork.VirtualNetworkResponse
 func GetWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwork {
 
 	vnetType, _ := VirtualNetworkTypeFromString(*c.Type)
+	
 	return &wssdnetwork.VirtualNetwork{
 		Name: *c.BaseProperties.Name,
 		Id:   *c.BaseProperties.ID,

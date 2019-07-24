@@ -1,0 +1,29 @@
+baseproperties:
+  id: 15c468c1-dc3f-44ce-a505-5a68ec44549c
+  name: "SampleL2BridgeNetwork"
+  type: "L2Bridge"
+  tags: {}
+addressspace: null
+macpool: null
+dnssettings:
+  domain: ""
+  search: []
+  servers: []
+  options: []
+subnets:
+- baseproperties:
+    id: ""
+    name: ""
+    type: null
+    tags: {}
+  addressprefix: "192.168.1.0/24"
+  routes:
+  - baseproperties:
+      id: null
+      name: null
+      type: null
+      tags: {}
+    nexthop: 192.168.1.1
+    destinationprefix: 0.0.0.0/0
+    metric: 0
+  ipconfigurationreferences: null

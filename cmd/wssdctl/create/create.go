@@ -8,6 +8,9 @@ import (
 
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/create/virtualmachine"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/create/virtualmachinescaleset"
+
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/create/virtualnetwork"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/create/virtualnetworkinterface"
 )
 
 type CreateFlags struct {
@@ -28,5 +31,8 @@ func NewCommand() *cobra.Command {
 
 	cmd.AddCommand(virtualmachine.NewCommand())
 	cmd.AddCommand(virtualmachinescaleset.NewCommand())
+	cmd.AddCommand(virtualnetwork.NewCommand())
+	cmd.AddCommand(virtualnetworkinterface.NewCommand())
+
 	return cmd
 }
