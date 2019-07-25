@@ -5,8 +5,6 @@ package virtualnetworkinterface
 import (
 	"context"
 
-	log "k8s.io/klog"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -53,7 +51,6 @@ func runE(flags *flags) error {
 		return err
 	}
 
-	log.Infof("Loaded Configuration [%s]", vnicconfig)
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
