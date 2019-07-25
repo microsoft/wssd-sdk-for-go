@@ -8,6 +8,8 @@ import (
 
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/delete/virtualmachine"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/delete/virtualmachinescaleset"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/delete/virtualnetwork"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/delete/virtualnetworkinterface"
 )
 
 // DeleteFlags
@@ -25,6 +27,8 @@ func NewCommand() *cobra.Command {
 	}
 	cmd.AddCommand(virtualmachine.NewCommand())
 	cmd.AddCommand(virtualmachinescaleset.NewCommand())
+	cmd.AddCommand(virtualnetwork.NewCommand())
+	cmd.AddCommand(virtualnetworkinterface.NewCommand())
 
 	cmd.PersistentFlags().StringVar(&flags.FilePath, "config", "", "configuration file path")
 	viper.BindPFlag("config", cmd.PersistentFlags().Lookup("config"))

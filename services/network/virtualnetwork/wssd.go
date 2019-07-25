@@ -30,31 +30,24 @@ type client struct {
 }
 
 func VirtualNetworkTypeToString(vnetType wssdnetwork.VirtualNetworkType) string {
-	names := [...]string{
-		"L2Bridge",
-		"L2Tunnel",
-		"Overlay",
-		"Transparent",
-	}
+	typename, ok := wssdnetwork.VirtualNetworkType_name[int32(vnetType)]
 
-	if vnetType < wssdnetwork.VirtualNetworkType_L2Bridge || vnetType > wssdnetwork.VirtualNetworkType_Transparent {
+	if !ok {
 		return "Unknown"
 	}
-	return names[vnetType]
+
+	return typename
+
 }
 
 func VirtualNetworkTypeFromString(vnNetworkString string) (wssdnetwork.VirtualNetworkType, error) {
-	switch vnNetworkString {
-	case "L2Bridge":
-		return wssdnetwork.VirtualNetworkType_L2Bridge, nil
-	case "L2Tunnel":
-		return wssdnetwork.VirtualNetworkType_L2Tunnel, nil
-	case "Overlay":
-		return wssdnetwork.VirtualNetworkType_Overlay, nil
-	case "Transparent":
-		return wssdnetwork.VirtualNetworkType_Transparent, nil
+	typevalue, ok := wssdnetwork.VirtualNetworkType_value[vnNetworkString]
+
+	if !ok {
+		return -1, errors.New("Unknown network type")
 	}
-	return -1, errors.New("Unknown network type")
+	
+	return wssdnetwork.VirtualNetworkType(typevalue), nil
 }
 
 // newClient - creates a client session with the backend wssd agent
@@ -124,6 +117,7 @@ func getVirtualNetworkRequest(opType wssdnetwork.Operation, name string, network
 				Name: name,
 			})
 	}
+
 	return request
 }
 
@@ -140,6 +134,7 @@ func getVirtualNetworksFromResponse(response *wssdnetwork.VirtualNetworkResponse
 func GetWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwork {
 
 	vnetType, _ := VirtualNetworkTypeFromString(*c.Type)
+	
 	return &wssdnetwork.VirtualNetwork{
 		Name: *c.BaseProperties.Name,
 		Id:   *c.BaseProperties.ID,
