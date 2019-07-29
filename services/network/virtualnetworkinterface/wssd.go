@@ -149,6 +149,9 @@ func getWssdNetworkInterfaceIPConfig(ipConfigs *[]network.IPConfiguration) []*ws
 	}
 
 	for _, ipConfig := range *ipConfigs {
+		if ipConfig.IPAddress == nil {
+			continue
+		}
 		wssdIpConfigs = append(wssdIpConfigs, &wssdnetwork.IpConfiguration{
 			Ipaddress:    *ipConfig.IPAddress,
 			Prefixlength: *ipConfig.PrefixLength,
