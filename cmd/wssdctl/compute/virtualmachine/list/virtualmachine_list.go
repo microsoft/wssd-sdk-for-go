@@ -20,11 +20,10 @@ type flags struct {
 func NewCommand() *cobra.Command {
 	flags := &flags{}
 	cmd := &cobra.Command{
-		Args:    cobra.NoArgs,
-		Use:     "virtualmachine",
-		Aliases: []string{"vm"},
-		Short:   "Get a specific/all Virtual Machine(s)",
-		Long:    "Get a specific/all Virtual Machine(s)",
+		Args:  cobra.NoArgs,
+		Use:   "list",
+		Short: "Get a specific/all Virtual Machine(s)",
+		Long:  "Get a specific/all Virtual Machine(s)",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},

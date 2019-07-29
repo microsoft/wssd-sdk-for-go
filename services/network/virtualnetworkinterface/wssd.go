@@ -144,6 +144,9 @@ func GetWssdVirtualNetworkInterface(c *network.VirtualNetworkInterface) *wssdnet
 
 func getWssdNetworkInterfaceIPConfig(ipConfigs *[]network.IPConfiguration) []*wssdnetwork.IpConfiguration {
 	wssdIpConfigs := []*wssdnetwork.IpConfiguration{}
+	if ipConfigs == nil {
+		return wssdIpConfigs
+	}
 
 	for _, ipConfig := range *ipConfigs {
 		wssdIpConfigs = append(wssdIpConfigs, &wssdnetwork.IpConfiguration{

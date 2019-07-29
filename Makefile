@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT license.
 GOCMD=go
-GOBUILD=$(GOCMD) build -i -v i#-mod=vendor
+GOBUILD=$(GOCMD) build -i -v #-mod=vendor
 GOHOSTOS=$(strip $(shell $(GOCMD) env get GOHOSTOS))
 
 TAG ?= $(shell git describe --tags)
@@ -23,4 +23,3 @@ ctl:
 
 vendor:
 	go get all ./...
-
