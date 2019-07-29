@@ -13,6 +13,7 @@ variables:
   GOBIN:  '$(GOPATH)/bin' # Go binaries path
   GOROOT: '/usr/local/go1.11' # Go installation path
   GOPATH: '$(system.defaultWorkingDirectory)/gopath' # Go workspace path
+  GO111MODULE: 'on'
   modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)' # Path to the module's code
 
 steps:
@@ -28,6 +29,7 @@ steps:
   displayName: 'Set up the Go workspace'
 
 - script: |
+    make vendor
     make
   workingDirectory: '$(modulePath)'
   displayName: 'Build Validation'
