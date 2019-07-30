@@ -21,11 +21,10 @@ type flags struct {
 func NewCommand() *cobra.Command {
 	flags := &flags{}
 	cmd := &cobra.Command{
-		Args:    cobra.NoArgs,
-		Use:     "virtualmachine",
-		Aliases: []string{"vm"},
-		Short:   "Delete a specific VirtualMachine",
-		Long:    "Delete a specific VirtualMachine",
+		Args:  cobra.NoArgs,
+		Use:   "delete",
+		Short: "Delete a specific VirtualMachine",
+		Long:  "Delete a specific VirtualMachine",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},

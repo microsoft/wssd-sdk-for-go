@@ -23,8 +23,8 @@ func NewCommand() *cobra.Command {
 	flags := &flags{}
 	cmd := &cobra.Command{
 		Args:    cobra.NoArgs,
-		Use:     "virtualmachine",
-		Aliases: []string{"vm"},
+		Use:     "show",
+		Aliases: []string{"get"},
 		Short:   "Get a specific Virtual Machine(s)",
 		Long:    "Get a specific Virtual Machine(s)",
 		RunE: func(cmd *cobra.Command, args []string) error {
