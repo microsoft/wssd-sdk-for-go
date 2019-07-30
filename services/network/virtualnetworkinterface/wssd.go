@@ -133,13 +133,18 @@ func getVirtualNetworkInterfacesFromResponse(server string, response *wssdnetwor
 // Conversion functions from network interface to wssd network interface
 func GetWssdVirtualNetworkInterface(c *network.VirtualNetworkInterface) *wssdnetwork.VirtualNetworkInterface {
 
-	return &wssdnetwork.VirtualNetworkInterface{
+	vnic := &wssdnetwork.VirtualNetworkInterface{
 		Name:        *c.BaseProperties.Name,
 		Id:          *c.BaseProperties.ID,
 		Networkname: *c.VirtualNetwork.BaseProperties.Name,
 		// TODO: Type
 		Ipconfigs: getWssdNetworkInterfaceIPConfig(c.IPConfigurations),
 	}
+
+	if c.MACAddress != nil {
+		vnic.Macaddress = *c.MACAddress
+	}
+	return vnic
 }
 
 func getWssdNetworkInterfaceIPConfig(ipConfigs *[]network.IPConfiguration) []*wssdnetwork.IpConfiguration {
@@ -177,6 +182,7 @@ func GetVirtualNetworkInterface(server string, c *wssdnetwork.VirtualNetworkInte
 			ID:   &c.Id,
 		},
 		VirtualNetwork: vnet,
+		MACAddress:     &c.Macaddress,
 		// TODO: Type
 		IPConfigurations: getNetworkIpConfigs(c.Ipconfigs),
 	}

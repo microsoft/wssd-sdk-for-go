@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
-	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
@@ -147,8 +146,11 @@ func getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkProfile) *wssdc
 	nc := &wssdcompute.NetworkConfiguration{
 		Interfaces: []*wssdcompute.NetworkInterface{},
 	}
-	for _, _ = range *s.NetworkInterfaceConfigurations {
-		nc.Interfaces = append(nc.Interfaces, &wssdcompute.NetworkInterface{}) // FixMe
+	for _, nic := range *s.NetworkInterfaces {
+		if nic.VirtualNetworkInterfaceID == nil {
+			continue
+		}
+		nc.Interfaces = append(nc.Interfaces, &wssdcompute.NetworkInterface{NetworkInterfaceId: *nic.VirtualNetworkInterfaceID})
 	}
 
 	return nc
@@ -207,11 +209,14 @@ func getVirtualMachineStorageProfileDataDisks(dd []*wssdcompute.Disk) *[]compute
 
 func getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfiguration) *compute.NetworkProfile {
 	np := &compute.NetworkProfile{
-		NetworkInterfaceConfigurations: &[]network.VirtualNetworkInterface{},
+		NetworkInterfaces: &[]compute.NetworkInterfaceReference{},
 	}
 
-	for _, _ = range n.Interfaces {
-		*np.NetworkInterfaceConfigurations = append(*np.NetworkInterfaceConfigurations, network.VirtualNetworkInterface{}) // FixMe
+	for _, nic := range n.Interfaces {
+		if nic == nil {
+			continue
+		}
+		*np.NetworkInterfaces = append(*np.NetworkInterfaces, compute.NetworkInterfaceReference{VirtualNetworkInterfaceID: &((*nic).NetworkInterfaceId)})
 	}
 	return np
 }

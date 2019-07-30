@@ -17,5 +17,5 @@ osprofile:
   windowsconfiguration: null
   linuxconfiguration: null
 networkprofile:
-  networkinterfaceconfigurations: []
+  networkinterfaces: []
 

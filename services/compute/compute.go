@@ -14,9 +14,7 @@
 
 package compute
 
-import (
-	"github.com/microsoft/wssd-sdk-for-go/services/network"
-)
+import ()
 
 // BaseProperties defines the structure of
 type BaseProperties struct {
@@ -121,7 +119,8 @@ type NetworkInterfaceReference struct {
 }
 type NetworkProfile struct {
 	// NetworkInterfaces
-	NetworkInterfaceConfigurations *[]network.VirtualNetworkInterface `json:"networkInterfaceConfigurations,omitempty"`
+	NetworkInterfaces *[]NetworkInterfaceReference `json:"networkInterfaces,omitempty"`
+	//NetworkInterfaceConfigurations *[]network.VirtualNetworkInterface `json:"networkInterfaceConfigurations,omitempty"`
 }
 
 type VirtualMachine struct {
