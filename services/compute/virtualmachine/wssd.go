@@ -156,12 +156,35 @@ func getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkProfile) *wssdc
 	return nc
 }
 
+func getWssdVirtualMachineOSSSHPublicKeys(ssh *compute.SSHConfiguration) []*wssdcompute.SSHPublicKey {
+	keys := []*wssdcompute.SSHPublicKey{}
+	if ssh == nil {
+		return keys
+	}
+	for _, key := range *ssh.PublicKeys {
+		keys = append(keys, &wssdcompute.SSHPublicKey{Keydata: *key.KeyData})
+	}
+	return keys
+
+}
+
 func getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wssdcompute.OperatingSystemConfiguration {
+	publickeys := []*wssdcompute.SSHPublicKey{}
+	if s.LinuxConfiguration != nil {
+		publickeys = getWssdVirtualMachineOSSSHPublicKeys(s.LinuxConfiguration.SSH)
+	}
+
+	adminuser := &wssdcompute.UserConfiguration{}
+	if s.AdminUsername != nil && s.AdminPassword != nil {
+		adminuser.Username = *s.AdminUsername
+		adminuser.Password = *s.AdminPassword
+	}
+
 	osconfig := wssdcompute.OperatingSystemConfiguration{
 		ComputerName:  *s.ComputerName,
-		Administrator: &wssdcompute.UserConfiguration{},
+		Administrator: adminuser,
 		Users:         []*wssdcompute.UserConfiguration{},
-		Publickeys:    []*wssdcompute.SSHPublicKey{},
+		Publickeys:    publickeys,
 	}
 	if s.CustomData != nil {
 		osconfig.StartupScript = *s.CustomData
