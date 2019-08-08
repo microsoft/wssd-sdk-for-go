@@ -58,7 +58,7 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	err = vmclient.Delete(ctx, vmId, vmId)
+	err = vmclient.Delete(ctx, vmName, vmId)
 	if err != nil {
 		return err
 	}

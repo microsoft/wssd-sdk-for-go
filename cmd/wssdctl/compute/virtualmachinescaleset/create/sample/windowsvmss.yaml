@@ -1,0 +1,30 @@
+baseproperties:
+  id: dd3c2797-0000-0000-0000-eba420d552a2
+  name: "windowsvmss"
+  type: null
+  tags: {}
+sku:
+  name: "windows"
+  capacity: 2
+virtualmachineprofile:
+  baseproperties:
+    id: dd3c2797-0000-0000-0000-eba420d55200
+    name: "windowsvm"
+    type: null
+    tags: {}
+  storageprofile:
+    osdisk:
+      name: null
+      ostype: "Windows"
+      vhdid: "g:/azureimage/windows.vhdx"
+    datadisks: []
+  osprofile:
+    computername: ""
+    adminusername: "administrator"
+    adminpassword: "P@ssword123"
+    customdata: null
+    windowsconfiguration: null
+    linuxconfiguration: null
+  networkprofile:
+    networkinterfaceconfigurations: []
+

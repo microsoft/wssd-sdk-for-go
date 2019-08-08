@@ -22,5 +22,5 @@ osprofile:
     disablepasswordauthentication: true
 networkprofile:
   networkinterfaces:
-  - virtualnetworkinterfaceid: "e1dd5a20-1e33-4d22-83ee-dc22d5cd3f37"
+  - virtualnetworkinterfacereference: "sampleendpoint1"
 

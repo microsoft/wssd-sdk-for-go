@@ -14,7 +14,9 @@
 
 package compute
 
-import ()
+import (
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
+)
 
 // BaseProperties defines the structure of
 type BaseProperties struct {
@@ -112,15 +114,14 @@ type OSProfile struct {
 }
 
 type NetworkInterfaceReference struct {
-	// VirtualNetworkID
-	VirtualNetworkID *string `json:"id,omitempty"`
-	// VirtualNetworkInterfaceID
-	VirtualNetworkInterfaceID *string `json:"id,omitempty"`
+	// VirtualNetworkReference
+	VirtualNetworkReference *string `json:"id,omitempty"`
+	// VirtualNetworkInterfaceReference
+	VirtualNetworkInterfaceReference *string `json:"id,omitempty"`
 }
 type NetworkProfile struct {
 	// NetworkInterfaces
 	NetworkInterfaces *[]NetworkInterfaceReference `json:"networkInterfaces,omitempty"`
-	//NetworkInterfaceConfigurations *[]network.VirtualNetworkInterface `json:"networkInterfaceConfigurations,omitempty"`
 }
 
 type VirtualMachine struct {
@@ -140,11 +141,25 @@ type Sku struct {
 	Capacity *int64 `json:"capacity,omitempty"`
 }
 
+type VirtualMachineScaleSetNetworkProfile struct {
+	// NetworkInterfaceConfigurations
+	NetworkInterfaceConfigurations *[]network.VirtualNetworkInterface `json:"networkInterfaceConfigurations,omitempty"`
+}
+type VirtualMachineScaleSetVMProfile struct {
+	BaseProperties
+	// StorageProfile
+	StorageProfile *StorageProfile `json:"storageProfile,omitempty"`
+	// OsProfile
+	OsProfile *OSProfile `json:"osProfile,omitempty"`
+	// NetworkProfile
+	NetworkProfile *VirtualMachineScaleSetNetworkProfile `json:"networkProfile,omitempty"`
+}
+
 // VirtualMachineScaleSet
 type VirtualMachineScaleSet struct {
 	BaseProperties
 	// Sku
 	Sku *Sku `json:"sku,omitempty"`
 	// VirtualMachineProfile
-	VirtualMachineProfile *VirtualMachine `json:"virtualMachineProfile,omitempty"`
+	VirtualMachineProfile *VirtualMachineScaleSetVMProfile `json:"virtualMachineProfile,omitempty"`
 }
