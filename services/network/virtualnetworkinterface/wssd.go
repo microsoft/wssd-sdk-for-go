@@ -99,6 +99,7 @@ func (c *client) Delete(ctx context.Context, name string, id string) error {
 	return err
 }
 
+/////////////// private methods  ///////////////
 func getVirtualNetworkInterfaceRequest(opType wssdnetwork.Operation, name string, networkInterface *network.VirtualNetworkInterface) *wssdnetwork.VirtualNetworkInterfaceRequest {
 	request := &wssdnetwork.VirtualNetworkInterfaceRequest{
 		OperationType:            opType,

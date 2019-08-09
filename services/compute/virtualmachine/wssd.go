@@ -39,25 +39,25 @@ func newVirtualMachineClient(subID string) (*client, error) {
 
 // Get
 func (c *client) Get(ctx context.Context, name string) (*[]compute.VirtualMachine, error) {
-	request := getVirtualMachineRequest(wssdcompute.Operation_GET, name, nil)
+	request := c.getVirtualMachineRequest(wssdcompute.Operation_GET, name, nil)
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
 	}
 	log.Infof("[VirtualMachine][Get] [%v]", response)
-	return getVirtualMachineFromResponse(response), nil
+	return c.getVirtualMachineFromResponse(response), nil
 
 }
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
-	request := getVirtualMachineRequest(wssdcompute.Operation_POST, name, sg)
+	request := c.getVirtualMachineRequest(wssdcompute.Operation_POST, name, sg)
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
 	}
 	log.Infof("[VirtualMachine][Create] [%v]", response)
-	vms := getVirtualMachineFromResponse(response)
+	vms := c.getVirtualMachineFromResponse(response)
 	if len(*vms) == 0 {
 		return nil, fmt.Errorf("Creation of Virtual Machine failed to unknown reason.")
 	}
@@ -67,6 +67,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg 
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, name string, id string) error {
+	log.Infof("[VirtualMachine][Delete] [%s] [%s]", name, id)
 	vm, err := c.Get(ctx, name)
 	if err != nil {
 		return err
@@ -75,29 +76,29 @@ func (c *client) Delete(ctx context.Context, name string, id string) error {
 		return fmt.Errorf("Virtual Machine [%s] not found", name)
 	}
 
-	request := getVirtualMachineRequest(wssdcompute.Operation_DELETE, name, &(*vm)[0])
+	request := c.getVirtualMachineRequest(wssdcompute.Operation_DELETE, name, &(*vm)[0])
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	log.Infof("[VirtualMachine][Delete] [%v]", response)
 
 	return err
 }
 
-func getVirtualMachineFromResponse(response *wssdcompute.VirtualMachineResponse) *[]compute.VirtualMachine {
+func (c *client) getVirtualMachineFromResponse(response *wssdcompute.VirtualMachineResponse) *[]compute.VirtualMachine {
 	vms := []compute.VirtualMachine{}
 	for _, vm := range response.GetVirtualMachineSystems() {
-		vms = append(vms, *(GetVirtualMachine(vm)))
+		vms = append(vms, *(c.getVirtualMachine(vm)))
 	}
 
 	return &vms
 }
 
-func getVirtualMachineRequest(opType wssdcompute.Operation, name string, vmss *compute.VirtualMachine) *wssdcompute.VirtualMachineRequest {
+func (c *client) getVirtualMachineRequest(opType wssdcompute.Operation, name string, vmss *compute.VirtualMachine) *wssdcompute.VirtualMachineRequest {
 	request := &wssdcompute.VirtualMachineRequest{
 		OperationType:         opType,
 		VirtualMachineSystems: []*wssdcompute.VirtualMachine{},
 	}
 	if vmss != nil {
-		request.VirtualMachineSystems = append(request.VirtualMachineSystems, GetWssdVirtualMachine(vmss))
+		request.VirtualMachineSystems = append(request.VirtualMachineSystems, c.getWssdVirtualMachine(vmss))
 	} else if len(name) > 0 {
 		request.VirtualMachineSystems = append(request.VirtualMachineSystems,
 			&wssdcompute.VirtualMachine{
@@ -108,31 +109,31 @@ func getVirtualMachineRequest(opType wssdcompute.Operation, name string, vmss *c
 }
 
 // Conversion functions from compute to wssdcompute
-func GetWssdVirtualMachine(c *compute.VirtualMachine) *wssdcompute.VirtualMachine {
+func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) *wssdcompute.VirtualMachine {
 	return &wssdcompute.VirtualMachine{
-		Name:    *c.Name,
-		Id:      *c.ID,
-		Storage: getWssdVirtualMachineStorageConfiguration(c.StorageProfile),
-		Os:      getWssdVirtualMachineOSConfiguration(c.OsProfile),
-		Network: getWssdVirtualMachineNetworkConfiguration(c.NetworkProfile),
+		Name:    *vm.Name,
+		Id:      *vm.ID,
+		Storage: c.getWssdVirtualMachineStorageConfiguration(vm.StorageProfile),
+		Os:      c.getWssdVirtualMachineOSConfiguration(vm.OsProfile),
+		Network: c.getWssdVirtualMachineNetworkConfiguration(vm.NetworkProfile),
 	}
 
 }
 
-func getWssdVirtualMachineStorageConfiguration(s *compute.StorageProfile) *wssdcompute.StorageConfiguration {
+func (c *client) getWssdVirtualMachineStorageConfiguration(s *compute.StorageProfile) *wssdcompute.StorageConfiguration {
 	return &wssdcompute.StorageConfiguration{
-		Osdisk:    getWssdVirtualMachineStorageConfigurationOsDisk(s.OsDisk),
-		Datadisks: getWssdVirtualMachineStorageConfigurationDataDisks(s.DataDisks),
+		Osdisk:    c.getWssdVirtualMachineStorageConfigurationOsDisk(s.OsDisk),
+		Datadisks: c.getWssdVirtualMachineStorageConfigurationDataDisks(s.DataDisks),
 	}
 }
 
-func getWssdVirtualMachineStorageConfigurationOsDisk(s *compute.OSDisk) *wssdcompute.Disk {
+func (c *client) getWssdVirtualMachineStorageConfigurationOsDisk(s *compute.OSDisk) *wssdcompute.Disk {
 	return &wssdcompute.Disk{
 		Diskid: *s.VhdId,
 	}
 }
 
-func getWssdVirtualMachineStorageConfigurationDataDisks(s *[]compute.DataDisk) []*wssdcompute.Disk {
+func (c *client) getWssdVirtualMachineStorageConfigurationDataDisks(s *[]compute.DataDisk) []*wssdcompute.Disk {
 	datadisks := []*wssdcompute.Disk{}
 	for _, d := range *s {
 		datadisks = append(datadisks, &wssdcompute.Disk{Diskid: *d.VhdId})
@@ -142,21 +143,24 @@ func getWssdVirtualMachineStorageConfigurationDataDisks(s *[]compute.DataDisk) [
 
 }
 
-func getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkProfile) *wssdcompute.NetworkConfiguration {
+func (c *client) getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkProfile) *wssdcompute.NetworkConfiguration {
 	nc := &wssdcompute.NetworkConfiguration{
 		Interfaces: []*wssdcompute.NetworkInterface{},
 	}
+	if s.NetworkInterfaces == nil {
+		return nc
+	}
 	for _, nic := range *s.NetworkInterfaces {
-		if nic.VirtualNetworkInterfaceID == nil {
+		if nic.VirtualNetworkInterfaceReference == nil {
 			continue
 		}
-		nc.Interfaces = append(nc.Interfaces, &wssdcompute.NetworkInterface{NetworkInterfaceId: *nic.VirtualNetworkInterfaceID})
+		nc.Interfaces = append(nc.Interfaces, &wssdcompute.NetworkInterface{NetworkInterfaceId: *nic.VirtualNetworkInterfaceReference})
 	}
 
 	return nc
 }
 
-func getWssdVirtualMachineOSSSHPublicKeys(ssh *compute.SSHConfiguration) []*wssdcompute.SSHPublicKey {
+func (c *client) getWssdVirtualMachineOSSSHPublicKeys(ssh *compute.SSHConfiguration) []*wssdcompute.SSHPublicKey {
 	keys := []*wssdcompute.SSHPublicKey{}
 	if ssh == nil {
 		return keys
@@ -168,10 +172,10 @@ func getWssdVirtualMachineOSSSHPublicKeys(ssh *compute.SSHConfiguration) []*wssd
 
 }
 
-func getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wssdcompute.OperatingSystemConfiguration {
+func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wssdcompute.OperatingSystemConfiguration {
 	publickeys := []*wssdcompute.SSHPublicKey{}
 	if s.LinuxConfiguration != nil {
-		publickeys = getWssdVirtualMachineOSSSHPublicKeys(s.LinuxConfiguration.SSH)
+		publickeys = c.getWssdVirtualMachineOSSSHPublicKeys(s.LinuxConfiguration.SSH)
 	}
 
 	adminuser := &wssdcompute.UserConfiguration{}
@@ -185,7 +189,13 @@ func getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wssdcompute.Ope
 		Administrator: adminuser,
 		Users:         []*wssdcompute.UserConfiguration{},
 		Publickeys:    publickeys,
+		Ostype:        wssdcompute.OperatingSystemType_WINDOWS,
 	}
+
+	if s.LinuxConfiguration != nil {
+		osconfig.Ostype = wssdcompute.OperatingSystemType_LINUX
+	}
+
 	if s.CustomData != nil {
 		osconfig.StartupScript = *s.CustomData
 	}
@@ -194,32 +204,32 @@ func getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wssdcompute.Ope
 
 // Conversion functions from wssdcompute to compute
 
-func GetVirtualMachine(c *wssdcompute.VirtualMachine) *compute.VirtualMachine {
+func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.VirtualMachine {
 	return &compute.VirtualMachine{
 		BaseProperties: compute.BaseProperties{
-			Name: &c.Name,
-			ID:   &c.Id,
+			Name: &vm.Name,
+			ID:   &vm.Id,
 		},
-		StorageProfile: getVirtualMachineStorageProfile(c.Storage),
-		OsProfile:      getVirtualMachineOSProfile(c.Os),
-		NetworkProfile: getVirtualMachineNetworkProfile(c.Network),
+		StorageProfile: c.getVirtualMachineStorageProfile(vm.Storage),
+		OsProfile:      c.getVirtualMachineOSProfile(vm.Os),
+		NetworkProfile: c.getVirtualMachineNetworkProfile(vm.Network),
 	}
 }
 
-func getVirtualMachineStorageProfile(s *wssdcompute.StorageConfiguration) *compute.StorageProfile {
+func (c *client) getVirtualMachineStorageProfile(s *wssdcompute.StorageConfiguration) *compute.StorageProfile {
 	return &compute.StorageProfile{
-		OsDisk:    getVirtualMachineStorageProfileOsDisk(s.Osdisk),
-		DataDisks: getVirtualMachineStorageProfileDataDisks(s.Datadisks),
+		OsDisk:    c.getVirtualMachineStorageProfileOsDisk(s.Osdisk),
+		DataDisks: c.getVirtualMachineStorageProfileDataDisks(s.Datadisks),
 	}
 }
 
-func getVirtualMachineStorageProfileOsDisk(d *wssdcompute.Disk) *compute.OSDisk {
+func (c *client) getVirtualMachineStorageProfileOsDisk(d *wssdcompute.Disk) *compute.OSDisk {
 	return &compute.OSDisk{
 		VhdId: &d.Diskid,
 	}
 }
 
-func getVirtualMachineStorageProfileDataDisks(dd []*wssdcompute.Disk) *[]compute.DataDisk {
+func (c *client) getVirtualMachineStorageProfileDataDisks(dd []*wssdcompute.Disk) *[]compute.DataDisk {
 	cdd := []compute.DataDisk{}
 
 	for _, i := range dd {
@@ -230,7 +240,7 @@ func getVirtualMachineStorageProfileDataDisks(dd []*wssdcompute.Disk) *[]compute
 
 }
 
-func getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfiguration) *compute.NetworkProfile {
+func (c *client) getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfiguration) *compute.NetworkProfile {
 	np := &compute.NetworkProfile{
 		NetworkInterfaces: &[]compute.NetworkInterfaceReference{},
 	}
@@ -239,12 +249,12 @@ func getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfiguration) *compu
 		if nic == nil {
 			continue
 		}
-		*np.NetworkInterfaces = append(*np.NetworkInterfaces, compute.NetworkInterfaceReference{VirtualNetworkInterfaceID: &((*nic).NetworkInterfaceId)})
+		*np.NetworkInterfaces = append(*np.NetworkInterfaces, compute.NetworkInterfaceReference{VirtualNetworkInterfaceReference: &((*nic).NetworkInterfaceId)})
 	}
 	return np
 }
 
-func getVirtualMachineOSProfile(o *wssdcompute.OperatingSystemConfiguration) *compute.OSProfile {
+func (c *client) getVirtualMachineOSProfile(o *wssdcompute.OperatingSystemConfiguration) *compute.OSProfile {
 	return &compute.OSProfile{
 		ComputerName: &o.ComputerName,
 		// AdminUsername: &o.Administrator.Username,
