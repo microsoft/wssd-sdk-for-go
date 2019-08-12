@@ -28,6 +28,10 @@ type BaseProperties struct {
 	Type *string `json:"type,omitempty"`
 	// Tags - Custom resource tags
 	Tags map[string]*string `json:"tags"`
+	// Zones - The virtual machine scale set zones.
+	Zones *[]string `json:"zones,omitempty"`
+	// Location - Resource location
+	Location *string `json:"location,omitempty"`
 }
 
 // ref: github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2018-10-01/compute/models.go
@@ -46,6 +50,23 @@ const (
 	Windows OperatingSystemTypes = "Windows"
 )
 
+// ImageReference specifies information about the image to use. You can specify information about platform
+// images, marketplace images, or virtual machine images. This element is required when you want to use a
+// platform image, marketplace image, or virtual machine image, but is not used in other creation
+// operations.
+type ImageReference struct {
+	// Publisher - The image publisher.
+	Publisher *string `json:"publisher,omitempty"`
+	// Offer - Specifies the offer of the platform image or marketplace image used to create the virtual machine.
+	Offer *string `json:"offer,omitempty"`
+	// Sku - The image SKU.
+	Sku *string `json:"sku,omitempty"`
+	// Version - Specifies the version of the platform image or marketplace image used to create the virtual machine. The allowed formats are Major.Minor.Build or 'latest'. Major, Minor, and Build are decimal numbers. Specify 'latest' to use the latest version of an image available at deploy time. Even if you use 'latest', the VM image will not automatically update after deploy time even if a new version becomes available.
+	Version *string `json:"version,omitempty"`
+	// ID - Resource Id
+	ID *string `json:"id,omitempty"`
+}
+
 type OSDisk struct {
 	// Name
 	Name *string `json:"name,omitempty"`
@@ -59,10 +80,13 @@ type DataDisk struct {
 	// Name
 	Name *string `json:"name,omitempty"`
 	// VhdId reference to VirtualHardDisk
-	VhdId *string `json:"vhd,omitempty"`
+	VhdId          *string         `json:"vhd,omitempty"`
+	ImageReference *ImageReference `json:"imageReference,omitempty"`
 }
 
 type StorageProfile struct {
+	// ImageReference - Specifies information about the image to use. You can specify information about platform images, marketplace images, or virtual machine images. This element is required when you want to use a platform image, marketplace image, or virtual machine image, but is not used in other creation operations.
+	ImageReference *ImageReference `json:"imageReference,omitempty"`
 	// OSDisk
 	OsDisk *OSDisk `json:"osDisk,omitempty"`
 	// DataDisks
@@ -145,6 +169,38 @@ type VirtualMachineScaleSetNetworkProfile struct {
 	// NetworkInterfaceConfigurations
 	NetworkInterfaceConfigurations *[]network.VirtualNetworkInterface `json:"networkInterfaceConfigurations,omitempty"`
 }
+
+// BootDiagnostics boot Diagnostics is a debugging feature which allows you to view Console Output and
+// Screenshot to diagnose VM status. <br><br> You can easily view the output of your console log. <br><br>
+// Azure also enables you to see a screenshot of the VM from the hypervisor.
+type BootDiagnostics struct {
+	// Enabled - Whether boot diagnostics should be enabled on the Virtual Machine.
+	Enabled *bool `json:"enabled,omitempty"`
+	// StorageURI - Uri of the storage account to use for placing the console output and screenshot.
+	StorageURI *string `json:"storageUri,omitempty"`
+}
+
+type DiagnosticsProfile struct {
+	// BootDiagnostics - Boot Diagnostics is a debugging feature which allows you to view Console Output and Screenshot to diagnose VM status. <br><br> You can easily view the output of your console log. <br><br> Azure also enables you to see a screenshot of the VM from the hypervisor.
+	BootDiagnostics *BootDiagnostics `json:"bootDiagnostics,omitempty"`
+}
+
+// VirtualMachinePriorityTypes enumerates the values for virtual machine priority types.
+type VirtualMachinePriorityTypes string
+
+const (
+	Low     VirtualMachinePriorityTypes = "Low"
+	Regular VirtualMachinePriorityTypes = "Regular"
+)
+
+// VirtualMachineEvictionPolicyTypes enumerates the values for virtual machine eviction policy types.
+type VirtualMachineEvictionPolicyTypes string
+
+const (
+	Deallocate VirtualMachineEvictionPolicyTypes = "Deallocate"
+	Delete     VirtualMachineEvictionPolicyTypes = "Delete"
+)
+
 type VirtualMachineScaleSetVMProfile struct {
 	BaseProperties
 	// StorageProfile
@@ -153,6 +209,46 @@ type VirtualMachineScaleSetVMProfile struct {
 	OsProfile *OSProfile `json:"osProfile,omitempty"`
 	// NetworkProfile
 	NetworkProfile *VirtualMachineScaleSetNetworkProfile `json:"networkProfile,omitempty"`
+	// DiagnosticsProfile - Specifies the boot diagnostic settings state
+	DiagnosticsProfile *DiagnosticsProfile `json:"diagnosticsProfile,omitempty"`
+	// Priority - Specifies the priority for the virtual machines in the scale set. <br><br>Minimum api-version: 2017-10-30-preview. Possible values include: 'Regular', 'Low'
+	Priority VirtualMachinePriorityTypes `json:"priority,omitempty"`
+	// EvictionPolicy - Specifies the eviction policy for virtual machines in a low priority scale set. <br><br>Minimum api-version: 2017-10-30-preview. Possible values include: 'Deallocate', 'Delete'
+	EvictionPolicy VirtualMachineEvictionPolicyTypes `json:"evictionPolicy,omitempty"`
+}
+
+// ResourceIdentityType enumerates the values for resource identity type.
+type ResourceIdentityType string
+
+const (
+	// ResourceIdentityTypeNone ...
+	ResourceIdentityTypeNone ResourceIdentityType = "None"
+	// ResourceIdentityTypeSystemAssigned ...
+	ResourceIdentityTypeSystemAssigned ResourceIdentityType = "SystemAssigned"
+	// ResourceIdentityTypeSystemAssignedUserAssigned ...
+	ResourceIdentityTypeSystemAssignedUserAssigned ResourceIdentityType = "SystemAssigned, UserAssigned"
+	// ResourceIdentityTypeUserAssigned ...
+	ResourceIdentityTypeUserAssigned ResourceIdentityType = "UserAssigned"
+)
+
+// VirtualMachineScaleSetIdentityUserAssignedIdentitiesValue ...
+type VirtualMachineScaleSetIdentityUserAssignedIdentitiesValue struct {
+	// PrincipalID - READ-ONLY; The principal id of user assigned identity.
+	PrincipalID *string `json:"principalId,omitempty"`
+	// ClientID - READ-ONLY; The client id of user assigned identity.
+	ClientID *string `json:"clientId,omitempty"`
+}
+
+// VirtualMachineScaleSetIdentity identity for the virtual machine scale set.
+type VirtualMachineScaleSetIdentity struct {
+	// PrincipalID - READ-ONLY; The principal id of virtual machine scale set identity. This property will only be provided for a system assigned identity.
+	PrincipalID *string `json:"principalId,omitempty"`
+	// TenantID - READ-ONLY; The tenant id associated with the virtual machine scale set. This property will only be provided for a system assigned identity.
+	TenantID *string `json:"tenantId,omitempty"`
+	// Type - The type of identity used for the virtual machine scale set. The type 'SystemAssigned, UserAssigned' includes both an implicitly created identity and a set of user assigned identities. The type 'None' will remove any identities from the virtual machine scale set. Possible values include: 'ResourceIdentityTypeSystemAssigned', 'ResourceIdentityTypeUserAssigned', 'ResourceIdentityTypeSystemAssignedUserAssigned', 'ResourceIdentityTypeNone'
+	Type ResourceIdentityType `json:"type,omitempty"`
+	// UserAssignedIdentities - The list of user identities associated with the virtual machine scale set. The user identity dictionary key references will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}'.
+	UserAssignedIdentities map[string]*VirtualMachineScaleSetIdentityUserAssignedIdentitiesValue `json:"userAssignedIdentities"`
 }
 
 // VirtualMachineScaleSet
@@ -162,4 +258,6 @@ type VirtualMachineScaleSet struct {
 	Sku *Sku `json:"sku,omitempty"`
 	// VirtualMachineProfile
 	VirtualMachineProfile *VirtualMachineScaleSetVMProfile `json:"virtualMachineProfile,omitempty"`
+	// Identity - The identity of the virtual machine scale set, if configured.
+	Identity *VirtualMachineScaleSetIdentity `json:"identity,omitempty"`
 }

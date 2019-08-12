@@ -15,7 +15,8 @@ import (
 
 type flags struct {
 	// Name of the Virtual Machine to get
-	Name string
+	Name  string
+	Group string
 }
 
 func NewCommand() *cobra.Command {
@@ -30,21 +31,22 @@ func NewCommand() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&flags.Name, "name", "", "name(s) of the virtual machine, comma separated")
+	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the virtual machine, comma separated")
 	cmd.MarkFlagRequired("name")
+	cmd.Flags().StringVar(&flags.Group, "group", "dummyGroup", "Group")
 
 	return cmd
 }
 
 func runE(flags *flags) error {
 	server := viper.GetString("server")
+	flags.Group = viper.GetString("group")
 	vmclient, err := virtualmachine.NewVirtualMachineClient(server)
 	if err != nil {
 		return err
 	}
 
 	vmName := flags.Name
-	vmId := ""
 	if len(vmName) == 0 {
 		config := viper.GetString("config")
 		vmconfig, err := virtualmachine.LoadConfig(config)
@@ -52,13 +54,12 @@ func runE(flags *flags) error {
 			return err
 		}
 		vmName = *(vmconfig.Name)
-		vmId = *(vmconfig.ID)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	err = vmclient.Delete(ctx, vmName, vmId)
+	err = vmclient.Delete(ctx, flags.Group, vmName)
 	if err != nil {
 		return err
 	}

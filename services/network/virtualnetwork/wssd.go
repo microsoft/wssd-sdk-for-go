@@ -46,7 +46,7 @@ func VirtualNetworkTypeFromString(vnNetworkString string) (wssdnetwork.VirtualNe
 	if !ok {
 		return -1, errors.New("Unknown network type")
 	}
-	
+
 	return wssdnetwork.VirtualNetworkType(typevalue), nil
 }
 
@@ -60,7 +60,7 @@ func newVirtualNetworkClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, name string) (*[]network.VirtualNetwork, error) {
+func (c *client) Get(ctx context.Context, group, name string) (*[]network.VirtualNetwork, error) {
 	request := getVirtualNetworkRequest(wssdnetwork.Operation_GET, name, nil)
 	response, err := c.VirtualNetworkAgentClient.Invoke(ctx, request)
 	if err != nil {
@@ -70,7 +70,7 @@ func (c *client) Get(ctx context.Context, name string) (*[]network.VirtualNetwor
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, vnet *network.VirtualNetwork) (*network.VirtualNetwork, error) {
+func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnet *network.VirtualNetwork) (*network.VirtualNetwork, error) {
 	request := getVirtualNetworkRequest(wssdnetwork.Operation_POST, name, vnet)
 	response, err := c.VirtualNetworkAgentClient.Invoke(ctx, request)
 	if err != nil {
@@ -88,8 +88,8 @@ func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, vne
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, name string, id string) error {
-	vnet, err := c.Get(ctx, name)
+func (c *client) Delete(ctx context.Context, group, name string) error {
+	vnet, err := c.Get(ctx, group, name)
 	if err != nil {
 		return err
 	}
@@ -134,7 +134,7 @@ func getVirtualNetworksFromResponse(response *wssdnetwork.VirtualNetworkResponse
 func GetWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwork {
 
 	vnetType, _ := VirtualNetworkTypeFromString(*c.Type)
-	
+
 	return &wssdnetwork.VirtualNetwork{
 		Name: *c.BaseProperties.Name,
 		Id:   *c.BaseProperties.ID,

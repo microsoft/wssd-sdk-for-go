@@ -13,6 +13,7 @@ import (
 type GetFlags struct {
 	// OutputFormat to display the output yaml/json
 	OutputFormat string
+	Group        string
 }
 
 func NewCommand() *cobra.Command {

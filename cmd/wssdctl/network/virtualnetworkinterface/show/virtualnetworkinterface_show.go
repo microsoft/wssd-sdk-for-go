@@ -37,6 +37,7 @@ func NewCommand() *cobra.Command {
 
 func runE(flags *flags) error {
 
+	group := viper.GetString("group")
 	server := viper.GetString("server")
 	vnetInterfaceClient, err := virtualnetworkinterface.NewVirtualNetworkInterfaceClient(server)
 	if err != nil {
@@ -46,7 +47,7 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	networkInterfaces, err := vnetInterfaceClient.Get(ctx, flags.Name)
+	networkInterfaces, err := vnetInterfaceClient.Get(ctx, group, flags.Name)
 	if err != nil {
 		return err
 	}

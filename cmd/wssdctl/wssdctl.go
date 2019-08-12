@@ -23,6 +23,8 @@ type Flags struct {
 	LogLevel int
 	// Verbose mode for debugging
 	Verbose bool
+	// Group
+	Group string
 }
 
 func NewCommand() *cobra.Command {
@@ -36,11 +38,14 @@ func NewCommand() *cobra.Command {
 		Version:      "0.01",
 	}
 
-	cmd.PersistentFlags().StringVar(&flags.ServerName, "server", "127.0.0.1", "server to which the request has to be sent to")
+	cmd.PersistentFlags().String("server", "127.0.0.1", "server to which the request has to be sent to")
 	viper.BindPFlag("server", cmd.PersistentFlags().Lookup("server"))
 
 	cmd.PersistentFlags().BoolVar(&flags.Verbose, "verbose", false, "Verbose Output")
 	cmd.PersistentFlags().IntVar(&flags.LogLevel, "loglevel", 1, "Logging level")
+
+	cmd.PersistentFlags().String("group", "dummpGroup", "Group Name")
+	viper.BindPFlag("group", cmd.PersistentFlags().Lookup("group"))
 
 	cmd.AddCommand(cloud.NewCommand())
 	cmd.AddCommand(compute.NewCommand())

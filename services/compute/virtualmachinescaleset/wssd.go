@@ -40,7 +40,7 @@ func newVirtualMachineScaleSetClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, name string) (*[]compute.VirtualMachineScaleSet, error) {
+func (c *client) Get(ctx context.Context, group, name string) (*[]compute.VirtualMachineScaleSet, error) {
 	request, err := c.getVirtualMachineScaleSetRequest(wssdcompute.Operation_GET, name, nil)
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (c *client) Get(ctx context.Context, name string) (*[]compute.VirtualMachin
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg *compute.VirtualMachineScaleSet) (*compute.VirtualMachineScaleSet, error) {
+func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *compute.VirtualMachineScaleSet) (*compute.VirtualMachineScaleSet, error) {
 	request, err := c.getVirtualMachineScaleSetRequest(wssdcompute.Operation_POST, name, sg)
 	if err != nil {
 		return nil, err
@@ -73,8 +73,8 @@ func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg 
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, name string, id string) error {
-	vmss, err := c.Get(ctx, name)
+func (c *client) Delete(ctx context.Context, group, name string) error {
+	vmss, err := c.Get(ctx, group, name)
 	if err != nil {
 		return err
 	}

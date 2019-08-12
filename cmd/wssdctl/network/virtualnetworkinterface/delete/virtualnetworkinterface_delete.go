@@ -39,6 +39,7 @@ func NewCommand() *cobra.Command {
 func runE(flags *flags) error {
 
 	server := viper.GetString("server")
+	group := viper.GetString("group")
 	vnetInterfaceClient, err := virtualnetworkinterface.NewVirtualNetworkInterfaceClient(server)
 	if err != nil {
 		return err
@@ -48,7 +49,6 @@ func runE(flags *flags) error {
 	defer cancel()
 
 	vnicName := flags.Name
-	vnicId := ""
 	if len(vnicName) == 0 {
 		config := viper.GetString("config")
 		vmconfig, err := virtualnetworkinterface.LoadConfig(config)
@@ -56,10 +56,9 @@ func runE(flags *flags) error {
 			return err
 		}
 		vnicName = *(vmconfig.Name)
-		vnicId = *(vmconfig.ID)
 	}
 
-	err = vnetInterfaceClient.Delete(ctx, vnicName, vnicId)
+	err = vnetInterfaceClient.Delete(ctx, group, vnicName)
 	if err != nil {
 		return err
 	}
