@@ -36,21 +36,21 @@ func newVirtualHardDiskClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, name string) (storage.VirtualHardDisk, error) {
+func (c *client) Get(ctx context.Context, group, name string) (storage.VirtualHardDisk, error) {
 	request := &wssdstorage.VirtualHardDiskRequest{OperationType: wssdstorage.Operation_GET}
 	_, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request, nil)
 	return storage.VirtualHardDisk{}, err
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg storage.VirtualHardDisk) (storage.VirtualHardDisk, error) {
+func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg storage.VirtualHardDisk) (storage.VirtualHardDisk, error) {
 	request := &wssdstorage.VirtualHardDiskRequest{OperationType: wssdstorage.Operation_POST}
 	_, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request, nil)
 	return storage.VirtualHardDisk{}, err
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, name string, id string) error {
+func (c *client) Delete(ctx context.Context, group, name string) error {
 	request := &wssdstorage.VirtualHardDiskRequest{OperationType: wssdstorage.Operation_DELETE}
 	_, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request, nil)
 	return err

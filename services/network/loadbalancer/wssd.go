@@ -36,14 +36,14 @@ func newLoadBalancerClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, name string) (network.LoadBalancer, error) {
+func (c *client) Get(ctx context.Context, group, name string) (network.LoadBalancer, error) {
 	lbrequest := &wssdnetwork.LoadBalancerRequest{OperationType: wssdnetwork.Operation_GET}
 	_, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
 	return network.LoadBalancer{}, err
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg network.LoadBalancer) (network.LoadBalancer, error) {
+func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg network.LoadBalancer) (network.LoadBalancer, error) {
 	lbrequest := &wssdnetwork.LoadBalancerRequest{OperationType: wssdnetwork.Operation_POST}
 	_, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
 	if err != nil {
@@ -55,7 +55,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg 
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, name string, id string) error {
+func (c *client) Delete(ctx context.Context, group, name string) error {
 	lbrequest := &wssdnetwork.LoadBalancerRequest{OperationType: wssdnetwork.Operation_DELETE}
 	_, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
 

@@ -37,6 +37,7 @@ func NewCommand() *cobra.Command {
 
 func runE(flags *flags) error {
 	server := viper.GetString("server")
+	group := viper.GetString("group")
 	client, err := virtualmachinescaleset.NewVirtualMachineScaleSetClient(server)
 	if err != nil {
 		return err
@@ -45,12 +46,12 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	_, err = client.Get(ctx, flags.Name)
+	_, err = client.Get(ctx, group, flags.Name)
 	if err != nil {
 		return err
 	}
 
-	_, err = client.CreateOrUpdate(ctx, flags.Name, "", nil)
+	_, err = client.CreateOrUpdate(ctx, group, flags.Name, nil)
 	if err != nil {
 		return err
 	}

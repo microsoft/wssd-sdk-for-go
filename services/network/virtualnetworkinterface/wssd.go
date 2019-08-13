@@ -44,13 +44,13 @@ func newVirtualNetworkInterfaceClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, name string) (*[]network.VirtualNetworkInterface, error) {
-	request := getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_GET, name, nil)
+func (c *client) Get(ctx context.Context, group, name string) (*[]network.VirtualNetworkInterface, error) {
+	request := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_GET, name, nil)
 	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
 	}
-	vnetInt, err := getVirtualNetworkInterfacesFromResponse(c.subID, response)
+	vnetInt, err := c.getVirtualNetworkInterfacesFromResponse(group, response)
 	if err != nil {
 		log.Errorf("[VirtualNetworkInterface][Get] getVirtualNetworkInterfacesFromResponse failed with error %v", err)
 		return nil, err
@@ -60,15 +60,15 @@ func (c *client) Get(ctx context.Context, name string) (*[]network.VirtualNetwor
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
-	request := getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_POST, name, vnetInterface)
+func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
+	request := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_POST, name, vnetInterface)
 	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[Virtual Network Interface] Create failed with error %v", err)
 		return nil, err
 	}
 	log.Infof("[VirtualNetworkInterface][Create] [%v]", response)
-	vnets, err := getVirtualNetworkInterfacesFromResponse(c.subID, response)
+	vnets, err := c.getVirtualNetworkInterfacesFromResponse(group, response)
 	if err != nil {
 		log.Errorf("[VirtualNetworkInterface][Create] getVirtualNetworkInterfacesFromResponse failed with error %v", err)
 		return nil, err
@@ -78,8 +78,8 @@ func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, vne
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, name string, id string) error {
-	vnetInterface, err := c.Get(ctx, name)
+func (c *client) Delete(ctx context.Context, group, name string) error {
+	vnetInterface, err := c.Get(ctx, group, name)
 	if err != nil {
 		return err
 	}
@@ -87,7 +87,7 @@ func (c *client) Delete(ctx context.Context, name string, id string) error {
 		return fmt.Errorf("Virtual Network Interface [%s] not found", name)
 	}
 
-	request := getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_DELETE, name, &(*vnetInterface)[0])
+	request := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_DELETE, name, &(*vnetInterface)[0])
 	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
 	log.Infof("[Virtual Network Interface][Delete] [%v]", response)
 
@@ -100,7 +100,7 @@ func (c *client) Delete(ctx context.Context, name string, id string) error {
 }
 
 /////////////// private methods  ///////////////
-func getVirtualNetworkInterfaceRequest(opType wssdnetwork.Operation, name string, networkInterface *network.VirtualNetworkInterface) *wssdnetwork.VirtualNetworkInterfaceRequest {
+func (c *client) getVirtualNetworkInterfaceRequest(opType wssdnetwork.Operation, name string, networkInterface *network.VirtualNetworkInterface) *wssdnetwork.VirtualNetworkInterfaceRequest {
 	request := &wssdnetwork.VirtualNetworkInterfaceRequest{
 		OperationType:            opType,
 		VirtualNetworkInterfaces: []*wssdnetwork.VirtualNetworkInterface{},
@@ -116,11 +116,11 @@ func getVirtualNetworkInterfaceRequest(opType wssdnetwork.Operation, name string
 	return request
 }
 
-func getVirtualNetworkInterfacesFromResponse(server string, response *wssdnetwork.VirtualNetworkInterfaceResponse) (*[]network.VirtualNetworkInterface, error) {
+func (c *client) getVirtualNetworkInterfacesFromResponse(group string, response *wssdnetwork.VirtualNetworkInterfaceResponse) (*[]network.VirtualNetworkInterface, error) {
 	virtualNetworkInterfaces := []network.VirtualNetworkInterface{}
 
 	for _, vnetInterface := range response.GetVirtualNetworkInterfaces() {
-		vnetIntf, err := GetVirtualNetworkInterface(server, vnetInterface)
+		vnetIntf, err := GetVirtualNetworkInterface(c.subID, group, vnetInterface)
 		if err != nil {
 			return nil, err
 		}
@@ -169,9 +169,9 @@ func getWssdNetworkInterfaceIPConfig(ipConfigs *[]network.IPConfiguration) []*ws
 }
 
 // Conversion function from wssd network interface to network interface
-func GetVirtualNetworkInterface(server string, c *wssdnetwork.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
+func GetVirtualNetworkInterface(server, group string, c *wssdnetwork.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
 
-	vnet, err := getVirtualNetwork(server, c.Networkname)
+	vnet, err := getVirtualNetwork(server, group, c.Networkname)
 	if err != nil {
 		return nil, fmt.Errorf("Virtual Network Interface [%s] is not on a supported network type.\n Inner error: %v", c.Name, err)
 	}
@@ -191,7 +191,7 @@ func GetVirtualNetworkInterface(server string, c *wssdnetwork.VirtualNetworkInte
 	return vnetIntf, nil
 }
 
-func getVirtualNetwork(server string, networkName string) (*network.VirtualNetwork, error) {
+func getVirtualNetwork(server, group, networkName string) (*network.VirtualNetwork, error) {
 	vnetclient, err := virtualnetwork.NewVirtualNetworkClient(server)
 	if err != nil {
 		return nil, err
@@ -200,7 +200,7 @@ func getVirtualNetwork(server string, networkName string) (*network.VirtualNetwo
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	networks, err := vnetclient.Get(ctx, networkName)
+	networks, err := vnetclient.Get(ctx, group, networkName)
 	if err != nil {
 		return nil, err
 	}

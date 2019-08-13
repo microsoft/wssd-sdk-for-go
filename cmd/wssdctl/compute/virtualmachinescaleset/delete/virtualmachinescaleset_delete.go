@@ -37,6 +37,7 @@ func NewCommand() *cobra.Command {
 }
 
 func runE(flags *flags) error {
+	group := viper.GetString("group")
 	server := viper.GetString("server")
 	vmclient, err := virtualmachinescaleset.NewVirtualMachineScaleSetClient(server)
 	if err != nil {
@@ -44,7 +45,6 @@ func runE(flags *flags) error {
 	}
 
 	vmName := flags.Name
-	vmId := ""
 	if len(vmName) == 0 {
 		config := viper.GetString("config")
 		vmconfig, err := virtualmachinescaleset.LoadConfig(config)
@@ -52,13 +52,12 @@ func runE(flags *flags) error {
 			return err
 		}
 		vmName = *(vmconfig.Name)
-		vmId = *(vmconfig.ID)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	err = vmclient.Delete(ctx, vmId, vmId)
+	err = vmclient.Delete(ctx, group, vmName)
 	if err != nil {
 		return err
 	}

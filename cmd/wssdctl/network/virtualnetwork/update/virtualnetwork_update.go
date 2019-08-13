@@ -38,6 +38,7 @@ func NewCommand() *cobra.Command {
 
 func runE(flags *flags) error {
 
+	group := viper.GetString("group")
 	server := viper.GetString("server")
 	vnetclient, err := virtualnetwork.NewVirtualNetworkClient(server)
 	if err != nil {
@@ -50,7 +51,7 @@ func runE(flags *flags) error {
 
 	panic("vnet update not implemented")
 
-	_, err = vnetclient.CreateOrUpdate(ctx, flags.Name, "", nil)
+	_, err = vnetclient.CreateOrUpdate(ctx, group, flags.Name, nil)
 	if err != nil {
 		return err
 	}

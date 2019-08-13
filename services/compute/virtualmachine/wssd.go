@@ -38,7 +38,7 @@ func newVirtualMachineClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, name string) (*[]compute.VirtualMachine, error) {
+func (c *client) Get(ctx context.Context, group, name string) (*[]compute.VirtualMachine, error) {
 	request := c.getVirtualMachineRequest(wssdcompute.Operation_GET, name, nil)
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	if err != nil {
@@ -50,7 +50,7 @@ func (c *client) Get(ctx context.Context, name string) (*[]compute.VirtualMachin
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
+func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
 	request := c.getVirtualMachineRequest(wssdcompute.Operation_POST, name, sg)
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	if err != nil {
@@ -66,9 +66,9 @@ func (c *client) CreateOrUpdate(ctx context.Context, name string, id string, sg 
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, name string, id string) error {
-	log.Infof("[VirtualMachine][Delete] [%s] [%s]", name, id)
-	vm, err := c.Get(ctx, name)
+func (c *client) Delete(ctx context.Context, group, name string) error {
+	log.Infof("[VirtualMachine][Delete] [%s] [%s]", name, group)
+	vm, err := c.Get(ctx, group, name)
 	if err != nil {
 		return err
 	}

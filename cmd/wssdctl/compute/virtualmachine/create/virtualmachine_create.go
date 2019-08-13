@@ -39,6 +39,7 @@ func NewCommand() *cobra.Command {
 
 func runE(flags *flags) error {
 	server := viper.GetString("server")
+	group := viper.GetString("group")
 	vmclient, err := virtualmachine.NewVirtualMachineClient(server)
 	if err != nil {
 		return err
@@ -53,7 +54,7 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	_, err = vmclient.CreateOrUpdate(ctx, *(vmconfig.Name), *(vmconfig.ID), vmconfig)
+	_, err = vmclient.CreateOrUpdate(ctx, group, *(vmconfig.Name), vmconfig)
 	if err != nil {
 		return err
 	}

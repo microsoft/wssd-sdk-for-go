@@ -20,7 +20,7 @@ import (
 )
 
 type Service interface {
-	Get(context.Context, string) (*[]compute.VirtualMachine, error)
+	Get(context.Context, string, string) (*[]compute.VirtualMachine, error)
 	CreateOrUpdate(context.Context, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
 	Delete(context.Context, string, string) error
 }
@@ -40,16 +40,16 @@ func NewVirtualMachineClient(cloudFQDN string) (*VirtualMachineClient, error) {
 }
 
 // Get methods invokes the client Get method
-func (c *VirtualMachineClient) Get(ctx context.Context, name string) (*[]compute.VirtualMachine, error) {
-	return c.internal.Get(ctx, name)
+func (c *VirtualMachineClient) Get(ctx context.Context, group, name string) (*[]compute.VirtualMachine, error) {
+	return c.internal.Get(ctx, group, name)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
-func (c *VirtualMachineClient) CreateOrUpdate(ctx context.Context, name string, id string, compute *compute.VirtualMachine) (*compute.VirtualMachine, error) {
-	return c.internal.CreateOrUpdate(ctx, name, id, compute)
+func (c *VirtualMachineClient) CreateOrUpdate(ctx context.Context, group, name string, compute *compute.VirtualMachine) (*compute.VirtualMachine, error) {
+	return c.internal.CreateOrUpdate(ctx, group, name, compute)
 }
 
 // Delete methods invokes delete of the compute resource
-func (c *VirtualMachineClient) Delete(ctx context.Context, name string, id string) error {
-	return c.internal.Delete(ctx, name, id)
+func (c *VirtualMachineClient) Delete(ctx context.Context, group string, name string) error {
+	return c.internal.Delete(ctx, group, name)
 }

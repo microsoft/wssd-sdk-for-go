@@ -37,8 +37,8 @@ func NewCommand() *cobra.Command {
 }
 
 func runE(flags *flags) error {
-
 	server := viper.GetString("server")
+	group := viper.GetString("group")
 	vnicclient, err := virtualnetworkinterface.NewVirtualNetworkInterfaceClient(server)
 	if err != nil {
 		return err
@@ -53,7 +53,7 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	_, err = vnicclient.CreateOrUpdate(ctx, *(vnicconfig.Name), *(vnicconfig.ID), vnicconfig)
+	_, err = vnicclient.CreateOrUpdate(ctx, group, *(vnicconfig.Name), vnicconfig)
 	if err != nil {
 		return err
 	}

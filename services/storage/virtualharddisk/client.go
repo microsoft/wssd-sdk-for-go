@@ -21,7 +21,7 @@ import (
 
 // Service interface
 type Service interface {
-	Get(context.Context, string) (storage.VirtualHardDisk, error)
+	Get(context.Context, string, string) (storage.VirtualHardDisk, error)
 	CreateOrUpdate(context.Context, string, string, storage.VirtualHardDisk) (storage.VirtualHardDisk, error)
 	Delete(context.Context, string, string) error
 }
@@ -43,16 +43,16 @@ func NewVirtualHardDiskClient(cloudFQDN string) (*VirtualHardDiskClient, error) 
 }
 
 // Get methods invokes the client Get method
-func (c *VirtualHardDiskClient) Get(ctx context.Context, name string) (storage.VirtualHardDisk, error) {
-	return c.internal.Get(ctx, name)
+func (c *VirtualHardDiskClient) Get(ctx context.Context, group, name string) (storage.VirtualHardDisk, error) {
+	return c.internal.Get(ctx, group, name)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
-func (c *VirtualHardDiskClient) CreateOrUpdate(ctx context.Context, name string, id string, storage storage.VirtualHardDisk) (storage.VirtualHardDisk, error) {
-	return c.internal.CreateOrUpdate(ctx, name, id, storage)
+func (c *VirtualHardDiskClient) CreateOrUpdate(ctx context.Context, group, name string, storage storage.VirtualHardDisk) (storage.VirtualHardDisk, error) {
+	return c.internal.CreateOrUpdate(ctx, group, name, storage)
 }
 
 // Delete methods invokes delete of the storage resource
-func (c *VirtualHardDiskClient) Delete(ctx context.Context, name string, id string) error {
-	return c.internal.Delete(ctx, name, id)
+func (c *VirtualHardDiskClient) Delete(ctx context.Context, group, name string) error {
+	return c.internal.Delete(ctx, group, name)
 }
