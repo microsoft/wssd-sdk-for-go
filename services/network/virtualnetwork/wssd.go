@@ -152,6 +152,9 @@ func GetWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 
 func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 	ipam := wssdnetwork.Ipam{}
+	if subnets == nil {
+		return []*wssdnetwork.Ipam{}
+	}
 
 	for _, subnet := range *subnets {
 		ipam.Subnets = append(ipam.Subnets, &wssdnetwork.Subnet{
@@ -168,6 +171,9 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 
 func getWssdNetworkRoutes(routes *[]network.Route) []*wssdnetwork.Route {
 	wssdroutes := []*wssdnetwork.Route{}
+	if routes == nil {
+		return wssdroutes
+	}
 
 	for _, route := range *routes {
 		wssdroutes = append(wssdroutes, &wssdnetwork.Route{
