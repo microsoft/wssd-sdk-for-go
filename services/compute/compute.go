@@ -165,9 +165,22 @@ type Sku struct {
 	Capacity *int64 `json:"capacity,omitempty"`
 }
 
+// VirtualNetwork defines the structure of a VNET
+type VirtualMachineScaleSetNetworkConfiguration struct {
+	BaseProperties
+	// VirtualNetworkName
+	VirtualNetworkName *string `json:"virtualNetworkName,omitempty"`
+	// IPConfigurations
+	IPConfigurations *[]network.IPConfiguration `json:"ipConfigurations,omitempty"`
+	// DNS
+	DNSSettings *network.DNS `json:"dnsSettings,omitempty"`
+	// EnableIPForwarding
+	EnableIPForwarding *bool `json:"enableIPForwarding,omitempty"`
+}
+
 type VirtualMachineScaleSetNetworkProfile struct {
 	// NetworkInterfaceConfigurations
-	NetworkInterfaceConfigurations *[]network.VirtualNetworkInterface `json:"networkInterfaceConfigurations,omitempty"`
+	NetworkInterfaceConfigurations *[]VirtualMachineScaleSetNetworkConfiguration `json:"networkInterfaceConfigurations,omitempty"`
 }
 
 // BootDiagnostics boot Diagnostics is a debugging feature which allows you to view Console Output and

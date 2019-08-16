@@ -20,7 +20,6 @@ import (
 	log "k8s.io/klog"
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
-	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
 )
@@ -192,14 +191,14 @@ func (c *client) getVirtualMachineScaleSetStorageProfileDataDisks(dd []*wssdcomp
 
 func (c *client) getVirtualMachineScaleSetNetworkProfile(n *wssdcompute.NetworkConfigurationScaleSet) (*compute.VirtualMachineScaleSetNetworkProfile, error) {
 	np := &compute.VirtualMachineScaleSetNetworkProfile{
-		NetworkInterfaceConfigurations: &[]network.VirtualNetworkInterface{},
+		NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{},
 	}
 
 	for _, nic := range n.Interfaces {
 		if nic == nil {
 			continue
 		}
-		vnic, err := c.getVirtualMachineScaleSetNetworkInterface(nic)
+		vnic, err := c.getVirtualMachineScaleSetNetworkConfiguration(nic)
 		if err != nil {
 			return nil, err
 		}
@@ -208,22 +207,10 @@ func (c *client) getVirtualMachineScaleSetNetworkProfile(n *wssdcompute.NetworkC
 	return np, nil
 }
 
-func (c *client) getVirtualMachineScaleSetNetworkInterface(nic *wssdcompute.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
-	vnet := network.VirtualNetwork{
-		BaseProperties: network.BaseProperties{
-			Name: &nic.Networkname,
-		},
-	}
-
-	vnetIntf := &network.VirtualNetworkInterface{
-		BaseProperties: network.BaseProperties{
-			Name: &nic.Name,
-			ID:   &nic.Id,
-		},
-		VirtualNetwork: &vnet,
-	}
-
-	return vnetIntf, nil
+func (c *client) getVirtualMachineScaleSetNetworkConfiguration(nic *wssdcompute.VirtualNetworkInterface) (*compute.VirtualMachineScaleSetNetworkConfiguration, error) {
+	return &compute.VirtualMachineScaleSetNetworkConfiguration{
+		VirtualNetworkName: &nic.Networkname,
+	}, nil
 }
 
 func (c *client) getVirtualMachineScaleSetOSProfile(o *wssdcompute.OperatingSystemConfiguration) *compute.OSProfile {
@@ -306,13 +293,10 @@ func (c *client) getWssdVirtualMachineScaleSetNetworkConfiguration(s *compute.Vi
 	return nc, nil
 }
 
-func (c *client) getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterface(nic *network.VirtualNetworkInterface) (*wssdcompute.VirtualNetworkInterface, error) {
-	if nic.VirtualNetwork == nil {
-		return nil, fmt.Errorf("Virtual Network reference required")
-	}
+func (c *client) getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterface(nic *compute.VirtualMachineScaleSetNetworkConfiguration) (*wssdcompute.VirtualNetworkInterface, error) {
 	return &wssdcompute.VirtualNetworkInterface{
 		Name:        *nic.Name,
-		Networkname: *nic.VirtualNetwork.Name,
+		Networkname: *nic.VirtualNetworkName,
 	}, nil
 }
 
