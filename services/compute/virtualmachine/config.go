@@ -43,7 +43,7 @@ func LoadConfig(path string) (*compute.VirtualMachine, error) {
 }
 
 // Print
-func Print(vm *compute.VirtualMachine) {
+func PrintYAML(vm *compute.VirtualMachine) {
 	str, err := yaml.Marshal(vm)
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -53,10 +53,10 @@ func Print(vm *compute.VirtualMachine) {
 }
 
 // PrintList
-func PrintList(vms *[]compute.VirtualMachine) {
+func PrintYAMLList(vms *[]compute.VirtualMachine) {
 	if vms != nil {
 		for _, vm := range *vms {
-			Print(&vm)
+			PrintYAML(&vm)
 		}
 	}
 }

@@ -53,7 +53,7 @@ func runE(flags *flags) error {
 		return nil
 	}
 
-	virtualmachine.PrintList(vms)
+	virtualmachine.PrintYAMLList(vms)
 
 	return nil
 }
