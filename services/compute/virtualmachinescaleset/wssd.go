@@ -327,8 +327,10 @@ func (c *client) getWssdVirtualMachineScaleSetOSConfiguration(s *compute.OSProfi
 	}
 
 	adminuser := &wssdcompute.UserConfiguration{}
-	if s.AdminUsername != nil && s.AdminPassword != nil {
+	if s.AdminUsername != nil {
 		adminuser.Username = *s.AdminUsername
+	}
+	if s.AdminPassword != nil {
 		adminuser.Password = *s.AdminPassword
 	}
 
