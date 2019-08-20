@@ -15,6 +15,7 @@
 package virtualmachinescaleset
 
 import (
+	"encoding/json"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -41,17 +42,46 @@ func LoadConfig(path string) (*compute.VirtualMachineScaleSet, error) {
 	return vm, nil
 }
 
-// Print - FixMe: Try to pass in interface{}
+// PrintList - FixMe: Try to pass in interface{}
 func PrintList(vmss *[]compute.VirtualMachineScaleSet) {
 	if vmss == nil {
 		return
 	}
 	for _, vms := range *vmss {
-		str, err := yaml.Marshal(vms)
-		if err != nil {
-			fmt.Printf("%v", err)
-			return
-		}
-		fmt.Printf("%s", string(str))
+		PrintYaml(&vms)
 	}
+}
+
+func PrintListTable(vmss *[]compute.VirtualMachineScaleSet, filters []string) {
+}
+
+func PrintListJson(vmss *[]compute.VirtualMachineScaleSet) {
+	if vmss == nil {
+		return
+	}
+	for _, vms := range *vmss {
+		PrintJson(&vms)
+	}
+}
+
+// PrintYaml
+func PrintYaml(vmss *compute.VirtualMachineScaleSet) {
+	str, err := yaml.Marshal(vmss)
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+	fmt.Printf("%s", string(str))
+
+}
+
+// PrintJson
+func PrintJson(vmss *compute.VirtualMachineScaleSet) {
+	str, err := json.Marshal(vmss)
+	if err != nil {
+		fmt.Printf("%v", err)
+		return
+	}
+	fmt.Printf("%s", string(str))
+
 }

@@ -59,6 +59,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *com
 	if err != nil {
 		return nil, err
 	}
+	log.Infof("[VirtualMachineScaleSet][Create][Request] [%v]", request)
 	response, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request)
 	log.Infof("[VirtualMachineScaleSet][Create][Response] [%v]", response)
 	if err != nil {
@@ -229,7 +230,7 @@ func (c *client) getWssdVirtualMachineScaleSet(vmss *compute.VirtualMachineScale
 	}
 	return &wssdcompute.VirtualMachineScaleSet{
 		Name: *(vmss.Name),
-		Id:   *(vmss.ID),
+		//Id:   *(vmss.ID),
 		Sku: &wssdcompute.Sku{
 			Name:     *(vmss.Sku.Name),
 			Capacity: *(vmss.Sku.Capacity),
@@ -267,6 +268,9 @@ func (c *client) getWssdVirtualMachineScaleSetStorageConfigurationOsDisk(s *comp
 
 func (c *client) getWssdVirtualMachineScaleSetStorageConfigurationDataDisks(s *[]compute.DataDisk) []*wssdcompute.Disk {
 	datadisks := []*wssdcompute.Disk{}
+	if s == nil {
+		return datadisks
+	}
 	for _, d := range *s {
 		datadisks = append(datadisks, &wssdcompute.Disk{Diskid: *d.VhdId})
 	}
@@ -294,8 +298,12 @@ func (c *client) getWssdVirtualMachineScaleSetNetworkConfiguration(s *compute.Vi
 }
 
 func (c *client) getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterface(nic *compute.VirtualMachineScaleSetNetworkConfiguration) (*wssdcompute.VirtualNetworkInterface, error) {
+	nicName := ""
+	if nic.Name != nil {
+		nicName = *nic.Name
+	}
 	return &wssdcompute.VirtualNetworkInterface{
-		Name:        *nic.Name,
+		Name:        nicName,
 		Networkname: *nic.VirtualNetworkName,
 	}, nil
 }
@@ -337,7 +345,7 @@ func (c *client) getWssdVirtualMachineScaleSetOSConfiguration(s *compute.OSProfi
 	}
 
 	if s.CustomData != nil {
-		osconfig.StartupScript = *s.CustomData
+		osconfig.CustomData = *s.CustomData
 	}
 	return &osconfig
 }
