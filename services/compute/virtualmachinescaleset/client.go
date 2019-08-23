@@ -22,6 +22,7 @@ import (
 
 type Service interface {
 	Get(context.Context, string, string) (*[]compute.VirtualMachineScaleSet, error)
+	GetVirtualMachines(context.Context, string, string) (*[]compute.VirtualMachine, error)
 	CreateOrUpdate(context.Context, string, string, *compute.VirtualMachineScaleSet) (*compute.VirtualMachineScaleSet, error)
 	Delete(context.Context, string, string) error
 }
@@ -43,6 +44,11 @@ func NewVirtualMachineScaleSetClient(cloudFQDN string) (*VirtualMachineScaleSetC
 // Get methods invokes the client Get method
 func (c *VirtualMachineScaleSetClient) Get(ctx context.Context, group, name string) (*[]compute.VirtualMachineScaleSet, error) {
 	return c.internal.Get(ctx, group, name)
+}
+
+// Get methods invokes the client Get method
+func (c *VirtualMachineScaleSetClient) List(ctx context.Context, group, name string) (*[]compute.VirtualMachine, error) {
+	return c.internal.GetVirtualMachines(ctx, group, name)
 }
 
 // CreateOrUpdate methods invokes create or update on the client

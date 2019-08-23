@@ -9,6 +9,7 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachinescaleset/delete"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachinescaleset/list"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachinescaleset/list_ip_addresses"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachinescaleset/list_virtualmachine"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachinescaleset/show"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachinescaleset/start"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachinescaleset/stop"
@@ -28,6 +29,7 @@ func NewCommand() *cobra.Command {
 	cmd.AddCommand(delete.NewCommand())
 	cmd.AddCommand(list.NewCommand())
 	cmd.AddCommand(list_ip_addresses.NewCommand())
+	cmd.AddCommand(list_virtualmachine.NewCommand())
 	cmd.AddCommand(show.NewCommand())
 	cmd.AddCommand(start.NewCommand())
 	cmd.AddCommand(stop.NewCommand())

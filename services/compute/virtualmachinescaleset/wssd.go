@@ -20,12 +20,14 @@ import (
 	log "k8s.io/klog"
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
+	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
 )
 
 type client struct {
-	subID string
+	subID    string
+	vmclient *virtualmachine.VirtualMachineClient
 	wssdcompute.VirtualMachineScaleSetAgentClient
 }
 
@@ -35,7 +37,11 @@ func newVirtualMachineScaleSetClient(subID string) (*client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &client{subID, c}, nil
+	vmc, err := virtualmachine.NewVirtualMachineClient(subID)
+	if err != nil {
+		return nil, err
+	}
+	return &client{subID, vmc, c}, nil
 }
 
 // Get
@@ -51,6 +57,38 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]compute.Virtua
 	}
 	log.Infof("[VirtualMachineScaleSet][Get] [%v]", response)
 	return c.getVirtualMachineScaleSetFromResponse(response)
+}
+
+// GetVirtualMachines
+func (c *client) GetVirtualMachines(ctx context.Context, group, name string) (*[]compute.VirtualMachine, error) {
+	request, err := c.getVirtualMachineScaleSetRequest(wssdcompute.Operation_GET, name, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	log.Infof("[VirtualMachineScaleSet][GetVirtualMachine] [%v]", response)
+
+	vms := []compute.VirtualMachine{}
+	for _, vmss := range response.GetVirtualMachineScaleSetSystems() {
+		for _, vm := range vmss.GetVirtualMachineSystems() {
+			tvms, err := c.vmclient.Get(ctx, group, vm.Name)
+			if err != nil {
+				return nil, err
+			}
+			if tvms == nil || len(*tvms) == 0 {
+				return nil, fmt.Errorf("Vmss doesnt have any Vms")
+			}
+			// FIXME: Make sure Vms only on this scale set is returned.
+			// If another Vm with the same name exists, that could also potentially be returned.
+			vms = append(vms, (*tvms)[0])
+		}
+	}
+
+	return &vms, nil
 }
 
 // CreateOrUpdate
