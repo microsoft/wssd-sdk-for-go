@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachinescaleset"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
@@ -38,6 +39,7 @@ func NewCommand() *cobra.Command {
 
 func runE(flags *flags) error {
 	server := viper.GetString("server")
+	group := viper.GetString("group")
 	client, err := virtualmachinescaleset.NewVirtualMachineScaleSetClient(server)
 	if err != nil {
 		return err
@@ -46,16 +48,16 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	vmss, err := client.Get(ctx, flags.Name)
+	vms, err := client.List(ctx, group, flags.Name)
 	if err != nil {
 		return err
 	}
 
-	if vmss == nil || len(*vmss) == 0 {
-		return fmt.Errorf("Unable to find Virtual Machine Scale Set [%s]", flags.Name)
+	if vms == nil || len(*vms) == 0 {
+		return fmt.Errorf("Virtual machine scale Set [%s] doesnt have any Virtual Machines", flags.Name)
 	}
 
-	panic("vmss list-virtualmachine not implemented")
+	virtualmachine.PrintYAMLList(vms)
 
 	return nil
 
