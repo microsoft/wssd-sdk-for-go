@@ -10,7 +10,6 @@ import (
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
-	log "k8s.io/klog"
 )
 
 type client struct {
@@ -33,7 +32,6 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]compute.Virtua
 	if err != nil {
 		return nil, err
 	}
-	log.Infof("[VirtualMachine][Get] [%v]", response)
 	return c.getVirtualMachineFromResponse(response), nil
 
 }
@@ -45,7 +43,6 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *com
 	if err != nil {
 		return nil, err
 	}
-	log.Infof("[VirtualMachine][Create] [%v]", response)
 	vms := c.getVirtualMachineFromResponse(response)
 	if len(*vms) == 0 {
 		return nil, fmt.Errorf("Creation of Virtual Machine failed to unknown reason.")
@@ -56,7 +53,6 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *com
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, group, name string) error {
-	log.Infof("[VirtualMachine][Delete] [%s] [%s]", name, group)
 	vm, err := c.Get(ctx, group, name)
 	if err != nil {
 		return err
@@ -66,8 +62,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 	}
 
 	request := c.getVirtualMachineRequest(wssdcompute.Operation_DELETE, name, &(*vm)[0])
-	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
-	log.Infof("[VirtualMachine][Delete] [%v]", response)
+	_, err = c.VirtualMachineAgentClient.Invoke(ctx, request)
 
 	return err
 }

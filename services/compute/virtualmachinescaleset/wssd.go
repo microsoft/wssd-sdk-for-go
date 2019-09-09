@@ -17,7 +17,6 @@ package virtualmachinescaleset
 import (
 	"context"
 	"fmt"
-	log "k8s.io/klog"
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
@@ -55,7 +54,6 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]compute.Virtua
 	if err != nil {
 		return nil, err
 	}
-	log.Infof("[VirtualMachineScaleSet][Get] [%v]", response)
 	return c.getVirtualMachineScaleSetFromResponse(response)
 }
 
@@ -70,7 +68,6 @@ func (c *client) GetVirtualMachines(ctx context.Context, group, name string) (*[
 	if err != nil {
 		return nil, err
 	}
-	log.Infof("[VirtualMachineScaleSet][GetVirtualMachine] [%v]", response)
 
 	vms := []compute.VirtualMachine{}
 	for _, vmss := range response.GetVirtualMachineScaleSetSystems() {
@@ -97,9 +94,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *com
 	if err != nil {
 		return nil, err
 	}
-	log.Infof("[VirtualMachineScaleSet][Create][Request] [%v]", request)
 	response, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request)
-	log.Infof("[VirtualMachineScaleSet][Create][Response] [%v]", response)
 	if err != nil {
 		return nil, err
 	}
@@ -124,8 +119,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 	if err != nil {
 		return err
 	}
-	response, err := c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request)
-	log.Infof("[VirtualMachineScaleSet][Delete] [%v]", response)
+	_, err = c.VirtualMachineScaleSetAgentClient.Invoke(ctx, request)
 	return err
 }
 
@@ -164,7 +158,6 @@ func (c *client) getVirtualMachineScaleSetRequest(opType wssdcompute.Operation, 
 				Name: name,
 			})
 	}
-	log.Infof("[VirtualMachineScaleSet][Create][Request] [%v], Operation[%s]", request, opType)
 
 	return request, nil
 

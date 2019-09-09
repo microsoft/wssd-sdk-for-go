@@ -22,7 +22,6 @@ import (
 	virtualnetwork "github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
-	log "k8s.io/klog"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )
@@ -52,7 +51,6 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]network.Virtua
 	}
 	vnetInt, err := c.getVirtualNetworkInterfacesFromResponse(group, response)
 	if err != nil {
-		log.Errorf("[VirtualNetworkInterface][Get] getVirtualNetworkInterfacesFromResponse failed with error %v", err)
 		return nil, err
 	}
 
@@ -64,13 +62,10 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnetInt
 	request := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_POST, name, vnetInterface)
 	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
 	if err != nil {
-		log.Errorf("[Virtual Network Interface] Create failed with error %v", err)
 		return nil, err
 	}
-	log.Infof("[VirtualNetworkInterface][Create] [%v]", response)
 	vnets, err := c.getVirtualNetworkInterfacesFromResponse(group, response)
 	if err != nil {
-		log.Errorf("[VirtualNetworkInterface][Create] getVirtualNetworkInterfacesFromResponse failed with error %v", err)
 		return nil, err
 	}
 
@@ -88,11 +83,9 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 	}
 
 	request := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_DELETE, name, &(*vnetInterface)[0])
-	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
-	log.Infof("[Virtual Network Interface][Delete] [%v]", response)
+	_, err = c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
 
 	if err != nil {
-		log.Errorf("[VirtualNetworkInterface][Delete] failed with error %v", err)
 		return err
 	}
 

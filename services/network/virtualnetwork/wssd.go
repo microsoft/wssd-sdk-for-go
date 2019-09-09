@@ -22,7 +22,6 @@ import (
 	errors "errors"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
-	log "k8s.io/klog"
 )
 
 type client struct {
@@ -74,10 +73,8 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnet *n
 	request := getVirtualNetworkRequest(wssdnetwork.Operation_POST, name, vnet)
 	response, err := c.VirtualNetworkAgentClient.Invoke(ctx, request)
 	if err != nil {
-		log.Errorf("[Virtual Network] Create failed with error %v", err)
 		return nil, err
 	}
-	log.Infof("[VirtualNetwork][Create] [%v]", response)
 	vnets := getVirtualNetworksFromResponse(response)
 
 	if len(*vnets) == 0 {
@@ -98,8 +95,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 	}
 
 	request := getVirtualNetworkRequest(wssdnetwork.Operation_DELETE, name, &(*vnet)[0])
-	response, err := c.VirtualNetworkAgentClient.Invoke(ctx, request)
-	log.Infof("[Virtual Network][Delete] [%v]", response)
+	_, err = c.VirtualNetworkAgentClient.Invoke(ctx, request)
 
 	return err
 }
