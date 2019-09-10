@@ -32,7 +32,7 @@ type BaseProperties struct {
 type VirtualHardDisk struct {
 	BaseProperties
 	// Path
-	Path *string `json:"path,omitempty"`
+	Source *string `json:"source,omitempty"`
 	// DiskSizeGB
 	DiskSizeGB *int32 `json:"diskSizeGB,omitempty"`
 }
