@@ -97,7 +97,7 @@ func getVirtualHardDiskRequest(opType wssdstorage.Operation, name string, vhd *s
 	return request
 }
 
-func GetVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDisk {
+func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDisk {
 
 	return &storage.VirtualHardDisk{
 		BaseProperties: storage.BaseProperties{
@@ -108,7 +108,7 @@ func GetVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 	}
 }
 
-func GetWssdVirtualHardDisk(vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHardDisk {
+func getWssdVirtualHardDisk(vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHardDisk {
 	return &wssdstorage.VirtualHardDisk{
 		//Id : *vhd.BaseProperties.ID,
 		Name: *vhd.BaseProperties.Name,
