@@ -15,11 +15,13 @@
 package virtualharddisk
 
 import (
+	"fmt"
 	"context"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdstorage "github.com/microsoft/wssdagent/rpc/storage"
+	log "k8s.io/klog"
 )
 
 type client struct {
@@ -36,22 +38,80 @@ func newVirtualHardDiskClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, group, name string) (storage.VirtualHardDisk, error) {
-	request := &wssdstorage.VirtualHardDiskRequest{OperationType: wssdstorage.Operation_GET}
-	_, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request, nil)
-	return storage.VirtualHardDisk{}, err
+func (c *client) Get(ctx context.Context, group, name string) (*[]storage.VirtualHardDisk, error) {
+	request := getVirtualHardDiskRequest(wssdstorage.Operation_GET, name, nil)
+	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	return getVirtualHardDisksFromResponse(response), nil
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg storage.VirtualHardDisk) (storage.VirtualHardDisk, error) {
-	request := &wssdstorage.VirtualHardDiskRequest{OperationType: wssdstorage.Operation_POST}
-	_, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request, nil)
-	return storage.VirtualHardDisk{}, err
+func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
+	request := getVirtualHardDiskRequest(wssdstorage.Operation_POST, name, sg)
+	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
+	if err != nil {
+		log.Errorf("[VirtualHardDisk] Create failed with error %v", err)
+		return nil, err
+	}
+
+	vhd := getVirtualHardDisksFromResponse(response)
+	
+	if len(*vhd) == 0 {
+		return nil, fmt.Errorf("[VirtualHardDisk][Create] Unexpected error: Creating a network interface returned no result")
+	}
+	
+	return &((*vhd)[0]), err
 }
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, group, name string) error {
-	request := &wssdstorage.VirtualHardDiskRequest{OperationType: wssdstorage.Operation_DELETE}
-	_, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request, nil)
+	request := getVirtualHardDiskRequest(wssdstorage.Operation_DELETE, name, nil)
+	_, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	return err
+}
+
+func getVirtualHardDisksFromResponse(response *wssdstorage.VirtualHardDiskResponse) *[]storage.VirtualHardDisk {
+	virtualHardDisks := []storage.VirtualHardDisk{}
+	for _, vhd := range response.GetVirtualHardDiskSystems() {
+		virtualHardDisks = append(virtualHardDisks, *(GetVirtualHardDisk(vhd)))
+	}
+
+	return &virtualHardDisks
+}
+
+func getVirtualHardDiskRequest(opType wssdstorage.Operation, name string, vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHardDiskRequest {
+	request := &wssdstorage.VirtualHardDiskRequest{
+		OperationType:   opType,
+		VirtualHardDiskSystems: []*wssdstorage.VirtualHardDisk{},
+	}
+	if vhd != nil {
+		request.VirtualHardDiskSystems = append(request.VirtualHardDiskSystems, GetWssdVirtualHardDisk(vhd))
+	} else if len(name) > 0 {
+		request.VirtualHardDiskSystems = append(request.VirtualHardDiskSystems,
+			&wssdstorage.VirtualHardDisk{
+				Name: name,
+			})
+	}
+	return request
+}
+
+func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDisk {
+
+	return &storage.VirtualHardDisk{
+		BaseProperties: storage.BaseProperties{
+			ID : &vhd.Id,
+			Name: &vhd.Name,
+		},
+		Source : &vhd.Source,
+	}
+}
+
+func getWssdVirtualHardDisk(vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHardDisk {
+	return &wssdstorage.VirtualHardDisk{
+		//Id : *vhd.BaseProperties.ID,
+		Name: *vhd.BaseProperties.Name,
+		Source: *vhd.Source,
+	}
 }

@@ -3,7 +3,13 @@
 package create
 
 import (
+	"context"
+	"time"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
+	"github.com/microsoft/wssd-sdk-for-go/services/storage/virtualharddisk"
 )
 
 type flags struct {
@@ -31,7 +37,26 @@ func NewCommand() *cobra.Command {
 
 func runE(flags *flags) error {
 
-	panic("vhd create not implemented")
+	server := viper.GetString("server")
+	group := viper.GetString("group")
+	vhdClient, err := virtualharddisk.NewVirtualHardDiskClient(server)
+	if err != nil {
+		return err
+	}
 
+	config := flags.FilePath
+	vhdConfig, err := virtualharddisk.LoadConfig(config)
+	if err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	
+	_, err = vhdClient.CreateOrUpdate(ctx, group, *(vhdConfig.Name), vhdConfig)
+	if err != nil {
+		return err
+	}
+	
 	return nil
 }
