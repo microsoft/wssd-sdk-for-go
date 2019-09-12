@@ -75,7 +75,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 func getVirtualHardDisksFromResponse(response *wssdstorage.VirtualHardDiskResponse) *[]storage.VirtualHardDisk {
 	virtualHardDisks := []storage.VirtualHardDisk{}
 	for _, vhd := range response.GetVirtualHardDiskSystems() {
-		virtualHardDisks = append(virtualHardDisks, *(GetVirtualHardDisk(vhd)))
+		virtualHardDisks = append(virtualHardDisks, *(getVirtualHardDisk(vhd)))
 	}
 
 	return &virtualHardDisks
@@ -87,7 +87,7 @@ func getVirtualHardDiskRequest(opType wssdstorage.Operation, name string, vhd *s
 		VirtualHardDiskSystems: []*wssdstorage.VirtualHardDisk{},
 	}
 	if vhd != nil {
-		request.VirtualHardDiskSystems = append(request.VirtualHardDiskSystems, GetWssdVirtualHardDisk(vhd))
+		request.VirtualHardDiskSystems = append(request.VirtualHardDiskSystems, getWssdVirtualHardDisk(vhd))
 	} else if len(name) > 0 {
 		request.VirtualHardDiskSystems = append(request.VirtualHardDiskSystems,
 			&wssdstorage.VirtualHardDisk{
