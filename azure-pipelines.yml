@@ -35,11 +35,6 @@ steps:
   displayName: 'Set up the Go workspace'
 
 - script: |
-    make vendor
-  workingDirectory: '$(modulePath)'
-  displayName: 'Get Dependencies'
-
-- script: |
-    make 
+    make all
   workingDirectory: '$(modulePath)'
   displayName: 'Build'
