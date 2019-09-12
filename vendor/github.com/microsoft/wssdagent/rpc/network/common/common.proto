@@ -1,0 +1,13 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
+syntax = "proto3";
+package network;
+
+enum Operation {
+	GET = 0;
+	POST = 1;
+	DELETE = 2;
+}
+
+
