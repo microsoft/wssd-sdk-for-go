@@ -5,7 +5,7 @@ package delete
 import (
 	"context"
 	"time"
-	
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -34,7 +34,7 @@ func NewCommand() *cobra.Command {
 	return cmd
 }
 
-func runE(flags *flags) error {	
+func runE(flags *flags) error {
 	server := viper.GetString("server")
 	group := viper.GetString("group")
 
@@ -46,11 +46,10 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	
 	err = vhdClient.Delete(ctx, group, flags.Name)
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
@@ -57,7 +58,7 @@ func runE(flags *flags) error {
 		return fmt.Errorf("Unable to find Virtual Machine [%s]", flags.Name)
 	}
 
-	virtualmachine.PrintYAMLList(vms)
+	config.PrintYAMLList(vms)
 
 	return nil
 }

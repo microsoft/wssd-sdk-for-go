@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
@@ -56,7 +57,7 @@ func runE(flags *flags) error {
 		return fmt.Errorf("Unable to find Virtual Network [%s]", flags.Name)
 	}
 
-	virtualnetwork.PrintList(networks)
+	config.PrintYAML(networks)
 
 	return nil
 }

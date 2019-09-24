@@ -3,13 +3,14 @@
 package list
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage/virtualharddisk"
 )
 
@@ -28,9 +29,9 @@ func NewCommand() *cobra.Command {
 			return runE(flags)
 		},
 	}
-	
+
 	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the vhd")
-	
+
 	return cmd
 }
 
@@ -46,7 +47,6 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	
 	vhds, err := vhdClient.Get(ctx, group, flags.Name)
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func runE(flags *flags) error {
 		return nil
 	}
 
-	virtualharddisk.PrintList(vhds)
+	config.PrintTable(vhds)
 
 	return nil
 }

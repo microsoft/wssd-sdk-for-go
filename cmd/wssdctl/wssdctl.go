@@ -10,11 +10,10 @@ import (
 	"github.com/spf13/viper"
 	"k8s.io/klog"
 
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/cloud"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/network"
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage"
 )
 
 type Flags struct {
@@ -48,7 +47,6 @@ func NewCommand() *cobra.Command {
 	cmd.PersistentFlags().String("group", "dummpGroup", "Group Name")
 	viper.BindPFlag("group", cmd.PersistentFlags().Lookup("group"))
 
-	cmd.AddCommand(cloud.NewCommand())
 	cmd.AddCommand(compute.NewCommand())
 	cmd.AddCommand(network.NewCommand())
 	cmd.AddCommand(storage.NewCommand())

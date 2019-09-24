@@ -1,16 +1,5 @@
-// Copyright 2019 (c) Microsoft and contributors. All rights reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license
 
 package network
 
@@ -27,21 +16,8 @@ const (
 	TransportProtocolUDP TransportProtocol = "Udp"
 )
 
-// BaseProperties defines the structure of a Load Balancer
-type BaseProperties struct {
-	// ID
-	ID *string `json:"ID,omitempty"`
-	// Name
-	Name *string `json:"name,omitempty"`
-	// Type
-	Type *string `json:"type,omitempty"`
-	// Tags - Custom resource tags
-	Tags map[string]*string `json:"tags"`
-}
-
-// Route is assoicated with a subnet.
-type Route struct {
-	BaseProperties
+// RouteProperties
+type RouteProperties struct {
 	// NextHop
 	NextHop *string `json:"nexthop,omitempty"`
 	// DestinationPrefix in cidr format
@@ -50,21 +26,48 @@ type Route struct {
 	Metric uint32 `json:"metric,omitempty"`
 }
 
+// Route is assoicated with a subnet.
+type Route struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*RouteProperties `json:"properties,omitempty"`
+}
+
 // IPConfigurationReference
 type IPConfigurationReference struct {
 	// IPConfigurationID
 	IPConfigurationID *string `json:"ID,omitempty"`
 }
 
-// Subnet is assoicated with a Virtual Network.
-type Subnet struct {
-	BaseProperties
+// SubnetProperties
+type SubnetProperties struct {
 	// Cidr for this subnet - IPv4, IPv6
 	AddressPrefix *string `json:"cidr,omitempty"`
 	// Routes for the subnet
 	Routes *[]Route `json:"routes,omitempty"`
 	// IPConfigurationReferences
 	IPConfigurationReferences *[]IPConfigurationReference `json:"ipConfigurationReferences,omitempty"`
+}
+
+// Subnet is assoicated with a Virtual Network.
+type Subnet struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*SubnetProperties `json:"properties,omitempty"`
 }
 
 // MACRange is associated with MACPool and respresents the start and end addresses.
@@ -81,8 +84,8 @@ type MACPool struct {
 	Ranges *[]MACRange `json:"ranges,omitempty"`
 }
 
-// DNS (Domain Name System is associated with a network.
-type DNS struct {
+// DNSSetting (Domain Name System is associated with a network.
+type DNSSetting struct {
 	// Domain
 	Domain *string `json:"domain,omitempty"`
 	// Search strings
@@ -100,22 +103,51 @@ type AddressSpace struct {
 	AddressPrefixes *[]string `json:"addressPrefixes,omitempty"`
 }
 
-type FrontendIPConfiguration struct {
-	BaseProperties
+// FrontendIPConfigurationProperties
+type FrontendIPConfigurationProperties struct {
 	// IPAddress of the Frontend IP
 	IPAddress *string `json:"ipaddress,omitempty"`
 	// ID of the Subnet this frontend ip configuration belongs to
 	SubnetID *string `json:"subnetID,omitempty"`
 }
 
-type BackendAddressPool struct {
-	BaseProperties
+// FrontendIPConfiguration
+type FrontendIPConfiguration struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*FrontendIPConfigurationProperties `json:"properties,omitempty"`
+}
+
+// BackendAddressPoolProperties
+type BackendAddressPoolProperties struct {
 	// BackendIPConfigurations
 	BackendIPConfigurations *[]IPConfiguration `json:"backendIPConfigurations,omitempty"`
 }
 
-type LoadBalancingRule struct {
-	BaseProperties
+// BackendAddressPool
+type BackendAddressPool struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+
+	// Properties
+	*BackendAddressPoolProperties `json:"properties,omitempty"`
+}
+
+// LoadBalancingRuleProperties
+type LoadBalancingRuleProperties struct {
 	// FrontendIPConfigurationID
 	FrontendIPConfigurationID *string `json:"frontendIPConfigurationID,omitempty"`
 	// BackendAddressPoolID
@@ -128,9 +160,22 @@ type LoadBalancingRule struct {
 	BackendPort *int32 `json:"backendPort,omitempty"`
 }
 
-// LoadBalancer defines the structure of a Load Balancer
-type LoadBalancer struct {
-	BaseProperties
+// LoadBalancingRule
+type LoadBalancingRule struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*LoadBalancingRuleProperties `json:"properties,omitempty"`
+}
+
+// LoadBalancerProperties
+type LoadBalancerProperties struct {
 	// FrontendIPConfigurations
 	FrontendIPConfigurations *[]FrontendIPConfiguration `json:"frontendIPConfigurations,omitempty"`
 	// BackendAddressPools
@@ -139,22 +184,47 @@ type LoadBalancer struct {
 	LoadBalancingRules *[]LoadBalancingRule `json:"loadBalancingRules,omitempty"`
 }
 
-// VirtualNetwork defines the structure of a VNET
-type VirtualNetwork struct {
-	BaseProperties
+// LoadBalancer defines the structure of a Load Balancer
+type LoadBalancer struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*LoadBalancerProperties `json:"properties,omitempty"`
+}
+
+type VirtualNetworkProperties struct {
 	// AddressSpace
 	AddressSpace *AddressSpace `json:"addressSpace,omitempty"`
 	// MACPool
 	MACPool *MACPool `json:"macPool,omitempty"`
 	// DNS
-	DNSSettings DNS `json:"dnsSettings,omitempty"`
+	DNSSettings *DNSSetting `json:"dnsSettings,omitempty"`
 	// Subnets that could hold ipv4 and ipv6 subnets
 	Subnets *[]Subnet `json:"subnets,omitempty"`
 }
 
-// IPConfiguration
-type IPConfiguration struct {
-	BaseProperties
+// VirtualNetwork defines the structure of a VNET
+type VirtualNetwork struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*VirtualNetworkProperties `json:"properties,omitempty"`
+}
+
+// IPConfigurationProperties
+type IPConfigurationProperties struct {
 	// IPAddress
 	IPAddress *string `json:"ipaddress,omitempty"`
 	// PrefixLength
@@ -169,19 +239,31 @@ type IPConfiguration struct {
 	LoadBalancerInboundNatPoolIDs *[]string `json:"loadBalancerInboundNatPools,omitempty"`
 }
 
-// VirtualNetwork defines the structure of a VNET
-type VirtualNetworkInterface struct {
-	BaseProperties
-	// VirtualMAChineID
-	VirtualMachineID *string `json:"virtualMAChineID,omitempty"`
+// IPConfiguration
+type IPConfiguration struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
 	// Tags - Custom resource tags
 	Tags map[string]*string `json:"tags"`
+	// Properties
+	*IPConfigurationProperties `json:"properties,omitempty"`
+}
+
+type VirtualNetworkInterfaceProperties struct {
+	// VirtualMAChineID
+	VirtualMachineID *string `json:"virtualMAChineID,omitempty"`
 	// VirtualNetwork reference
 	VirtualNetwork *VirtualNetwork `json:"virtualNetworkID,omitempty"`
+	// VirtualNetworkName
+	VirtualNetworkName *string `json:"virtualNetworkName,omitempty"`
 	// IPConfigurations
 	IPConfigurations *[]IPConfiguration `json:"ipConfigurations,omitempty"`
 	// DNS
-	DNSSettings *DNS `json:"dnsSettings,omitempty"`
+	DNSSettings *DNSSetting `json:"dnsSettings,omitempty"`
 	// Routes for the subnet
 	Routes *[]Route `json:"routes,omitempty"`
 	// MACAddress - the macaddress of the network interface
@@ -194,4 +276,18 @@ type VirtualNetworkInterface struct {
 	EnableDHCPGuard *bool `json:"enableDHCPGuard,omitempty"`
 	// EnableRouterAdvertisementGuard
 	EnableRouterAdvertisementGuard *bool `json:"enableRouterAdvertisementGuard,omitempty"`
+}
+
+// VirtualNetwork defines the structure of a VNET
+type VirtualNetworkInterface struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*VirtualNetworkInterfaceProperties `json:"properties,omitempty"`
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault/secret"
 )
 
@@ -17,8 +18,8 @@ type flags struct {
 	Name      string
 	FilePath  string
 	VaultName string
-	Output string
-	Query string
+	Output    string
+	Query     string
 }
 
 func NewCommand() *cobra.Command {
@@ -69,7 +70,7 @@ func runE(flags *flags) error {
 		return nil
 	}
 
-	err = secret.ExportList(secrets, flags.FilePath, flags.Query, flags.Output)
+	err = config.ExportFormatList(secrets, flags.FilePath, flags.Query, flags.Output)
 
 	return err
 }
