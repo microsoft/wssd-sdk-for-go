@@ -14,12 +14,15 @@
 
 package keyvault
 
-import ()
+import (
+	"github.com/microsoft/wssd-sdk-for-go/services/security"
+)
 
-// Client structure
-type BaseClient struct {
-}
-
-func New() BaseClient {
-	return BaseClient{}
+// Secret defines the structure of a secret
+type Secret struct {
+	security.BaseProperties
+	// KeyValues
+	VaultName *string
+	Value     *string
+	FileName  *string `json:"filename"`
 }

@@ -5,9 +5,9 @@ package secret
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/keyvault/secret/set"
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/keyvault/secret/show"
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/keyvault/secret/download"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/secret/set"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/secret/show"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/secret/download"
 )
 
 type GetFlags struct {

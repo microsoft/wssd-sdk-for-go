@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package keyvault
+package security
 
 import ()
 
-// BaseProperties defines the structure of a KeyVault
+// BaseProperties defines the structure of a Security Item
 type BaseProperties struct {
 	// ID
 	ID *string `json:"ID,omitempty"`
@@ -28,18 +28,9 @@ type BaseProperties struct {
 	Tags map[string]*string `json:"tags"`
 }
 
-// SimpleVault defines the structure of a keyvault
-type SimpleVault struct {
+// KeyVault defines the structure of a keyvault
+type KeyVault struct {
 	BaseProperties
 	// KeyValues
-//	SecretMap map[string]*Secret `json:"secretmap"`
-}
-
-// Secret defines the structure of a secret
-type Secret struct {
-	BaseProperties
-	// KeyValues
-	VaultName *string
-	Value     *string
-	FileName  *string `json:"filename"`
+	//SecretMap map[string]*string `json:"secretmap"`
 }

@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-package download
+package show
 
 import (
 	"context"
@@ -9,24 +9,25 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/microsoft/wssd-sdk-for-go/services/keyvault"
-	"github.com/microsoft/wssd-sdk-for-go/services/keyvault/secret"
+	"github.com/microsoft/wssd-sdk-for-go/services/security"
+	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
+	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault/secret"
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )
 
 type flags struct {
-	Name      string
-	FilePath  string
-	VaultName string
+	Name     string
+	FilePath string
+	VaultName  string
 }
 
 func NewCommand() *cobra.Command {
 	flags := &flags{}
 	cmd := &cobra.Command{
 		Args:  cobra.NoArgs,
-		Use:   "download",
-		Short: "download a secret",
-		Long:  "download a secret",
+		Use:   "show",
+		Short: "show a secret",
+		Long:  "show a secret",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},
@@ -36,8 +37,6 @@ func NewCommand() *cobra.Command {
 	cmd.MarkFlagRequired("name")
 	cmd.Flags().StringVar(&flags.VaultName, "vault-name", "", "name of the secret, comma separated")
 	cmd.MarkFlagRequired("vault-name")
-	cmd.Flags().StringVar(&flags.FilePath, "file-path", "", "name of the secret, comma separated")
-	cmd.MarkFlagRequired("file-path")
 
 	return cmd
 }
@@ -58,7 +57,7 @@ func runE(flags *flags) error {
 	emptyValue := ""
 
 	secrets, err := secretClient.Get(ctx, group, secretName, &keyvault.Secret{
-		BaseProperties: keyvault.BaseProperties{
+		BaseProperties: security.BaseProperties{
 			Name: &flags.Name,
 		},
 		Value : &emptyValue,
@@ -74,7 +73,7 @@ func runE(flags *flags) error {
 		return nil           
 	}
 
-	err = secret.ExportList(secrets, flags.FilePath)
+	secret.PrintList(secrets)
 
-	return err
+	return nil
 }

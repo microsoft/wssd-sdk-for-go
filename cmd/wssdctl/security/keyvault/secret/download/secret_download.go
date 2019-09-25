@@ -1,22 +1,23 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-package set
+package download
 
 import (
 	"context"
 	//"time"
-
+	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/microsoft/wssd-sdk-for-go/services/keyvault"
-	"github.com/microsoft/wssd-sdk-for-go/services/keyvault/secret"
+
+	"github.com/microsoft/wssd-sdk-for-go/services/security"
+	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
+	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault/secret"
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )
 
 type flags struct {
 	Name      string
 	FilePath  string
-	Value     string
 	VaultName string
 }
 
@@ -24,9 +25,9 @@ func NewCommand() *cobra.Command {
 	flags := &flags{}
 	cmd := &cobra.Command{
 		Args:  cobra.NoArgs,
-		Use:   "set",
-		Short: "set a secret",
-		Long:  "set a secret",
+		Use:   "download",
+		Short: "download a secret",
+		Long:  "download a secret",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},
@@ -34,11 +35,10 @@ func NewCommand() *cobra.Command {
 
 	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the secret, comma separated")
 	cmd.MarkFlagRequired("name")
-	cmd.Flags().StringVar(&flags.Value, "value", "", "name of the secret, comma separated")
-	cmd.MarkFlagRequired("value")
-
 	cmd.Flags().StringVar(&flags.VaultName, "vault-name", "", "name of the secret, comma separated")
 	cmd.MarkFlagRequired("vault-name")
+	cmd.Flags().StringVar(&flags.FilePath, "file-path", "", "name of the secret, comma separated")
+	cmd.MarkFlagRequired("file-path")
 
 	return cmd
 }
@@ -56,18 +56,26 @@ func runE(flags *flags) error {
 	defer cancel()
 
 	secretName := flags.Name
- 
+	emptyValue := ""
 
-	_, err = secretClient.CreateOrUpdate(ctx, group, secretName, &keyvault.Secret{
-		BaseProperties: keyvault.BaseProperties{
+	secrets, err := secretClient.Get(ctx, group, secretName, &keyvault.Secret{
+		BaseProperties: security.BaseProperties{
 			Name: &flags.Name,
 		},
-		Value : &flags.Value,
+		Value : &emptyValue,
 		VaultName: &flags.VaultName,
 	})
 	if err != nil {
 		return err
 	}
+	
+	if secrets == nil || len(*secrets) == 0 {
+		fmt.Println("No Secrets")
+		// Not an error
+		return nil           
+	}
 
-	return nil
+	err = secret.ExportList(secrets, flags.FilePath)
+
+	return err
 }

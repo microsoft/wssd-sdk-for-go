@@ -17,15 +17,16 @@ package secret
 import (
 	"fmt"
 	"context"
-	"github.com/microsoft/wssd-sdk-for-go/services/keyvault"
+	"github.com/microsoft/wssd-sdk-for-go/services/security"
+	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
-	wssdkeyvault "github.com/microsoft/wssdagent/rpc/keyvault"
+	wssdsecurity "github.com/microsoft/wssdagent/rpc/security"
 	log "k8s.io/klog"
 )
 
 type client struct {
-	wssdkeyvault.SecretAgentClient
+	wssdsecurity.SecretAgentClient
 }
 
 // newClient - creates a client session with the backend wssd agent
@@ -39,7 +40,7 @@ func newSecretClient(subID string) (*client, error) {
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string, sg *keyvault.Secret) (*[]keyvault.Secret, error) {
-	request := getSecretRequest(wssdkeyvault.Operation_GET, name, sg)
+	request := getSecretRequest(wssdsecurity.Operation_GET, name, sg)
 	response, err := c.SecretAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -49,7 +50,7 @@ func (c *client) Get(ctx context.Context, group, name string, sg *keyvault.Secre
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *keyvault.Secret) (*keyvault.Secret, error) {
-	request := getSecretRequest(wssdkeyvault.Operation_POST, name, sg)
+	request := getSecretRequest(wssdsecurity.Operation_POST, name, sg)
 	response, err := c.SecretAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[Secret] Create failed with error %v", err)
@@ -59,7 +60,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *key
 	sec := getSecretsFromResponse(response)
 	
 	if len(*sec) == 0 {
-		return nil, fmt.Errorf("[Secret][Create] Unexpected error: Creating a network interface returned no result")
+		return nil, fmt.Errorf("[Secret][Create] Unexpected error: Creating a secret returned no result")
 	}
 	
 	return &((*sec)[0]), err
@@ -67,12 +68,12 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *key
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, group, name string) error {
-	request := getSecretRequest(wssdkeyvault.Operation_DELETE, name, nil)
+	request := getSecretRequest(wssdsecurity.Operation_DELETE, name, nil)
 	_, err := c.SecretAgentClient.Invoke(ctx, request)
 	return err
 }
 
-func getSecretsFromResponse(response *wssdkeyvault.SecretResponse) *[]keyvault.Secret {
+func getSecretsFromResponse(response *wssdsecurity.SecretResponse) *[]keyvault.Secret {
 	Secrets := []keyvault.Secret{}
 	for _, secrets := range response.GetSecrets() {
 		Secrets = append(Secrets, *(getSecret(secrets)))
@@ -81,26 +82,26 @@ func getSecretsFromResponse(response *wssdkeyvault.SecretResponse) *[]keyvault.S
 	return &Secrets
 }
 
-func getSecretRequest(opType wssdkeyvault.Operation, name string, sec *keyvault.Secret) *wssdkeyvault.SecretRequest {
-	request := &wssdkeyvault.SecretRequest{
+func getSecretRequest(opType wssdsecurity.Operation, name string, sec *keyvault.Secret) *wssdsecurity.SecretRequest {
+	request := &wssdsecurity.SecretRequest{
 		OperationType:   opType,
-		Secrets: []*wssdkeyvault.Secret{},
+		Secrets: []*wssdsecurity.Secret{},
 	}
 	if sec != nil {
 		request.Secrets = append(request.Secrets, getWssdSecret(sec))
 	} else if len(name) > 0 {
 		request.Secrets = append(request.Secrets,
-			&wssdkeyvault.Secret{
+			&wssdsecurity.Secret{
 				Name: name,
 			})
 	}
 	return request
 }
 
-func getSecret(sec *wssdkeyvault.Secret) *keyvault.Secret {
+func getSecret(sec *wssdsecurity.Secret) *keyvault.Secret {
 
 	return &keyvault.Secret{
-		BaseProperties: keyvault.BaseProperties{
+		BaseProperties: security.BaseProperties{
 			ID : &sec.Id,
 			Name: &sec.Name,
 		},
@@ -110,8 +111,8 @@ func getSecret(sec *wssdkeyvault.Secret) *keyvault.Secret {
 	}
 }
 
-func getWssdSecret(sec *keyvault.Secret) *wssdkeyvault.Secret {
-	return &wssdkeyvault.Secret{
+func getWssdSecret(sec *keyvault.Secret) *wssdsecurity.Secret {
+	return &wssdsecurity.Secret{
 		//Id : *vault.BaseProperties.ID,
 		Name: *sec.BaseProperties.Name,
 	//	Filename: *sec.FileName,

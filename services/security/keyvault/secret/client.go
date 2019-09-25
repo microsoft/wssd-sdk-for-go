@@ -16,7 +16,8 @@ package secret
 
 import (
 	"context"
-	"github.com/microsoft/wssd-sdk-for-go/services/keyvault"
+	"github.com/microsoft/wssd-sdk-for-go/services/security"
+	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 )
 
 // Service interface
@@ -28,7 +29,7 @@ type Service interface {
 
 // Client structure
 type SecretClient struct {
-	keyvault.BaseClient
+	security.BaseClient
 	internal Service
 }
 

@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/microsoft/wssd-sdk-for-go/services/keyvault/simplevault"
+	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )
 
@@ -40,7 +40,7 @@ func runE(flags *flags) error {
 	group := viper.GetString("group")
 
 	server := viper.GetString("server")
-	vaultClient, err := simplevault.NewSimpleVaultClient(server)
+	vaultClient, err := keyvault.NewKeyVaultClient(server)
 	if err != nil {
 		return err
 	}

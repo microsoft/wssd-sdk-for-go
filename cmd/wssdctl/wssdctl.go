@@ -14,7 +14,7 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/network"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage"
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/keyvault"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security"
 )
 
 type Flags struct {
@@ -52,7 +52,7 @@ func NewCommand() *cobra.Command {
 	cmd.AddCommand(compute.NewCommand())
 	cmd.AddCommand(network.NewCommand())
 	cmd.AddCommand(storage.NewCommand())
-	cmd.AddCommand(keyvault.NewCommand())
+	cmd.AddCommand(security.NewCommand())
 
 	return cmd
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package simplevault
+package secret
 
 import (
 	"fmt"
@@ -21,29 +21,49 @@ import (
 
 	log "k8s.io/klog"
 
-	"github.com/microsoft/wssd-sdk-for-go/services/keyvault"
-	wssdkeyvault "github.com/microsoft/wssdagent/rpc/keyvault"
+	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
+	wssdkeyvault "github.com/microsoft/wssdagent/rpc/security"
 )
 
 // Load the virtual hard disk configuration from the specified path
-func LoadConfig(path string) (*keyvault.SimpleVault, error) {
+func LoadConfig(path string) (*keyvault.Secret, error) {
 	log.Infof("[LoadConfig] [%s]", path)
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	kv := &keyvault.SimpleVault{}
+	srt := &keyvault.Secret{}
 
-	err = yaml.Unmarshal(contents, kv)
+	err = yaml.Unmarshal(contents, srt)
 	if err != nil {
 		return nil, err
 	}
 	
-	return kv, nil
+	return srt, nil
 }
 
-func Print(kv *keyvault.SimpleVault) {
-	str, err := yaml.Marshal(kv)
+func ExportList(srtList *[]keyvault.Secret, path string) error {
+	log.Infof("[ExportList] [%s]", path)
+	var fileToWrite string 
+	if srtList != nil {
+		for _, srt := range *srtList {
+			str, err := yaml.Marshal(srt)
+			if err != nil {
+				fmt.Printf("%v", err)
+				return err
+			}
+			fileToWrite += string(str)
+		}
+	}
+	err := ioutil.WriteFile(
+		path,
+		[]byte(fileToWrite),
+		0644)
+	return err
+}
+
+func Print(srt *keyvault.Secret) {
+	str, err := yaml.Marshal(srt)
 	if err != nil {
 		fmt.Printf("%v", err)
 		return
@@ -51,16 +71,16 @@ func Print(kv *keyvault.SimpleVault) {
 	fmt.Printf("%s", string(str))
 }
 
-func PrintList(kvList *[]keyvault.SimpleVault) {
-	if kvList != nil {
-		for _, kv := range *kvList {
-			Print(&kv)
+func PrintList(srtList *[]keyvault.Secret) {
+	if srtList != nil {
+		for _, srt := range *srtList {
+			Print(&srt)
 		}
 	}
 }
 
-func PrintWssd(kv *wssdkeyvault.SimpleVault) {
-	str, err := yaml.Marshal(kv)
+func PrintWssd(srt *wssdkeyvault.Secret) {
+	str, err := yaml.Marshal(srt)
 	if err != nil {
 		fmt.Printf("%v", err)
 		return
@@ -68,8 +88,8 @@ func PrintWssd(kv *wssdkeyvault.SimpleVault) {
 	fmt.Printf("%s", string(str))
 }
 
-func PrintListWssd(kvList []*wssdkeyvault.SimpleVault) {
-	for _, kv := range kvList {
-		PrintWssd(kv)
+func PrintListWssd(srtList []*wssdkeyvault.Secret) {
+	for _, srt := range srtList {
+		PrintWssd(srt)
 	}
 }

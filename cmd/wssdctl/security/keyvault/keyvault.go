@@ -5,10 +5,10 @@ package keyvault
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/keyvault/create"
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/keyvault/delete"
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/keyvault/list"
-	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/keyvault/secret"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/create"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/delete"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/list"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/secret"
 )
 
 type GetFlags struct {
