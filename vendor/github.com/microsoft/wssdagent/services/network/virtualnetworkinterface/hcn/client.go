@@ -4,7 +4,7 @@
 package hcn
 
 import (
-	"github.com/microsoft/wssdagent/pkg/wssdagent/errors"
+	"github.com/microsoft/wssdagent/pkg/errors"
 	pb "github.com/microsoft/wssdagent/rpc/network"
 )
 

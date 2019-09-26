@@ -4,9 +4,9 @@ package hcs
 
 import (
 	"fmt"
-	"github.com/microsoft/wssdagent/common"
-	"github.com/microsoft/wssdagent/pkg/wssdagent/apis/config"
-	"github.com/microsoft/wssdagent/pkg/wssdagent/store"
+	"github.com/microsoft/wssdagent/pkg/apis/config"
+	"github.com/microsoft/wssdagent/pkg/guid"
+	"github.com/microsoft/wssdagent/pkg/store"
 	pb "github.com/microsoft/wssdagent/rpc/storage"
 	"github.com/microsoft/wssdagent/services/storage/virtualharddisk/internal"
 	"io"
@@ -74,7 +74,7 @@ func (c *client) Get(virtualHardDisk *pb.VirtualHardDisk) ([]*pb.VirtualHardDisk
 func (c *client) Create(virtualHardDisk *pb.VirtualHardDisk) (*pb.VirtualHardDisk, error) {
 	log.Infof("[VirtualHardDisk][Create] [%v]", virtualHardDisk)
 	if len(virtualHardDisk.Id) == 0 {
-		virtualHardDisk.Id = common.NewGuid()
+		virtualHardDisk.Id = guid.NewGuid()
 	}
 
 	vhdInternal := c.newVirtualHardDisk(virtualHardDisk.Id)

@@ -19,3 +19,9 @@ Module="storage"
 echo "Generating $Module protoc"
 protoc -I $Module/common $Module/common/common.proto --go_out=plugins=grpc:$Module
 protoc -I $Module/virtualharddisk -I $Module/common $Module/virtualharddisk/virtualharddisk.proto  --go_out=plugins=grpc:$Module
+
+Module="security"
+echo "Generating $Module protoc"
+protoc -I $Module/common $Module/common/common.proto --go_out=plugins=grpc:$Module
+protoc -I $Module/keyvault/secret -I $Module/common $Module/keyvault/secret/secret.proto  --go_out=plugins=grpc:$Module
+protoc -I $Module/keyvault -I $Module/common -I $Module/keyvault/secret $Module/keyvault/keyvault.proto  --go_out=plugins=grpc:$Module

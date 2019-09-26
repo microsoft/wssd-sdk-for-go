@@ -10,8 +10,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/microsoft/wssdagent/pkg/wssdagent/apis/config"
-	aserver "github.com/microsoft/wssdagent/pkg/wssdagent/server"
+	"github.com/microsoft/wssdagent/pkg/apis/config"
+	aserver "github.com/microsoft/wssdagent/pkg/server"
 )
 
 const (

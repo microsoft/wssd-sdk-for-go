@@ -10,8 +10,8 @@ import (
 
 	"github.com/Microsoft/hcsshim/hcn"
 
-	"github.com/microsoft/wssdagent/pkg/wssdagent/apis/config"
-	"github.com/microsoft/wssdagent/pkg/wssdagent/store"
+	"github.com/microsoft/wssdagent/pkg/apis/config"
+	"github.com/microsoft/wssdagent/pkg/store"
 	pb "github.com/microsoft/wssdagent/rpc/network"
 	"github.com/microsoft/wssdagent/services/network/virtualnetwork/internal"
 )
