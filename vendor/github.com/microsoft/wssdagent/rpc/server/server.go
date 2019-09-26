@@ -8,6 +8,7 @@ import (
 	log "k8s.io/klog"
 
 	compute_pb "github.com/microsoft/wssdagent/rpc/compute"
+	security_pb "github.com/microsoft/wssdagent/rpc/security"
 	network_pb "github.com/microsoft/wssdagent/rpc/network"
 	storage_pb "github.com/microsoft/wssdagent/rpc/storage"
 
@@ -30,6 +31,10 @@ func RegisterServers(opts []grpc.ServerOption) *grpc.Server {
 
 	// Register storage agents
 	storage_pb.RegisterVirtualHardDiskAgentServer(grpcServer, newVirtualHardDiskAgentServer())
+
+	// Register security agents
+	security_pb.RegisterKeyVaultAgentServer(grpcServer, newKeyVaultAgentServer())
+	security_pb.RegisterSecretAgentServer(grpcServer, newSecretAgentServer())
 
 	return grpcServer
 }

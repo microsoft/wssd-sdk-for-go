@@ -9,10 +9,10 @@ import (
 	log "k8s.io/klog"
 	"reflect"
 
-	"github.com/microsoft/wssdagent/common"
-	"github.com/microsoft/wssdagent/pkg/wssdagent/apis/config"
-	"github.com/microsoft/wssdagent/pkg/wssdagent/errors"
-	"github.com/microsoft/wssdagent/pkg/wssdagent/store"
+	"github.com/microsoft/wssdagent/pkg/apis/config"
+	"github.com/microsoft/wssdagent/pkg/errors"
+	"github.com/microsoft/wssdagent/pkg/guid"
+	"github.com/microsoft/wssdagent/pkg/store"
 	pb "github.com/microsoft/wssdagent/rpc/compute"
 	"github.com/microsoft/wssdagent/services/compute/virtualmachine"
 	"github.com/microsoft/wssdagent/services/compute/virtualmachinescaleset/internal"
@@ -56,7 +56,7 @@ func (c *client) Create(vmss *pb.VirtualMachineScaleSet) (*pb.VirtualMachineScal
 
 	// 1.
 	if len(vmss.Id) == 0 {
-		vmss.Id = common.NewGuid()
+		vmss.Id = guid.NewGuid()
 	}
 	vmssinternal = c.newVirtualMachineScaleSet(vmss.Id)
 
@@ -178,7 +178,7 @@ func (c *client) createReplicaVirtualMachines(startVmCount int, vmss *pb.Virtual
 		replicaVm := &pb.VirtualMachine{}
 		json.Unmarshal(vmBytes, replicaVm)
 		replicaVm.Name = fmt.Sprintf("vm_%s_%s_%d", vmss.Name, vmss.Virtualmachineprofile.Vmprefix, vmcount)
-		replicaVm.Id = common.NewGuid()
+		replicaVm.Id = guid.NewGuid()
 
 		// 2.a Create endpoints for each replica Vm
 		if err := c.addNetworkConfiguration(vmss, replicaVm, vmcount); err != nil {
@@ -208,7 +208,7 @@ func (c *client) cleanupReplicaVirtualMachines(startVmCount int, vmss *pb.Virtua
 		replicaVm := &pb.VirtualMachine{}
 		json.Unmarshal(vmBytes, replicaVm)
 		replicaVm.Name = fmt.Sprintf("vm_%s_%s_%d", vmss.Name, vmss.Virtualmachineprofile.Vmprefix, vmcount)
-		replicaVm.Id = common.NewGuid()
+		replicaVm.Id = guid.NewGuid()
 
 		// 2.a cleanup endpoints for each replica Vm
 		if err := c.cleanupNetworkConfiguration(replicaVm); err != nil {

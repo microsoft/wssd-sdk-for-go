@@ -14,11 +14,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/microsoft/wssdagent/common"
+	"github.com/microsoft/wssdagent/pkg/apis/config"
+	"github.com/microsoft/wssdagent/pkg/errors"
+	"github.com/microsoft/wssdagent/pkg/guid"
 	"github.com/microsoft/wssdagent/pkg/ssh"
-	"github.com/microsoft/wssdagent/pkg/wssdagent/apis/config"
-	"github.com/microsoft/wssdagent/pkg/wssdagent/errors"
-	"github.com/microsoft/wssdagent/pkg/wssdagent/store"
+	"github.com/microsoft/wssdagent/pkg/store"
 	pb "github.com/microsoft/wssdagent/rpc/compute"
 	"github.com/microsoft/wssdagent/services/compute/virtualmachine/cloudinit"
 	schema "github.com/microsoft/wssdagent/services/compute/virtualmachine/hcs/internal"
@@ -61,7 +61,7 @@ func (c *client) newVirtualMachine(id string) *internal.VirtualMachineInternal {
 func (c *client) Create(vm *pb.VirtualMachine) (*pb.VirtualMachine, error) {
 	log.Infof("[VirtualMachine][Create] [%v]", vm)
 	if len(vm.Id) == 0 {
-		vm.Id = common.NewGuid()
+		vm.Id = guid.NewGuid()
 	}
 	vminternal := c.newVirtualMachine(vm.Id)
 
