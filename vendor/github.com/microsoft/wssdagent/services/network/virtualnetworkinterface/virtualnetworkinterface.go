@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/microsoft/wssdagent/common"
+	"github.com/microsoft/wssdagent/pkg/guid"
 	pb "github.com/microsoft/wssdagent/rpc/network"
 	log "k8s.io/klog"
 )
@@ -20,7 +20,7 @@ type VirtualNetworkInterfaceProvider interface {
 
 // CreateVirtualNetworkInterface
 func CreateVirtualNetworkInterface(provider VirtualNetworkInterfaceProvider, name, vnetName string) error {
-	vnic := &pb.VirtualNetworkInterface{Name: name, Id: common.NewGuid(), Networkname: vnetName}
+	vnic := &pb.VirtualNetworkInterface{Name: name, Id: guid.NewGuid(), Networkname: vnetName}
 	_, err := provider.CreateOrUpdate([]*pb.VirtualNetworkInterface{vnic})
 	if err != nil {
 		return err

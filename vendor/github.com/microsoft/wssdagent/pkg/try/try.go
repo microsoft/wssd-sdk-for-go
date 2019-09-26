@@ -3,7 +3,7 @@
 package try
 
 import (
-	"github.com/microsoft/wssdagent/pkg/wssdagent/errors"
+	"github.com/microsoft/wssdagent/pkg/errors"
 )
 
 // Func represents functions that can be retried.

@@ -6,12 +6,13 @@ package client
 import (
 	"fmt"
 	compute_pb "github.com/microsoft/wssdagent/rpc/compute"
+	security_pb "github.com/microsoft/wssdagent/rpc/security"
 	network_pb "github.com/microsoft/wssdagent/rpc/network"
 	storage_pb "github.com/microsoft/wssdagent/rpc/storage"
 	"google.golang.org/grpc"
 	log "k8s.io/klog"
 
-	"github.com/microsoft/wssdagent/pkg/wssdagent/apis/config"
+	"github.com/microsoft/wssdagent/pkg/apis/config"
 )
 
 func getServerEndpoint(serverAddress *string) string {
@@ -89,4 +90,26 @@ func GetVirtualHardDiskClient(serverAddress *string) (storage_pb.VirtualHardDisk
 	}
 
 	return storage_pb.NewVirtualHardDiskAgentClient(conn), nil
+}
+
+// GetKeyVaultClient returns the keyvault client to communicate with the wssdagent
+func GetKeyVaultClient(serverAddress *string) (security_pb.KeyVaultAgentClient, error) {
+	opts := getDefaultDialOption()
+	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	if err != nil {
+		log.Fatalf("Unable to get KeyVaultClient. Failed to dial: %v", err)
+	}
+
+	return security_pb.NewKeyVaultAgentClient(conn), nil
+}
+
+// GetSecretClient returns the secret client to communicate with the wssdagent
+func GetSecretClient(serverAddress *string) (security_pb.SecretAgentClient, error) {
+	opts := getDefaultDialOption()
+	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	if err != nil {
+		log.Fatalf("Unable to get KeyVaultClient. Failed to dial: %v", err)
+	}
+
+	return security_pb.NewSecretAgentClient(conn), nil
 }

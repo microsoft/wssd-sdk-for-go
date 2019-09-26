@@ -89,10 +89,10 @@ func CreateUserdata(hostname string) *Userdata {
 		Hostname:                  hostname,
 		ResizeRootFS:              false,
 		SSHPasswordAuthentication: true,
-		Users:        []*user{},
-		WriteFiles:   []*WriteFile{},
-		RunCommands:  []string{},
-		FinalMessage: "Bootstrapped by WSSDAgent using Cloud-Init for " + hostname,
+		Users:                     []*user{},
+		WriteFiles:                []*WriteFile{},
+		RunCommands:               []string{},
+		FinalMessage:              "Bootstrapped by WSSDAgent using Cloud-Init for " + hostname,
 	}
 }
 
