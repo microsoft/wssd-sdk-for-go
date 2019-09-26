@@ -9,6 +9,7 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/delete"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/list"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/secret"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/show"
 )
 
 type GetFlags struct {
@@ -28,6 +29,7 @@ func NewCommand() *cobra.Command {
 	cmd.AddCommand(create.NewCommand())
 	cmd.AddCommand(delete.NewCommand())
 	cmd.AddCommand(list.NewCommand())
+	cmd.AddCommand(show.NewCommand())
 	cmd.AddCommand(secret.NewCommand())
 
 	return cmd

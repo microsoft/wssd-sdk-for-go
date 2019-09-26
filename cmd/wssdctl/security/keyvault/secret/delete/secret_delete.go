@@ -1,11 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-package download
+package delete
 
 import (
 	"context"
-	//"time"
-	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -23,9 +21,9 @@ func NewCommand() *cobra.Command {
 	flags := &flags{}
 	cmd := &cobra.Command{
 		Args:  cobra.NoArgs,
-		Use:   "download",
-		Short: "download a secret",
-		Long:  "download a secret",
+		Use:   "delete",
+		Short: "delete a secret",
+		Long:  "delete a secret",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},
@@ -35,8 +33,6 @@ func NewCommand() *cobra.Command {
 	cmd.MarkFlagRequired("name")
 	cmd.Flags().StringVar(&flags.VaultName, "vault-name", "", "name of the secret, comma separated")
 	cmd.MarkFlagRequired("vault-name")
-	cmd.Flags().StringVar(&flags.FilePath, "file-path", "", "name of the secret, comma separated")
-	cmd.MarkFlagRequired("file-path")
 
 	return cmd
 }
@@ -53,18 +49,10 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	secrets, err := secretClient.Get(ctx, group, flags.Name, flags.VaultName)
+	err = secretClient.Delete(ctx, group, flags.Name, flags.VaultName)
 	if err != nil {
 		return err
 	}
 
-	if secrets == nil || len(*secrets) == 0 {
-		fmt.Println("No Secrets")
-		// Not an error
-		return nil
-	}
-
-	err = secret.ExportList(secrets, flags.FilePath)
-
-	return err
+	return nil
 }

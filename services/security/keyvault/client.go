@@ -46,6 +46,7 @@ func NewKeyVaultClient(cloudFQDN string) (*KeyVaultClient, error) {
 func (c *KeyVaultClient) Get(ctx context.Context, group, name string) (*[]security.KeyVault, error) {
 	return c.internal.Get(ctx, group, name)
 }
+
 // CreateOrUpdate methods invokes create or update on the client
 func (c *KeyVaultClient) CreateOrUpdate(ctx context.Context, group, name string, keyvault *security.KeyVault) (*security.KeyVault, error) {
 	return c.internal.CreateOrUpdate(ctx, group, name, keyvault)

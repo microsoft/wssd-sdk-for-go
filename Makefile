@@ -8,16 +8,19 @@ TAG ?= $(shell git describe --tags)
 COMMIT ?= $(shell git describe --always)
 BUILD_DATE ?= $(shell date -u +%m/%d/%Y)
 
-OUT=bin/wssdctl.exe
+OUTEXE=bin/wssdctl.exe
+OUT=bin/wssdctl
 
 PKG := 
 
-all: ctl
+all: ctl ctlexe
 
 clean:
-	rm -rf ${OUT} 
+	rm -rf ${OUT} ${OUTEXE}
+ctlexe:
+	GO111MODULE=on GOARCH=amd64 GOOS=windows $(GOBUILD) -ldflags "-X main.version=$(TAG) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)" -o ${OUTEXE} github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl
 ctl:
-	GO111MODULE=on GOARCH=amd64 GOOS=windows $(GOBUILD) -ldflags "-X main.version=$(TAG) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)" -o ${OUT} github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl
+	GO111MODULE=on GOARCH=amd64 $(GOBUILD) -ldflags "-X main.version=$(TAG) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)" -o ${OUT} github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl
 
 .PHONY: vendor
 vendor:

@@ -9,16 +9,14 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/microsoft/wssd-sdk-for-go/services/security"
-	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
-	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault/secret"
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
+	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault/secret"
 )
 
 type flags struct {
-	Name     string
-	FilePath string
-	VaultName  string
+	Name      string
+	FilePath  string
+	VaultName string
 }
 
 func NewCommand() *cobra.Command {
@@ -53,24 +51,15 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	secretName := flags.Name
-	emptyValue := ""
-
-	secrets, err := secretClient.Get(ctx, group, secretName, &keyvault.Secret{
-		BaseProperties: security.BaseProperties{
-			Name: &flags.Name,
-		},
-		Value : &emptyValue,
-		VaultName: &flags.VaultName,
-	})
+	secrets, err := secretClient.Get(ctx, group, flags.Name, flags.VaultName)
 	if err != nil {
 		return err
 	}
-	
+
 	if secrets == nil || len(*secrets) == 0 {
 		fmt.Println("No Secrets")
 		// Not an error
-		return nil           
+		return nil
 	}
 
 	secret.PrintList(secrets)

@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
-package list
+package show
 
 import (
 	"context"
@@ -24,14 +24,16 @@ func NewCommand() *cobra.Command {
 	flags := &flags{}
 	cmd := &cobra.Command{
 		Args:  cobra.NoArgs,
-		Use:   "list",
-		Short: "list a keyvault",
-		Long:  "list a keyvault",
+		Use:   "show",
+		Short: "show a keyvault",
+		Long:  "show a keyvault",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},
 	}
 
+	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the keyvault resource(s), comma separated")
+	cmd.MarkFlagRequired("name")
 	return cmd
 }
 
@@ -47,7 +49,8 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	keyvaults, err := vaultClient.Get(ctx, group, "")
+	vaultName := flags.Name
+	keyvaults, err := vaultClient.Get(ctx, group, vaultName)
 	if err != nil {
 		return err
 	}
