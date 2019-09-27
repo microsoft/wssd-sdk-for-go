@@ -4,12 +4,12 @@
 package fs
 
 import (
-	"fmt"
 	log "k8s.io/klog"
 	"reflect"
 
-	"github.com/microsoft/wssdagent/pkg/guid"
 	"github.com/microsoft/wssdagent/pkg/apis/config"
+	"github.com/microsoft/wssdagent/pkg/errors"
+	"github.com/microsoft/wssdagent/pkg/guid"
 	"github.com/microsoft/wssdagent/pkg/store"
 	pb "github.com/microsoft/wssdagent/rpc/security"
 	fman "github.com/microsoft/wssdagent/services/security/keyvault/common/fs"
@@ -93,17 +93,13 @@ func (c *client) Get(vaultDef *pb.KeyVault) ([]*pb.KeyVault, error) {
 func (c *client) Delete(vault *pb.KeyVault) error {
 	log.Infof("[KeyVault][Delete] spec[%v]", vault)
 
-	vaults, err := c.Get(vault)
+	// Check the internal store
+	vaultint, err := c.getKeyVaultInternalByName(vault.Name)
 	if err != nil {
 		return err
 	}
-
-	if len(vaults) == 0 {
-		return fmt.Errorf("Key Vault [%s] was not found", vault.Name)
-	}
-
 	// Because of uniqueness of name we know that there will only be one
-	vaultToBeDeleted := vaults[0]
+	vaultToBeDeleted := vaultint.Skv
 
 	manager := fman.GetInstance()
 	err = manager.RemoveVault(*vaultToBeDeleted)
@@ -121,7 +117,7 @@ func (c *client) getKeyVaultInternalByName(name string) (*internal.KeyVaultInter
 	}
 
 	if *svList == nil || len(*svList) == 0 {
-		return nil, nil
+		return nil, errors.NotFound
 	}
 
 	for _, sv := range *svList {
@@ -130,5 +126,5 @@ func (c *client) getKeyVaultInternalByName(name string) (*internal.KeyVaultInter
 			return svInt, nil
 		}
 	}
-	return nil, fmt.Errorf("Key Vault [%s] not found", name)
+	return nil, errors.NotFound
 }

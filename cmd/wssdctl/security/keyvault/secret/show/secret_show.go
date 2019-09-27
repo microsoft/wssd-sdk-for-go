@@ -14,9 +14,11 @@ import (
 )
 
 type flags struct {
-	Name      string
-	FilePath  string
-	VaultName string
+	Name     string
+	FilePath string
+	VaultName  string
+	Output string
+	Query string
 }
 
 func NewCommand() *cobra.Command {
@@ -35,6 +37,9 @@ func NewCommand() *cobra.Command {
 	cmd.MarkFlagRequired("name")
 	cmd.Flags().StringVar(&flags.VaultName, "vault-name", "", "name of the secret, comma separated")
 	cmd.MarkFlagRequired("vault-name")
+
+	cmd.Flags().StringVar(&flags.Output, "output", "yaml", "Output Format")
+	cmd.Flags().StringVar(&flags.Query, "query", "", "Output Format")
 
 	return cmd
 }
@@ -62,7 +67,7 @@ func runE(flags *flags) error {
 		return nil
 	}
 
-	secret.PrintList(secrets)
+	secret.PrintList(secrets, flags.Query, flags.Output)
 
 	return nil
 }

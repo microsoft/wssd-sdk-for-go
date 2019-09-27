@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/microsoft/wssdagent/pkg/apis/config"
+	"github.com/microsoft/wssdagent/pkg/errors"
+	"github.com/microsoft/wssdagent/pkg/crypto"
 
 
 	pb "github.com/microsoft/wssdagent/rpc/security"
@@ -13,7 +15,6 @@ import (
 )
 
 const VaultFileName = "vault.json"
-
 
 type filesystemvaultmanager struct {
 	FilePath string
@@ -137,6 +138,13 @@ func (fsv *filesystemvaultmanager) AddSecretToVault(sec pb.Secret) error {
 		return fmt.Errorf("Vault Not Found, vault Id: %v", sec.VaultId)
 	}
 
+	encryptedValue, err := crypto.EncryptSecret(sec.Value)
+	if err != nil {
+		return err
+	}
+
+	sec.Value = *encryptedValue
+
 	vault.Secrets = append(vault.Secrets, &sec)
 	vaultManager.Vaults[sec.VaultId] = vault
 
@@ -151,7 +159,7 @@ func (fsv *filesystemvaultmanager) AddSecretToVault(sec pb.Secret) error {
 func (fsv *filesystemvaultmanager) RemoveSecretFromVault(sec pb.Secret) error {
 	fsv.mux.Lock()
 	defer fsv.mux.Unlock()
-	
+
 	vaultManager, err := fsv.openVaultManager()
 	if err != nil {
 		return fmt.Errorf("Failed to open Vault Manager, err: %v", err)
@@ -183,14 +191,23 @@ func (fsv *filesystemvaultmanager) ShowSecretFromVault(sec pb.Secret) (*pb.Secre
 	if err != nil {
 		return nil, fmt.Errorf("Failed to open Vault Manager, err: %v", err)
 	}
+	if len(sec.Name) == 0 {
+		return nil, errors.Wrapf(errors.InvalidInput, "Missing Secret Name")
+	}
 
 	vault := vaultManager.Vaults[sec.VaultId]
 
 	for _, srt := range vault.Secrets {
 		if srt.Name == sec.Name {
+			decryptedValue, err := crypto.DecryptSecret(srt.Value)
+			if err != nil {
+				return nil, err
+			}
+
+			srt.Value = *decryptedValue
 			return srt, nil
 		}
 	}
 
-	return nil, nil
+	return nil, errors.NotFound
 }
