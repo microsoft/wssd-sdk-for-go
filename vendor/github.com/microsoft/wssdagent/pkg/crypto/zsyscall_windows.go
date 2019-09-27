@@ -43,14 +43,14 @@ var (
 	procCryptUnprotectData = modcrypt32.NewProc("CryptUnprotectData")
 )
 
-func encryptData(datain *_DATA_BLOB, varw uint16, vara uint16, varb uint16, varc uint16, vard uint16, dataout *_DATA_BLOB) (hr bool) {
-	r0, _, _ := syscall.Syscall9(procCryptProtectData.Addr(), 7, uintptr(unsafe.Pointer(datain)), uintptr(varw), uintptr(vara), uintptr(varb), uintptr(varc), uintptr(vard), uintptr(unsafe.Pointer(dataout)), 0, 0)
+func encryptData(datain *_DATA_BLOB, varw *uint16, vara *uint16, varb *uint16, varc *uint16, vard *uint16, dataout *_DATA_BLOB) (hr bool) {
+	r0, _, _ := syscall.Syscall9(procCryptProtectData.Addr(), 7, uintptr(unsafe.Pointer(datain)), uintptr(unsafe.Pointer(varw)), uintptr(unsafe.Pointer(vara)), uintptr(unsafe.Pointer(varb)), uintptr(unsafe.Pointer(varc)), uintptr(unsafe.Pointer(vard)), uintptr(unsafe.Pointer(dataout)), 0, 0)
 	hr = r0 != 0
 	return
 }
 
-func decryptData(datain *_DATA_BLOB, varw uint16, vara uint16, varb uint16, varc uint16, vard uint16, dataout *_DATA_BLOB) (hr bool) {
-	r0, _, _ := syscall.Syscall9(procCryptUnprotectData.Addr(), 7, uintptr(unsafe.Pointer(datain)), uintptr(varw), uintptr(vara), uintptr(varb), uintptr(varc), uintptr(vard), uintptr(unsafe.Pointer(dataout)), 0, 0)
+func decryptData(datain *_DATA_BLOB, varw *uint16, vara *uint16, varb *uint16, varc *uint16, vard *uint16, dataout *_DATA_BLOB) (hr bool) {
+	r0, _, _ := syscall.Syscall9(procCryptUnprotectData.Addr(), 7, uintptr(unsafe.Pointer(datain)), uintptr(unsafe.Pointer(varw)), uintptr(unsafe.Pointer(vara)), uintptr(unsafe.Pointer(varb)), uintptr(unsafe.Pointer(varc)), uintptr(unsafe.Pointer(vard)), uintptr(unsafe.Pointer(dataout)), 0, 0)
 	hr = r0 != 0
 	return
 }

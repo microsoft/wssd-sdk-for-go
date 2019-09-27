@@ -16,10 +16,11 @@ import (
 )
 
 type flags struct {
-	Name      string
-	FilePath  string
-	Value     string
-	VaultName string
+	Name            string
+	FilePathConfig  string
+	FilePathValue   string
+	Value           string
+	VaultName       string
 }
 
 func NewCommand() *cobra.Command {
@@ -37,7 +38,8 @@ func NewCommand() *cobra.Command {
 	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the secret, comma separated")
 	cmd.Flags().StringVar(&flags.Value, "value", "", "name of the secret, comma separated")
 	cmd.Flags().StringVar(&flags.VaultName, "vault-name", "", "name of the secret, comma separated")
-	cmd.Flags().StringVar(&flags.FilePath, "config", "", "configuration file path")
+	cmd.Flags().StringVar(&flags.FilePathConfig, "config", "", "configuration file path")
+	cmd.Flags().StringVar(&flags.FilePathValue, "file", "", "value file path")
 
 	return cmd
 }
@@ -56,8 +58,8 @@ func runE(flags *flags) error {
 
 	var secretName string
 	var srtConfig *keyvault.Secret
-	if flags.FilePath != "" {
-		config := flags.FilePath
+	if flags.FilePathConfig != "" {
+		config := flags.FilePathConfig
 		srtConfig, err := secret.LoadConfig(config)
 		if err != nil {
 			return err
@@ -65,15 +67,26 @@ func runE(flags *flags) error {
 
 		secretName = *srtConfig.Name 
 	} else {
-		if flags.Name == "" || flags.Value == "" || flags.VaultName == "" {
-			return fmt.Errorf("Error: must specify --config or --name, --vault-name, --value")
+		if flags.Name == "" || flags.VaultName == "" {
+			return fmt.Errorf("Error: must specify --config or --name, --vault-name")
+		}
+		var value *string
+		if flags.FilePathValue != "" {
+			value, err = secret.LoadValue(flags.FilePathValue)
+			if err != nil {
+				return err
+			}
+		} else if flags.Value != "" {
+			value = &flags.Value
+		} else {
+			return fmt.Errorf("Error: must specify --value or --file-path")
 		}
 
 		srtConfig = &keyvault.Secret{
 			BaseProperties: security.BaseProperties{
 				Name: &flags.Name,
 			},
-			Value : &flags.Value,
+			Value : value,
 			VaultName: &flags.VaultName,
 		}
 		secretName = flags.Name

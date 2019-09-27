@@ -22,7 +22,7 @@ import (
 type Secret struct {
 	security.BaseProperties
 	// KeyValues
-	VaultName *string
-	Value     *string
+	VaultName *string `json:"vaultname"`
+	Value     *string `json:"value"`
 	FileName  *string `json:"filename"`
 }

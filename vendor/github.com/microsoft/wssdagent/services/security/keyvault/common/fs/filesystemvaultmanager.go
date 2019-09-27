@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/microsoft/wssdagent/pkg/apis/config"
+	"github.com/microsoft/wssdagent/pkg/crypto"
 
 
 	pb "github.com/microsoft/wssdagent/rpc/security"
@@ -137,6 +138,16 @@ func (fsv *filesystemvaultmanager) AddSecretToVault(sec pb.Secret) error {
 		return fmt.Errorf("Vault Not Found, vault Id: %v", sec.VaultId)
 	}
 
+	encryptedValue, err := crypto.EncryptSecret(sec.Value)
+	if err != nil {
+		return err
+	}
+	_, err = crypto.DecryptSecret(*encryptedValue)
+	if err != nil {
+		return err
+	}
+	sec.Value = *encryptedValue
+
 	vault.Secrets = append(vault.Secrets, &sec)
 	vaultManager.Vaults[sec.VaultId] = vault
 
@@ -188,6 +199,12 @@ func (fsv *filesystemvaultmanager) ShowSecretFromVault(sec pb.Secret) (*pb.Secre
 
 	for _, srt := range vault.Secrets {
 		if srt.Name == sec.Name {
+			decryptedValue, err := crypto.DecryptSecret(srt.Value)
+			if err != nil {
+				return nil, err
+			}
+
+			srt.Value = *decryptedValue
 			return srt, nil
 		}
 	}

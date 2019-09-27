@@ -1,12 +1,23 @@
 package crypto
 
-func EncryptSecret(pswd []byte) (*[]byte, error) {
-	blob := NewBlob(pswd)
-	var outblob *_DATA_BLOB
-	bo := encryptData(blob, 0,0,0,0,0, outblob)
-	if bo {
-		return nil,nil
+import "fmt"
+
+func EncryptSecret(secret []byte) (*[]byte, error) {
+	inBlob := NewBlob(secret)
+	outblob := NewBlob([]byte(""))
+	winBool := encryptData(inBlob, nil, nil, nil, nil, nil, outblob)
+	if !winBool {
+		return nil, fmt.Errorf("Could Not Encrypt Secret")
 	}
-	test := ToByteArray(outblob)
-	return &test, nil
+	return ToByteArray(outblob), nil
+}
+
+func DecryptSecret(secret []byte) (*[]byte, error) {
+	inBlob := NewBlob(secret)
+	outblob := NewBlob([]byte(""))
+	winBool := decryptData(inBlob, nil, nil, nil, nil, nil, outblob)
+	if !winBool {
+		return nil, fmt.Errorf("Could Not Decrypt Secret")
+	}
+	return ToByteArray(outblob), nil
 }

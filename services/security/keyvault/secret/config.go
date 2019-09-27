@@ -18,14 +18,16 @@ import (
 	"fmt"
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
+	"encoding/json"
 
 	log "k8s.io/klog"
 
+	"github.com/jmespath/go-jmespath"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 	wssdkeyvault "github.com/microsoft/wssdagent/rpc/security"
 )
 
-// Load the virtual hard disk configuration from the specified path
+// Load the secret configuration from the specified path
 func LoadConfig(path string) (*keyvault.Secret, error) {
 	log.Infof("[LoadConfig] [%s]", path)
 	contents, err := ioutil.ReadFile(path)
@@ -42,12 +44,24 @@ func LoadConfig(path string) (*keyvault.Secret, error) {
 	return srt, nil
 }
 
-func ExportList(srtList *[]keyvault.Secret, path string) error {
+// Load the secret configuration from the specified path
+func LoadValue(path string) (*string, error) {
+	log.Infof("[LoadValue] [%s]", path)
+	contents, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	value := string(contents)
+
+	return &value, nil
+}
+
+func ExportList(srtList *[]keyvault.Secret, path string, query string, outputType string) error {
 	log.Infof("[ExportList] [%s]", path)
 	var fileToWrite string 
 	if srtList != nil {
 		for _, srt := range *srtList {
-			str, err := yaml.Marshal(srt)
+			str, err := marshalOutput(&srt, query, outputType)
 			if err != nil {
 				fmt.Printf("%v", err)
 				return err
@@ -62,19 +76,19 @@ func ExportList(srtList *[]keyvault.Secret, path string) error {
 	return err
 }
 
-func Print(srt *keyvault.Secret) {
-	str, err := yaml.Marshal(srt)
+func Print(srt *keyvault.Secret, query string, outputType string) {
+	marshaledByte, err := marshalOutput(srt, query, outputType)
 	if err != nil {
 		fmt.Printf("%v", err)
 		return
 	}
-	fmt.Printf("%s", string(str))
+	fmt.Printf("%s", string(marshaledByte))
 }
 
-func PrintList(srtList *[]keyvault.Secret) {
+func PrintList(srtList *[]keyvault.Secret, query string,  outputType string) {
 	if srtList != nil {
 		for _, srt := range *srtList {
-			Print(&srt)
+			Print(&srt, query,  outputType)
 		}
 	}
 }
@@ -92,4 +106,61 @@ func PrintListWssd(srtList []*wssdkeyvault.Secret) {
 	for _, srt := range srtList {
 		PrintWssd(srt)
 	}
+}
+
+
+func marshalOutput(srt *keyvault.Secret, query string, outputType string) ([]byte, error) {
+	var queryTarget interface{}
+	var result interface{}
+	var err error
+
+	jsonByte, err := json.Marshal(&srt)
+	if err != nil {
+		return nil, err
+	}
+	json.Unmarshal(jsonByte, &queryTarget)
+
+	if query != "" {	
+		result, err = jmespath.Search(query, queryTarget)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		result = queryTarget
+	}
+
+	var marshaledByte []byte
+	if (outputType == "json") {
+		marshaledByte, err = json.Marshal(result)
+	} else if (outputType == "tsv") {
+		marshaledByte, err = marshalTSV(result)
+	} else {
+		marshaledByte, err = yaml.Marshal(result)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return marshaledByte, nil
+}
+
+func marshalTSV(result interface{}) ([]byte, error) {
+	var str []byte
+	switch v := result.(type) {
+	case string:
+		str = []byte(v)
+	case map[string]interface{}:
+		var tabString string
+		for _, value := range v {
+			typ, ok := value.(string)
+			if ok && typ != "" {
+				tabString += typ + "\t"
+			}
+		}
+		str = []byte(tabString)
+	default:
+		return nil, fmt.Errorf("Unsupported Format") 
+	}
+	return str, nil
 }
