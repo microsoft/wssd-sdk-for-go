@@ -4,6 +4,7 @@ import "unsafe"
 
 //go:generate go run ../mksyscall_windows.go -output zsyscall_windows.go wincrypt.go
 
+//sys localFree(mem uintptr) = LocalFree
 //sys encryptData(datain *_DATA_BLOB, varw *uint16, vara *uint16, varb *uint16, varc *uint16, vard *uint16, dataout *_DATA_BLOB) (hr bool) = crypt32.CryptProtectData
 //sys decryptData(datain *_DATA_BLOB, varw *uint16, vara *uint16, varb *uint16, varc *uint16, vard *uint16, dataout *_DATA_BLOB) (hr bool) = crypt32.CryptUnprotectData
 

@@ -1,6 +1,9 @@
 package crypto
 
-import "fmt"
+import (
+	"fmt"
+	"unsafe"
+)
 
 func EncryptSecret(secret []byte) (*[]byte, error) {
 	inBlob := NewBlob(secret)
@@ -9,6 +12,8 @@ func EncryptSecret(secret []byte) (*[]byte, error) {
 	if !winBool {
 		return nil, fmt.Errorf("Could Not Encrypt Secret")
 	}
+
+	defer localFree(uintptr(unsafe.Pointer(outblob.pbData)))
 	return ToByteArray(outblob), nil
 }
 
@@ -19,5 +24,7 @@ func DecryptSecret(secret []byte) (*[]byte, error) {
 	if !winBool {
 		return nil, fmt.Errorf("Could Not Decrypt Secret")
 	}
+	
+	defer localFree(uintptr(unsafe.Pointer(outblob.pbData)))
 	return ToByteArray(outblob), nil
 }

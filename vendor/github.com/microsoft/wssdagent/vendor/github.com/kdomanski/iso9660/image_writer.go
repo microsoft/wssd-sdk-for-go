@@ -87,7 +87,8 @@ func manglePath(input string) (string, string) {
 	for i := 0; i < len(dirSegments); i++ {
 		dirSegments[i] = mangleDirectoryName(dirSegments[i])
 	}
-	name = mangleFileName(name)
+	// FIXME - this is converting user-data to user_data
+	// name = mangleFileName(name)
 
 	return path.Join(dirSegments...), name
 }
@@ -456,7 +457,7 @@ func (iw *ImageWriter) WriteTo(wa io.WriterAt) error {
 		},
 		Primary: &PrimaryVolumeDescriptorBody{
 			SystemIdentifier:              runtime.GOOS,
-			VolumeIdentifier:              "",
+			VolumeIdentifier:              "cidata",
 			VolumeSpaceSize:               int32(wc.freeSectorPointer),
 			VolumeSetSize:                 1,
 			VolumeSequenceNumber:          1,

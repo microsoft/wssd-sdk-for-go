@@ -9,15 +9,12 @@ import (
 	"fmt"
 	"github.com/Microsoft/hcsshim"
 	log "k8s.io/klog"
-	"os/exec"
 	"reflect"
 	"strings"
-	"time"
 
 	"github.com/microsoft/wssdagent/pkg/apis/config"
 	"github.com/microsoft/wssdagent/pkg/errors"
 	"github.com/microsoft/wssdagent/pkg/guid"
-	"github.com/microsoft/wssdagent/pkg/ssh"
 	"github.com/microsoft/wssdagent/pkg/store"
 	pb "github.com/microsoft/wssdagent/rpc/compute"
 	"github.com/microsoft/wssdagent/services/compute/virtualmachine/cloudinit"
@@ -116,13 +113,9 @@ func (c *client) Create(vm *pb.VirtualMachine) (*pb.VirtualMachine, error) {
 	vminternal.Vm = vm
 
 	// 7. Save the config to the store
-	c.store.Add(vm.Id, vminternal)
-
-	err = c.addSSHKeys(vm)
-	if err != nil {
-		// Ignore the error for now
-		log.Warningf("Adding SSH Keys failed %v", err)
-
+	if err = c.store.Add(vm.Id, vminternal); err != nil {
+		// TODO: Cleaup the VM
+		return nil, err
 	}
 
 	return vminternal.Vm, nil
@@ -196,7 +189,7 @@ func (c *client) Delete(vm *pb.VirtualMachine) error {
 			return err
 		}
 	}
-	return c.store.Delete(vm.Id)
+	return c.store.Delete(vmint.Id)
 }
 
 ////////////////////// Private Functions //////////////////////////////////
@@ -311,58 +304,4 @@ func (c *client) getVirtualMachineInternal(name string) (*internal.VirtualMachin
 	}
 	return nil, errors.NotFound
 
-}
-
-func (c *client) waitForSSH(vm *pb.VirtualMachine) (string, error) {
-	if len(vm.Network.Interfaces) == 0 {
-		return "", nil
-	}
-	vnicName := vm.Network.Interfaces[0].NetworkInterfaceId
-	ip, err := virtualnetworkinterface.WaitForIPAddress(c.vnicprovider, vnicName)
-	if err != nil {
-		return "", err
-	}
-	if len(ip) == 0 {
-		return "", fmt.Errorf("IPAddress not available for the Vm [%s][%s]", vm.Name, vnicName)
-	}
-
-	// Wait for SSH connectivity
-	for i := 0; i < 10; i++ {
-		err := exec.Command("scp", "-o", "StrictHostKeyChecking=no", fmt.Sprintf("%s@%s:~/.profile", vm.Os.Administrator.Username, ip), "tmp").Run()
-		if err == nil {
-			break
-		}
-		log.Infof("[VirtualMachine][waitForSSH] [%s][%v]", ip, err)
-		time.Sleep(6 * time.Second)
-	}
-
-	return ip, nil
-}
-
-// TODO: Remove this workaround
-func (c *client) addSSHKeys(vm *pb.VirtualMachine) error {
-	ip, err := c.waitForSSH(vm)
-	if err != nil {
-		return err
-	}
-
-	// Upload keys to the Vms
-	log.Infof("[VirtualMachine][addSSHKeys] Uploading id_rsa_test.pub to " + ip)
-	err = exec.Command("scp", "-o", "StrictHostKeyChecking=no", "id_rsa_test.pub", fmt.Sprintf("%s@%s:~/.ssh/id_rsa.pub", vm.Os.Administrator.Username, ip)).Run()
-	if err != nil {
-		return err
-	}
-
-	log.Infof("[VirtualMachine][addSSHKeys] Uploading id_rsa_test to " + ip)
-	err = exec.Command("scp", "-o", "StrictHostKeyChecking=no", "id_rsa_test", fmt.Sprintf("%s@%s:~/.ssh/id_rsa", vm.Os.Administrator.Username, ip)).Run()
-	if err != nil {
-		return err
-	}
-	log.Infof("[VirtualMachine][addSSHKeys] Fixing Persmission of private key on " + ip)
-	err = ssh.ExecuteCommand(vm.Os.Administrator.Username, ip, "id_rsa_test", "chmod 600 ~/.ssh/id_rsa")
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
