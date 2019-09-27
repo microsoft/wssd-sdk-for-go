@@ -15,8 +15,8 @@
 package secret
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 
@@ -39,8 +39,8 @@ func newSecretClient(subID string) (*client, error) {
 }
 
 // Get
-func (c *client) Get(ctx context.Context, group, name string, sg *keyvault.Secret) (*[]keyvault.Secret, error) {
-	request := getSecretRequest(wssdsecurity.Operation_GET, name, sg)
+func (c *client) Get(ctx context.Context, group, name, vaultName string) (*[]keyvault.Secret, error) {
+	request := getSecretRequest(wssdsecurity.Operation_GET, name, vaultName, nil)
 	response, err := c.SecretAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,11 @@ func (c *client) Get(ctx context.Context, group, name string, sg *keyvault.Secre
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *keyvault.Secret) (*keyvault.Secret, error) {
-	request := getSecretRequest(wssdsecurity.Operation_POST, name, sg)
+	err := c.validate(ctx, group, name, sg)
+	if err != nil {
+		return nil, err
+	}
+	request := getSecretRequest(wssdsecurity.Operation_POST, name, *sg.VaultName, sg)
 	response, err := c.SecretAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[Secret] Create failed with error %v", err)
@@ -58,18 +62,37 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *key
 	}
 
 	sec := getSecretsFromResponse(response)
-	
+
 	if len(*sec) == 0 {
 		return nil, fmt.Errorf("[Secret][Create] Unexpected error: Creating a secret returned no result")
 	}
-	
+
 	return &((*sec)[0]), err
 }
 
+func (c *client) validate(ctx context.Context, group, name string, sg *keyvault.Secret) (err error) {
+	if sg == nil || sg.VaultName == nil || sg.Value == nil {
+		return fmt.Errorf("[Secret][Create] Invalid Input")
+	}
+
+	if sg.Name == nil {
+		sg.Name = &name
+	}
+	return nil
+}
+
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, group, name string) error {
-	request := getSecretRequest(wssdsecurity.Operation_DELETE, name, nil)
-	_, err := c.SecretAgentClient.Invoke(ctx, request)
+func (c *client) Delete(ctx context.Context, group, name, vaultName string) error {
+	secret, err := c.Get(ctx, group, name, vaultName)
+	if err != nil {
+		return err
+	}
+	if len(*secret) == 0 {
+		return fmt.Errorf("Keysecret [%s] not found", name)
+	}
+
+	request := getSecretRequest(wssdsecurity.Operation_DELETE, name, vaultName, &(*secret)[0])
+	_, err = c.SecretAgentClient.Invoke(ctx, request)
 	return err
 }
 
@@ -82,17 +105,18 @@ func getSecretsFromResponse(response *wssdsecurity.SecretResponse) *[]keyvault.S
 	return &Secrets
 }
 
-func getSecretRequest(opType wssdsecurity.Operation, name string, sec *keyvault.Secret) *wssdsecurity.SecretRequest {
+func getSecretRequest(opType wssdsecurity.Operation, name, vaultName string, sec *keyvault.Secret) *wssdsecurity.SecretRequest {
 	request := &wssdsecurity.SecretRequest{
-		OperationType:   opType,
-		Secrets: []*wssdsecurity.Secret{},
+		OperationType: opType,
+		Secrets:       []*wssdsecurity.Secret{},
 	}
 	if sec != nil {
-		request.Secrets = append(request.Secrets, getWssdSecret(sec))
+		request.Secrets = append(request.Secrets, getWssdSecret(sec, opType))
 	} else if len(name) > 0 {
 		request.Secrets = append(request.Secrets,
 			&wssdsecurity.Secret{
-				Name: name,
+				Name:      name,
+				VaultName: vaultName,
 			})
 	}
 	return request
@@ -102,21 +126,24 @@ func getSecret(sec *wssdsecurity.Secret) *keyvault.Secret {
 
 	return &keyvault.Secret{
 		BaseProperties: security.BaseProperties{
-			ID : &sec.Id,
+			ID:   &sec.Id,
 			Name: &sec.Name,
 		},
-		FileName : &sec.Filename,
-		Value : &sec.Value,
-		VaultName : &sec.VaultName,
+		FileName:  &sec.Filename,
+		Value:     &sec.Value,
+		VaultName: &sec.VaultName,
 	}
 }
 
-func getWssdSecret(sec *keyvault.Secret) *wssdsecurity.Secret {
-	return &wssdsecurity.Secret{
-		//Id : *vault.BaseProperties.ID,
-		Name: *sec.BaseProperties.Name,
-	//	Filename: *sec.FileName,
-		Value: *sec.Value,
+func getWssdSecret(sec *keyvault.Secret, opType wssdsecurity.Operation) *wssdsecurity.Secret {
+	secret := &wssdsecurity.Secret{
+		Name:      *sec.BaseProperties.Name,
 		VaultName: *sec.VaultName,
 	}
+
+	if opType == wssdsecurity.Operation_POST {
+		secret.Value = *sec.Value
+	}
+
+	return secret
 }

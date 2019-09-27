@@ -15,8 +15,8 @@
 package keyvault
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
@@ -57,18 +57,26 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *sec
 	}
 
 	vault := getKeyVaultsFromResponse(response)
-	
+
 	if len(*vault) == 0 {
 		return nil, fmt.Errorf("[KeyVault][Create] Unexpected error: Creating a security returned no result")
 	}
-	
+
 	return &((*vault)[0]), err
 }
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, group, name string) error {
-	request := getKeyVaultRequest(wssdsecurity.Operation_DELETE, name, nil)
-	_, err := c.KeyVaultAgentClient.Invoke(ctx, request)
+	vault, err := c.Get(ctx, group, name)
+	if err != nil {
+		return err
+	}
+	if len(*vault) == 0 {
+		return fmt.Errorf("Keyvault [%s] not found", name)
+	}
+
+	request := getKeyVaultRequest(wssdsecurity.Operation_DELETE, name, &(*vault)[0])
+	_, err = c.KeyVaultAgentClient.Invoke(ctx, request)
 	return err
 }
 
@@ -83,8 +91,8 @@ func getKeyVaultsFromResponse(response *wssdsecurity.KeyVaultResponse) *[]securi
 
 func getKeyVaultRequest(opType wssdsecurity.Operation, name string, vault *security.KeyVault) *wssdsecurity.KeyVaultRequest {
 	request := &wssdsecurity.KeyVaultRequest{
-		OperationType:   opType,
-		KeyVaults: []*wssdsecurity.KeyVault{},
+		OperationType: opType,
+		KeyVaults:     []*wssdsecurity.KeyVault{},
 	}
 	if vault != nil {
 		request.KeyVaults = append(request.KeyVaults, getWssdKeyVault(vault))
@@ -101,10 +109,10 @@ func getKeyVault(vault *wssdsecurity.KeyVault) *security.KeyVault {
 
 	return &security.KeyVault{
 		BaseProperties: security.BaseProperties{
-			ID : &vault.Id,
+			ID:   &vault.Id,
 			Name: &vault.Name,
 		},
-	//	Source : &vault.Source,
+		//	Source : &vault.Source,
 	}
 }
 
@@ -112,7 +120,7 @@ func getWssdKeyVault(vault *security.KeyVault) *wssdsecurity.KeyVault {
 	return &wssdsecurity.KeyVault{
 		//Id : *vault.BaseProperties.ID,
 		Name: *vault.BaseProperties.Name,
-	//	Source: *vault.Source,
+		//	Source: *vault.Source,
 		Secrets: []*wssdsecurity.Secret{},
 	}
 }
