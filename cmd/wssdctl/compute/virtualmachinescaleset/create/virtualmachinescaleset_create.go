@@ -10,6 +10,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachinescaleset"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
@@ -44,17 +46,18 @@ func runE(flags *flags) error {
 	if err != nil {
 		return err
 	}
-	config := flags.FilePath
-	vmconfig, err := virtualmachinescaleset.LoadConfig(config)
+
+	vmconfig := compute.VirtualMachineScaleSet{}
+	err = config.LoadYAMLFile(flags.FilePath, &vmconfig)
 	if err != nil {
 		return err
 	}
 
-	log.Infof("Loaded Configuration [%s]", vmconfig)
+	log.Infof("Loaded Configuration [%+v]", vmconfig)
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	_, err = client.CreateOrUpdate(ctx, group, *(vmconfig.Name), vmconfig)
+	_, err = client.CreateOrUpdate(ctx, group, *(vmconfig.Name), &vmconfig)
 	if err != nil {
 		return err
 	}

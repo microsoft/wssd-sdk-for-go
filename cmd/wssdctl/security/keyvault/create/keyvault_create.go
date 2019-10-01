@@ -7,11 +7,12 @@ import (
 	//"time"
 	"fmt"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
-	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 type flags struct {
@@ -45,17 +46,17 @@ func runE(flags *flags) error {
 	if err != nil {
 		return err
 	}
-	
+
 	var vaultName string
 	var kvConfig *security.KeyVault
-	
+
 	if flags.FilePath != "" {
-		config := flags.FilePath
-		kvConfig, err := keyvault.LoadConfig(config)
+		kvConfig = &security.KeyVault{}
+		err = config.LoadYAMLFile(flags.FilePath, kvConfig)
 		if err != nil {
 			return err
 		}
-		vaultName = *kvConfig.Name 
+		vaultName = *kvConfig.Name
 	} else {
 		if flags.Name == "" {
 			return fmt.Errorf("Error: must specify --name or --config")

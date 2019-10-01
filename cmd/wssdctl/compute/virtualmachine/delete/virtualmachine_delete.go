@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
@@ -48,11 +50,13 @@ func runE(flags *flags) error {
 
 	vmName := flags.Name
 	if len(vmName) == 0 {
-		config := viper.GetString("config")
-		vmconfig, err := virtualmachine.LoadConfig(config)
+		configPath := viper.GetString("config")
+		vmconfig := compute.VirtualMachine{}
+		err = config.LoadYAMLFile(configPath, &vmconfig)
 		if err != nil {
 			return err
 		}
+
 		vmName = *(vmconfig.Name)
 	}
 

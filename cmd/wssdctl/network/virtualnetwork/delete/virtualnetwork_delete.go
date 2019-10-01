@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
@@ -49,12 +51,13 @@ func runE(flags *flags) error {
 
 	vnetName := flags.Name
 	if len(vnetName) == 0 {
-		config := viper.GetString("config")
-		vmconfig, err := virtualnetwork.LoadConfig(config)
+		vnetconfig := network.VirtualNetwork{}
+		configFile := viper.GetString("config")
+		err = config.LoadYAMLFile(configFile, &vnetconfig)
 		if err != nil {
 			return err
 		}
-		vnetName = *(vmconfig.Name)
+		vnetName = *(vnetconfig.Name)
 	}
 
 	err = vnetClient.Delete(ctx, group, vnetName)

@@ -12,6 +12,7 @@ import (
 
 	//"github.com/microsoft/wssd-sdk-for-go/services/keyvault"
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 )
 
@@ -58,7 +59,7 @@ func runE(flags *flags) error {
 		return nil
 	}
 
-	keyvault.PrintList(keyvaults)
+	config.PrintTable(keyvaults)
 
 	return nil
 }

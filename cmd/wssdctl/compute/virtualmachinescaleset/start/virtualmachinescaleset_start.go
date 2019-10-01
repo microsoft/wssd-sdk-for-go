@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachinescaleset"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
@@ -58,7 +59,7 @@ func runE(flags *flags) error {
 
 	panic("vmss start not implemented")
 
-	virtualmachinescaleset.PrintList(vmss)
+	config.PrintYAML(vmss)
 	return nil
 
 }

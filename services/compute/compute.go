@@ -1,38 +1,11 @@
-// Copyright 2019 (c) Microsoft and contributors. All rights reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license
 
 package compute
 
 import (
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 )
-
-// BaseProperties defines the structure of
-type BaseProperties struct {
-	// ID
-	ID *string `json:"ID,omitempty"`
-	// Name
-	Name *string `json:"name,omitempty"`
-	// Type
-	Type *string `json:"type,omitempty"`
-	// Tags - Custom resource tags
-	Tags map[string]*string `json:"tags"`
-	// Zones - The virtual machine scale set zones.
-	Zones *[]string `json:"zones,omitempty"`
-	// Location - Resource location
-	Location *string `json:"location,omitempty"`
-}
 
 // ref: github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2018-10-01/compute/models.go
 
@@ -148,14 +121,25 @@ type NetworkProfile struct {
 	NetworkInterfaces *[]NetworkInterfaceReference `json:"networkInterfaces,omitempty"`
 }
 
-type VirtualMachine struct {
-	BaseProperties
+type VirtualMachineProperties struct {
 	// StorageProfile
 	StorageProfile *StorageProfile `json:"storageProfile,omitempty"`
 	// OsProfile
 	OsProfile *OSProfile `json:"osProfile,omitempty"`
 	// NetworkProfile
 	NetworkProfile *NetworkProfile `json:"networkProfile,omitempty"`
+}
+type VirtualMachine struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*VirtualMachineProperties `json:"properties,omitempty"`
 }
 
 type Sku struct {
@@ -165,17 +149,29 @@ type Sku struct {
 	Capacity *int64 `json:"capacity,omitempty"`
 }
 
-// VirtualNetwork defines the structure of a VNET
-type VirtualMachineScaleSetNetworkConfiguration struct {
-	BaseProperties
+type VirtualMachineScaleSetNetworkConfigurationProperties struct {
 	// VirtualNetworkName
 	VirtualNetworkName *string `json:"virtualNetworkName,omitempty"`
 	// IPConfigurations
 	IPConfigurations *[]network.IPConfiguration `json:"ipConfigurations,omitempty"`
 	// DNS
-	DNSSettings *network.DNS `json:"dnsSettings,omitempty"`
+	DNSSettings *network.DNSSetting `json:"dnsSettings,omitempty"`
 	// EnableIPForwarding
 	EnableIPForwarding *bool `json:"enableIPForwarding,omitempty"`
+}
+
+// VirtualNetwork defines the structure of a VNET
+type VirtualMachineScaleSetNetworkConfiguration struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*VirtualMachineScaleSetNetworkConfigurationProperties `json:"properties,omitempty"`
 }
 
 type VirtualMachineScaleSetNetworkProfile struct {
@@ -214,8 +210,8 @@ const (
 	Delete     VirtualMachineEvictionPolicyTypes = "Delete"
 )
 
-type VirtualMachineScaleSetVMProfile struct {
-	BaseProperties
+// VirtualMachineScaleSetVMProfileProperties
+type VirtualMachineScaleSetVMProfileProperties struct {
 	// StorageProfile
 	StorageProfile *StorageProfile `json:"storageProfile,omitempty"`
 	// OsProfile
@@ -228,6 +224,20 @@ type VirtualMachineScaleSetVMProfile struct {
 	Priority VirtualMachinePriorityTypes `json:"priority,omitempty"`
 	// EvictionPolicy - Specifies the eviction policy for virtual machines in a low priority scale set. <br><br>Minimum api-version: 2017-10-30-preview. Possible values include: 'Deallocate', 'Delete'
 	EvictionPolicy VirtualMachineEvictionPolicyTypes `json:"evictionPolicy,omitempty"`
+}
+
+// VirtualMachineScaleSetVMProfile
+type VirtualMachineScaleSetVMProfile struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*VirtualMachineScaleSetVMProfileProperties `json:"properties,omitempty"`
 }
 
 // ResourceIdentityType enumerates the values for resource identity type.
@@ -264,13 +274,26 @@ type VirtualMachineScaleSetIdentity struct {
 	UserAssignedIdentities map[string]*VirtualMachineScaleSetIdentityUserAssignedIdentitiesValue `json:"userAssignedIdentities"`
 }
 
-// VirtualMachineScaleSet
-type VirtualMachineScaleSet struct {
-	BaseProperties
-	// Sku
-	Sku *Sku `json:"sku,omitempty"`
+// VirtualMachineScaleSetProperties
+type VirtualMachineScaleSetProperties struct {
 	// VirtualMachineProfile
 	VirtualMachineProfile *VirtualMachineScaleSetVMProfile `json:"virtualMachineProfile,omitempty"`
+}
+
+// VirtualMachineScaleSet
+type VirtualMachineScaleSet struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Sku
+	Sku *Sku `json:"sku,omitempty"`
 	// Identity - The identity of the virtual machine scale set, if configured.
 	Identity *VirtualMachineScaleSetIdentity `json:"identity,omitempty"`
+	// Properties
+	*VirtualMachineScaleSetProperties `json:"properties,omitempty"`
 }

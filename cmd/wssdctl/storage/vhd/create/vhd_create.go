@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage/virtualharddisk"
 )
 
@@ -44,19 +46,19 @@ func runE(flags *flags) error {
 		return err
 	}
 
-	config := flags.FilePath
-	vhdConfig, err := virtualharddisk.LoadConfig(config)
+	vhdConfig := storage.VirtualHardDisk{}
+	err = config.LoadYAMLFile(flags.FilePath, &vhdConfig)
 	if err != nil {
 		return err
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
-	
-	_, err = vhdClient.CreateOrUpdate(ctx, group, *(vhdConfig.Name), vhdConfig)
+
+	_, err = vhdClient.CreateOrUpdate(ctx, group, *(vhdConfig.Name), &vhdConfig)
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }

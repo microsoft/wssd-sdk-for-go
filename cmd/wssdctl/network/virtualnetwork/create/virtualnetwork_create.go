@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
 )
 
@@ -44,8 +46,8 @@ func runE(flags *flags) error {
 		return err
 	}
 
-	config := flags.FilePath
-	vnetconfig, err := virtualnetwork.LoadConfig(config)
+	vnetconfig := network.VirtualNetwork{}
+	err = config.LoadYAMLFile(flags.FilePath, &vnetconfig)
 	if err != nil {
 		return err
 	}
@@ -54,7 +56,7 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	_, err = vnetclient.CreateOrUpdate(ctx, group, *(vnetconfig.Name), vnetconfig)
+	_, err = vnetclient.CreateOrUpdate(ctx, group, *(vnetconfig.Name), &vnetconfig)
 	if err != nil {
 		return err
 	}

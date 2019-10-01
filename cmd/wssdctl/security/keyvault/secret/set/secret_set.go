@@ -7,20 +7,21 @@ import (
 	//"time"
 	"fmt"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault/secret"
-	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 type flags struct {
-	Name            string
-	FilePathConfig  string
-	FilePathValue   string
-	Value           string
-	VaultName       string
+	Name           string
+	FilePathConfig string
+	FilePathValue  string
+	Value          string
+	VaultName      string
 }
 
 func NewCommand() *cobra.Command {
@@ -59,20 +60,20 @@ func runE(flags *flags) error {
 	var secretName string
 	var srtConfig *keyvault.Secret
 	if flags.FilePathConfig != "" {
-		config := flags.FilePathConfig
-		srtConfig, err := secret.LoadConfig(config)
+		srtConfig = &keyvault.Secret{}
+		err = config.LoadYAMLFile(flags.FilePathConfig, srtConfig)
 		if err != nil {
 			return err
 		}
 
-		secretName = *srtConfig.Name 
+		secretName = *srtConfig.Name
 	} else {
 		if flags.Name == "" || flags.VaultName == "" {
 			return fmt.Errorf("Error: must specify --config or --name, --vault-name")
 		}
 		var value *string
 		if flags.FilePathValue != "" {
-			value, err = secret.LoadValue(flags.FilePathValue)
+			value, err = config.LoadValueFile(flags.FilePathValue)
 			if err != nil {
 				return err
 			}
@@ -86,12 +87,12 @@ func runE(flags *flags) error {
 			BaseProperties: security.BaseProperties{
 				Name: &flags.Name,
 			},
-			Value : value,
+			Value:     value,
 			VaultName: &flags.VaultName,
 		}
 		secretName = flags.Name
 	}
- 
+
 	_, err = secretClient.CreateOrUpdate(ctx, group, secretName, srtConfig)
 	if err != nil {
 		return err
