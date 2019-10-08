@@ -58,7 +58,7 @@ func runE(flags *flags) error {
 		return fmt.Errorf("Unable to find Virtual Machine [%s]", flags.Name)
 	}
 
-	config.PrintYAMLList(vms)
+	config.PrintYAMLList(*vms)
 
 	return nil
 }

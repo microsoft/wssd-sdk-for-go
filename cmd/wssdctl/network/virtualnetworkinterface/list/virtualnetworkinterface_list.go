@@ -57,7 +57,7 @@ func runE(flags *flags) error {
 		return nil
 	}
 
-	config.PrintTable(networkInterfaces)
+	config.PrintYAMLList(*networkInterfaces)
 
 	return nil
 }

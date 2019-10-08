@@ -57,7 +57,7 @@ func runE(flags *flags) error {
 		return fmt.Errorf("Unable to find Virtual Machine Scale Set [%s]", flags.Name)
 	}
 
-	config.PrintYAMLList(vmss)
+	config.PrintYAMLList(*vmss)
 	return nil
 
 }
