@@ -114,6 +114,8 @@ github.com/microsoft/wssdagent v0.0.15 h1:vRnn60EU263aKpWbQlrdFpiMDGRZiCnS5zrFUP
 github.com/microsoft/wssdagent v0.0.15/go.mod h1:8YtJSn645+a5+aSC6Tcs9vgfojEe/9vmTvc2lyLV1k0=
 github.com/microsoft/wssdagent v0.0.16 h1:JfUTkXwSvMqLWiiMP+NFy5MM+Lbare+vwx3xa16wnM0=
 github.com/microsoft/wssdagent v0.0.16/go.mod h1:mYlh9TLeDKyGlpMmcTBBDys41W9JD8iiI8AR957uyqY=
+github.com/microsoft/wssdagent v0.0.17 h1:INgyEhuXrOFQNKQfk+PiL34/50S4jquID9HmvexVN1s=
+github.com/microsoft/wssdagent v0.0.17/go.mod h1:mYlh9TLeDKyGlpMmcTBBDys41W9JD8iiI8AR957uyqY=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2 h1:fmNYVwqnSfB9mZU6OS2O6GsXM+wcskZDuKQzvN1EDeE=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=

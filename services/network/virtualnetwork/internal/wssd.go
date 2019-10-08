@@ -18,11 +18,9 @@ type client struct {
 
 func VirtualNetworkTypeToString(vnetType wssdnetwork.VirtualNetworkType) string {
 	typename, ok := wssdnetwork.VirtualNetworkType_name[int32(vnetType)]
-
 	if !ok {
 		return "Unknown"
 	}
-
 	return typename
 
 }
@@ -127,7 +125,6 @@ func getVirtualNetworksFromResponse(response *wssdnetwork.VirtualNetworkResponse
 
 // Conversion functions from network to wssdnetwork
 func GetWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwork {
-
 	vnetType, _ := VirtualNetworkTypeFromString(*c.Type)
 
 	wssdvnet := &wssdnetwork.VirtualNetwork{
