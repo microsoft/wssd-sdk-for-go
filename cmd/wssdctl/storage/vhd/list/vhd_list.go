@@ -57,7 +57,7 @@ func runE(flags *flags) error {
 		return nil
 	}
 
-	config.PrintTable(vhds)
+	config.PrintYAMLList(*vhds)
 
 	return nil
 }

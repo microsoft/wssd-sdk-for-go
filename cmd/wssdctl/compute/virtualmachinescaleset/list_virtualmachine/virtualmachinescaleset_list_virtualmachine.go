@@ -57,7 +57,7 @@ func runE(flags *flags) error {
 		return fmt.Errorf("Virtual machine scale Set [%s] doesnt have any Virtual Machines", flags.Name)
 	}
 
-	config.PrintTable(vms)
+	config.PrintYAMLList(*vms)
 
 	return nil
 

@@ -56,7 +56,7 @@ func runE(flags *flags) error {
 		return fmt.Errorf("Unable to find Virtual Network Interface [%s]", flags.Name)
 	}
 
-	config.PrintYAMLList(networkInterfaces)
+	config.PrintYAMLList(*networkInterfaces)
 
 	return nil
 }

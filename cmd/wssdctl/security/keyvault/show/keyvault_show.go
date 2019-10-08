@@ -62,7 +62,7 @@ func runE(flags *flags) error {
 		return nil
 	}
 
-	config.PrintYAMLList(keyvaults)
+	config.PrintYAMLList(*keyvaults)
 
 	return nil
 }

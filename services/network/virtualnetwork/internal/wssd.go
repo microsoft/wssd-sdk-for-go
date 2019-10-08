@@ -16,7 +16,7 @@ type client struct {
 	wssdnetwork.VirtualNetworkAgentClient
 }
 
-func VirtualNetworkTypeToString(vnetType wssdnetwork.VirtualNetworkType) string {
+func virtualNetworkTypeToString(vnetType wssdnetwork.VirtualNetworkType) string {
 	typename, ok := wssdnetwork.VirtualNetworkType_name[int32(vnetType)]
 	if !ok {
 		return "Unknown"
@@ -25,7 +25,7 @@ func VirtualNetworkTypeToString(vnetType wssdnetwork.VirtualNetworkType) string 
 
 }
 
-func VirtualNetworkTypeFromString(vnNetworkString string) (wssdnetwork.VirtualNetworkType, error) {
+func virtualNetworkTypeFromString(vnNetworkString string) (wssdnetwork.VirtualNetworkType, error) {
 	typevalue := wssdnetwork.VirtualNetworkType_ICS
 	if len(vnNetworkString) > 0 {
 		typevTmp, ok := wssdnetwork.VirtualNetworkType_value[vnNetworkString]
@@ -125,7 +125,7 @@ func getVirtualNetworksFromResponse(response *wssdnetwork.VirtualNetworkResponse
 
 // Conversion functions from network to wssdnetwork
 func GetWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwork {
-	vnetType, _ := VirtualNetworkTypeFromString(*c.Type)
+	vnetType, _ := virtualNetworkTypeFromString(*c.Type)
 
 	wssdvnet := &wssdnetwork.VirtualNetwork{
 		Name: *c.Name,
@@ -201,7 +201,7 @@ func getWssdNetworkRoutes(routes *[]network.Route) []*wssdnetwork.Route {
 // Conversion function from wssdnetwork to network
 func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 
-	vnetType := VirtualNetworkTypeToString(c.Type)
+	vnetType := virtualNetworkTypeToString(c.Type)
 	vnet := &network.VirtualNetwork{
 		Name: &c.Name,
 		ID:   &c.Id,
