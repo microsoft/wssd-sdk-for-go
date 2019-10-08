@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
-	errors "errors"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 )
@@ -29,13 +28,14 @@ func VirtualNetworkTypeToString(vnetType wssdnetwork.VirtualNetworkType) string 
 }
 
 func VirtualNetworkTypeFromString(vnNetworkString string) (wssdnetwork.VirtualNetworkType, error) {
-	typevalue, ok := wssdnetwork.VirtualNetworkType_value[vnNetworkString]
-
-	if !ok {
-		return -1, errors.New("Unknown network type")
+	typevalue := wssdnetwork.VirtualNetworkType_ICS
+	if len(vnNetworkString) > 0 {
+		typevTmp, ok := wssdnetwork.VirtualNetworkType_value[vnNetworkString]
+		if ok {
+			typevalue = wssdnetwork.VirtualNetworkType(typevTmp)
+		}
 	}
-
-	return wssdnetwork.VirtualNetworkType(typevalue), nil
+	return typevalue, nil
 }
 
 // NewVirtualNetworkClient - creates a client session with the backend wssd agent
