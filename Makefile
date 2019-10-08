@@ -28,6 +28,3 @@ vendor:
 	GO111MODULE=on go mod vendor
 	rm -rf vendor/github.com/Microsoft/hcsshim
 	git clone --branch vm https://github.com/madhanrm/hcsshim.git vendor/github.com/Microsoft/hcsshim
-	git clone https://github.com/census-instrumentation/opencensus-go vendor/go.opencensus.io
-	mkdir -p vendor/github.com/hashicorp
-	git clone https://github.com/hashicorp/golang-lru vendor/github.com/hashicorp/golang-lru
