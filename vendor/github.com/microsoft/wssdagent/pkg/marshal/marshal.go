@@ -9,6 +9,10 @@ import (
 	"io/ioutil"
 )
 
+func ToString(data interface{}) string {
+	return fmt.Sprintf("%+v", data)
+}
+
 func ToJSON(data interface{}) (string, error) {
 	jsonBytes, err := ToJSONBytes(data)
 	if err != nil {
@@ -20,12 +24,35 @@ func ToJSONBytes(data interface{}) ([]byte, error) {
 	return json.Marshal(data)
 }
 
+// ToJSONFile writes the data to path in YAML format
+func ToJSONFile(data interface{}, path string) error {
+	enc, err := ToJSONBytes(data)
+	if err != nil {
+		return err
+
+	}
+
+	err = ioutil.WriteFile(path, enc, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func FromJSON(jsonString string, object interface{}) error {
 	return json.Unmarshal([]byte(jsonString), object)
 }
 
 func FromJSONBytes(jsonBytes []byte, object interface{}) error {
 	return json.Unmarshal(jsonBytes, object)
+}
+
+func FromJSONFile(path string, object interface{}) error {
+	contents, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	return FromJSONBytes(contents, object)
 }
 
 func ToYAML(data interface{}) (string, error) {
@@ -37,6 +64,21 @@ func ToYAML(data interface{}) (string, error) {
 }
 func ToYAMLBytes(data interface{}) ([]byte, error) {
 	return yaml.Marshal(data)
+}
+
+// ToYAMLFile writes the data to path in YAML format
+func ToYAMLFile(data interface{}, path string) error {
+	enc, err := ToYAMLBytes(data)
+	if err != nil {
+		return err
+
+	}
+
+	err = ioutil.WriteFile(path, enc, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func FromYAMLBytes(yamlData []byte, object interface{}) error {

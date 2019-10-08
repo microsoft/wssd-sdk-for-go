@@ -17,6 +17,9 @@ type BaseConfiguration struct {
 // ChildAgentConfiguration
 type ChildAgentConfiguration struct {
 	BaseConfiguration
+
+	// Provider Specification
+	ProviderSpec string
 }
 
 // WSSDAgentConfiguration
