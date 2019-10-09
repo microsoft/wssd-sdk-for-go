@@ -118,7 +118,6 @@ func GetWssdVirtualNetworkInterface(c *network.VirtualNetworkInterface) *wssdnet
 
 	vnic := &wssdnetwork.VirtualNetworkInterface{
 		Name:        *c.Name,
-		Id:          *c.ID,
 		Networkname: *c.VirtualNetworkName,
 		// TODO: Type
 		Ipconfigs: getWssdNetworkInterfaceIPConfig(c.IPConfigurations),
@@ -143,7 +142,6 @@ func getWssdNetworkInterfaceIPConfig(ipConfigs *[]network.IPConfiguration) []*ws
 		wssdIpConfigs = append(wssdIpConfigs, &wssdnetwork.IpConfiguration{
 			Ipaddress:    *ipConfig.IPAddress,
 			Prefixlength: *ipConfig.PrefixLength,
-			Subnetid:     *ipConfig.SubnetID,
 		})
 	}
 

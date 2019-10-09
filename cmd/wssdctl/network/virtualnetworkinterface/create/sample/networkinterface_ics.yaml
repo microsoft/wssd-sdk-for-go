@@ -1,0 +1,3 @@
+name: "SampleICSEndpoint"
+virtualnetworkinterfaceproperties:
+  virtualnetworkname: "SampleICS"

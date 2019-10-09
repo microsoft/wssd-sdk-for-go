@@ -96,7 +96,6 @@ func (c *client) getVirtualMachineRequest(opType wssdcompute.Operation, name str
 func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) *wssdcompute.VirtualMachine {
 	wssdvm := &wssdcompute.VirtualMachine{
 		Name: *vm.Name,
-		Id:   *vm.ID,
 	}
 
 	if vm.VirtualMachineProperties == nil {
@@ -143,7 +142,7 @@ func (c *client) getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkPro
 		if nic.VirtualNetworkInterfaceReference == nil {
 			continue
 		}
-		nc.Interfaces = append(nc.Interfaces, &wssdcompute.NetworkInterface{NetworkInterfaceId: *nic.VirtualNetworkInterfaceReference})
+		nc.Interfaces = append(nc.Interfaces, &wssdcompute.NetworkInterface{NetworkInterfaceName: *nic.VirtualNetworkInterfaceReference})
 	}
 
 	return nc
@@ -241,7 +240,7 @@ func (c *client) getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfigura
 		if nic == nil {
 			continue
 		}
-		*np.NetworkInterfaces = append(*np.NetworkInterfaces, compute.NetworkInterfaceReference{VirtualNetworkInterfaceReference: &((*nic).NetworkInterfaceId)})
+		*np.NetworkInterfaces = append(*np.NetworkInterfaces, compute.NetworkInterfaceReference{VirtualNetworkInterfaceReference: &((*nic).NetworkInterfaceName)})
 	}
 	return np
 }

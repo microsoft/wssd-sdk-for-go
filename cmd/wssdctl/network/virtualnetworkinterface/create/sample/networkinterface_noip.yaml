@@ -1,27 +1,3 @@
-baseproperties:
-  id: e1dd5a20-1e33-4d22-83ee-dc22d5cd3f37
-  name: "sampleendpoint1"
-  type: null
-  tags: {}
-virtualmachineid: null
-tags: {}
-virtualnetwork:
-  baseproperties:
-    name: "Default Switch"
-    id: c08cb7b8-9b3c-408e-8e30-5e16a3aeb444
-ipconfigurations:
-- baseproperties:
-    id: null
-    name: null
-    type: null
-    tags: {}
-  virtualnetworkinterfaceid: null
-  loadbalancerbackendaddresspoolids: null
-  loadbalancerinboundnatpoolids: null
-dnssettings: null
-routes: null
-macaddress: "00-15-5D-65-74-79"
-enableipforwarding: null
-enablemacspoofing: null
-enabledhcpguard: null
-enablerouteradvertisementguard: null
+name: "SampleL2BridgeEndpoint"
+virtualnetworkinterfaceproperties:
+  virtualnetworkname: "SampleL2BridgeNetwork"

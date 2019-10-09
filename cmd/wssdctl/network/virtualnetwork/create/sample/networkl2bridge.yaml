@@ -1,0 +1,11 @@
+name: "SampleL2BridgeNetwork"
+type: "L2Bridge"
+virtualnetworkproperties:
+  subnets:
+  - name: test
+    subnetproperties:
+      addressprefix: "192.168.1.0/24"
+      routes:
+      - routeproperties:
+          nexthop: 192.168.1.1
+          destinationprefix: 0.0.0.0/0

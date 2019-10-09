@@ -57,6 +57,7 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]network.Virtua
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnet *network.VirtualNetwork) (*network.VirtualNetwork, error) {
+	log.Infof("[VirtualNetwork] Create failed with error %+v", vnet)
 	err := c.validate(ctx, group, name, vnet)
 	if err != nil {
 		return nil, err
@@ -103,7 +104,7 @@ func getVirtualNetworkRequest(opType wssdnetwork.Operation, name string, network
 		VirtualNetworks: []*wssdnetwork.VirtualNetwork{},
 	}
 	if network != nil {
-		request.VirtualNetworks = append(request.VirtualNetworks, GetWssdVirtualNetwork(network))
+		request.VirtualNetworks = append(request.VirtualNetworks, getWssdVirtualNetwork(network))
 	} else if len(name) > 0 {
 		request.VirtualNetworks = append(request.VirtualNetworks,
 			&wssdnetwork.VirtualNetwork{
@@ -124,12 +125,11 @@ func getVirtualNetworksFromResponse(response *wssdnetwork.VirtualNetworkResponse
 }
 
 // Conversion functions from network to wssdnetwork
-func GetWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwork {
+func getWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwork {
 	vnetType, _ := virtualNetworkTypeFromString(*c.Type)
 
 	wssdvnet := &wssdnetwork.VirtualNetwork{
 		Name: *c.Name,
-		Id:   *c.ID,
 		Type: vnetType,
 	}
 	if c.VirtualNetworkProperties == nil {
@@ -161,7 +161,6 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 	for _, subnet := range *subnets {
 		wssdsubnet := &wssdnetwork.Subnet{
 			Name: *subnet.Name,
-			Id:   *subnet.ID,
 			// TODO: implement something for IPConfigurationReferences
 		}
 

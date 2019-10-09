@@ -252,7 +252,6 @@ func (c *client) getWssdVirtualMachineScaleSet(vmss *compute.VirtualMachineScale
 	}
 	return &wssdcompute.VirtualMachineScaleSet{
 		Name: *(vmss.Name),
-		//Id:   *(vmss.ID),
 		Sku: &wssdcompute.Sku{
 			Name:     *(vmss.Sku.Name),
 			Capacity: *(vmss.Sku.Capacity),
