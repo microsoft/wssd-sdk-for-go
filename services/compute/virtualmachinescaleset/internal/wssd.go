@@ -195,7 +195,7 @@ func (c *client) getVirtualMachineScaleSetStorageProfile(s *wssdcompute.StorageC
 
 func (c *client) getVirtualMachineScaleSetStorageProfileOsDisk(d *wssdcompute.Disk) *compute.OSDisk {
 	return &compute.OSDisk{
-		VhdId: &d.Diskid,
+		VhdName: &d.Diskname,
 	}
 }
 
@@ -203,7 +203,7 @@ func (c *client) getVirtualMachineScaleSetStorageProfileDataDisks(dd []*wssdcomp
 	cdd := []compute.DataDisk{}
 
 	for _, i := range dd {
-		cdd = append(cdd, compute.DataDisk{VhdId: &(i.Diskid)})
+		cdd = append(cdd, compute.DataDisk{VhdName: &(i.Diskname)})
 	}
 
 	return &cdd
@@ -283,7 +283,7 @@ func (c *client) getWssdVirtualMachineScaleSetStorageConfiguration(s *compute.St
 
 func (c *client) getWssdVirtualMachineScaleSetStorageConfigurationOsDisk(s *compute.OSDisk) *wssdcompute.Disk {
 	return &wssdcompute.Disk{
-		Diskid: *s.VhdId,
+		Diskname: *s.VhdName,
 	}
 }
 
@@ -293,7 +293,7 @@ func (c *client) getWssdVirtualMachineScaleSetStorageConfigurationDataDisks(s *[
 		return datadisks
 	}
 	for _, d := range *s {
-		datadisks = append(datadisks, &wssdcompute.Disk{Diskid: *d.VhdId})
+		datadisks = append(datadisks, &wssdcompute.Disk{Diskname: *d.VhdName})
 	}
 
 	return datadisks

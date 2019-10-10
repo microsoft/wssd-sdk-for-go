@@ -10,7 +10,7 @@ virtualmachinescalesetproperties:
         osdisk:
           name: null
           ostype: "Windows"
-          vhdid: "g:/azureimage/windows.vhdx"
+          vhdname: windows
         datadisks: []
       osprofile:
         computername: ""

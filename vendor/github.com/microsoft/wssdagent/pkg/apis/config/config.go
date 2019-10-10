@@ -26,6 +26,7 @@ func DefaultAgentConfiguration() *WSSDAgentConfiguration {
 			LogPath:         path.Join(basePath, "log"),
 		},
 		ProviderConfigurations: map[string]ChildAgentConfiguration{},
+		ImageStorePath:         "c:/wssdimagestore",
 	}
 	// Load Default configuration
 	agentConfig, err := yaml.Marshal(ac)

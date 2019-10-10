@@ -45,15 +45,15 @@ type OSDisk struct {
 	Name *string `json:"name,omitempty"`
 	// OsType
 	OsType OperatingSystemTypes `json:"osType,omitempty"`
-	// VhdId reference to virtual hard disk
-	VhdId *string `json:"vhd,omitempty"`
+	// VhdName reference to virtual hard disk
+	VhdName *string `json:"vhd,omitempty"`
 }
 
 type DataDisk struct {
 	// Name
 	Name *string `json:"name,omitempty"`
-	// VhdId reference to VirtualHardDisk
-	VhdId          *string         `json:"vhd,omitempty"`
+	// VhdName reference to VirtualHardDisk
+	VhdName        *string         `json:"vhd,omitempty"`
 	ImageReference *ImageReference `json:"imageReference,omitempty"`
 }
 
