@@ -57,7 +57,6 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]network.Virtua
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnet *network.VirtualNetwork) (*network.VirtualNetwork, error) {
-	log.Infof("[VirtualNetwork] Create failed with error %+v", vnet)
 	err := c.validate(ctx, group, name, vnet)
 	if err != nil {
 		return nil, err
