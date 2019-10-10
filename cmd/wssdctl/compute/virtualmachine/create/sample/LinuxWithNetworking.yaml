@@ -1,26 +1,23 @@
-baseproperties:
-  id: dd3c2797-0000-0000-0000-eba420d552a1
-  name: "UbuntuVM1"
-  type: null
-  tags: {}
-storageprofile:
-  osdisk:
-    name: null
-    ostype: "Linux"
-    vhdid: "D:/kubernetes/msk8s/images/Ubuntu.vhdx"
-  datadisks: []
-osprofile:
-  computername: "lumaster"
-  adminusername: "localadmin"
-  adminpassword: ""
-  customdata: ""
-  windowsconfiguration: null
-  linuxconfiguration:
-    ssh:
-      publickeys:
-      - keydata: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKxmVSZOphCI2RWMJf5qvtMwmLBo0OlG1knLt4Yk26JqOTtGWdqmJM7QcQevBp6wnBKhzEIheq/kUJ8lRMoGplZ4wPsTu/BO2IgoAi0/xIX9NalRCD1TpLPOmaa7nqGi/7+BbTznbqtDDqKST80juLT+bbz5g3UIxsSu+R2Rpm782AzDkQ61K3YFuRiK4c58+ANZv790NTltQ3Y9iO0ivJ1dbiNXj1qVEEuXAuP80d4MgQHt+rwNdpex/2p5NHRpC/GYuSwrjQBgBX2hgOT2kvAq19x55D0bcvZ99+M9Ar9TBCfVfme7GGFceD1qrhJdXQapqhO9FJG9qk75Iti2BX
-    disablepasswordauthentication: true
-networkprofile:
-  networkinterfaces:
-  - virtualnetworkinterfacereference: "sampleendpoint1"
+name: "UbuntuVM1"
+virtualmachineprofile:
+  storageprofile:
+    osdisk:
+      name: null
+      ostype: "Linux"
+      vhdid: "D:/kubernetes/msk8s/images/Ubuntu.vhdx"
+    datadisks: []
+  osprofile:
+    computername: "lumaster"
+    adminusername: "localadmin"
+    adminpassword: ""
+    customdata: ""
+    windowsconfiguration: null
+    linuxconfiguration:
+      ssh:
+        publickeys:
+        - keydata: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKxmVSZOphCI2RWMJf5qvtMwmLBo0OlG1knLt4Yk26JqOTtGWdqmJM7QcQevBp6wnBKhzEIheq/kUJ8lRMoGplZ4wPsTu/BO2IgoAi0/xIX9NalRCD1TpLPOmaa7nqGi/7+BbTznbqtDDqKST80juLT+bbz5g3UIxsSu+R2Rpm782AzDkQ61K3YFuRiK4c58+ANZv790NTltQ3Y9iO0ivJ1dbiNXj1qVEEuXAuP80d4MgQHt+rwNdpex/2p5NHRpC/GYuSwrjQBgBX2hgOT2kvAq19x55D0bcvZ99+M9Ar9TBCfVfme7GGFceD1qrhJdXQapqhO9FJG9qk75Iti2BX
+      disablepasswordauthentication: true
+  networkprofile:
+    networkinterfaces:
+    - virtualnetworkinterfacereference: "sampleendpoint1"
 

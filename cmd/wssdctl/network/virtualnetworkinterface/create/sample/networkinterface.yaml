@@ -1,30 +1,8 @@
-baseproperties:
-  id: e1dd5a20-1e33-4d22-83ee-dc22d5cd3f36
-  name: "SampleL2BridgeEndpoint"
-  type: null
-  tags: {}
-virtualmachineid: null
-tags: {}
-virtualnetwork:
-  baseproperties:
-    name: "SampleL2BridgeNetwork"
-    id: 15c468c1-dc3f-44ce-a505-5a68ec44549c
-ipconfigurations:
-- baseproperties:
-    id: null
-    name: null
-    type: null
-    tags: {}
-  ipaddress: "192.168.1.188"
-  prefixlength: "24"
-  subnetid: ""
-  virtualnetworkinterfaceid: null
-  loadbalancerbackendaddresspoolids: null
-  loadbalancerinboundnatpoolids: null
-dnssettings: null
-routes: null
-macaddress: null
-enableipforwarding: null
-enablemacspoofing: null
-enabledhcpguard: null
-enablerouteradvertisementguard: null
+name: "SampleL2BridgeEndpoint"
+virtualnetworkinterfaceproperties:
+  virtualnetworkname: "SampleL2BridgeNetwork"
+  ipconfigurations:
+  - name: test
+    ipconfigurationproperties:
+      ipaddress: "192.168.1.188"
+      prefixlength: "24"

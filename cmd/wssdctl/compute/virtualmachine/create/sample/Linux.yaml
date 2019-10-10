@@ -1,21 +1,18 @@
-baseproperties:
-  id: dd3c2797-0000-0000-0000-eba420d552a1
-  name: "LinuxVM"
-  type: null
-  tags: {}
-storageprofile:
-  osdisk:
-    name: null
-    ostype: "Linux"
-    vhdid: "g:/azureimage/Mariner_Gen2.vhdx"
-  datadisks: []
-osprofile:
-  computername: "linuxmaster"
-  adminusername: "localadmin"
-  adminpassword: "P@ssword123"
-  customdata: null
-  windowsconfiguration: null
-  linuxconfiguration: null
-networkprofile:
-  networkinterfaces: []
+name: "LinuxVM"
+virtualmachineproperties:
+  storageprofile:
+    osdisk:
+      name: null
+      ostype: "Linux"
+      vhdid: "g:/azureimage/Mariner_Gen2.vhdx"
+    datadisks: []
+  osprofile:
+    computername: "linuxmaster"
+    adminusername: "localadmin"
+    adminpassword: "P@ssword123"
+    customdata: null
+    windowsconfiguration: null
+    linuxconfiguration: null
+  networkprofile:
+    networkinterfaces: []
 

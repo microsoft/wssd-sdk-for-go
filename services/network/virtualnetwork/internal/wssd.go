@@ -103,7 +103,7 @@ func getVirtualNetworkRequest(opType wssdnetwork.Operation, name string, network
 		VirtualNetworks: []*wssdnetwork.VirtualNetwork{},
 	}
 	if network != nil {
-		request.VirtualNetworks = append(request.VirtualNetworks, GetWssdVirtualNetwork(network))
+		request.VirtualNetworks = append(request.VirtualNetworks, getWssdVirtualNetwork(network))
 	} else if len(name) > 0 {
 		request.VirtualNetworks = append(request.VirtualNetworks,
 			&wssdnetwork.VirtualNetwork{
@@ -124,12 +124,11 @@ func getVirtualNetworksFromResponse(response *wssdnetwork.VirtualNetworkResponse
 }
 
 // Conversion functions from network to wssdnetwork
-func GetWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwork {
+func getWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwork {
 	vnetType, _ := virtualNetworkTypeFromString(*c.Type)
 
 	wssdvnet := &wssdnetwork.VirtualNetwork{
 		Name: *c.Name,
-		Id:   *c.ID,
 		Type: vnetType,
 	}
 	if c.VirtualNetworkProperties == nil {
@@ -161,7 +160,6 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 	for _, subnet := range *subnets {
 		wssdsubnet := &wssdnetwork.Subnet{
 			Name: *subnet.Name,
-			Id:   *subnet.ID,
 			// TODO: implement something for IPConfigurationReferences
 		}
 
