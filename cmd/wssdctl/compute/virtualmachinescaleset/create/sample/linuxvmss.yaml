@@ -10,7 +10,7 @@ virtualmachinescalesetproperties:
         osdisk:
           name: null
           ostype: "Linux"
-          vhdid: "D:/kubernetes/msk8s/images/Ubuntu.vhdx"
+          vhdname: ubuntu
         datadisks: []
       osprofile:
         computername: "lumaster"
