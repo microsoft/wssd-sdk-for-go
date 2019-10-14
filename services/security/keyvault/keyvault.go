@@ -3,15 +3,27 @@
 
 package keyvault
 
-import (
-	"github.com/microsoft/wssd-sdk-for-go/services/security"
-)
+import ()
+
+type SecretProperties struct {
+	// VaultName
+	VaultName *string `json:"vaultname"`
+	// Value
+	Value *string `json:"value"`
+	// FileName
+	FileName *string `json:"filename"`
+}
 
 // Secret defines the structure of a secret
 type Secret struct {
-	security.BaseProperties
-	// KeyValues
-	VaultName *string `json:"vaultname"`
-	Value     *string `json:"value"`
-	FileName  *string `json:"filename"`
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*SecretProperties `json:"properties,omitempty"`
 }

@@ -16,6 +16,8 @@ import (
 )
 
 type flags struct {
+	Output string
+	Query  string
 }
 
 func NewCommand() *cobra.Command {
@@ -29,6 +31,8 @@ func NewCommand() *cobra.Command {
 			return runE(flags)
 		},
 	}
+	cmd.Flags().StringVar(&flags.Output, "output", "yaml", "Output Format [yaml, json, csv, tsv]")
+	cmd.Flags().StringVar(&flags.Query, "query", "", "Output Format")
 
 	return cmd
 }
@@ -54,7 +58,7 @@ func runE(flags *flags) error {
 		return nil
 	}
 
-	config.PrintYAMLList(*vms)
+	config.PrintFormatList(*vms, flags.Query, flags.Output)
 
 	return nil
 }

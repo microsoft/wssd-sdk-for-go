@@ -95,21 +95,16 @@ func getKeyVaultRequest(opType wssdsecurity.Operation, name string, vault *secur
 }
 
 func getKeyVault(vault *wssdsecurity.KeyVault) *security.KeyVault {
-
 	return &security.KeyVault{
-		BaseProperties: security.BaseProperties{
-			ID:   &vault.Id,
-			Name: &vault.Name,
-		},
+		ID:   &vault.Id,
+		Name: &vault.Name,
 		//	Source : &vault.Source,
 	}
 }
 
 func getWssdKeyVault(vault *security.KeyVault) *wssdsecurity.KeyVault {
 	return &wssdsecurity.KeyVault{
-		//Id : *vault.BaseProperties.ID,
-		Name: *vault.BaseProperties.Name,
-		//	Source: *vault.Source,
+		Name:    *vault.Name,
 		Secrets: []*wssdsecurity.Secret{},
 	}
 }

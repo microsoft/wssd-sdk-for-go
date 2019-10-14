@@ -6,7 +6,6 @@ package internal
 import (
 	"context"
 	"fmt"
-	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
@@ -114,19 +113,19 @@ func getSecretRequest(opType wssdsecurity.Operation, name, vaultName string, sec
 func getSecret(sec *wssdsecurity.Secret) *keyvault.Secret {
 	value := string(sec.Value)
 	return &keyvault.Secret{
-		BaseProperties: security.BaseProperties{
-			ID:   &sec.Id,
-			Name: &sec.Name,
+		ID:   &sec.Id,
+		Name: &sec.Name,
+		SecretProperties: &keyvault.SecretProperties{
+			FileName:  &sec.Filename,
+			Value:     &value,
+			VaultName: &sec.VaultName,
 		},
-		FileName:  &sec.Filename,
-		Value:     &value,
-		VaultName: &sec.VaultName,
 	}
 }
 
 func getWssdSecret(sec *keyvault.Secret, opType wssdsecurity.Operation) *wssdsecurity.Secret {
 	secret := &wssdsecurity.Secret{
-		Name:      *sec.BaseProperties.Name,
+		Name:      *sec.Name,
 		VaultName: *sec.VaultName,
 	}
 
