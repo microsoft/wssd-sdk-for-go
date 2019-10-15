@@ -4,23 +4,22 @@ package list
 
 import (
 	"context"
-	//"time"
 	"fmt"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	//"github.com/microsoft/wssd-sdk-for-go/services/keyvault"
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
-	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
+	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault/secret"
 )
 
 type flags struct {
-	Name     string
-	FilePath string
-	Output   string
-	Query    string
+	Name      string
+	VaultName string
+	FilePath  string
+	Output    string
+	Query     string
 }
 
 func NewCommand() *cobra.Command {
@@ -28,14 +27,16 @@ func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Args:  cobra.NoArgs,
 		Use:   "list",
-		Short: "list a keyvault",
-		Long:  "list a keyvault",
+		Short: "list a secret",
+		Long:  "list a secret",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},
 	}
 	cmd.Flags().StringVar(&flags.Output, "output", "yaml", "Output Format [yaml, json, csv, tsv]")
 	cmd.Flags().StringVar(&flags.Query, "query", "", "Output Format")
+	cmd.Flags().StringVar(&flags.VaultName, "vault-name", "", "name of the vault")
+	cmd.MarkFlagRequired("vault-name")
 
 	return cmd
 }
@@ -44,7 +45,7 @@ func runE(flags *flags) error {
 	group := viper.GetString("group")
 
 	server := viper.GetString("server")
-	vaultClient, err := keyvault.NewKeyVaultClient(server)
+	vaultClient, err := secret.NewSecretClient(server)
 	if err != nil {
 		return err
 	}
@@ -52,17 +53,17 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	keyvaults, err := vaultClient.Get(ctx, group, flags.Name)
+	secrets, err := vaultClient.Get(ctx, group, flags.Name, flags.VaultName)
 	if err != nil {
 		return err
 	}
 
-	if keyvaults == nil || len(*keyvaults) == 0 {
+	if secrets == nil || len(*secrets) == 0 {
 		fmt.Println("No Key Vaults")
 		// Not an error
 		return nil
 	}
 
-	config.PrintFormatList(*keyvaults, flags.Query, flags.Output)
+	config.PrintFormatList(*secrets, flags.Query, flags.Output)
 	return nil
 }

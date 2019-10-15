@@ -106,6 +106,12 @@ func getSecretRequest(opType wssdsecurity.Operation, name, vaultName string, sec
 				Name:      name,
 				VaultName: vaultName,
 			})
+	} else {
+		request.Secrets = append(request.Secrets,
+			&wssdsecurity.Secret{
+				VaultName: vaultName,
+			})
+
 	}
 	return request
 }
