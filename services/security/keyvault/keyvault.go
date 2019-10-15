@@ -8,8 +8,6 @@ import ()
 type SecretProperties struct {
 	// VaultName
 	VaultName *string `json:"vaultname"`
-	// Value
-	Value *string `json:"value"`
 	// FileName
 	FileName *string `json:"filename"`
 }
@@ -24,6 +22,8 @@ type Secret struct {
 	Type *string `json:"type,omitempty"`
 	// Tags - Custom resource tags
 	Tags map[string]*string `json:"tags"`
+	// Value
+	Value *string `json:"value"`
 	// Properties
 	*SecretProperties `json:"properties,omitempty"`
 }
