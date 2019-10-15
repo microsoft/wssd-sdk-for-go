@@ -119,11 +119,11 @@ func getSecretRequest(opType wssdsecurity.Operation, name, vaultName string, sec
 func getSecret(sec *wssdsecurity.Secret) *keyvault.Secret {
 	value := string(sec.Value)
 	return &keyvault.Secret{
-		ID:   &sec.Id,
-		Name: &sec.Name,
+		ID:    &sec.Id,
+		Name:  &sec.Name,
+		Value: &value,
 		SecretProperties: &keyvault.SecretProperties{
 			FileName:  &sec.Filename,
-			Value:     &value,
 			VaultName: &sec.VaultName,
 		},
 	}

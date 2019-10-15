@@ -83,9 +83,9 @@ func runE(flags *flags) error {
 		}
 
 		srtConfig = &keyvault.Secret{
-			Name: &flags.Name,
+			Name:  &flags.Name,
+			Value: value,
 			SecretProperties: &keyvault.SecretProperties{
-				Value:     value,
 				VaultName: &flags.VaultName,
 			},
 		}
