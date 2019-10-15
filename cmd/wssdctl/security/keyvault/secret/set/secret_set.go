@@ -9,7 +9,6 @@ import (
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
-	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault/secret"
 	"github.com/spf13/cobra"
@@ -84,11 +83,11 @@ func runE(flags *flags) error {
 		}
 
 		srtConfig = &keyvault.Secret{
-			BaseProperties: security.BaseProperties{
-				Name: &flags.Name,
+			Name: &flags.Name,
+			SecretProperties: &keyvault.SecretProperties{
+				Value:     value,
+				VaultName: &flags.VaultName,
 			},
-			Value:     value,
-			VaultName: &flags.VaultName,
 		}
 		secretName = flags.Name
 	}

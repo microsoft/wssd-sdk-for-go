@@ -5,8 +5,13 @@ package security
 
 import ()
 
-// BaseProperties defines the structure of a Security Item
-type BaseProperties struct {
+// KeyVaultProperties defines the structure of a Security Item
+type KeyVaultProperties struct {
+	SecretMap map[string]*string `json:"secretmap"`
+}
+
+// KeyVault defines the structure of a keyvault
+type KeyVault struct {
 	// ID
 	ID *string `json:"ID,omitempty"`
 	// Name
@@ -15,11 +20,6 @@ type BaseProperties struct {
 	Type *string `json:"type,omitempty"`
 	// Tags - Custom resource tags
 	Tags map[string]*string `json:"tags"`
-}
-
-// KeyVault defines the structure of a keyvault
-type KeyVault struct {
-	BaseProperties
-	// KeyValues
-	//SecretMap map[string]*string `json:"secretmap"`
+	// Properties
+	*KeyVaultProperties `json:"properties,omitempty"`
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/secret/delete"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/secret/download"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/secret/list"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/secret/set"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault/secret/show"
 )
@@ -26,6 +27,7 @@ func NewCommand() *cobra.Command {
 
 	cmd.AddCommand(set.NewCommand())
 	cmd.AddCommand(show.NewCommand())
+	cmd.AddCommand(list.NewCommand())
 	cmd.AddCommand(delete.NewCommand())
 	cmd.AddCommand(download.NewCommand())
 
