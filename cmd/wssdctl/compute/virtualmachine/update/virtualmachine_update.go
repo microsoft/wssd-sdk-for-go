@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
 
@@ -41,7 +42,13 @@ func NewCommand() *cobra.Command {
 
 func runE(flags *flags) error {
 	server := viper.GetString("server")
-	vmclient, err := virtualmachine.NewVirtualMachineClient(server)
+
+	authorizer, err := auth.NewAuthorizerFromEnvironment()
+	if err != nil {
+		return err
+	}
+	
+	vmclient, err := virtualmachine.NewVirtualMachineClient(server, authorizer)
 	if err != nil {
 		return err
 	}

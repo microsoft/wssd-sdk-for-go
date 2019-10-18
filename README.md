@@ -12,3 +12,27 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+
+# Debug Mode
+
+To learn about proper deployment with cert generation ... please read [Cert Generation](https://github.com/microsoft/wssdagent/blob/master/certs/README.md).
+
+If you would like to test changes without any of this setup for set please set environment variable `WSSD_DEBUG_MODE` to `on`
+
+
+## Windows
+
+To do this on windows open an admin cmd. Then run
+
+`setx WSSD_DEBUG_MODE "on"`
+
+Close this window and open a new cmd. Ensure the proper value is set with 
+
+`set`
+
+## Linux
+
+Run
+
+`export WSSD_DEBUG_MODE=on`

@@ -5,6 +5,7 @@ package loadbalancer
 
 import (
 	"context"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/loadbalancer/internal"
 )
@@ -23,8 +24,8 @@ type LoadBalancerClient struct {
 }
 
 // NewLoadBalancerClient method returns new client
-func NewLoadBalancerClient(cloudFQDN string) (*LoadBalancerClient, error) {
-	c, err := internal.NewLoadBalancerClient(cloudFQDN)
+func NewLoadBalancerClient(cloudFQDN string, authorizer auth.Authorizer) (*LoadBalancerClient, error) {
+	c, err := internal.NewLoadBalancerClient(cloudFQDN, authorizer)
 	if err != nil {
 		return nil, err
 	}

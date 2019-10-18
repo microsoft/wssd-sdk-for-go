@@ -5,6 +5,7 @@ package secret
 
 import (
 	"context"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault/secret/internal"
@@ -24,8 +25,8 @@ type SecretClient struct {
 }
 
 // NewClient method returns new client
-func NewSecretClient(cloudFQDN string) (*SecretClient, error) {
-	c, err := internal.NewSecretClient(cloudFQDN)
+func NewSecretClient(cloudFQDN string, authorizer auth.Authorizer) (*SecretClient, error) {
+	c, err := internal.NewSecretClient(cloudFQDN, authorizer)
 	if err != nil {
 		return nil, err
 	}

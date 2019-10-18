@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
 )
 
@@ -40,7 +40,13 @@ func runE(flags *flags) error {
 
 	group := viper.GetString("group")
 	server := viper.GetString("server")
-	vnetclient, err := virtualnetwork.NewVirtualNetworkClient(server)
+
+	authorizer, err := auth.NewAuthorizerFromEnvironment()
+	if err != nil {
+		return err
+	}
+
+	vnetclient, err := virtualnetwork.NewVirtualNetworkClient(server, authorizer)
 	if err != nil {
 		return err
 	}

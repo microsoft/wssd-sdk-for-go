@@ -7,5 +7,6 @@ require (
 	github.com/microsoft/wssdagent v0.0.21
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.4.0
+	google.golang.org/grpc v1.22.0
 	k8s.io/klog v0.3.3
 )

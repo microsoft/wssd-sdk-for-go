@@ -9,6 +9,7 @@ import (
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 	"github.com/spf13/cobra"
@@ -42,7 +43,13 @@ func runE(flags *flags) error {
 	group := viper.GetString("group")
 
 	server := viper.GetString("server")
-	vaultClient, err := keyvault.NewKeyVaultClient(server)
+
+	authorizer, err := auth.NewAuthorizerFromEnvironment()
+	if err != nil {
+		return err
+	}
+
+	vaultClient, err := keyvault.NewKeyVaultClient(server, authorizer)
 	if err != nil {
 		return err
 	}

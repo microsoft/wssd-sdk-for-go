@@ -5,6 +5,7 @@ package internal
 
 import (
 	"context"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
@@ -16,8 +17,8 @@ type client struct {
 }
 
 // NewLoadBalancerClient- creates a client session with the backend wssd agent
-func NewLoadBalancerClient(subID string) (*client, error) {
-	c, err := wssdclient.GetLoadBalancerClient(&subID)
+func NewLoadBalancerClient(subID string, authorizer auth.Authorizer) (*client, error) {
+	c, err := wssdclient.GetLoadBalancerClient(&subID, authorizer)
 	if err != nil {
 		return nil, err
 	}

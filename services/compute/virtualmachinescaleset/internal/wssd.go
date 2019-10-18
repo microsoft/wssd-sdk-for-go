@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
@@ -20,12 +21,12 @@ type client struct {
 }
 
 // NewVirtualMachineScaleSetClient - creates a client session with the backend wssd agent
-func NewVirtualMachineScaleSetClient(subID string) (*client, error) {
-	c, err := wssdclient.GetVirtualMachineScaleSetClient(&subID)
+func NewVirtualMachineScaleSetClient(subID string, authorizer auth.Authorizer) (*client, error) {
+	c, err := wssdclient.GetVirtualMachineScaleSetClient(&subID, authorizer)
 	if err != nil {
 		return nil, err
 	}
-	vmc, err := virtualmachine.NewVirtualMachineClient(subID)
+	vmc, err := virtualmachine.NewVirtualMachineClient(subID, authorizer)
 	if err != nil {
 		return nil, err
 	}

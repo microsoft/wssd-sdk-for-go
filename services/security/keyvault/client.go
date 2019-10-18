@@ -5,6 +5,7 @@ package keyvault
 
 import (
 	"context"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault/internal"
 )
@@ -23,8 +24,8 @@ type KeyVaultClient struct {
 }
 
 // NewClient method returns new client
-func NewKeyVaultClient(cloudFQDN string) (*KeyVaultClient, error) {
-	c, err := internal.NewKeyVaultClient(cloudFQDN)
+func NewKeyVaultClient(cloudFQDN string, authorizer auth.Authorizer) (*KeyVaultClient, error) {
+	c, err := internal.NewKeyVaultClient(cloudFQDN, authorizer)
 	if err != nil {
 		return nil, err
 	}

@@ -11,6 +11,7 @@ import (
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault/secret"
 )
 
@@ -49,7 +50,13 @@ func runE(flags *flags) error {
 	group := viper.GetString("group")
 
 	server := viper.GetString("server")
-	secretClient, err := secret.NewSecretClient(server)
+
+	authorizer, err := auth.NewAuthorizerFromEnvironment()
+	if err != nil {
+		return err
+	}
+
+	secretClient, err := secret.NewSecretClient(server, authorizer)
 	if err != nil {
 		return err
 	}

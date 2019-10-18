@@ -6,6 +6,7 @@ package internal
 import (
 	"context"
 	"fmt"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
@@ -18,8 +19,8 @@ type client struct {
 }
 
 // NewSecretClient - creates a client session with the backend wssd agent
-func NewSecretClient(subID string) (*client, error) {
-	c, err := wssdclient.GetSecretClient(&subID)
+func NewSecretClient(subID string, authorizer auth.Authorizer) (*client, error) {
+	c, err := wssdclient.GetSecretClient(&subID, authorizer)
 	if err != nil {
 		return nil, err
 	}

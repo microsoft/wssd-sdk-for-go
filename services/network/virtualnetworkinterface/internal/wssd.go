@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 
 	virtualnetwork "github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
@@ -23,8 +24,8 @@ type client struct {
 }
 
 // NewVirtualNetworkInterfaceClientN- creates a client session with the backend wssd agent
-func NewVirtualNetworkInterfaceClient(subID string) (*client, error) {
-	c, err := wssdclient.GetVirtualNetworkInterfaceClient(&subID)
+func NewVirtualNetworkInterfaceClient(subID string, authorizer auth.Authorizer) (*client, error) {
+	c, err := wssdclient.GetVirtualNetworkInterfaceClient(&subID, authorizer)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +172,13 @@ func GetVirtualNetworkInterface(server, group string, c *wssdnetwork.VirtualNetw
 }
 
 func getVirtualNetwork(server, group, networkName string) (*network.VirtualNetwork, error) {
-	vnetclient, err := virtualnetwork.NewVirtualNetworkClient(server)
+
+	authorizer, err := auth.NewAuthorizerFromEnvironment()
+	if err != nil {
+		return nil, err
+	}
+
+	vnetclient, err := virtualnetwork.NewVirtualNetworkClient(server, authorizer)
 	if err != nil {
 		return nil, err
 	}
