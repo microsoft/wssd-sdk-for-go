@@ -5,6 +5,7 @@ package virtualnetworkinterface
 
 import (
 	"context"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetworkinterface/internal"
 )
@@ -23,8 +24,8 @@ type VirtualNetworkInterfaceClient struct {
 }
 
 // NewVirtualNetworkInterfaceClient method returns new client
-func NewVirtualNetworkInterfaceClient(cloudFQDN string) (*VirtualNetworkInterfaceClient, error) {
-	c, err := internal.NewVirtualNetworkInterfaceClient(cloudFQDN)
+func NewVirtualNetworkInterfaceClient(cloudFQDN string, authorizer auth.Authorizer) (*VirtualNetworkInterfaceClient, error) {
+	c, err := internal.NewVirtualNetworkInterfaceClient(cloudFQDN, authorizer)
 	if err != nil {
 		return nil, err
 	}

@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
@@ -37,8 +38,9 @@ func virtualNetworkTypeFromString(vnNetworkString string) (wssdnetwork.VirtualNe
 }
 
 // NewVirtualNetworkClient - creates a client session with the backend wssd agent
-func NewVirtualNetworkClient(subID string) (*client, error) {
-	c, err := wssdclient.GetVirtualNetworkClient(&subID)
+func NewVirtualNetworkClient(subID string, authorizer auth.Authorizer) (*client, error) {
+
+	c, err := wssdclient.GetVirtualNetworkClient(&subID, authorizer)
 	if err != nil {
 		return nil, err
 	}

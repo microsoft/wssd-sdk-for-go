@@ -38,7 +38,7 @@ func NewCommand() *cobra.Command {
 
 func runE(flags *flags) error {
 	server := viper.GetString("server")
-	vmclient, err := virtualmachine.NewVirtualMachineClient(server)
+	vmclient, err := virtualmachine.NewVirtualMachineClient(server, authorizer)
 	if err != nil {
 		return err
 	}

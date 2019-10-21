@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetworkinterface"
 
@@ -42,7 +43,13 @@ func runE(flags *flags) error {
 
 	server := viper.GetString("server")
 	group := viper.GetString("group")
-	vnetInterfaceClient, err := virtualnetworkinterface.NewVirtualNetworkInterfaceClient(server)
+
+	authorizer, err := auth.NewAuthorizerFromEnvironment()
+	if err != nil {
+		return err
+	}
+
+	vnetInterfaceClient, err := virtualnetworkinterface.NewVirtualNetworkInterfaceClient(server, authorizer)
 	if err != nil {
 		return err
 	}

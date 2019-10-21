@@ -5,6 +5,7 @@ package virtualharddisk
 
 import (
 	"context"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage/virtualharddisk/internal"
 )
@@ -23,8 +24,8 @@ type VirtualHardDiskClient struct {
 }
 
 // NewClient method returns new client
-func NewVirtualHardDiskClient(cloudFQDN string) (*VirtualHardDiskClient, error) {
-	c, err := internal.NewVirtualHardDiskClient(cloudFQDN)
+func NewVirtualHardDiskClient(cloudFQDN string, authorizer auth.Authorizer) (*VirtualHardDiskClient, error) {
+	c, err := internal.NewVirtualHardDiskClient(cloudFQDN, authorizer)
 	if err != nil {
 		return nil, err
 	}

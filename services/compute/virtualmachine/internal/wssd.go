@@ -6,6 +6,7 @@ package internal
 import (
 	"context"
 	"fmt"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
@@ -17,8 +18,8 @@ type client struct {
 }
 
 // newVirtualMachineClient - creates a client session with the backend wssd agent
-func NewVirtualMachineClient(subID string) (*client, error) {
-	c, err := wssdclient.GetVirtualMachineClient(&subID)
+func NewVirtualMachineClient(subID string, authorizer auth.Authorizer) (*client, error) {
+	c, err := wssdclient.GetVirtualMachineClient(&subID, authorizer)
 	if err != nil {
 		return nil, err
 	}

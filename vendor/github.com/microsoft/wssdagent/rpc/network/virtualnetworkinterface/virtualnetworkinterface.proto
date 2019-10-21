@@ -1,0 +1,43 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
+syntax = "proto3";
+package network;
+
+import "google/protobuf/wrappers.proto";
+import "common.proto";
+
+enum VirtualNetworkInterfaceType {
+	Local = 0;
+	Remote = 1;
+}
+message VirtualNetworkInterfaceRequest {
+	repeated VirtualNetworkInterface VirtualNetworkInterfaces = 1;
+	Operation OperationType = 2;
+}
+
+message VirtualNetworkInterfaceResponse {
+	repeated VirtualNetworkInterface VirtualNetworkInterfaces = 1;
+	google.protobuf.BoolValue Result = 2;
+	string  Error = 3;
+}
+
+message IpConfiguration {
+	string ipaddress = 1;
+	string prefixlength = 2;
+	string subnetid = 3;
+}
+
+message VirtualNetworkInterface {
+	string name = 1;
+	string id = 2;
+	string networkname = 4;
+	VirtualNetworkInterfaceType type = 3;
+	repeated IpConfiguration ipconfigs = 5;
+	string macaddress = 6;
+}
+
+service VirtualNetworkInterfaceAgent {
+	rpc Invoke(VirtualNetworkInterfaceRequest) returns (VirtualNetworkInterfaceResponse) {}
+}
+

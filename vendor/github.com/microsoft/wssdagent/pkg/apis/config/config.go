@@ -63,3 +63,16 @@ func GetChildAgentConfiguration(childAgentName string) *ChildAgentConfiguration 
 
 	return &childAgentConfig
 }
+
+func GetPublicKeyConfiguration() string {
+	basePath := viper.GetString("BaseDir")
+	publicKeyName := viper.GetString("PublicKeyName")
+	return path.Join(basePath, publicKeyName)
+}
+
+func GetTLSServerCertConfiguration() string {
+	return viper.GetString("TLSCertPath")
+}
+func GetTLSServerKeyConfiguration() string {
+	return viper.GetString("TLSKeyPath")
+}

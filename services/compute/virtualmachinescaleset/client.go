@@ -5,7 +5,7 @@ package virtualmachinescaleset
 
 import (
 	"context"
-
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachinescaleset/internal"
 )
@@ -22,8 +22,8 @@ type VirtualMachineScaleSetClient struct {
 	internal Service
 }
 
-func NewVirtualMachineScaleSetClient(cloudFQDN string) (*VirtualMachineScaleSetClient, error) {
-	c, err := internal.NewVirtualMachineScaleSetClient(cloudFQDN)
+func NewVirtualMachineScaleSetClient(cloudFQDN string, authorizer auth.Authorizer) (*VirtualMachineScaleSetClient, error) {
+	c, err := internal.NewVirtualMachineScaleSetClient(cloudFQDN, authorizer)
 	if err != nil {
 		return nil, err
 	}

@@ -6,6 +6,7 @@ package internal
 import (
 	"context"
 	"fmt"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
@@ -18,8 +19,8 @@ type client struct {
 }
 
 // NewVirtualHardDiskClient - creates a client session with the backend wssd agent
-func NewVirtualHardDiskClient(subID string) (*client, error) {
-	c, err := wssdclient.GetVirtualHardDiskClient(&subID)
+func NewVirtualHardDiskClient(subID string, authorizer auth.Authorizer) (*client, error) {
+	c, err := wssdclient.GetVirtualHardDiskClient(&subID, authorizer)
 	if err != nil {
 		return nil, err
 	}

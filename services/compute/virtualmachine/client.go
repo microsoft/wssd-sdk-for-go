@@ -5,6 +5,7 @@ package virtualmachine
 
 import (
 	"context"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine/internal"
 )
@@ -20,8 +21,8 @@ type VirtualMachineClient struct {
 	internal Service
 }
 
-func NewVirtualMachineClient(cloudFQDN string) (*VirtualMachineClient, error) {
-	c, err := internal.NewVirtualMachineClient(cloudFQDN)
+func NewVirtualMachineClient(cloudFQDN string, authorizer auth.Authorizer) (*VirtualMachineClient, error) {
+	c, err := internal.NewVirtualMachineClient(cloudFQDN, authorizer)
 	if err != nil {
 		return nil, err
 	}
