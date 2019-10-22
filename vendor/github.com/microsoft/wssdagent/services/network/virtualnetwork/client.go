@@ -63,6 +63,9 @@ func (c *Client) Create(ctx context.Context, vnetDef *pb.VirtualNetwork) (newvne
 
 	err = c.Validate(ctx, vnetDef)
 	if err != nil {
+		if err == errors.AlreadyExists {
+			newvnet, err = c.Update(ctx, vnetDef)
+		}
 		return
 	}
 	vnetinternal := c.newVirtualNetwork(vnetDef)
@@ -79,17 +82,34 @@ func (c *Client) Create(ctx context.Context, vnetDef *pb.VirtualNetwork) (newvne
 
 }
 
-// Get all/selected HCS virtual network(s)
-func (c *Client) Get(ctx context.Context, networkDef *pb.VirtualNetwork) (vnets []*pb.VirtualNetwork, err error) {
-	ctx, span := trace.NewSpan(ctx, "VirtualNetwork", "Get", marshal.ToString(networkDef))
+// Update Virtual Network
+func (c *Client) Update(ctx context.Context, vnetDef *pb.VirtualNetwork) (newvnet *pb.VirtualNetwork, err error) {
+	ctx, span := trace.NewSpan(ctx, "VirtualNetwork", "Create", marshal.ToString(vnetDef))
+	defer span.End(err)
+	c.mux.Lock()
+	defer c.mux.Unlock()
+
+	vnetinternal, err := c.getVirtualNetworkInternal(vnetDef.Name)
+	if err != nil {
+		return
+	}
+	// TODO: implement update
+	newvnet = vnetinternal.Entity
+
+	return
+}
+
+// Get all/selected virtual network(s)
+func (c *Client) Get(ctx context.Context, vnetDef *pb.VirtualNetwork) (vnets []*pb.VirtualNetwork, err error) {
+	ctx, span := trace.NewSpan(ctx, "VirtualNetwork", "Get", marshal.ToString(vnetDef))
 	defer span.End(err)
 
 	c.mux.Lock()
 	defer c.mux.Unlock()
 
 	vnetName := ""
-	if networkDef != nil {
-		vnetName = networkDef.Name
+	if vnetDef != nil {
+		vnetName = vnetDef.Name
 	}
 
 	vnetsint, err := c.store.ListFilter("Name", vnetName)
@@ -106,14 +126,14 @@ func (c *Client) Get(ctx context.Context, networkDef *pb.VirtualNetwork) (vnets 
 }
 
 // Delete the specified virtual network(s)
-func (c *Client) Delete(ctx context.Context, networkDef *pb.VirtualNetwork) (err error) {
-	ctx, span := trace.NewSpan(ctx, "VirtualNetwork", "Delete", marshal.ToString(networkDef))
+func (c *Client) Delete(ctx context.Context, vnetDef *pb.VirtualNetwork) (err error) {
+	ctx, span := trace.NewSpan(ctx, "VirtualNetwork", "Delete", marshal.ToString(vnetDef))
 	defer span.End(err)
 
 	c.mux.Lock()
 	defer c.mux.Unlock()
 
-	vnetinternal, err := c.getVirtualNetworkInternal(networkDef.Name)
+	vnetinternal, err := c.getVirtualNetworkInternal(vnetDef.Name)
 	if err != nil {
 		return
 	}
@@ -129,18 +149,18 @@ func (c *Client) Delete(ctx context.Context, networkDef *pb.VirtualNetwork) (err
 }
 
 // Validate
-func (c *Client) Validate(ctx context.Context, networkDef *pb.VirtualNetwork) (err error) {
-	ctx, span := trace.NewSpan(ctx, "VirtualNetwork", "Validate", marshal.ToString(networkDef))
+func (c *Client) Validate(ctx context.Context, vnetDef *pb.VirtualNetwork) (err error) {
+	ctx, span := trace.NewSpan(ctx, "VirtualNetwork", "Validate", marshal.ToString(vnetDef))
 	defer span.End(err)
 
 	err = nil
 
-	if networkDef == nil {
+	if vnetDef == nil {
 		err = errors.Wrapf(errors.InvalidInput, "Input group definition is nil")
 		return
 	}
 
-	_, err = c.getVirtualNetworkInternal(networkDef.Name)
+	_, err = c.getVirtualNetworkInternal(vnetDef.Name)
 	if err != nil && err == errors.NotFound {
 		err = nil
 	} else {

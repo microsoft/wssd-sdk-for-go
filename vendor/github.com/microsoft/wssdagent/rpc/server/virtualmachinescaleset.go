@@ -5,7 +5,6 @@ package server
 
 import (
 	context "context"
-	"github.com/microsoft/wssdagent/pkg/errors"
 	pb "github.com/microsoft/wssdagent/rpc/compute"
 	"github.com/microsoft/wssdagent/services/compute/virtualmachinescaleset"
 	codes "google.golang.org/grpc/codes"
@@ -50,9 +49,6 @@ func (s *virtualmachinescalesetAgentServer) Invoke(context context.Context, req 
 	}
 	log.Infof("[VirtualMachineScaleSetAgent] [Invoke] Request[%v] Response[%v], Error [%v]", req, res, err)
 
-	if err == errors.NotFound {
-		err = status.Errorf(codes.NotFound, err.Error())
-	}
-	return res, err
+	return res, GetGRPCError(err)
 
 }

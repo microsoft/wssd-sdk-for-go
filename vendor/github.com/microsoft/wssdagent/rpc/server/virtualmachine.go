@@ -5,7 +5,6 @@ package server
 
 import (
 	context "context"
-	"github.com/microsoft/wssdagent/pkg/errors"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	log "k8s.io/klog"
@@ -49,8 +48,5 @@ func (s *virtualmachineAgentServer) Invoke(context context.Context, req *pb.Virt
 
 	log.Infof("[VirtualMachineAgent] [Invoke] Request[%v] Response[%v], Error [%v]", req, res, err)
 
-	if err == errors.NotFound {
-		err = status.Errorf(codes.NotFound, err.Error())
-	}
-	return res, err
+	return res, GetGRPCError(err)
 }

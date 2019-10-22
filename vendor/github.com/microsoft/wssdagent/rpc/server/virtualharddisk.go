@@ -5,7 +5,6 @@ package server
 
 import (
 	context "context"
-	"github.com/microsoft/wssdagent/pkg/errors"
 	pb "github.com/microsoft/wssdagent/rpc/storage"
 	"github.com/microsoft/wssdagent/services/storage/virtualharddisk"
 	codes "google.golang.org/grpc/codes"
@@ -49,10 +48,6 @@ func (s *virtualharddiskAgentServer) Invoke(context context.Context, req *pb.Vir
 		return nil, status.Errorf(codes.Unavailable, "[VirtualHarddiskAgent] Invalid operation type specified")
 	}
 	log.Infof("[VirtualHarddiskAgent] [Invoke] Request[%v] Response[%v], Error [%v]", req, res, err)
-	if err == errors.NotFound {
-		err = status.Errorf(codes.NotFound, err.Error())
-	}
-
-	return res, err
+	return res, GetGRPCError(err)
 
 }

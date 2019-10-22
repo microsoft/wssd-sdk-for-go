@@ -5,7 +5,6 @@ package server
 
 import (
 	context "context"
-	"github.com/microsoft/wssdagent/pkg/errors"
 	pb "github.com/microsoft/wssdagent/rpc/network"
 	"github.com/microsoft/wssdagent/services/network/virtualnetwork"
 	codes "google.golang.org/grpc/codes"
@@ -50,9 +49,5 @@ func (s *virtualnetworkAgentServer) Invoke(context context.Context, req *pb.Virt
 		return nil, status.Errorf(codes.Unavailable, "[VirtualNetworkAgent] Invalid operation type specified")
 	}
 	log.Infof("[VirtualNetworkAgent] [Invoke] Request[%v] Response[%v], Error [%v]", req, res, err)
-	if err == errors.NotFound {
-		err = status.Errorf(codes.NotFound, err.Error())
-	}
-
-	return res, err
+	return res, GetGRPCError(err)
 }

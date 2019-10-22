@@ -36,7 +36,3 @@ Close this window and open a new cmd. Ensure the proper value is set with
 Run
 
 `export WSSD_DEBUG_MODE=on`
-
-
-
-

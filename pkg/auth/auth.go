@@ -6,7 +6,7 @@ package auth
 import (
 	"os"
 	"path"
-//	"fmt"
+	"crypto/tls"
 	"google.golang.org/grpc/credentials"
 	"io/ioutil"
 	context "context"
@@ -22,15 +22,21 @@ const (
 )
 
 type Authorizer interface {
-	WithAuthorization() credentials.PerRPCCredentials
+	WithTransportAuthorization() credentials.TransportCredentials
+	WithRPCAuthorization() credentials.PerRPCCredentials
 }
 
 type ManagedIdentityConfig struct {
-	DotTokenPath string
+	ClientTokenPath string
+	ClientCertPath string
 }
 
-func (ba *BearerAuthorizer) WithAuthorization() credentials.PerRPCCredentials {
+func (ba *BearerAuthorizer) WithRPCAuthorization() credentials.PerRPCCredentials {
 	return ba.tokenProvider
+}
+
+func (ba *BearerAuthorizer) WithTransportAuthorization() credentials.TransportCredentials {
+	return ba.transportCredentials
 }
 
 type JwtTokenProvider struct {
@@ -40,11 +46,15 @@ type JwtTokenProvider struct {
 // BearerAuthorizer implements the bearer authorization
 type BearerAuthorizer struct {
 	tokenProvider JwtTokenProvider
+	transportCredentials credentials.TransportCredentials
 }
 
 // NewBearerAuthorizer crates a BearerAuthorizer using the given token provider
-func NewBearerAuthorizer(tp JwtTokenProvider) *BearerAuthorizer {
-	return &BearerAuthorizer{tokenProvider: tp}
+func NewBearerAuthorizer(tp JwtTokenProvider, tc credentials.TransportCredentials) *BearerAuthorizer {
+	return &BearerAuthorizer{
+		tokenProvider: tp,
+		transportCredentials: tc,
+	}
 }
 
 // EnvironmentSettings contains the available authentication settings.
@@ -64,7 +74,8 @@ func GetSettingsFromEnvironment() (s EnvironmentSettings, err error) {
 	s = EnvironmentSettings{
 		Values: map[string]string{},
 	}
-	s.Values[ClientTokenPath] = GetClientTokenLocation()
+	s.Values[ClientTokenPath] = getClientTokenLocation()
+	s.Values[ClientCertPath] = getClientCertLocation()
 
 	return
 }
@@ -74,24 +85,44 @@ func (settings EnvironmentSettings) GetAuthorizer() (Authorizer, error) {
 }
 
 func (settings EnvironmentSettings) GetManagedIdentityConfig() ManagedIdentityConfig {
-	return ManagedIdentityConfig{settings.Values[ClientTokenPath]}
+	return ManagedIdentityConfig{
+		settings.Values[ClientTokenPath],
+		settings.Values[ClientCertPath],
+	}
 }
 
 func (mc ManagedIdentityConfig) Authorizer() (Authorizer, error) {
 
-	jwtCreds := CredsFromTokenFile(GetClientTokenLocation())
-	
-	return NewBearerAuthorizer(jwtCreds), nil
+	jwtCreds := TokenProviderFromFile(mc.ClientTokenPath)
+	transportCreds := TransportCredentialsFromFile(mc.ClientCertPath)
+
+	return NewBearerAuthorizer(jwtCreds, transportCreds), nil
 }
 
-func CredsFromTokenFile(tokenLocation string) JwtTokenProvider {
+func TokenProviderFromFile(tokenLocation string) JwtTokenProvider {
 	data, err := ioutil.ReadFile(tokenLocation)
 	if err != nil {
+		// Call to open the token file most likely failed do to
+		// token not being set. This is expected when the an identity is not yet
+		// set. Log and continue
 		return JwtTokenProvider{}
 	}
 
 	return JwtTokenProvider{string(data)}
 }
+
+func TransportCredentialsFromFile(certLocation string) credentials.TransportCredentials {
+	creds, err := credentials.NewClientTLSFromFile(certLocation, "")
+	if err != nil {
+		// Call to open the cert file most likely failed do to 
+		// cert not being set. We will just create an empty TLS
+		// config, log and continue as this may be the desired outcome if
+		// running in debug mode
+    	return credentials.NewTLS(&tls.Config{})
+	}
+	return creds
+}
+
 
 func (c JwtTokenProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
@@ -103,7 +134,7 @@ func (c JwtTokenProvider) RequireTransportSecurity() bool {
 	return true
 }
 
-func GetClientTokenLocation() string {
+func getClientTokenLocation() string {
 	clientTokenPath := os.Getenv(ClientTokenPath);
 	if clientTokenPath == "" {
 		wd, err := os.Getwd()
@@ -121,7 +152,7 @@ func GetClientTokenLocation() string {
 	return clientTokenPath
 }
 
-func GetTLSClientCertConfiguration() string {
+func getClientCertLocation() string {
 	clientCertPath := os.Getenv(ClientCertPath);
 	if clientCertPath == "" {
 		wd, err := os.Getwd()
@@ -136,8 +167,7 @@ func GetTLSClientCertConfiguration() string {
 
 func SaveToken(tokenStr string) error {
 	return ioutil.WriteFile(
-		GetClientTokenLocation(),
+		getClientTokenLocation(),
 		[]byte(tokenStr),
 		0644)
 }
-

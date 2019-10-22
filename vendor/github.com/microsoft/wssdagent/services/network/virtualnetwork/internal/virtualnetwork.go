@@ -11,10 +11,11 @@ import (
 )
 
 type VirtualNetworkInternal struct {
-	Entity     *pb.VirtualNetwork
-	Name       string
-	Id         string
-	ConfigPath string
+	Entity      *pb.VirtualNetwork
+	Name        string
+	Id          string
+	ConfigPath  string
+	SystemOwned bool
 }
 
 func NewVirtualNetworkInternal(id, basepath string, vnet *pb.VirtualNetwork) *VirtualNetworkInternal {
