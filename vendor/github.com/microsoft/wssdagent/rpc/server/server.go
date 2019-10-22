@@ -8,8 +8,8 @@ import (
 	log "k8s.io/klog"
 
 	compute_pb "github.com/microsoft/wssdagent/rpc/compute"
-	security_pb "github.com/microsoft/wssdagent/rpc/security"
 	network_pb "github.com/microsoft/wssdagent/rpc/network"
+	security_pb "github.com/microsoft/wssdagent/rpc/security"
 	storage_pb "github.com/microsoft/wssdagent/rpc/storage"
 	"github.com/microsoft/wssdagent/pkg/apis/config"
 	"github.com/microsoft/wssdagent/pkg/auth"

@@ -34,6 +34,7 @@ func (c *Client) CreateVirtualNetwork(vnetInternal *internal.VirtualNetworkInter
 	if err == nil {
 		// If network is already in the system, use it
 		if networkSchema.Type == hcnNetwork.Type {
+			vnetInternal.SystemOwned = true
 			vnetInternal.Entity, err = getVirtualNetworkConfig(hcnNetwork)
 			return
 		}
@@ -103,6 +104,12 @@ func (c *Client) CleanupVirtualNetwork(vnetInternal *internal.VirtualNetworkInte
 			return nil
 		}
 		return err
+	}
+
+	// If owned by the system, do not attempt to delete it,
+	// since we didnt create it
+	if vnetInternal.SystemOwned {
+		return nil
 	}
 
 	err = hcnNetwork.Delete()

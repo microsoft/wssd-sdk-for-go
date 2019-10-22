@@ -5,7 +5,6 @@ package server
 
 import (
 	context "context"
-	"github.com/microsoft/wssdagent/pkg/errors"
 	pb "github.com/microsoft/wssdagent/rpc/security"
 	"github.com/microsoft/wssdagent/services/security/keyvault"
 	codes "google.golang.org/grpc/codes"
@@ -47,10 +46,7 @@ func (s *keyvaultAgentServer) Invoke(context context.Context, req *pb.KeyVaultRe
 		return nil, status.Errorf(codes.Unavailable, "[KeyVaultAgent] Invalid operation type specified")
 	}
 	log.Infof("[KeyVaultAgent] [Invoke] Request[%v] Response[%v], Error [%v]", req, res, err)
-	if err == errors.NotFound {
-		err = status.Errorf(codes.NotFound, err.Error())
-	}
 
-	return res, err
+	return res, GetGRPCError(err)
 
 }

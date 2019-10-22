@@ -12,7 +12,6 @@ import (
 	network_pb "github.com/microsoft/wssdagent/rpc/network"
 	storage_pb "github.com/microsoft/wssdagent/rpc/storage"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	log "k8s.io/klog"
 
 	"github.com/microsoft/wssdagent/pkg/apis/config"
@@ -50,12 +49,8 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 		opts = append(opts, grpc.WithInsecure())
 	} else {
 
-		creds, err := credentials.NewClientTLSFromFile(auth.GetTLSClientCertConfiguration(), "")
-		if err != nil {
-        	panic(fmt.Errorf("could not load tls cert: %s", err))
-		}
-		opts = append(opts, grpc.WithTransportCredentials(creds))
-		opts = append(opts, grpc.WithPerRPCCredentials(authorizer.WithAuthorization()))
+		opts = append(opts, grpc.WithTransportCredentials(authorizer.WithTransportAuthorization()))
+		opts = append(opts, grpc.WithPerRPCCredentials(authorizer.WithRPCAuthorization()))
 	}
 
 	return opts
