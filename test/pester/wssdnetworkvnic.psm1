@@ -30,7 +30,9 @@ function CreateSampleNetworkInterface() {
 		$yaml = @"
 name: $Global:sampleNetworkInterface
 virtualnetworkinterfaceproperties:
-  virtualnetworkname: $Global:sampleVirtualNetwork
+  ipconfigurations:
+  - ipconfigurationproperties:
+      subnetid: $Global:sampleVirtualNetwork
 "@
 		$yamlFile = "testNetworkInterface.yaml"
 		Set-Content -Path $yamlFile -Value $yaml 

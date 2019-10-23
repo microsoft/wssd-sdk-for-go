@@ -25,5 +25,7 @@ virtualmachinescalesetproperties:
           disablepasswordauthentication: true
       networkprofile:
         networkinterfaceconfigurations:
-        - virtualmachinescalesetnetworkconfigurtionproperties:
-            virtualnetworkname: "Default Switch"
+        - virtualmachinescalesetnetworkconfigurationproperties:
+            ipconfigurations:
+            - ipconfigurationproperties:
+                subnetid: "Default Switch"

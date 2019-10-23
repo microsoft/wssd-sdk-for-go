@@ -231,6 +231,8 @@ type IPConfigurationProperties struct {
 	PrefixLength *string `json:"prefixlength,omitempty"`
 	// SubnetID
 	SubnetID *string `json:"subnetId,omitempty"`
+	// Primary indicates that this is the primary IPaddress of the Nic
+	Primary *bool `json:"primary,omitempty"`
 	// VirtualNetworkInterface reference
 	VirtualNetworkInterfaceID *string `json:"virtualNetworkInterfaceID,omitempty"`
 	// LoadBalancerBackendAddressPoolIDs
@@ -258,8 +260,6 @@ type VirtualNetworkInterfaceProperties struct {
 	VirtualMachineID *string `json:"virtualMAChineID,omitempty"`
 	// VirtualNetwork reference
 	VirtualNetwork *VirtualNetwork `json:"virtualNetworkID,omitempty"`
-	// VirtualNetworkName
-	VirtualNetworkName *string `json:"virtualNetworkName,omitempty"`
 	// IPConfigurations
 	IPConfigurations *[]IPConfiguration `json:"ipConfigurations,omitempty"`
 	// DNS

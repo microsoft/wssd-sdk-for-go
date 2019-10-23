@@ -10,6 +10,8 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
+	"github.com/microsoft/wssdagent/pkg/errors"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
 )
@@ -230,11 +232,26 @@ func (c *client) getVirtualMachineScaleSetNetworkProfile(n *wssdcompute.NetworkC
 }
 
 func (c *client) getVirtualMachineScaleSetNetworkConfiguration(nic *wssdcompute.VirtualNetworkInterface) (*compute.VirtualMachineScaleSetNetworkConfiguration, error) {
+	ipconfigs := []network.IPConfiguration{}
+	for _, wssdipconfig := range nic.Ipconfigs {
+		ipconfigs = append(ipconfigs, *(c.getVirtualMachineScaleSetNetworkConfigurationIPConfiguration(wssdipconfig)))
+	}
+
 	return &compute.VirtualMachineScaleSetNetworkConfiguration{
 		VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-			VirtualNetworkName: &nic.Networkname,
+			IPConfigurations: &ipconfigs,
 		},
 	}, nil
+}
+
+func (c *client) getVirtualMachineScaleSetNetworkConfigurationIPConfiguration(wssdipconfig *wssdcompute.IpConfiguration) *network.IPConfiguration {
+	return &network.IPConfiguration{
+		IPConfigurationProperties: &network.IPConfigurationProperties{
+			SubnetID:     &wssdipconfig.Subnetid,
+			PrefixLength: &wssdipconfig.Prefixlength,
+			IPAddress:    &wssdipconfig.Ipaddress,
+		},
+	}
 }
 
 func (c *client) getVirtualMachineScaleSetOSProfile(o *wssdcompute.OperatingSystemConfiguration) *compute.OSProfile {
@@ -327,11 +344,43 @@ func (c *client) getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterfa
 	wssdvnic := &wssdcompute.VirtualNetworkInterface{
 		Name: nicName,
 	}
-	if nic.VirtualMachineScaleSetNetworkConfigurationProperties != nil {
-		wssdvnic.Networkname = *nic.VirtualMachineScaleSetNetworkConfigurationProperties.VirtualNetworkName
+	if nic.VirtualMachineScaleSetNetworkConfigurationProperties == nil ||
+		nic.IPConfigurations == nil ||
+		len(*nic.IPConfigurations) == 0 {
+		return nil, errors.Wrapf(errors.InvalidConfiguration, "Missing IPConfiguration Properties")
+	}
+
+	for _, ipconfig := range *nic.IPConfigurations {
+		wssdipconfig, err := c.getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterfaceIPConfiguration(&ipconfig)
+		if err != nil {
+			return nil, err
+		}
+		wssdvnic.Ipconfigs = append(wssdvnic.Ipconfigs, wssdipconfig)
 	}
 
 	return wssdvnic, nil
+}
+
+func (c *client) getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterfaceIPConfiguration(ipconfig *network.IPConfiguration) (*wssdcompute.IpConfiguration, error) {
+	if ipconfig.IPConfigurationProperties == nil {
+		return nil, errors.Wrapf(errors.InvalidConfiguration, "Missing IPConfiguration Properties")
+	}
+	if ipconfig.SubnetID == nil {
+		return nil, errors.Wrapf(errors.InvalidConfiguration, "Missing Subnet Reference in IPConfiguration Properties")
+	}
+
+	wssdipconfig := &wssdcompute.IpConfiguration{
+		Subnetid: *ipconfig.SubnetID,
+	}
+
+	if ipconfig.IPAddress != nil {
+		wssdipconfig.Ipaddress = *ipconfig.IPAddress
+	}
+	if ipconfig.PrefixLength != nil {
+		wssdipconfig.Prefixlength = *ipconfig.PrefixLength
+	}
+
+	return wssdipconfig, nil
 }
 
 func (c *client) getWssdVirtualMachineScaleSetOSSSHPublicKeys(ssh *compute.SSHConfiguration) []*wssdcompute.SSHPublicKey {

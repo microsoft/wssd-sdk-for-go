@@ -150,8 +150,6 @@ type Sku struct {
 }
 
 type VirtualMachineScaleSetNetworkConfigurationProperties struct {
-	// VirtualNetworkName
-	VirtualNetworkName *string `json:"virtualNetworkName,omitempty"`
 	// IPConfigurations
 	IPConfigurations *[]network.IPConfiguration `json:"ipConfigurations,omitempty"`
 	// DNS

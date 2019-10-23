@@ -1,8 +1,8 @@
 name: "SampleL2BridgeEndpoint"
 virtualnetworkinterfaceproperties:
-  virtualnetworkname: "SampleL2BridgeNetwork"
   ipconfigurations:
   - name: test
     ipconfigurationproperties:
       ipaddress: "192.168.1.188"
       prefixlength: "24"
+      subnetid: SampleL2BridgeNetwork
