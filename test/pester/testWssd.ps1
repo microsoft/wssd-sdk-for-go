@@ -265,12 +265,10 @@ virtualmachineproperties:
 Describe 'VirtualMachineScaleSet BVT' {
 	BeforeAll {
 		CreateSampleVirtualNetwork
-		CreateSampleNetworkInterface
 		CreateSampleVirtualHardDisk
 	}
 
 	AfterAll {
-		DeleteSampleNetworkInterface
 		DeleteSampleVirtualNetwork
 		DeleteSampleVirtualHardDisk
 	}
