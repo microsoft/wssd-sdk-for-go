@@ -26,7 +26,8 @@ function VirtualHardDiskUpdate($name, $yamlFile) {
 
 function CreateSampleVirtualHardDisk() {
 	$Global:sampleVirtualHardDisk = "sampleVirtualHardDisk"
-	$Global:sampleVirtualHardDiskSource = "./sample.vhdx"
+	$pwd = (pwd).Path
+	$Global:sampleVirtualHardDiskSource = "$pwd/sample.vhdx"
 	New-VHD $Global:sampleVirtualHardDiskSource -SizeBytes 4MB
 $yaml = @"
 name: $Global:sampleVirtualHardDisk

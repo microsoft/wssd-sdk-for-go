@@ -1,3 +1,5 @@
 name: "SampleL2BridgeEndpoint"
 virtualnetworkinterfaceproperties:
-  virtualnetworkname: "SampleL2BridgeNetwork"
+  ipconfigurations:
+  - ipconfigurationproperties:
+      subnetid: "SampleL2BridgeNetwork"

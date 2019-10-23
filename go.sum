@@ -93,33 +93,8 @@ github.com/lyft/protoc-gen-validate v0.0.13/go.mod h1:XbGvPuh87YZc5TdIa2/I4pLk0Q
 github.com/magiconair/properties v1.8.0 h1:LLgXmsheXeRoUOBOjtwPQCWIYqM/LU1ayDtDePerRcY=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-<<<<<<< HEAD
-github.com/microsoft/wssdagent v0.0.21 h1:UjgdzGiCLrKk6OpwD/oIvISl6s0AoYDOhkw0sYtZ3ro=
-github.com/microsoft/wssdagent v0.0.21/go.mod h1:mYlh9TLeDKyGlpMmcTBBDys41W9JD8iiI8AR957uyqY=
-=======
-github.com/microsoft/wssdagent v0.0.2 h1:4qlkoq7+n6hZlxFfCBchwYNubjMUGFKqnpSotsWibUE=
-github.com/microsoft/wssdagent v0.0.2/go.mod h1:VAiqIky++jZd+IsxNtazqS+R9KKAVQPoxe78/XXifiw=
-github.com/microsoft/wssdagent v0.0.3 h1:1TRdQaioyxyNIEyTQuE99nNPf3joC0k7zXmLGXiY5Mo=
-github.com/microsoft/wssdagent v0.0.3/go.mod h1:ruCMJkYB3TYw0lH+mkjpyAxq9nw11RODASD3UcA3+eo=
-github.com/microsoft/wssdagent v0.0.4 h1:lS2Hd/g3fsqsvAoN40hg3Jk5cR/rlDnpVH1g8rLMN8Y=
-github.com/microsoft/wssdagent v0.0.4/go.mod h1:B8r9SuKlLx0vjsP5ng9BzACAskkWMT8CYybKr+4+EDI=
-github.com/microsoft/wssdagent v0.0.5 h1:a+mKFzfJZ9vv0DHTlrvMvfjcGy3adwYimqfNJPocnv8=
-github.com/microsoft/wssdagent v0.0.5/go.mod h1:B8r9SuKlLx0vjsP5ng9BzACAskkWMT8CYybKr+4+EDI=
-github.com/microsoft/wssdagent v0.0.8 h1:Y9ZO1ZfhpzfipPmZwE1yDa20VGDtmyA0uq9eBI2zfw0=
-github.com/microsoft/wssdagent v0.0.8/go.mod h1:vxIN4Z8bE3gNlFb4AAOFLSSyNNX2k7WxELDjRHWguXQ=
-github.com/microsoft/wssdagent v0.0.9 h1:YHcHMMOem3SExw07e1WxFLP6SVP90GuCIzSjXDQjceA=
-github.com/microsoft/wssdagent v0.0.9/go.mod h1:vxIN4Z8bE3gNlFb4AAOFLSSyNNX2k7WxELDjRHWguXQ=
-github.com/microsoft/wssdagent v0.0.11 h1:p87fcLo0UNMarzK0hYVeP3rBeHqOX+pHWDsZW5kaFUY=
-github.com/microsoft/wssdagent v0.0.11/go.mod h1:FsFbLudJprCpnoEWbsvsDGCZ13Sqx0YKOIQ9fnF9u0I=
-github.com/microsoft/wssdagent v0.0.12 h1:VMmfsmnXe6nSNb6sqiF1yodKIF36AMCGx6AFMdXuh/k=
-github.com/microsoft/wssdagent v0.0.12/go.mod h1:8YtJSn645+a5+aSC6Tcs9vgfojEe/9vmTvc2lyLV1k0=
-github.com/microsoft/wssdagent v0.0.14 h1:vpTurCp+3lSumxim0H2KSYizkFrgrnSwi+pk+7nnmFY=
-github.com/microsoft/wssdagent v0.0.14/go.mod h1:8YtJSn645+a5+aSC6Tcs9vgfojEe/9vmTvc2lyLV1k0=
-github.com/microsoft/wssdagent v0.0.15 h1:vRnn60EU263aKpWbQlrdFpiMDGRZiCnS5zrFUP3m36o=
-github.com/microsoft/wssdagent v0.0.15/go.mod h1:8YtJSn645+a5+aSC6Tcs9vgfojEe/9vmTvc2lyLV1k0=
-github.com/microsoft/wssdagent v0.0.18 h1:l3BwOUnzE5JWRalOcRchD9uWX00e6vqU2OLOsc4SVNA=
-github.com/microsoft/wssdagent v0.0.18/go.mod h1:mYlh9TLeDKyGlpMmcTBBDys41W9JD8iiI8AR957uyqY=
->>>>>>> for rebase
+github.com/microsoft/wssdagent v0.0.22 h1:PlTjJgfUh4T+kUXTHypSmJBGfUGJMvBkmi5r+LLuV9g=
+github.com/microsoft/wssdagent v0.0.22/go.mod h1:90yPcO2gBuXrWJ/4/PwGm4zezLS5fkKI8wj6s0duiik=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2 h1:fmNYVwqnSfB9mZU6OS2O6GsXM+wcskZDuKQzvN1EDeE=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
@@ -135,6 +110,7 @@ github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/9
 github.com/pierrec/lz4 v1.0.2-0.20190131084431-473cd7ce01a1/go.mod h1:3/3N9NVKO0jef7pBehbT1qWhCMrIgbYNnFAZCqQ5LRc=
 github.com/pierrec/lz4 v2.0.5+incompatible/go.mod h1:pdkljMzZIN41W+lC3N2tnIh5sFi+IEE17M5jbnwPHcY=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
+github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/profile v1.2.1/go.mod h1:hJw3o1OdXxsrSjjVksARp5W95eeEaEfptyVZyv6JUPA=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

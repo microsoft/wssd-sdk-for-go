@@ -6,10 +6,11 @@ package internal
 import (
 	"context"
 	"fmt"
-	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
 	virtualnetwork "github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
+	"github.com/microsoft/wssdagent/pkg/errors"
 	wssdclient "github.com/microsoft/wssdagent/rpc/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 
@@ -34,7 +35,10 @@ func NewVirtualNetworkInterfaceClient(subID string, authorizer auth.Authorizer) 
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (*[]network.VirtualNetworkInterface, error) {
-	request := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_GET, name, nil)
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_GET, name, nil)
+	if err != nil {
+		return nil, err
+	}
 	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -49,7 +53,10 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]network.Virtua
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
-	request := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_POST, name, vnetInterface)
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_POST, name, vnetInterface)
+	if err != nil {
+		return nil, err
+	}
 	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -72,7 +79,10 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 		return fmt.Errorf("Virtual Network Interface [%s] not found", name)
 	}
 
-	request := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_DELETE, name, &(*vnetInterface)[0])
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_DELETE, name, &(*vnetInterface)[0])
+	if err != nil {
+		return err
+	}
 	_, err = c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
 
 	if err != nil {
@@ -83,27 +93,31 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 }
 
 /////////////// private methods  ///////////////
-func (c *client) getVirtualNetworkInterfaceRequest(opType wssdnetwork.Operation, name string, networkInterface *network.VirtualNetworkInterface) *wssdnetwork.VirtualNetworkInterfaceRequest {
+func (c *client) getVirtualNetworkInterfaceRequest(opType wssdnetwork.Operation, name string, networkInterface *network.VirtualNetworkInterface) (*wssdnetwork.VirtualNetworkInterfaceRequest, error) {
 	request := &wssdnetwork.VirtualNetworkInterfaceRequest{
 		OperationType:            opType,
 		VirtualNetworkInterfaces: []*wssdnetwork.VirtualNetworkInterface{},
 	}
 	if networkInterface != nil {
-		request.VirtualNetworkInterfaces = append(request.VirtualNetworkInterfaces, GetWssdVirtualNetworkInterface(networkInterface))
+		wssdnetworkinterface, err := c.getWssdVirtualNetworkInterface(networkInterface)
+		if err != nil {
+			return nil, err
+		}
+		request.VirtualNetworkInterfaces = append(request.VirtualNetworkInterfaces, wssdnetworkinterface)
 	} else if len(name) > 0 {
 		request.VirtualNetworkInterfaces = append(request.VirtualNetworkInterfaces,
 			&wssdnetwork.VirtualNetworkInterface{
 				Name: name,
 			})
 	}
-	return request
+	return request, nil
 }
 
 func (c *client) getVirtualNetworkInterfacesFromResponse(group string, response *wssdnetwork.VirtualNetworkInterfaceResponse) (*[]network.VirtualNetworkInterface, error) {
 	virtualNetworkInterfaces := []network.VirtualNetworkInterface{}
 
 	for _, vnetInterface := range response.GetVirtualNetworkInterfaces() {
-		vnetIntf, err := GetVirtualNetworkInterface(c.subID, group, vnetInterface)
+		vnetIntf, err := c.getVirtualNetworkInterface(c.subID, group, vnetInterface)
 		if err != nil {
 			return nil, err
 		}
@@ -115,63 +129,68 @@ func (c *client) getVirtualNetworkInterfacesFromResponse(group string, response 
 }
 
 // Conversion functions from network interface to wssd network interface
-func GetWssdVirtualNetworkInterface(c *network.VirtualNetworkInterface) *wssdnetwork.VirtualNetworkInterface {
+func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterface) (*wssdnetwork.VirtualNetworkInterface, error) {
+	if c.VirtualNetworkInterfaceProperties == nil {
+		return nil, errors.Wrapf(errors.InvalidInput, "Missing Network Interface Properties")
+	}
+
+	wssdipconfigs := []*wssdnetwork.IpConfiguration{}
+	for _, ipconfig := range *c.IPConfigurations {
+		wssdipconfig, err := cc.getWssdNetworkInterfaceIPConfig(&ipconfig)
+		if err != nil {
+			return nil, err
+		}
+		wssdipconfigs = append(wssdipconfigs, wssdipconfig)
+	}
 
 	vnic := &wssdnetwork.VirtualNetworkInterface{
-		Name:        *c.Name,
-		Networkname: *c.VirtualNetworkName,
-		// TODO: Type
-		Ipconfigs: getWssdNetworkInterfaceIPConfig(c.IPConfigurations),
+		Name:      *c.Name,
+		Ipconfigs: wssdipconfigs,
 	}
 
 	if c.MACAddress != nil {
 		vnic.Macaddress = *c.MACAddress
 	}
-	return vnic
+	return vnic, nil
 }
 
-func getWssdNetworkInterfaceIPConfig(ipConfigs *[]network.IPConfiguration) []*wssdnetwork.IpConfiguration {
-	wssdIpConfigs := []*wssdnetwork.IpConfiguration{}
-	if ipConfigs == nil {
-		return wssdIpConfigs
+func (c *client) getWssdNetworkInterfaceIPConfig(ipconfig *network.IPConfiguration) (*wssdnetwork.IpConfiguration, error) {
+	if ipconfig.IPConfigurationProperties == nil {
+		return nil, errors.Wrapf(errors.InvalidInput, "Missing IPConfiguration Properties")
+	}
+	if ipconfig.IPConfigurationProperties.SubnetID == nil ||
+		len(*ipconfig.IPConfigurationProperties.SubnetID) == 0 {
+		return nil, errors.Wrapf(errors.InvalidInput, "Missing IPConfiguration Properties")
 	}
 
-	for _, ipConfig := range *ipConfigs {
-		if ipConfig.IPAddress == nil {
-			continue
-		}
-		wssdIpConfigs = append(wssdIpConfigs, &wssdnetwork.IpConfiguration{
-			Ipaddress:    *ipConfig.IPAddress,
-			Prefixlength: *ipConfig.PrefixLength,
-		})
+	wssdipconfig := &wssdnetwork.IpConfiguration{
+		Subnetid: *ipconfig.SubnetID,
+	}
+	if ipconfig.IPAddress != nil {
+		wssdipconfig.Ipaddress = *ipconfig.IPAddress
+	}
+	if ipconfig.PrefixLength != nil {
+		wssdipconfig.Prefixlength = *ipconfig.PrefixLength
 	}
 
-	return wssdIpConfigs
+	return wssdipconfig, nil
 }
 
 // Conversion function from wssd network interface to network interface
-func GetVirtualNetworkInterface(server, group string, c *wssdnetwork.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
-
-	//vnet, err := getVirtualNetwork(server, group, c.Networkname)
-	//if err != nil {
-	//	return nil, fmt.Errorf("Virtual Network Interface [%s] is not on a supported network type.\n Inner error: %v", c.Name, err)
-	//}
-
+func (cc *client) getVirtualNetworkInterface(server, group string, c *wssdnetwork.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
 	vnetIntf := &network.VirtualNetworkInterface{
 		Name: &c.Name,
 		ID:   &c.Id,
 		VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
-			VirtualNetworkName: &c.Networkname,
-			MACAddress:         &c.Macaddress,
-			// TODO: Type
-			IPConfigurations: getNetworkIpConfigs(c.Ipconfigs),
+			MACAddress:       &c.Macaddress,
+			IPConfigurations: cc.getNetworkIpConfigs(c.Ipconfigs),
 		},
 	}
 
 	return vnetIntf, nil
 }
 
-func getVirtualNetwork(server, group, networkName string) (*network.VirtualNetwork, error) {
+func (c *client) getVirtualNetwork(server, group, networkName string) (*network.VirtualNetwork, error) {
 
 	authorizer, err := auth.NewAuthorizerFromEnvironment()
 	if err != nil {
@@ -198,7 +217,7 @@ func getVirtualNetwork(server, group, networkName string) (*network.VirtualNetwo
 	return nil, fmt.Errorf("Virtual Network [%s] not found or network type not supported", networkName)
 }
 
-func getNetworkIpConfigs(wssdipconfigs []*wssdnetwork.IpConfiguration) *[]network.IPConfiguration {
+func (c *client) getNetworkIpConfigs(wssdipconfigs []*wssdnetwork.IpConfiguration) *[]network.IPConfiguration {
 	ipconfigs := []network.IPConfiguration{}
 
 	for _, wssdipconfig := range wssdipconfigs {

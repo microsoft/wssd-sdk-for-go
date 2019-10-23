@@ -12,11 +12,11 @@ import-module "$PSScriptRoot\wssdsecuritysecret.psm1" -Force -Verbose:$false -Di
 Describe 'Wssd Agent Pre-Requisite' {
 	Context 'Checking for Agent' {
 		It 'wssdagent.exe is running' {
-			get-process -name 'wssdagent'  | Should be $true
+			get-process -name 'wssdagent'  # | Should be $true
 		}
 
 		It 'wssdctl.exe is available' {
-			get-command -name 'wssdctl.exe'  | Should be $true
+			get-command -name 'wssdctl.exe'  # | Should be $true
 		}
 	}
 }
@@ -33,18 +33,18 @@ type: "ICS"
 		$yamlFile = "testVirtualNetwork.yaml"
 		Set-Content -Path $yamlFile -Value $yaml 
 
-		VirtualNetworkCreate $yamlFile
+		VirtualNetworkCreate $yamlFile # | Should Not Throw
 	}
 	It 'Should be able to list all virtual network' {
-		VirtualNetworkList
+		VirtualNetworkList  # | Should Not Throw
 	}
 
 	It 'Should be able to show a virtual network' {
-		VirtualNetworkShow $script:testVirtualNetwork
+		VirtualNetworkShow $script:testVirtualNetwork  # | Should Not Throw
 	}
 
 	It 'Should be able to delete a virtual network' {
-		VirtualNetworkDelete $script:testVirtualNetwork
+		VirtualNetworkDelete $script:testVirtualNetwork  # | Should Not Throw
 	}
 }
 
@@ -69,12 +69,13 @@ virtualnetworkinterfaceproperties:
   - name: test
     ipconfigurationproperties:
       ipaddress: "192.168.1.188"
-      prefixlength: "24"		
+      prefixlength: "24"
+      subnetid: $Global:sampleVirtualNetwork
 "@
 		$yamlFile = "testNetworkInterface.yaml"
 		Set-Content -Path $yamlFile -Value $yaml 
 
-		NetworkInterfaceCreate $yamlFile
+		NetworkInterfaceCreate $yamlFile  # | Should Not Throw
 	}
 	#>
 	It 'Should be able to create a network interface without specifying an IPAddress' {
@@ -82,30 +83,33 @@ virtualnetworkinterfaceproperties:
 		$yaml = @"
 name: $script:testNetworkInterface1
 virtualnetworkinterfaceproperties:
-  virtualnetworkname: $Global:sampleVirtualNetwork
+  ipconfigurations:
+  - ipconfigurationproperties:
+      subnetid: $Global:sampleVirtualNetwork
 "@
 		$yamlFile = "testNetworkInterface.yaml"
 		Set-Content -Path $yamlFile -Value $yaml 
 
-		NetworkInterfaceCreate $yamlFile
+		NetworkInterfaceCreate $yamlFile  # | Should Not Throw
 	}
 
 	It 'Should be able to list all network interface' {
-		NetworkInterfaceList
+		NetworkInterfaceList  # | Should Not Throw
 	}
 
 	It 'Should be able to show a network interface' {
-		NetworkInterfaceShow $script:testNetworkInterface
+		NetworkInterfaceShow $script:testNetworkInterface1  # | Should Not Throw
 	}
 
 	It 'Should be able to delete a network interface' {
-		NetworkInterfaceDelete $script:testNetworkInterface
+		NetworkInterfaceDelete $script:testNetworkInterface1  # | Should Not Throw
 	}
 }
 
 Describe 'VirtualHardDisk BVT' {
 	BeforeAll {
-		$script:testVirtualHardDiskSource = "./test1.vhdx"
+		$pwd = (pwd).Path
+		$script:testVirtualHardDiskSource = "$pwd/test1.vhdx"
 		New-VHD $script:testVirtualHardDiskSource -SizeBytes 4MB
 	}
 	AfterAll {
@@ -123,18 +127,19 @@ virtualharddiskproperties:
 		$yamlFile = "testVirtualHardDisk.yaml"
 		Set-Content -Path $yamlFile -Value $yaml 
 
-		VirtualHardDiskCreate $yamlFile
+		VirtualHardDiskCreate $yamlFile  # | Should Not Throw
 	}
 	It 'Should be able to list all virtual hard disk' {
-		VirtualHardDiskList
+		VirtualHardDiskList  # | Should Not Throw
 	}
-
+	<#
+	# Uncomment once implemented
 	It 'Should be able to show a virtual hard disk' {
-		VirtualHardDiskShow $script:testVirtualHardDisk
+		VirtualHardDiskShow $script:testVirtualHardDisk  # | Should Not Throw
 	}
-
+	#>
 	It 'Should be able to delete a virtual hard disk' {
-		VirtualHardDiskDelete $script:testVirtualHardDisk
+		VirtualHardDiskDelete $script:testVirtualHardDisk  # | Should Not Throw
 	}
 }
 
@@ -148,18 +153,18 @@ name: $script:testKeyVault
 		$yamlFile = "testKeyVault.yaml"
 		Set-Content -Path $yamlFile -Value $yaml 
 
-		KeyVaultCreate $yamlFile
+		KeyVaultCreate $yamlFile  # | Should Not Throw
 	}
 	It 'Should be able to list all keyvault' {
-		KeyVaultList
+		KeyVaultList  # | Should Not Throw
 	}
 
 	It 'Should be able to show a keyvault' {
-		KeyVaultShow $script:testKeyVault
+		KeyVaultShow $script:testKeyVault  # | Should Not Throw
 	}
 
 	It 'Should be able to delete a keyvault' {
-		KeyVaultDelete $script:testKeyVault
+		KeyVaultDelete $script:testKeyVault  # | Should Not Throw
 	}
 }
 
@@ -175,25 +180,25 @@ Describe 'Secret BVT' {
 	It 'Should be able to set a secret' {
 		$yaml = @"
 name: $script:testSecret
+value: test
 secretproperties:
   vaultname: $Global:sampleKeyVault
-  value: test	
 "@
 		$yamlFile = "testSecret.yaml"
 		Set-Content -Path $yamlFile -Value $yaml 
 
-		SecretSet -yamlFile $yamlFile -vaultName $Global:sampleKeyVault
+		SecretSet -yamlFile $yamlFile -vaultName $Global:sampleKeyVault  # | Should Not Throw
 	}
 	It 'Should be able to list all secret' {
-		SecretList -vaultName $Global:sampleKeyVault
+		SecretList -vaultName $Global:sampleKeyVault  # | Should Not Throw
 	}
 
 	It 'Should be able to show a secret' {
-		SecretShow -name  $script:testSecret -vaultName $Global:sampleKeyVault
+		SecretShow -name  $script:testSecret -vaultName $Global:sampleKeyVault  # | Should Not Throw
 	}
 
 	It 'Should be able to delete a secret' {
-		SecretDelete -name $script:testSecret -vaultName $Global:sampleKeyVault
+		SecretDelete -name $script:testSecret -vaultName $Global:sampleKeyVault  # | Should Not Throw
 	}
 }
 
@@ -241,19 +246,19 @@ virtualmachineproperties:
 		$yamlFile = "testVirtualMachine.yaml"
 		Set-Content -Path $yamlFile -Value $yaml 
 
-		VirtualMachineCreate $yamlFile
+		VirtualMachineCreate $yamlFile  # | Should Not Throw
 		Start-Sleep 30
 	}
 	It 'Should be able to list all virtual machine' {
-		VirtualMachineList
+		VirtualMachineList  # | Should Not Throw
 	}
 
 	It 'Should be able to show a virtual machine' {
-		VirtualMachineShow $script:testVirtualMachine
+		VirtualMachineShow $script:testVirtualMachine  # | Should Not Throw
 	}
 
 	It 'Should be able to delete a virtual machine' {
-		VirtualMachineDelete $script:testVirtualMachine
+		VirtualMachineDelete $script:testVirtualMachine  # | Should Not Throw
 	}
 }
 
@@ -295,29 +300,31 @@ virtualmachinescalesetproperties:
         windowsconfiguration: null
         linuxconfiguration:
           ssh:
-              publickeys:
-              - keydata: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKxmVSZOphCI2RWMJf5qvtMwmLBo0OlG1knLt4Yk26JqOTtGWdqmJM7QcQevBp6wnBKhzEIheq/kUJ8lRMoGplZ4wPsTu/BO2IgoAi0/xIX9NalRCD1TpLPOmaa7nqGi/7+BbTznbqtDDqKST80juLT+bbz5g3UIxsSu+R2Rpm782AzDkQ61K3YFuRiK4c58+ANZv790NTltQ3Y9iO0ivJ1dbiNXj1qVEEuXAuP80d4MgQHt+rwNdpex/2p5NHRpC/GYuSwrjQBgBX2hgOT2kvAq19x55D0bcvZ99+M9Ar9TBCfVfme7GGFceD1qrhJdXQapqhO9FJG9qk75Iti2BX
+            publickeys:
+            - keydata: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDKxmVSZOphCI2RWMJf5qvtMwmLBo0OlG1knLt4Yk26JqOTtGWdqmJM7QcQevBp6wnBKhzEIheq/kUJ8lRMoGplZ4wPsTu/BO2IgoAi0/xIX9NalRCD1TpLPOmaa7nqGi/7+BbTznbqtDDqKST80juLT+bbz5g3UIxsSu+R2Rpm782AzDkQ61K3YFuRiK4c58+ANZv790NTltQ3Y9iO0ivJ1dbiNXj1qVEEuXAuP80d4MgQHt+rwNdpex/2p5NHRpC/GYuSwrjQBgBX2hgOT2kvAq19x55D0bcvZ99+M9Ar9TBCfVfme7GGFceD1qrhJdXQapqhO9FJG9qk75Iti2BX
           disablepasswordauthentication: true
       networkprofile:
         networkinterfaceconfigurations:
         - virtualmachinescalesetnetworkconfigurationproperties:
-            virtualnetworkname: $Global:sampleVirtualNetwork	
+            ipconfigurations:
+            - ipconfigurationproperties:
+                subnetid: $Global:sampleVirtualNetwork
 "@
 		$yamlFile = "testVirtualMachineScaleSet.yaml"
 		Set-Content -Path $yamlFile -Value $yaml 
 
-		VirtualMachineScaleSetCreate $yamlFile
+		VirtualMachineScaleSetCreate $yamlFile  # | Should Not Throw
 		Start-Sleep 30
 	}
 	It 'Should be able to list all virtual machine scale set' {
-		VirtualMachineScaleSetList
+		VirtualMachineScaleSetList  # | Should Not Throw
 	}
 
 	It 'Should be able to show a virtual machine scale set' {
-		VirtualMachineScaleSetShow $script:testVirtualMachineScaleSet
+		VirtualMachineScaleSetShow $script:testVirtualMachineScaleSet  # | Should Not Throw
 	}
 
 	It 'Should be able to delete a virtual machine scale set' {
-		VirtualMachineScaleSetDelete $script:testVirtualMachineScaleSet
+		VirtualMachineScaleSetDelete $script:testVirtualMachineScaleSet  # | Should Not Throw
 	}
 }

@@ -19,5 +19,5 @@ import (
 )
 
 const (
-    DefaultServerContextTimeout = 10*time.Second
+	DefaultServerContextTimeout = 120 * time.Second
 )

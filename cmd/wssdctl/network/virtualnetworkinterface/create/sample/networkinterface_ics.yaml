@@ -1,3 +1,5 @@
 name: "SampleICSEndpoint"
 virtualnetworkinterfaceproperties:
-  virtualnetworkname: "SampleICS"
+  ipconfigurations:
+  - ipconfigurationproperties:
+      subnetid: "SampleICS"
