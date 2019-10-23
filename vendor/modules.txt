@@ -28,6 +28,7 @@ github.com/magiconair/properties
 github.com/microsoft/wssdagent/pkg/marshal
 github.com/microsoft/wssdagent/rpc/client
 github.com/microsoft/wssdagent/rpc/compute
+github.com/microsoft/wssdagent/pkg/errors
 github.com/microsoft/wssdagent/rpc/network
 github.com/microsoft/wssdagent/rpc/security
 github.com/microsoft/wssdagent/rpc/storage
@@ -36,6 +37,8 @@ github.com/microsoft/wssdagent/pkg/apis/config
 github.com/mitchellh/mapstructure
 # github.com/pelletier/go-toml v1.2.0
 github.com/pelletier/go-toml
+# github.com/pkg/errors v0.8.1
+github.com/pkg/errors
 # github.com/spf13/afero v1.1.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
@@ -66,13 +69,14 @@ golang.org/x/text/unicode/bidi
 # google.golang.org/genproto v0.0.0-20190701230453-710ae3a149df
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.22.0
+google.golang.org/grpc/credentials
+google.golang.org/grpc/credentials/internal
 google.golang.org/grpc
 google.golang.org/grpc/codes
 google.golang.org/grpc/status
 google.golang.org/grpc/balancer
 google.golang.org/grpc/balancer/roundrobin
 google.golang.org/grpc/connectivity
-google.golang.org/grpc/credentials
 google.golang.org/grpc/encoding
 google.golang.org/grpc/encoding/proto
 google.golang.org/grpc/grpclog
@@ -96,7 +100,6 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/tap
 google.golang.org/grpc/balancer/base
-google.golang.org/grpc/credentials/internal
 google.golang.org/grpc/binarylog/grpc_binarylog_v1
 google.golang.org/grpc/internal/syscall
 # gopkg.in/yaml.v2 v2.2.2
