@@ -9,7 +9,7 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 
-	wssdclient "github.com/microsoft/wssdagent/rpc/client"
+	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdstorage "github.com/microsoft/wssdagent/rpc/storage"
 	log "k8s.io/klog"
 )

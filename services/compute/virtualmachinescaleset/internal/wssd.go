@@ -12,7 +12,7 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	"github.com/microsoft/wssdagent/pkg/errors"
-	wssdclient "github.com/microsoft/wssdagent/rpc/client"
+	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
 )
 
