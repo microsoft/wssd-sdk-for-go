@@ -11,7 +11,7 @@ import (
 
 	virtualnetwork "github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
 	"github.com/microsoft/wssdagent/pkg/errors"
-	wssdclient "github.com/microsoft/wssdagent/rpc/client"
+	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"

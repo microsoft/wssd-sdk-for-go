@@ -8,7 +8,7 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
-	wssdclient "github.com/microsoft/wssdagent/rpc/client"
+	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 )
 

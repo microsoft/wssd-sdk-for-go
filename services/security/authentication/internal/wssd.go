@@ -7,7 +7,7 @@ import (
 	"context"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 
-	wssdclient "github.com/microsoft/wssdagent/rpc/client"
+	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdsecurity "github.com/microsoft/wssdagent/rpc/security"
 	//log "k8s.io/klog"
 )
