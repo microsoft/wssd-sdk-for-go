@@ -45,6 +45,16 @@ function DeleteSampleVirtualHardDisk() {
 	remove-item $Global:sampleVirtualHardDiskSource
 }
 
+function CreateVMMSVhd() {
+	$pwd = (pwd).Path
+	$Global:testVirtualHardDiskSource = "$pwd/test1.vhdx"
+	New-VHD $Global:testVirtualHardDiskSource -SizeBytes 4MB
+}
+
+function CleanupVMMSVhd() {
+		del $Global:testVirtualHardDiskSource
+}
+
 Export-ModuleMember VirtualHardDiskCreate
 Export-ModuleMember VirtualHardDiskDelete
 Export-ModuleMember VirtualHardDiskShow
@@ -52,3 +62,5 @@ Export-ModuleMember VirtualHardDiskList
 Export-ModuleMember VirtualHardDiskUpdate
 Export-ModuleMember CreateSampleVirtualHardDisk
 Export-ModuleMember DeleteSampleVirtualHardDisk
+Export-ModuleMember CreateVMMSVhd
+Export-ModuleMember CleanupVMMSVhd

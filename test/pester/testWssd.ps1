@@ -108,12 +108,10 @@ virtualnetworkinterfaceproperties:
 
 Describe 'VirtualHardDisk BVT' {
 	BeforeAll {
-		$pwd = (pwd).Path
-		$script:testVirtualHardDiskSource = "$pwd/test1.vhdx"
-		New-VHD $script:testVirtualHardDiskSource -SizeBytes 4MB
+		CreateVMMSVhd
 	}
 	AfterAll {
-		del $script:testVirtualHardDiskSource
+		CleanupVMMSVhd
 	}
 
 	$script:testVirtualHardDisk = "testVirtualHardDisk1"
@@ -122,7 +120,7 @@ Describe 'VirtualHardDisk BVT' {
 		$yaml = @"
 name: $script:testVirtualHardDisk
 virtualharddiskproperties:
-  source: $script:testVirtualHardDiskSource	
+  source: $Global:testVirtualHardDiskSource	
 "@
 		$yamlFile = "testVirtualHardDisk.yaml"
 		Set-Content -Path $yamlFile -Value $yaml 
@@ -247,7 +245,6 @@ virtualmachineproperties:
 		Set-Content -Path $yamlFile -Value $yaml 
 
 		VirtualMachineCreate $yamlFile  # | Should Not Throw
-		Start-Sleep 30
 	}
 	It 'Should be able to list all virtual machine' {
 		VirtualMachineList  # | Should Not Throw
@@ -312,7 +309,6 @@ virtualmachinescalesetproperties:
 		Set-Content -Path $yamlFile -Value $yaml 
 
 		VirtualMachineScaleSetCreate $yamlFile  # | Should Not Throw
-		Start-Sleep 30
 	}
 	It 'Should be able to list all virtual machine scale set' {
 		VirtualMachineScaleSetList  # | Should Not Throw
