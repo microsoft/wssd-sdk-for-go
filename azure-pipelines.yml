@@ -7,34 +7,24 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 variables:
   GOPATH: '$(Agent.BuildDirectory)/gopath' # Go workspace path
-  GOROOT: '$(Agent.BuildDirectory)/go' # Go installation path
   GOBIN:  '$(GOPATH)/bin' # Go binaries path
   GO111MODULE: 'on'
-  modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)' # Path to the module's code
+  modulePath: '$(system.defaultWorkingDirectory)' # Path to the module's code
 
 steps:
 - script: |
-    wget "https://storage.googleapis.com/golang/go1.12.linux-amd64.tar.gz" --output-document "$(Agent.BuildDirectory)/go1.12.tar.gz"
-    tar -C '$(Agent.BuildDirectory)' -xzf "$(Agent.BuildDirectory)/go1.12.tar.gz"
-  displayName: 'Setup Go 1.12.6'
-
-- script: |
-    mkdir -p '$(GOBIN)'
-    mkdir -p '$(GOPATH)/pkg'
-    mkdir -p '$(modulePath)'
-    mkdir -p '$(GOROOT)'
-    shopt -s extglob
-    shopt -s dotglob
-    mv !(gopath) '$(modulePath)'
-    echo '##vso[task.prependpath]$(GOBIN)'
-    echo '##vso[task.prependpath]$(GOROOT)/bin'
+    mkdir "%GOBIN%"
+    mkdir "%GOPATH%/pkg"
   displayName: 'Set up the Go workspace'
 
 - script: |
     make all
   workingDirectory: '$(modulePath)'
   displayName: 'Build'
+
+- publish: $(modulePath)/bin
+  artifact: binaries
