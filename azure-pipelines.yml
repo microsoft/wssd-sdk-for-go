@@ -28,3 +28,6 @@ steps:
 
 - publish: $(modulePath)/bin
   artifact: binaries
+
+- publish: $(modulePath)/test/pester
+  artifact: test
