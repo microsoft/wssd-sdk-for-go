@@ -27,8 +27,7 @@ function VirtualHardDiskUpdate($name, $yamlFile) {
 function CreateSampleVirtualHardDisk() {
 	$Global:sampleVirtualHardDisk = "sampleVirtualHardDisk"
 	$pwd = (pwd).Path
-	$Global:sampleVirtualHardDiskSource = "$pwd/sample.vhdx"
-	New-VHD $Global:sampleVirtualHardDiskSource -SizeBytes 4MB
+	$Global:sampleVirtualHardDiskSource = "$pwd/test.vhdx"
 $yaml = @"
 name: $Global:sampleVirtualHardDisk
 virtualharddiskproperties:
@@ -47,8 +46,7 @@ function DeleteSampleVirtualHardDisk() {
 
 function CreateVMMSVhd() {
 	$pwd = (pwd).Path
-	$Global:testVirtualHardDiskSource = "$pwd/test1.vhdx"
-	New-VHD $Global:testVirtualHardDiskSource -SizeBytes 4MB
+	$Global:testVirtualHardDiskSource = "$pwd/test.vhdx"
 }
 
 function CleanupVMMSVhd() {
