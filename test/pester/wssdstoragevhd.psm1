@@ -41,16 +41,13 @@ virtualharddiskproperties:
 
 function DeleteSampleVirtualHardDisk() {
 	VirtualHardDiskDelete $Global:sampleVirtualHardDisk
-	remove-item $Global:sampleVirtualHardDiskSource
 }
 
 function CreateVMMSVhd() {
-	$pwd = (pwd).Path
 	$Global:testVirtualHardDiskSource = "$pwd/test.vhdx"
 }
 
 function CleanupVMMSVhd() {
-		del $Global:testVirtualHardDiskSource
 }
 
 Export-ModuleMember VirtualHardDiskCreate
