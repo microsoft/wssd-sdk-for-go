@@ -25,7 +25,9 @@ func DefaultAgentConfiguration() *WSSDAgentConfiguration {
 			ConfigStorePath: path.Join(basePath),
 			LogPath:         path.Join(basePath, "log"),
 		},
-		ProviderConfigurations: map[string]ChildAgentConfiguration{},
+		ProviderConfigurations: map[string]ChildAgentConfiguration{ 
+				"virtualmachine": ChildAgentConfiguration{ProviderSpec: "hcs",},
+		},
 		ImageStorePath:         "c:/wssdimagestore",
 	}
 	// Load Default configuration

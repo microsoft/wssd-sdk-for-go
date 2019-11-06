@@ -24,3 +24,27 @@ func Wrap(cause error, message string) error {
 func Wrapf(err error, format string, args ...interface{}) error {
 	return perrors.Wrapf(err, format, args)
 }
+
+func IsNotFound(err error) bool {
+	return checkError(err, NotFound)
+}
+func IsAlreadyExists(err error) bool {
+	return checkError(err, AlreadyExists)
+}
+
+func checkError(wrappedError, err error) bool {
+	if wrappedError == nil {
+		return false
+	}
+
+	if wrappedError == err {
+		return true
+	}
+
+	cerr := perrors.Cause(wrappedError)
+	if cerr != nil && cerr == err {
+		return true
+	}
+	return false
+
+}
