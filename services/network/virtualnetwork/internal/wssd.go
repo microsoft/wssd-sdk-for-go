@@ -11,6 +11,7 @@ import (
 
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
+	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
 )
 
 type client struct {
@@ -49,7 +50,7 @@ func NewVirtualNetworkClient(subID string, authorizer auth.Authorizer) (*client,
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (*[]network.VirtualNetwork, error) {
-	request := getVirtualNetworkRequest(wssdnetwork.Operation_GET, name, nil)
+	request := getVirtualNetworkRequest(wssdcommonproto.Operation_GET, name, nil)
 	response, err := c.VirtualNetworkAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -63,7 +64,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnet *n
 	if err != nil {
 		return nil, err
 	}
-	request := getVirtualNetworkRequest(wssdnetwork.Operation_POST, name, vnet)
+	request := getVirtualNetworkRequest(wssdcommonproto.Operation_POST, name, vnet)
 	response, err := c.VirtualNetworkAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -87,7 +88,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 		return fmt.Errorf("Virtual Network [%s] not found", name)
 	}
 
-	request := getVirtualNetworkRequest(wssdnetwork.Operation_DELETE, name, &(*vnet)[0])
+	request := getVirtualNetworkRequest(wssdcommonproto.Operation_DELETE, name, &(*vnet)[0])
 	_, err = c.VirtualNetworkAgentClient.Invoke(ctx, request)
 
 	return err
@@ -99,7 +100,7 @@ func (c *client) validate(ctx context.Context, group, name string, vnet *network
 	return nil
 }
 
-func getVirtualNetworkRequest(opType wssdnetwork.Operation, name string, network *network.VirtualNetwork) *wssdnetwork.VirtualNetworkRequest {
+func getVirtualNetworkRequest(opType wssdcommonproto.Operation, name string, network *network.VirtualNetwork) *wssdnetwork.VirtualNetworkRequest {
 	request := &wssdnetwork.VirtualNetworkRequest{
 		OperationType:   opType,
 		VirtualNetworks: []*wssdnetwork.VirtualNetwork{},

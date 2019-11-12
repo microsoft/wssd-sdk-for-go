@@ -11,6 +11,7 @@ import (
 
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdsecurity "github.com/microsoft/wssdagent/rpc/security"
+	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
 	log "k8s.io/klog"
 )
 
@@ -29,7 +30,7 @@ func NewSecretClient(subID string, authorizer auth.Authorizer) (*client, error) 
 
 // Get
 func (c *client) Get(ctx context.Context, group, name, vaultName string) (*[]keyvault.Secret, error) {
-	request := getSecretRequest(wssdsecurity.Operation_GET, name, vaultName, nil)
+	request := getSecretRequest(wssdcommonproto.Operation_GET, name, vaultName, nil)
 	response, err := c.SecretAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -43,7 +44,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *key
 	if err != nil {
 		return nil, err
 	}
-	request := getSecretRequest(wssdsecurity.Operation_POST, name, *sg.VaultName, sg)
+	request := getSecretRequest(wssdcommonproto.Operation_POST, name, *sg.VaultName, sg)
 	response, err := c.SecretAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[Secret] Create failed with error %v", err)
@@ -80,7 +81,7 @@ func (c *client) Delete(ctx context.Context, group, name, vaultName string) erro
 		return fmt.Errorf("Keysecret [%s] not found", name)
 	}
 
-	request := getSecretRequest(wssdsecurity.Operation_DELETE, name, vaultName, &(*secret)[0])
+	request := getSecretRequest(wssdcommonproto.Operation_DELETE, name, vaultName, &(*secret)[0])
 	_, err = c.SecretAgentClient.Invoke(ctx, request)
 	return err
 }
@@ -94,7 +95,7 @@ func getSecretsFromResponse(response *wssdsecurity.SecretResponse) *[]keyvault.S
 	return &Secrets
 }
 
-func getSecretRequest(opType wssdsecurity.Operation, name, vaultName string, sec *keyvault.Secret) *wssdsecurity.SecretRequest {
+func getSecretRequest(opType wssdcommonproto.Operation, name, vaultName string, sec *keyvault.Secret) *wssdsecurity.SecretRequest {
 	request := &wssdsecurity.SecretRequest{
 		OperationType: opType,
 		Secrets:       []*wssdsecurity.Secret{},
@@ -130,13 +131,13 @@ func getSecret(sec *wssdsecurity.Secret) *keyvault.Secret {
 	}
 }
 
-func getWssdSecret(sec *keyvault.Secret, opType wssdsecurity.Operation) *wssdsecurity.Secret {
+func getWssdSecret(sec *keyvault.Secret, opType wssdcommonproto.Operation) *wssdsecurity.Secret {
 	secret := &wssdsecurity.Secret{
 		Name:      *sec.Name,
 		VaultName: *sec.VaultName,
 	}
 
-	if opType == wssdsecurity.Operation_POST {
+	if opType == wssdcommonproto.Operation_POST {
 		secret.Value = []byte(*sec.Value)
 	}
 

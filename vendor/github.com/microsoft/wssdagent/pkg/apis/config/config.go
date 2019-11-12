@@ -12,6 +12,7 @@ import (
 const (
 	ListenAddress string = "0.0.0.0"
 	ServerPort    int    = 45000
+	DefaultProviderSpec string = "hcs"
 )
 
 // DefaultAgentCofiguration
@@ -26,7 +27,9 @@ func DefaultAgentConfiguration() *WSSDAgentConfiguration {
 			LogPath:         path.Join(basePath, "log"),
 		},
 		ProviderConfigurations: map[string]ChildAgentConfiguration{ 
-				"virtualmachine": ChildAgentConfiguration{ProviderSpec: "hcs",},
+				"virtualmachine": newChildAgentConfiguration(path.Join(basePath), "virtualmachine", DefaultProviderSpec),
+				"virtualnetwork": newChildAgentConfiguration(path.Join(basePath), "virtualnetwork", DefaultProviderSpec),
+				"virtualnetworkinterface": newChildAgentConfiguration(path.Join(basePath), "virtualnetworkinterface", DefaultProviderSpec),
 		},
 		ImageStorePath:         "c:/wssdimagestore",
 	}
@@ -53,13 +56,7 @@ func GetChildAgentConfiguration(childAgentName string) *ChildAgentConfiguration 
 		return &val
 	}
 
-	childAgentConfig := ChildAgentConfiguration{
-		BaseConfiguration: BaseConfiguration{
-			DataStorePath:   path.Join(wssdAgentConfig.DataStorePath, childAgentName),
-			ConfigStorePath: path.Join(wssdAgentConfig.DataStorePath, childAgentName),
-			LogPath:         path.Join(wssdAgentConfig.DataStorePath, childAgentName, "log"),
-		},
-	}
+	childAgentConfig := newChildAgentConfiguration(wssdAgentConfig.DataStorePath, childAgentName, DefaultProviderSpec)
 
 	wssdAgentConfig.ProviderConfigurations[childAgentName] = childAgentConfig
 
@@ -78,3 +75,15 @@ func GetTLSServerCertConfiguration() string {
 func GetTLSServerKeyConfiguration() string {
 	return viper.GetString("TLSKeyPath")
 }
+
+func newChildAgentConfiguration(dataStorePath string, childAgentName string, providerSpec string) ChildAgentConfiguration {
+	return ChildAgentConfiguration{
+		BaseConfiguration: BaseConfiguration{
+			DataStorePath:   path.Join(dataStorePath, childAgentName),
+			ConfigStorePath: path.Join(dataStorePath, childAgentName),
+			LogPath:         path.Join(dataStorePath, childAgentName, "log"),
+		},
+		ProviderSpec: providerSpec,
+	}
+}
+

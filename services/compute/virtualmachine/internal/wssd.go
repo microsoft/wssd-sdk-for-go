@@ -11,6 +11,7 @@ import (
 
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
+	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
 )
 
 type client struct {
@@ -28,7 +29,7 @@ func NewVirtualMachineClient(subID string, authorizer auth.Authorizer) (*client,
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (*[]compute.VirtualMachine, error) {
-	request := c.getVirtualMachineRequest(wssdcompute.Operation_GET, name, nil)
+	request := c.getVirtualMachineRequest(wssdcommonproto.Operation_GET, name, nil)
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -39,7 +40,7 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]compute.Virtua
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
-	request := c.getVirtualMachineRequest(wssdcompute.Operation_POST, name, sg)
+	request := c.getVirtualMachineRequest(wssdcommonproto.Operation_POST, name, sg)
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -62,7 +63,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 		return fmt.Errorf("Virtual Machine [%s] not found", name)
 	}
 
-	request := c.getVirtualMachineRequest(wssdcompute.Operation_DELETE, name, &(*vm)[0])
+	request := c.getVirtualMachineRequest(wssdcommonproto.Operation_DELETE, name, &(*vm)[0])
 	_, err = c.VirtualMachineAgentClient.Invoke(ctx, request)
 
 	return err
@@ -77,7 +78,7 @@ func (c *client) getVirtualMachineFromResponse(response *wssdcompute.VirtualMach
 	return &vms
 }
 
-func (c *client) getVirtualMachineRequest(opType wssdcompute.Operation, name string, vmss *compute.VirtualMachine) *wssdcompute.VirtualMachineRequest {
+func (c *client) getVirtualMachineRequest(opType wssdcommonproto.Operation, name string, vmss *compute.VirtualMachine) *wssdcompute.VirtualMachineRequest {
 	request := &wssdcompute.VirtualMachineRequest{
 		OperationType:         opType,
 		VirtualMachineSystems: []*wssdcompute.VirtualMachine{},

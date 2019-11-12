@@ -5,16 +5,21 @@ package errors
 import (
 	"errors"
 	perrors "github.com/pkg/errors"
+	"google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 )
 
 var (
 	NotFound             error = errors.New("Not Found")
-	Failed               error = errors.New("Failed")
 	InvalidConfiguration error = errors.New("Invalid Configuration")
 	InvalidInput         error = errors.New("Invalid Input")
-	InvalidFilter        error = errors.New("Invalid Filter")
 	NotSupported         error = errors.New("Not Supported")
 	AlreadyExists        error = errors.New("Already Exists")
+	Duplicates           error = errors.New("Duplicates")
+	InvalidFilter        error = errors.New("Invalid Filter")
+	Failed               error = errors.New("Failed")
+	InvalidGroup         error = errors.New("InvalidGroup")
+	Unknown              error = errors.New("Unknown Reason")
 )
 
 func Wrap(cause error, message string) error {
@@ -22,9 +27,41 @@ func Wrap(cause error, message string) error {
 }
 
 func Wrapf(err error, format string, args ...interface{}) error {
-	return perrors.Wrapf(err, format, args)
+	return perrors.Wrapf(err, format, args...)
 }
 
+func GetGRPCErrorCode(err error) codes.Code {
+	if derr, ok := status.FromError(err); ok {
+		return derr.Code()
+	}
+	return codes.Unknown
+}
+func IsGRPCNotFound(err error) bool {
+	if derr, ok := status.FromError(err); ok {
+		return derr.Code() == codes.NotFound
+	}
+	return false
+}
+
+func IsGRPCAlreadyExist(err error) bool {
+	if derr, ok := status.FromError(err); ok {
+		return derr.Code() == codes.AlreadyExists
+	}
+	return false
+}
+
+func GetGRPCError(err error) error {
+	if err == nil {
+		return err
+	}
+	if IsNotFound(err) {
+		return status.Errorf(codes.NotFound, err.Error())
+	}
+	if IsAlreadyExists(err) {
+		return status.Errorf(codes.AlreadyExists, err.Error())
+	}
+	return err
+}
 func IsNotFound(err error) bool {
 	return checkError(err, NotFound)
 }
@@ -36,15 +73,17 @@ func checkError(wrappedError, err error) bool {
 	if wrappedError == nil {
 		return false
 	}
-
 	if wrappedError == err {
 		return true
 	}
-
 	cerr := perrors.Cause(wrappedError)
 	if cerr != nil && cerr == err {
 		return true
 	}
 	return false
 
+}
+
+func New(errString string) error {
+	return errors.New(errString)
 }

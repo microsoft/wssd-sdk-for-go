@@ -3,12 +3,24 @@
 package marshal
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
 
+func Duplicate(data interface{}, duplicatedData interface{}) error {
+	dataBytes, err := ToJSONBytes(data)
+	if err != nil {
+		return err
+	}
+	err = FromJSONBytes(dataBytes, duplicatedData)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 func ToString(data interface{}) string {
 	return fmt.Sprintf("%+v", data)
 }
@@ -53,6 +65,10 @@ func FromJSONFile(path string, object interface{}) error {
 		return err
 	}
 	return FromJSONBytes(contents, object)
+}
+
+func ToBase64(data string) string {
+	return base64.StdEncoding.EncodeToString([]byte(data))
 }
 
 func ToYAML(data interface{}) (string, error) {

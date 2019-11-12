@@ -14,6 +14,8 @@ import (
 	"github.com/microsoft/wssdagent/pkg/errors"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
+	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
+	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
 )
 
 type client struct {
@@ -37,7 +39,7 @@ func NewVirtualMachineScaleSetClient(subID string, authorizer auth.Authorizer) (
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (*[]compute.VirtualMachineScaleSet, error) {
-	request, err := c.getVirtualMachineScaleSetRequest(wssdcompute.Operation_GET, name, nil)
+	request, err := c.getVirtualMachineScaleSetRequest(wssdcommonproto.Operation_GET, name, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +53,7 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]compute.Virtua
 
 // GetVirtualMachines
 func (c *client) GetVirtualMachines(ctx context.Context, group, name string) (*[]compute.VirtualMachine, error) {
-	request, err := c.getVirtualMachineScaleSetRequest(wssdcompute.Operation_GET, name, nil)
+	request, err := c.getVirtualMachineScaleSetRequest(wssdcommonproto.Operation_GET, name, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +84,7 @@ func (c *client) GetVirtualMachines(ctx context.Context, group, name string) (*[
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *compute.VirtualMachineScaleSet) (*compute.VirtualMachineScaleSet, error) {
-	request, err := c.getVirtualMachineScaleSetRequest(wssdcompute.Operation_POST, name, sg)
+	request, err := c.getVirtualMachineScaleSetRequest(wssdcommonproto.Operation_POST, name, sg)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +109,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 		return fmt.Errorf("Virtual Machine Scale Set [%s] not found", name)
 	}
 
-	request, err := c.getVirtualMachineScaleSetRequest(wssdcompute.Operation_DELETE, name, &(*vmss)[0])
+	request, err := c.getVirtualMachineScaleSetRequest(wssdcommonproto.Operation_DELETE, name, &(*vmss)[0])
 	if err != nil {
 		return err
 	}
@@ -132,7 +134,7 @@ func (c *client) getVirtualMachineScaleSetFromResponse(response *wssdcompute.Vir
 
 }
 
-func (c *client) getVirtualMachineScaleSetRequest(opType wssdcompute.Operation, name string, vmss *compute.VirtualMachineScaleSet) (*wssdcompute.VirtualMachineScaleSetRequest, error) {
+func (c *client) getVirtualMachineScaleSetRequest(opType wssdcommonproto.Operation, name string, vmss *compute.VirtualMachineScaleSet) (*wssdcompute.VirtualMachineScaleSetRequest, error) {
 	request := &wssdcompute.VirtualMachineScaleSetRequest{
 		OperationType:                 opType,
 		VirtualMachineScaleSetSystems: []*wssdcompute.VirtualMachineScaleSet{},
@@ -231,7 +233,7 @@ func (c *client) getVirtualMachineScaleSetNetworkProfile(n *wssdcompute.NetworkC
 	return np, nil
 }
 
-func (c *client) getVirtualMachineScaleSetNetworkConfiguration(nic *wssdcompute.VirtualNetworkInterface) (*compute.VirtualMachineScaleSetNetworkConfiguration, error) {
+func (c *client) getVirtualMachineScaleSetNetworkConfiguration(nic *wssdnetwork.VirtualNetworkInterface) (*compute.VirtualMachineScaleSetNetworkConfiguration, error) {
 	ipconfigs := []network.IPConfiguration{}
 	for _, wssdipconfig := range nic.Ipconfigs {
 		ipconfigs = append(ipconfigs, *(c.getVirtualMachineScaleSetNetworkConfigurationIPConfiguration(wssdipconfig)))
@@ -244,7 +246,7 @@ func (c *client) getVirtualMachineScaleSetNetworkConfiguration(nic *wssdcompute.
 	}, nil
 }
 
-func (c *client) getVirtualMachineScaleSetNetworkConfigurationIPConfiguration(wssdipconfig *wssdcompute.IpConfiguration) *network.IPConfiguration {
+func (c *client) getVirtualMachineScaleSetNetworkConfigurationIPConfiguration(wssdipconfig *wssdnetwork.IpConfiguration) *network.IPConfiguration {
 	return &network.IPConfiguration{
 		IPConfigurationProperties: &network.IPConfigurationProperties{
 			SubnetID:     &wssdipconfig.Subnetid,
@@ -320,7 +322,7 @@ func (c *client) getWssdVirtualMachineScaleSetStorageConfigurationDataDisks(s *[
 
 func (c *client) getWssdVirtualMachineScaleSetNetworkConfiguration(s *compute.VirtualMachineScaleSetNetworkProfile) (*wssdcompute.NetworkConfigurationScaleSet, error) {
 	nc := &wssdcompute.NetworkConfigurationScaleSet{
-		Interfaces: []*wssdcompute.VirtualNetworkInterface{},
+		Interfaces: []*wssdnetwork.VirtualNetworkInterface{},
 	}
 	if s == nil || s.NetworkInterfaceConfigurations == nil {
 		return nc, nil
@@ -336,12 +338,12 @@ func (c *client) getWssdVirtualMachineScaleSetNetworkConfiguration(s *compute.Vi
 	return nc, nil
 }
 
-func (c *client) getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterface(nic *compute.VirtualMachineScaleSetNetworkConfiguration) (*wssdcompute.VirtualNetworkInterface, error) {
+func (c *client) getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterface(nic *compute.VirtualMachineScaleSetNetworkConfiguration) (*wssdnetwork.VirtualNetworkInterface, error) {
 	nicName := ""
 	if nic.Name != nil {
 		nicName = *nic.Name
 	}
-	wssdvnic := &wssdcompute.VirtualNetworkInterface{
+	wssdvnic := &wssdnetwork.VirtualNetworkInterface{
 		Name: nicName,
 	}
 	if nic.VirtualMachineScaleSetNetworkConfigurationProperties == nil ||
@@ -361,7 +363,7 @@ func (c *client) getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterfa
 	return wssdvnic, nil
 }
 
-func (c *client) getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterfaceIPConfiguration(ipconfig *network.IPConfiguration) (*wssdcompute.IpConfiguration, error) {
+func (c *client) getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterfaceIPConfiguration(ipconfig *network.IPConfiguration) (*wssdnetwork.IpConfiguration, error) {
 	if ipconfig.IPConfigurationProperties == nil {
 		return nil, errors.Wrapf(errors.InvalidConfiguration, "Missing IPConfiguration Properties")
 	}
@@ -369,7 +371,7 @@ func (c *client) getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterfa
 		return nil, errors.Wrapf(errors.InvalidConfiguration, "Missing Subnet Reference in IPConfiguration Properties")
 	}
 
-	wssdipconfig := &wssdcompute.IpConfiguration{
+	wssdipconfig := &wssdnetwork.IpConfiguration{
 		Subnetid: *ipconfig.SubnetID,
 	}
 

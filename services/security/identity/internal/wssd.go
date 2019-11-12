@@ -11,6 +11,7 @@ import (
 
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdsecurity "github.com/microsoft/wssdagent/rpc/security"
+	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
 	log "k8s.io/klog"
 )
 
@@ -29,7 +30,7 @@ func NewIdentityClient(subID string, authorizer auth.Authorizer) (*client, error
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (*[]security.Identity, error) {
-	request := getIdentityRequest(wssdsecurity.Operation_GET, name, nil)
+	request := getIdentityRequest(wssdcommonproto.Operation_GET, name, nil)
 	response, err := c.IdentityAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -39,7 +40,7 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]security.Ident
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *security.Identity) (*security.Identity, error) {
-	request := getIdentityRequest(wssdsecurity.Operation_POST, name, sg)
+	request := getIdentityRequest(wssdcommonproto.Operation_POST, name, sg)
 	response, err := c.IdentityAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[Identity] Create failed with error %v", err)
@@ -65,7 +66,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 		return fmt.Errorf("Identity [%s] not found", name)
 	}
 
-	request := getIdentityRequest(wssdsecurity.Operation_DELETE, name, &(*identity)[0])
+	request := getIdentityRequest(wssdcommonproto.Operation_DELETE, name, &(*identity)[0])
 	_, err = c.IdentityAgentClient.Invoke(ctx, request)
 	return err
 }
@@ -79,7 +80,7 @@ func getIdentitiesFromResponse(response *wssdsecurity.IdentityResponse) *[]secur
 	return &identities
 }
 
-func getIdentityRequest(opType wssdsecurity.Operation, name string, identity *security.Identity) *wssdsecurity.IdentityRequest {
+func getIdentityRequest(opType wssdcommonproto.Operation, name string, identity *security.Identity) *wssdsecurity.IdentityRequest {
 	request := &wssdsecurity.IdentityRequest{
 		OperationType: opType,
 		Identitys:     []*wssdsecurity.Identity{},
