@@ -87,27 +87,3 @@ func checkError(wrappedError, err error) bool {
 func New(errString string) error {
 	return errors.New(errString)
 }
-
-func IsNotFound(err error) bool {
-	return checkError(err, NotFound)
-}
-func IsAlreadyExists(err error) bool {
-	return checkError(err, AlreadyExists)
-}
-
-func checkError(wrappedError, err error) bool {
-	if wrappedError == nil {
-		return false
-	}
-
-	if wrappedError == err {
-		return true
-	}
-
-	cerr := perrors.Cause(wrappedError)
-	if cerr != nil && cerr == err {
-		return true
-	}
-	return false
-
-}
