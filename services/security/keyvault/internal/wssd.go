@@ -11,6 +11,7 @@ import (
 
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdsecurity "github.com/microsoft/wssdagent/rpc/security"
+	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
 	log "k8s.io/klog"
 )
 
@@ -29,7 +30,7 @@ func NewKeyVaultClient(subID string, authorizer auth.Authorizer) (*client, error
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (*[]security.KeyVault, error) {
-	request := getKeyVaultRequest(wssdsecurity.Operation_GET, name, nil)
+	request := getKeyVaultRequest(wssdcommonproto.Operation_GET, name, nil)
 	response, err := c.KeyVaultAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -39,7 +40,7 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]security.KeyVa
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *security.KeyVault) (*security.KeyVault, error) {
-	request := getKeyVaultRequest(wssdsecurity.Operation_POST, name, sg)
+	request := getKeyVaultRequest(wssdcommonproto.Operation_POST, name, sg)
 	response, err := c.KeyVaultAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[KeyVault] Create failed with error %v", err)
@@ -65,7 +66,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 		return fmt.Errorf("Keyvault [%s] not found", name)
 	}
 
-	request := getKeyVaultRequest(wssdsecurity.Operation_DELETE, name, &(*vault)[0])
+	request := getKeyVaultRequest(wssdcommonproto.Operation_DELETE, name, &(*vault)[0])
 	_, err = c.KeyVaultAgentClient.Invoke(ctx, request)
 	return err
 }
@@ -79,7 +80,7 @@ func getKeyVaultsFromResponse(response *wssdsecurity.KeyVaultResponse) *[]securi
 	return &vaults
 }
 
-func getKeyVaultRequest(opType wssdsecurity.Operation, name string, vault *security.KeyVault) *wssdsecurity.KeyVaultRequest {
+func getKeyVaultRequest(opType wssdcommonproto.Operation, name string, vault *security.KeyVault) *wssdsecurity.KeyVaultRequest {
 	request := &wssdsecurity.KeyVaultRequest{
 		OperationType: opType,
 		KeyVaults:     []*wssdsecurity.KeyVault{},

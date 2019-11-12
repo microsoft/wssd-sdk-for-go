@@ -1,0 +1,41 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT license.
+
+syntax = "proto3";
+option go_package = "github.com/microsoft/wssdagent/rpc/common";
+
+package wssd;
+
+enum Operation {
+	GET = 0;
+	POST = 1;
+	DELETE = 2;
+}
+
+enum State {
+	UNKNOWN = 0;
+	CREATING = 1;
+	CREATED = 2;
+	CREATE_FAILED = 3;
+	DELETING = 4;
+	DELETE_FAILED = 5;
+	DELETED = 6;
+	UPDATING = 7;
+	UPDATE_FAILED = 8;
+	PROVISIONING = 9;
+	PROVISIONED = 10;
+	PROVISION_FAILED = 11;
+	DEPROVISIONING = 12;
+	DEPROVISIONED = 13;
+	DEPROVISION_FAILED = 14;
+}
+
+message Error {
+	string errorMessage = 1;
+}
+message Health {
+	State currentState = 1;
+	State lastState = 2;
+	Error lastError = 3;
+}
+

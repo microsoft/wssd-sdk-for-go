@@ -10,6 +10,7 @@ import (
 
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
+	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
 )
 
 type client struct {
@@ -27,14 +28,14 @@ func NewLoadBalancerClient(subID string, authorizer auth.Authorizer) (*client, e
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (network.LoadBalancer, error) {
-	lbrequest := &wssdnetwork.LoadBalancerRequest{OperationType: wssdnetwork.Operation_GET}
+	lbrequest := &wssdnetwork.LoadBalancerRequest{OperationType: wssdcommonproto.Operation_GET}
 	_, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
 	return network.LoadBalancer{}, err
 }
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg network.LoadBalancer) (network.LoadBalancer, error) {
-	lbrequest := &wssdnetwork.LoadBalancerRequest{OperationType: wssdnetwork.Operation_POST}
+	lbrequest := &wssdnetwork.LoadBalancerRequest{OperationType: wssdcommonproto.Operation_POST}
 	_, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
 	if err != nil {
 		return network.LoadBalancer{}, err
@@ -46,7 +47,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg netw
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, group, name string) error {
-	lbrequest := &wssdnetwork.LoadBalancerRequest{OperationType: wssdnetwork.Operation_DELETE}
+	lbrequest := &wssdnetwork.LoadBalancerRequest{OperationType: wssdcommonproto.Operation_DELETE}
 	_, err := c.LoadBalancerAgentClient.Invoke(ctx, lbrequest, nil)
 
 	// Convert _ output to LoadBalancer

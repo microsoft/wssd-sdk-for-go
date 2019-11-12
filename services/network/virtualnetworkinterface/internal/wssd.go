@@ -13,7 +13,7 @@ import (
 	"github.com/microsoft/wssdagent/pkg/errors"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
-
+	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )
 
@@ -35,7 +35,7 @@ func NewVirtualNetworkInterfaceClient(subID string, authorizer auth.Authorizer) 
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (*[]network.VirtualNetworkInterface, error) {
-	request, err := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_GET, name, nil)
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_GET, name, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]network.Virtua
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
-	request, err := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_POST, name, vnetInterface)
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_POST, name, vnetInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 		return fmt.Errorf("Virtual Network Interface [%s] not found", name)
 	}
 
-	request, err := c.getVirtualNetworkInterfaceRequest(wssdnetwork.Operation_DELETE, name, &(*vnetInterface)[0])
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_DELETE, name, &(*vnetInterface)[0])
 	if err != nil {
 		return err
 	}
@@ -93,7 +93,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 }
 
 /////////////// private methods  ///////////////
-func (c *client) getVirtualNetworkInterfaceRequest(opType wssdnetwork.Operation, name string, networkInterface *network.VirtualNetworkInterface) (*wssdnetwork.VirtualNetworkInterfaceRequest, error) {
+func (c *client) getVirtualNetworkInterfaceRequest(opType wssdcommonproto.Operation, name string, networkInterface *network.VirtualNetworkInterface) (*wssdnetwork.VirtualNetworkInterfaceRequest, error) {
 	request := &wssdnetwork.VirtualNetworkInterfaceRequest{
 		OperationType:            opType,
 		VirtualNetworkInterfaces: []*wssdnetwork.VirtualNetworkInterface{},

@@ -11,6 +11,7 @@ import (
 
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	wssdstorage "github.com/microsoft/wssdagent/rpc/storage"
+	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
 	log "k8s.io/klog"
 )
 
@@ -29,7 +30,7 @@ func NewVirtualHardDiskClient(subID string, authorizer auth.Authorizer) (*client
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (*[]storage.VirtualHardDisk, error) {
-	request := getVirtualHardDiskRequest(wssdstorage.Operation_GET, name, nil)
+	request := getVirtualHardDiskRequest(wssdcommonproto.Operation_GET, name, nil)
 	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -39,7 +40,7 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]storage.Virtua
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
-	request := getVirtualHardDiskRequest(wssdstorage.Operation_POST, name, sg)
+	request := getVirtualHardDiskRequest(wssdcommonproto.Operation_POST, name, sg)
 	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[VirtualHardDisk] Create failed with error %v", err)
@@ -57,7 +58,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *sto
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, group, name string) error {
-	request := getVirtualHardDiskRequest(wssdstorage.Operation_DELETE, name, nil)
+	request := getVirtualHardDiskRequest(wssdcommonproto.Operation_DELETE, name, nil)
 	_, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	return err
 }
@@ -71,7 +72,7 @@ func getVirtualHardDisksFromResponse(response *wssdstorage.VirtualHardDiskRespon
 	return &virtualHardDisks
 }
 
-func getVirtualHardDiskRequest(opType wssdstorage.Operation, name string, vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHardDiskRequest {
+func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name string, vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHardDiskRequest {
 	request := &wssdstorage.VirtualHardDiskRequest{
 		OperationType:          opType,
 		VirtualHardDiskSystems: []*wssdstorage.VirtualHardDisk{},
