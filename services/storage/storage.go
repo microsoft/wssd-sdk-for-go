@@ -11,6 +11,8 @@ type VirtualHardDiskProperties struct {
 	Source *string `json:"source,omitempty"`
 	// DiskSizeGB
 	DiskSizeGB *int32 `json:"diskSizeGB,omitempty"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
 }
 
 // VirtualHardDisk defines the structure of a VHD

@@ -205,6 +205,8 @@ type VirtualNetworkProperties struct {
 	MACPool *MACPool `json:"macPool,omitempty"`
 	// DNS
 	DNSSettings *DNSSetting `json:"dnsSettings,omitempty"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// Subnets that could hold ipv4 and ipv6 subnets
 	Subnets *[]Subnet `json:"subnets,omitempty"`
 }

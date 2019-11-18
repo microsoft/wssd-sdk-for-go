@@ -128,6 +128,8 @@ type VirtualMachineProperties struct {
 	OsProfile *OSProfile `json:"osProfile,omitempty"`
 	// NetworkProfile
 	NetworkProfile *NetworkProfile `json:"networkProfile,omitempty"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
 }
 type VirtualMachine struct {
 	// ID
@@ -276,6 +278,8 @@ type VirtualMachineScaleSetIdentity struct {
 type VirtualMachineScaleSetProperties struct {
 	// VirtualMachineProfile
 	VirtualMachineProfile *VirtualMachineScaleSetVMProfile `json:"virtualMachineProfile,omitempty"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
 }
 
 // VirtualMachineScaleSet
