@@ -3,8 +3,6 @@
 
 package network
 
-import ()
-
 type TransportProtocol string
 
 const (

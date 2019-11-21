@@ -3,8 +3,6 @@
 
 package keyvault
 
-import ()
-
 type SecretProperties struct {
 	// VaultName
 	VaultName *string `json:"vaultname"`

@@ -3,8 +3,6 @@
 
 package security
 
-import ()
-
 // KeyVaultProperties defines the structure of a Security Item
 type KeyVaultProperties struct {
 	SecretMap map[string]*string `json:"secretmap"`

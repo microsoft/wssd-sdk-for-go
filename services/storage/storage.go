@@ -3,8 +3,6 @@
 
 package storage
 
-import ()
-
 // BaseProperties defines the structure of a Load Balancer
 type VirtualHardDiskProperties struct {
 	// Path

@@ -13,7 +13,7 @@ OUT=bin/wssdctl
 
 PKG := 
 
-all: ctl ctlexe
+all: format ctl ctlexe
 
 clean:
 	rm -rf ${OUT} ${OUTEXE}
@@ -21,6 +21,8 @@ ctlexe:
 	GO111MODULE=on GOARCH=amd64 GOOS=windows $(GOBUILD) -ldflags "-X main.version=$(TAG) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)" -o ${OUTEXE} github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl
 ctl:
 	GO111MODULE=on GOARCH=amd64 $(GOBUILD) -ldflags "-X main.version=$(TAG) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)" -o ${OUT} github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl
+format:
+	gofmt -s -w cmd/ common/ pkg/ services/ test/ tools/
 
 .PHONY: vendor
 vendor:

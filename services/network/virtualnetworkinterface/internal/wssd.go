@@ -17,8 +17,6 @@ import (
 	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 )
 
-const ()
-
 type client struct {
 	subID string
 	wssdnetwork.VirtualNetworkInterfaceAgentClient

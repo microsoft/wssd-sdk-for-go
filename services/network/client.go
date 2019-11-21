@@ -3,8 +3,6 @@
 
 package network
 
-import ()
-
 // Client structure
 type BaseClient struct {
 }

@@ -3,8 +3,6 @@
 
 package storage
 
-import ()
-
 // Client structure
 type BaseClient struct {
 }
