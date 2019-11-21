@@ -5,10 +5,10 @@ package update
 import (
 	"context"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetworkinterface"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )

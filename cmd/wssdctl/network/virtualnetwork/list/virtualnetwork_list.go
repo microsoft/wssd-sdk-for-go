@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
@@ -43,7 +43,7 @@ func runE(flags *flags) error {
 
 	group := viper.GetString("group")
 	server := viper.GetString("server")
-	
+
 	authorizer, err := auth.NewAuthorizerFromEnvironment()
 	if err != nil {
 		return err

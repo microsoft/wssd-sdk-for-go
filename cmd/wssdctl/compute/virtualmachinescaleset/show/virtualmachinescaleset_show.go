@@ -6,11 +6,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachinescaleset"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )

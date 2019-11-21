@@ -24,21 +24,20 @@ type KeyVault struct {
 	*KeyVaultProperties `json:"properties,omitempty"`
 }
 
-
 // IdentityProperties defines the structure of a Security Item
 type IdentityProperties struct {
 }
 
 // Identity defines the structure of a identity
 type Identity struct {
-		// ID
-		ID *string `json:"ID,omitempty"`
-		// Name
-		Name *string `json:"name,omitempty"`
-		// Type
-		Type *string `json:"type,omitempty"`
-		// Tags - Custom resource tags
-		Tags map[string]*string `json:"tags"`
-		// Properties
-		*IdentityProperties `json:"properties,omitempty"`
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*IdentityProperties `json:"properties,omitempty"`
 }

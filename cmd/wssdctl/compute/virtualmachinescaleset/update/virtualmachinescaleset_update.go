@@ -5,10 +5,10 @@ package update
 import (
 	"context"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachinescaleset"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )
@@ -43,7 +43,7 @@ func runE(flags *flags) error {
 	if err != nil {
 		return err
 	}
-	
+
 	client, err := virtualmachinescaleset.NewVirtualMachineScaleSetClient(server, authorizer)
 	if err != nil {
 		return err

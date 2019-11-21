@@ -37,7 +37,7 @@ func (c *client) Login(ctx context.Context, group, name string) (*string, error)
 
 func getAuthenticationRequest(name string) *wssdsecurity.AuthenticationRequest {
 	request := &wssdsecurity.AuthenticationRequest{
-		Identity:     &wssdsecurity.Identity{
+		Identity: &wssdsecurity.Identity{
 			Name: name,
 		},
 	}

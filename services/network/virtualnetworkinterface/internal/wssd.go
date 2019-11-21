@@ -9,12 +9,12 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
+	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
+	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	virtualnetwork "github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
 	"github.com/microsoft/wssdagent/pkg/errors"
-	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
-	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
-	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
+	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 )
 
 const ()

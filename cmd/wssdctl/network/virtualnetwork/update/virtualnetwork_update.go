@@ -6,10 +6,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 type flags struct {

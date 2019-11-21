@@ -18,7 +18,7 @@ import (
 
 type flags struct {
 	Identity bool
-	User string
+	User     string
 }
 
 func NewCommand() *cobra.Command {
@@ -38,7 +38,6 @@ func NewCommand() *cobra.Command {
 	cmd.Flags().StringVar(&flags.User, "user", "", "User Name for Managed Identity Login")
 	cmd.MarkFlagRequired("user")
 
-
 	return cmd
 }
 
@@ -57,8 +56,8 @@ func runE(flags *flags) error {
 	}
 
 	if !flags.Identity {
-		return fmt.Errorf("Not Supported") 
-	} 
+		return fmt.Errorf("Not Supported")
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()

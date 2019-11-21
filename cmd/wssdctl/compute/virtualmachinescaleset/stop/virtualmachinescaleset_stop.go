@@ -46,7 +46,7 @@ func runE(flags *flags) error {
 	if err != nil {
 		return err
 	}
-	
+
 	client, err := virtualmachinescaleset.NewVirtualMachineScaleSetClient(server, authorizer)
 	if err != nil {
 		return err

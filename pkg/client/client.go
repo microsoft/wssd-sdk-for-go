@@ -4,22 +4,21 @@
 package client
 
 import (
-	"os"
-	"strings"
 	"fmt"
 	compute_pb "github.com/microsoft/wssdagent/rpc/compute"
-	security_pb "github.com/microsoft/wssdagent/rpc/security"
 	network_pb "github.com/microsoft/wssdagent/rpc/network"
+	security_pb "github.com/microsoft/wssdagent/rpc/security"
 	storage_pb "github.com/microsoft/wssdagent/rpc/storage"
 	"google.golang.org/grpc"
 	log "k8s.io/klog"
+	"os"
+	"strings"
 
-	"github.com/microsoft/wssdagent/pkg/apis/config"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
+	"github.com/microsoft/wssdagent/pkg/apis/config"
 )
 
 const debugModeTLS = "WSSD_DEBUG_MODE"
-
 
 // Returns nil if debug mode is on; err if it is not
 func isDebugMode() error {
