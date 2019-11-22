@@ -3,8 +3,6 @@
 
 package security
 
-import ()
-
 // Client structure
 type BaseClient struct {
 }

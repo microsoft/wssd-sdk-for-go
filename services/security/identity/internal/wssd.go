@@ -10,8 +10,8 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
-	wssdsecurity "github.com/microsoft/wssdagent/rpc/security"
 	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
+	wssdsecurity "github.com/microsoft/wssdagent/rpc/security"
 	log "k8s.io/klog"
 )
 
@@ -98,8 +98,8 @@ func getIdentityRequest(opType wssdcommonproto.Operation, name string, identity 
 
 func getIdentity(identity *wssdsecurity.Identity) *security.Identity {
 	return &security.Identity{
-			ID:   &identity.Id,
-			Name: &identity.Name,
+		ID:   &identity.Id,
+		Name: &identity.Name,
 	}
 }
 

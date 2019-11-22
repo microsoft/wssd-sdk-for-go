@@ -3,8 +3,6 @@
 
 package compute
 
-import ()
-
 // Client structure
 type BaseClient struct {
 }

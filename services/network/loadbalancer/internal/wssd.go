@@ -9,8 +9,8 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
-	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
+	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 )
 
 type client struct {

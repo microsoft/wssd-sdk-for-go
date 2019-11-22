@@ -10,8 +10,8 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
-	wssdsecurity "github.com/microsoft/wssdagent/rpc/security"
 	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
+	wssdsecurity "github.com/microsoft/wssdagent/rpc/security"
 	log "k8s.io/klog"
 )
 
