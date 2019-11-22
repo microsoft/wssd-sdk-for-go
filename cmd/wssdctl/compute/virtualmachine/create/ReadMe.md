@@ -5,5 +5,5 @@ Linux.yaml
 
 # Sample Execution
 
-./wssdctl.exe create vm --config windows.yaml
+./wssdctl.exe compute virtualmachine create --config windows.yaml
 
