@@ -1,4 +1,5 @@
-$Global:wssdcloutctl = (Get-Command "wssdctl.exe").Source
+$ScriptPath = Split-Path $MyInvocation.MyCommand.Path
+$Global:wssdcloutctl = (Get-Command "$($ScriptPath)\wssdctl.exe").Source
 
 function Execute-Command(
     $Command,

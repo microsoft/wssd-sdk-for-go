@@ -9,11 +9,11 @@ function VirtualNetworkCreate($yamlFile) {
 }
 
 function VirtualNetworkDelete($name) {
-		Execute-WssdCommand -Arguments  "network vnet delete --name $name"
+		Execute-WssdCommand -Arguments  "network vnet delete --name `"$name`""
 }
 
 function VirtualNetworkShow($name) {
-		Execute-WssdCommand -Arguments  "network vnet show --name $name"
+		Execute-WssdCommand -Arguments  "network vnet show --name `"$name`""
 }
 
 function VirtualNetworkList() {
@@ -21,11 +21,11 @@ function VirtualNetworkList() {
 }
 
 function VirtualNetworkUpdate($name, $yamlFile) {
-		Execute-WssdCommand -Arguments  "network vnet update --name $name --config $yamlFile"
+		Execute-WssdCommand -Arguments  "network vnet update --name `"$name`" --config $yamlFile"
 }
 
 function CreateSampleVirtualNetwork() {
-	$Global:sampleVirtualNetwork = "sampleVirtualNetwork"
+	$Global:sampleVirtualNetwork = "Default Switch"
 	$yaml = @"
 name: $Global:sampleVirtualNetwork
 type: "ICS"
