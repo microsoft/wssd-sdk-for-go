@@ -14,5 +14,5 @@ virtualmachineproperties:
     windowsconfiguration: null
     linuxconfiguration: null
   networkprofile:
-    networkinterfaces: []
-
+    networkinterfaces:
+    - virtualnetworkinterfacereference: "endpoint1"

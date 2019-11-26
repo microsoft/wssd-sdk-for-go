@@ -4,4 +4,4 @@ networkinterface.yaml
 
 # Sample Execution
 
-./wssdctl.exe create vnic --config networkinterface.yaml
+./wssdctl.exe network vnic create --config networkinterface.yaml

@@ -16,14 +16,14 @@ Describe 'Wssd Agent Pre-Requisite' {
 		}
 
 		It 'wssdctl.exe is available' {
-			get-command -name 'wssdctl.exe'  # | Should be $true
+			get-command -name "$($ScriptPath)\wssdctl.exe"  # | Should be $true
 		}
 	}
 }
 
 
 Describe 'VirtualNetwork BVT' {
-	$script:testVirtualNetwork = "testVirtualNetwork1"
+	$script:testVirtualNetwork = "Default Switch"
 
 	It 'Should be able to create a virtual network' {
 		$yaml = @"
