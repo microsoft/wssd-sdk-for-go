@@ -3,7 +3,17 @@
 package create
 
 import (
+	"context"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
+	"github.com/microsoft/wssd-sdk-for-go/services/network/loadbalancer"
+
+	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )
 
 type flags struct {
@@ -30,8 +40,33 @@ func NewCommand() *cobra.Command {
 }
 
 func runE(flags *flags) error {
+	group := viper.GetString("group")
+	server := viper.GetString("server")
 
-	panic("lb create not implemented")
+	authorizer, err := auth.NewAuthorizerFromEnvironment()
+	if err != nil {
+		return err
+	}
+
+	lbclient, err := loadbalancer.NewLoadBalancerClient(server, authorizer)
+	if err != nil {
+		return err
+	}
+
+	lbconfig := network.LoadBalancer{}
+	err = config.LoadYAMLFile(flags.FilePath, &lbconfig)
+	if err != nil {
+		return err
+	}
+
+	// Wait up to one minute for network creation
+	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
+	defer cancel()
+
+	_, err = lbclient.CreateOrUpdate(ctx, group, *(lbconfig.Name), &lbconfig)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

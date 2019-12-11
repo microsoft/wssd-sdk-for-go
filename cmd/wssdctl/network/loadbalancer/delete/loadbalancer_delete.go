@@ -3,7 +3,17 @@
 package delete
 
 import (
+	"context"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
+	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
+	"github.com/microsoft/wssd-sdk-for-go/services/network/loadbalancer"
+
+	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 )
 
 type flags struct {
@@ -29,7 +39,38 @@ func NewCommand() *cobra.Command {
 }
 
 func runE(flags *flags) error {
-	panic("lb delete not implemented")
+	group := viper.GetString("group")
+	server := viper.GetString("server")
+
+	authorizer, err := auth.NewAuthorizerFromEnvironment()
+	if err != nil {
+		return err
+	}
+
+	lbclient, err := loadbalancer.NewLoadBalancerClient(server, authorizer)
+	if err != nil {
+		return err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
+	defer cancel()
+
+	lbName := flags.Name
+	if len(lbName) == 0 {
+		configPath := viper.GetString("config")
+
+		lbconfig := network.VirtualNetworkInterface{}
+		err = config.LoadYAMLFile(configPath, &lbconfig)
+		if err != nil {
+			return err
+		}
+		lbName = *(lbconfig.Name)
+	}
+
+	err = lbclient.Delete(ctx, group, lbName)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
