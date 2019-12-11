@@ -12,7 +12,7 @@ enum Operation {
 	DELETE = 2;
 }
 
-enum State {
+enum ProvisionState {
 	UNKNOWN = 0;
 	CREATING = 1;
 	CREATED = 2;
@@ -30,12 +30,25 @@ enum State {
 	DEPROVISION_FAILED = 14;
 }
 
+enum HealthState {
+     NO_CONTACT = 0;
+     OK = 1;
+     WARNING = 2;
+     CRITICAL = 3;
+}
+
 message Error {
 	string errorMessage = 1;
 }
-message Health {
-	State currentState = 1;
-	State lastState = 2;
+
+message ProvisionStatus {
+	ProvisionState currentState = 1;
+	ProvisionState lastState = 2;
 	Error lastError = 3;
 }
 
+message Health {
+	HealthState currentState = 1;
+	HealthState lastState = 2;
+	Error lastError = 3;
+}
