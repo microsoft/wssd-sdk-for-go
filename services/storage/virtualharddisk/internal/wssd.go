@@ -6,6 +6,7 @@ package internal
 import (
 	"context"
 	"fmt"
+
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 
@@ -94,14 +95,38 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 		ID:   &vhd.Id,
 		Name: &vhd.Name,
 		VirtualHardDiskProperties: &storage.VirtualHardDiskProperties{
-			Source: &vhd.Source,
+			Source:              &vhd.Source,
+			Path:                &vhd.Path,
+			DiskSizeGB:          &vhd.Size,
+			Dynamic:             &vhd.Dynamic,
+			Blocksizebytes:      &vhd.Blocksizebytes,
+			Logicalsectorbytes:  &vhd.Logicalsectorbytes,
+			Physicalsectorbytes: &vhd.Physicalsectorbytes,
+			Controllernumber:    &vhd.Controllernumber,
+			Controllerlocation:  &vhd.Controllerlocation,
+			Disknumber:          &vhd.Disknumber,
+			Vmname:              &vhd.Vmname,
+			Scsipath:            &vhd.Scsipath,
+			Virtualharddisktype: &vhd.Virtualharddisktype,
 		},
 	}
 }
 
 func getWssdVirtualHardDisk(vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHardDisk {
 	return &wssdstorage.VirtualHardDisk{
-		Name:   *vhd.Name,
-		Source: *vhd.Source,
+		Name:                *vhd.Name,
+		Source:              *vhd.Source,
+		Path:                *vhd.Path,
+		Size:                *vhd.DiskSizeGB,
+		Dynamic:             *vhd.Dynamic,
+		Blocksizebytes:      *vhd.Blocksizebytes,
+		Logicalsectorbytes:  *vhd.Logicalsectorbytes,
+		Physicalsectorbytes: *vhd.Physicalsectorbytes,
+		Controllerlocation:  *vhd.Controllerlocation,
+		Controllernumber:    *vhd.Controllernumber,
+		Disknumber:          *vhd.Disknumber,
+		Vmname:              *vhd.Vmname,
+		Scsipath:            *vhd.Scsipath,
+		Virtualharddisktype: *vhd.Virtualharddisktype,
 	}
 }
