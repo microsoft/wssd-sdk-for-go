@@ -37,6 +37,8 @@ type VirtualHardDiskProperties struct {
 	Scsipath *string `json:"scsipath,omitempty"`
 	//Virtualharddisktype
 	Virtualharddisktype *wssdstorage.VirtualHardDiskType `json:"virtualharddisktype,omitempty"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
 }
 
 // VirtualHardDisk defines the structure of a VHD

@@ -108,8 +108,18 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			Vmname:              &vhd.Vmname,
 			Scsipath:            &vhd.Scsipath,
 			Virtualharddisktype: &vhd.Virtualharddisktype,
+			ProvisioningState:   getVirtualHardDiskProvisioningState(vhd.ProvisionStatus),
 		},
 	}
+}
+
+func getVirtualHardDiskProvisioningState(status *wssdcommonproto.ProvisionStatus) *string {
+	provisionState := wssdcommonproto.ProvisionState_UNKNOWN
+	if status != nil {
+		provisionState = status.CurrentState
+	}
+	stateString := provisionState.String()
+	return &stateString
 }
 
 func getWssdVirtualHardDisk(vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHardDisk {

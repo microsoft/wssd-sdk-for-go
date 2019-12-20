@@ -16,7 +16,7 @@ Describe 'Wssd Agent Pre-Requisite' {
 		}
 
 		It 'wssdctl.exe is available' {
-			get-command -name "$($ScriptPath)\wssdctl.exe"  # | Should be $true
+			get-command -name 'wssdctl.exe'  # | Should be $true
 		}
 	}
 }

@@ -5,6 +5,7 @@ package loadbalancer
 
 import (
 	"context"
+
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/loadbalancer/internal"
@@ -12,8 +13,8 @@ import (
 
 // Service interface
 type Service interface {
-	Get(context.Context, string, string) (network.LoadBalancer, error)
-	CreateOrUpdate(context.Context, string, string, network.LoadBalancer) (network.LoadBalancer, error)
+	Get(context.Context, string, string) (*[]network.LoadBalancer, error)
+	CreateOrUpdate(context.Context, string, string, *network.LoadBalancer) (*network.LoadBalancer, error)
 	Delete(context.Context, string, string) error
 }
 
@@ -34,12 +35,12 @@ func NewLoadBalancerClient(cloudFQDN string, authorizer auth.Authorizer) (*LoadB
 }
 
 // Get methods invokes the client Get method
-func (c *LoadBalancerClient) Get(ctx context.Context, group, name string) (network.LoadBalancer, error) {
+func (c *LoadBalancerClient) Get(ctx context.Context, group, name string) (*[]network.LoadBalancer, error) {
 	return c.internal.Get(ctx, group, name)
 }
 
 // Ensure methods invokes create or update on the client
-func (c *LoadBalancerClient) CreateOrUpdate(ctx context.Context, group, name string, lb network.LoadBalancer) (network.LoadBalancer, error) {
+func (c *LoadBalancerClient) CreateOrUpdate(ctx context.Context, group, name string, lb *network.LoadBalancer) (*network.LoadBalancer, error) {
 	return c.internal.CreateOrUpdate(ctx, group, name, lb)
 }
 

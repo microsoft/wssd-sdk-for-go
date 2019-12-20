@@ -4,19 +4,45 @@ package config
 
 import (
 	"bytes"
+	"context"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
+	"os"
 	"path"
+	"strings"
+
+	"github.com/microsoft/wssdagent/pkg/trace"
 )
 
 const (
-	ListenAddress string = "0.0.0.0"
-	ServerPort    int    = 45000
-	DefaultProviderSpec string = "hcs"
+	ListenAddress       string = "0.0.0.0"
+	ServerPort          int    = 45000
+	DefaultProviderSpec string = "vmms"
 )
+
+const environmentProviderSpecStr = "WSSD_PROVIDER_SPEC"
+
+// Returns nil if debug mode is on; err if it is not
+func environmentProviderSpec(span *trace.LogSpan) string {
+	environmentProvSpec := strings.ToLower(os.Getenv(environmentProviderSpecStr))
+
+	if len(environmentProvSpec) > 0 {
+		if environmentProvSpec != "vmms" && environmentProvSpec != "hcs" {
+			span.Log("Invalid WSSD_PROVIDER_SPEC: '%s', the only supported values are 'vmms' and 'hcs'", environmentProvSpec)
+			return DefaultProviderSpec
+		}
+
+		return environmentProvSpec
+	}
+
+	return DefaultProviderSpec
+}
 
 // DefaultAgentCofiguration
 func DefaultAgentConfiguration() *WSSDAgentConfiguration {
+	_, span := trace.NewSpan(context.Background(), "Wssdagent DefaultAgentConfiguration Span")
+
+	provSpec := environmentProviderSpec(span)
 	basePath := viper.GetString("BaseDir")
 	ac := WSSDAgentConfiguration{
 		Port:    ServerPort,
@@ -26,12 +52,13 @@ func DefaultAgentConfiguration() *WSSDAgentConfiguration {
 			ConfigStorePath: path.Join(basePath),
 			LogPath:         path.Join(basePath, "log"),
 		},
-		ProviderConfigurations: map[string]ChildAgentConfiguration{ 
-				"virtualmachine": newChildAgentConfiguration(path.Join(basePath), "virtualmachine", DefaultProviderSpec),
-				"virtualnetwork": newChildAgentConfiguration(path.Join(basePath), "virtualnetwork", DefaultProviderSpec),
-				"virtualnetworkinterface": newChildAgentConfiguration(path.Join(basePath), "virtualnetworkinterface", DefaultProviderSpec),
+		ProviderConfigurations: map[string]ChildAgentConfiguration{
+			"virtualmachine":          newChildAgentConfiguration(path.Join(basePath), "virtualmachine", provSpec),
+			"virtualnetwork":          newChildAgentConfiguration(path.Join(basePath), "virtualnetwork", provSpec),
+			"virtualnetworkinterface": newChildAgentConfiguration(path.Join(basePath), "virtualnetworkinterface", provSpec),
+			"loadbalancer":            newChildAgentConfiguration(path.Join(basePath), "loadbalancer", provSpec),
 		},
-		ImageStorePath:         "c:/wssdimagestore",
+		ImageStorePath: "c:/wssdimagestore",
 	}
 	// Load Default configuration
 	agentConfig, err := yaml.Marshal(ac)
@@ -50,13 +77,15 @@ func GetAgentConfiguration() *WSSDAgentConfiguration {
 }
 
 func GetChildAgentConfiguration(childAgentName string) *ChildAgentConfiguration {
+	_, span := trace.NewSpan(context.Background(), "Wssdagent ChildAgentConfiguration Span")
+
 	// Get Agents configuration
 	wssdAgentConfig := GetAgentConfiguration()
 	if val, ok := wssdAgentConfig.ProviderConfigurations[childAgentName]; ok {
 		return &val
 	}
 
-	childAgentConfig := newChildAgentConfiguration(wssdAgentConfig.DataStorePath, childAgentName, DefaultProviderSpec)
+	childAgentConfig := newChildAgentConfiguration(wssdAgentConfig.DataStorePath, childAgentName, environmentProviderSpec(span))
 
 	wssdAgentConfig.ProviderConfigurations[childAgentName] = childAgentConfig
 
@@ -86,4 +115,3 @@ func newChildAgentConfiguration(dataStorePath string, childAgentName string, pro
 		ProviderSpec: providerSpec,
 	}
 }
-

@@ -29,5 +29,3 @@ vendor:
 	GO111MODULE=on GOPRIVATE="github.com/microsoft" go get github.com/microsoft/wssdagent 
 	GO111MODULE=on go mod vendor
 	GO111MODULE=on go mod tidy
-	rm -rf vendor/github.com/Microsoft/hcsshim
-	git clone --branch vm https://github.com/madhanrm/hcsshim.git vendor/github.com/Microsoft/hcsshim
