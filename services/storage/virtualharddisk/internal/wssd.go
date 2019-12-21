@@ -6,6 +6,7 @@ package internal
 import (
 	"context"
 	"fmt"
+
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 
@@ -94,13 +95,25 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 		ID:   &vhd.Id,
 		Name: &vhd.Name,
 		VirtualHardDiskProperties: &storage.VirtualHardDiskProperties{
-			Source: &vhd.Source,
-			ProvisioningState: getVirtualHardDiskProvisioningState(vhd.ProvisionStatus),
+			Source:              &vhd.Source,
+			Path:                &vhd.Path,
+			DiskSizeGB:          &vhd.Size,
+			Dynamic:             &vhd.Dynamic,
+			Blocksizebytes:      &vhd.Blocksizebytes,
+			Logicalsectorbytes:  &vhd.Logicalsectorbytes,
+			Physicalsectorbytes: &vhd.Physicalsectorbytes,
+			Controllernumber:    &vhd.Controllernumber,
+			Controllerlocation:  &vhd.Controllerlocation,
+			Disknumber:          &vhd.Disknumber,
+			Vmname:              &vhd.Vmname,
+			Scsipath:            &vhd.Scsipath,
+			Virtualharddisktype: &vhd.Virtualharddisktype,
+			ProvisioningState:   getVirtualHardDiskProvisioningState(vhd.ProvisionStatus),
 		},
 	}
 }
 
-func getVirtualHardDiskProvisioningState(status *wssdcommonproto.ProvisionStatus) (*string) {
+func getVirtualHardDiskProvisioningState(status *wssdcommonproto.ProvisionStatus) *string {
 	provisionState := wssdcommonproto.ProvisionState_UNKNOWN
 	if status != nil {
 		provisionState = status.CurrentState
@@ -109,10 +122,70 @@ func getVirtualHardDiskProvisioningState(status *wssdcommonproto.ProvisionStatus
 	return &stateString
 }
 
-
 func getWssdVirtualHardDisk(vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHardDisk {
-	return &wssdstorage.VirtualHardDisk{
-		Name:   *vhd.Name,
-		Source: *vhd.Source,
+
+	var disk wssdstorage.VirtualHardDisk
+
+	if vhd.Name != nil {
+		disk.Name = *vhd.Name
 	}
+	if vhd.Source != nil {
+		disk.Source = *vhd.Source
+	}
+	if vhd.Path != nil {
+		disk.Path = *vhd.Path
+	}
+	if vhd.DiskSizeGB != nil {
+		disk.Size = *vhd.DiskSizeGB
+	}
+	if vhd.Dynamic != nil {
+		disk.Dynamic = *vhd.Dynamic
+	}
+	if vhd.Blocksizebytes != nil {
+		disk.Blocksizebytes = *vhd.Blocksizebytes
+	}
+	if vhd.Logicalsectorbytes != nil {
+		disk.Logicalsectorbytes = *vhd.Logicalsectorbytes
+	}
+	if vhd.Physicalsectorbytes != nil {
+		disk.Physicalsectorbytes = *vhd.Physicalsectorbytes
+	}
+	if vhd.Controllerlocation != nil {
+		disk.Controllerlocation = *vhd.Controllerlocation
+	}
+	if vhd.Controllernumber != nil {
+		disk.Controllernumber = *vhd.Controllernumber
+	}
+	if vhd.Disknumber != nil {
+		disk.Disknumber = *vhd.Disknumber
+	}
+	if vhd.Vmname != nil {
+		disk.Vmname = *vhd.Vmname
+	}
+
+	if vhd.Scsipath != nil {
+		disk.Scsipath = *vhd.Scsipath
+	}
+
+	if vhd.Virtualharddisktype != nil {
+		disk.Virtualharddisktype = *vhd.Virtualharddisktype
+	}
+
+	return &disk
+	// 	return &wssdstorage.VirtualHardDisk{
+	// 		Name:                *vhd.Name,
+	// 		Source:              *vhd.Source,
+	// 		Path:                *vhd.Path,
+	// 		Size:                *vhd.DiskSizeGB,
+	// 		Dynamic:             *vhd.Dynamic,
+	// 		Blocksizebytes:      *vhd.Blocksizebytes,
+	// 		Logicalsectorbytes:  *vhd.Logicalsectorbytes,
+	// 		Physicalsectorbytes: *vhd.Physicalsectorbytes,
+	// 		Controllerlocation:  *vhd.Controllerlocation,
+	// 		Controllernumber:    *vhd.Controllernumber,
+	// 		Disknumber:          *vhd.Disknumber,
+	// 		Vmname:              *vhd.Vmname,
+	// 		Scsipath:            *vhd.Scsipath,
+	// 		Virtualharddisktype: *vhd.Virtualharddisktype,
+	// 	}
 }
