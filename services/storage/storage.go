@@ -3,10 +3,6 @@
 
 package storage
 
-import (
-	wssdstorage "github.com/microsoft/wssdagent/rpc/storage"
-)
-
 // BaseProperties defines the structure of a Load Balancer
 type VirtualHardDiskProperties struct {
 	// Path
@@ -36,7 +32,7 @@ type VirtualHardDiskProperties struct {
 	//Scsipath
 	Scsipath *string `json:"scsipath,omitempty"`
 	//Virtualharddisktype
-	Virtualharddisktype *wssdstorage.VirtualHardDiskType `json:"virtualharddisktype,omitempty"`
+	Virtualharddisktype string `json:"virtualharddisktype,omitempty"`
 	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 }
