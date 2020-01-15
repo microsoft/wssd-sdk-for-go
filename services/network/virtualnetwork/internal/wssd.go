@@ -209,7 +209,7 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 		Type: &vnetType,
 		VirtualNetworkProperties: &network.VirtualNetworkProperties{
 			// TODO: MACPool (it is currently missing from network.VirtualNetwork)
-			Subnets: getNetworkSubnets(c.Ipams),
+			Subnets:           getNetworkSubnets(c.Ipams),
 			ProvisioningState: getVirtualNetworkProvisioningState(c.ProvisionStatus),
 		},
 	}
@@ -228,7 +228,7 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 	return vnet
 }
 
-func getVirtualNetworkProvisioningState(status *wssdcommonproto.ProvisionStatus) (*string) {
+func getVirtualNetworkProvisioningState(status *wssdcommonproto.ProvisionStatus) *string {
 	provisionState := wssdcommonproto.ProvisionState_UNKNOWN
 	if status != nil {
 		provisionState = status.CurrentState

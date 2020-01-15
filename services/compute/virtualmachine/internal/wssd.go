@@ -202,15 +202,15 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 		Name: &vm.Name,
 		ID:   &vm.Id,
 		VirtualMachineProperties: &compute.VirtualMachineProperties{
-			StorageProfile: c.getVirtualMachineStorageProfile(vm.Storage),
-			OsProfile:      c.getVirtualMachineOSProfile(vm.Os),
-			NetworkProfile: c.getVirtualMachineNetworkProfile(vm.Network),
+			StorageProfile:    c.getVirtualMachineStorageProfile(vm.Storage),
+			OsProfile:         c.getVirtualMachineOSProfile(vm.Os),
+			NetworkProfile:    c.getVirtualMachineNetworkProfile(vm.Network),
 			ProvisioningState: c.getVirtualMachineProvisioningState(vm.ProvisionStatus),
 		},
 	}
 }
 
-func (c *client) getVirtualMachineProvisioningState(status *wssdcommonproto.ProvisionStatus) (*string) {
+func (c *client) getVirtualMachineProvisioningState(status *wssdcommonproto.ProvisionStatus) *string {
 	provisionState := wssdcommonproto.ProvisionState_UNKNOWN
 	if status != nil {
 		provisionState = status.CurrentState
@@ -218,7 +218,6 @@ func (c *client) getVirtualMachineProvisioningState(status *wssdcommonproto.Prov
 	stateString := provisionState.String()
 	return &stateString
 }
-
 
 func (c *client) getVirtualMachineStorageProfile(s *wssdcompute.StorageConfiguration) *compute.StorageProfile {
 	return &compute.StorageProfile{

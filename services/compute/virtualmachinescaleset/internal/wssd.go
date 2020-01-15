@@ -171,12 +171,12 @@ func (c *client) getVirtualMachineScaleSet(vmss *wssdcompute.VirtualMachineScale
 		},
 		VirtualMachineScaleSetProperties: &compute.VirtualMachineScaleSetProperties{
 			VirtualMachineProfile: vmprofile,
-			ProvisioningState : c.getVirtualMachineScaleSetProvisioningState(vmss.ProvisionStatus),
+			ProvisioningState:     c.getVirtualMachineScaleSetProvisioningState(vmss.ProvisionStatus),
 		},
 	}, nil
 }
 
-func (c *client) getVirtualMachineScaleSetProvisioningState(status *wssdcommonproto.ProvisionStatus) (*string) {
+func (c *client) getVirtualMachineScaleSetProvisioningState(status *wssdcommonproto.ProvisionStatus) *string {
 	provisionState := wssdcommonproto.ProvisionState_UNKNOWN
 	if status != nil {
 		provisionState = status.CurrentState
