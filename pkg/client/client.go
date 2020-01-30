@@ -9,6 +9,7 @@ import (
 	network_pb "github.com/microsoft/wssdagent/rpc/network"
 	security_pb "github.com/microsoft/wssdagent/rpc/security"
 	storage_pb "github.com/microsoft/wssdagent/rpc/storage"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	log "k8s.io/klog"
 	"os"
@@ -24,6 +25,9 @@ const debugModeTLS = "WSSD_DEBUG_MODE"
 func isDebugMode() error {
 	debugEnv := strings.ToLower(os.Getenv(debugModeTLS))
 	if debugEnv == "on" {
+		return nil
+	}
+	if viper.GetBool("Debug") {
 		return nil
 	}
 	return fmt.Errorf("Debug Mode not set")
