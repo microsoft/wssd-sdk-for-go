@@ -107,7 +107,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			Disknumber:          &vhd.Disknumber,
 			Vmname:              &vhd.Vmname,
 			Scsipath:            &vhd.Scsipath,
-			Virtualharddisktype: &vhd.Virtualharddisktype,
+			Virtualharddisktype: vhd.Virtualharddisktype.String(),
 			ProvisioningState:   getVirtualHardDiskProvisioningState(vhd.ProvisionStatus),
 		},
 	}
@@ -167,8 +167,8 @@ func getWssdVirtualHardDisk(vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHa
 		disk.Scsipath = *vhd.Scsipath
 	}
 
-	if vhd.Virtualharddisktype != nil {
-		disk.Virtualharddisktype = *vhd.Virtualharddisktype
+	if vhd.Virtualharddisktype != "" {
+		disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
 	}
 
 	return &disk
@@ -188,4 +188,13 @@ func getWssdVirtualHardDisk(vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHa
 	// 		Scsipath:            *vhd.Scsipath,
 	// 		Virtualharddisktype: *vhd.Virtualharddisktype,
 	// 	}
+}
+
+func getVirtualharddisktype(enum string) wssdstorage.VirtualHardDiskType {
+	typevalue := wssdstorage.VirtualHardDiskType(0)
+	typevTmp, ok := wssdstorage.VirtualHardDiskType_value[enum]
+	if ok {
+		typevalue = wssdstorage.VirtualHardDiskType(typevTmp)
+	}
+	return typevalue
 }
