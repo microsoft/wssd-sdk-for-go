@@ -16,10 +16,19 @@ import (
 	"strings"
 
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
-	"github.com/microsoft/wssdagent/pkg/apis/config"
 )
 
-const debugModeTLS = "WSSD_DEBUG_MODE"
+const (
+	debugModeTLS    = "WSSD_DEBUG_MODE"
+	
+	// Workaround to allow wssdctl to build for Linux
+	// Before we were pulling this value from github.com/wssdagent/pkg/apis/config,
+	// and that pkg uses the trace pkg ... which needs to be refactored to build for linux.
+	//
+	// In the future we may want to decouple wssdagent usage in the sdk ... so its possible that even when that is fixed,
+	// this value still lives here.
+	KnownServerPort = 45000
+)
 
 // Returns nil if debug mode is on; err if it is not
 func isDebugMode() error {
@@ -34,7 +43,7 @@ func isDebugMode() error {
 }
 
 func getServerEndpoint(serverAddress *string) string {
-	return fmt.Sprintf("%s:%d", *serverAddress, config.ServerPort)
+	return fmt.Sprintf("%s:%d", *serverAddress, KnownServerPort)
 }
 
 func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
