@@ -15,10 +15,12 @@ var (
 	InvalidInput         error = errors.New("Invalid Input")
 	NotSupported         error = errors.New("Not Supported")
 	AlreadyExists        error = errors.New("Already Exists")
+	AlreadyInUse         error = errors.New("Already In Use")
 	Duplicates           error = errors.New("Duplicates")
 	InvalidFilter        error = errors.New("Invalid Filter")
 	Failed               error = errors.New("Failed")
 	InvalidGroup         error = errors.New("InvalidGroup")
+	UpdateFailed         error = errors.New("Update Failed")
 	Unknown              error = errors.New("Unknown Reason")
 )
 
@@ -68,7 +70,9 @@ func IsNotFound(err error) bool {
 func IsAlreadyExists(err error) bool {
 	return checkError(err, AlreadyExists)
 }
-
+func IsInvalidGroup(err error) bool {
+	return checkError(err, InvalidGroup)
+}
 func checkError(wrappedError, err error) bool {
 	if wrappedError == nil {
 		return false

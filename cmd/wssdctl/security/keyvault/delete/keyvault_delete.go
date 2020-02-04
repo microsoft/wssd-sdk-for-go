@@ -42,7 +42,7 @@ func runE(flags *flags) error {
 
 	server := viper.GetString("server")
 
-	authorizer, err := auth.NewAuthorizerFromEnvironment()
+	authorizer, err := auth.NewAuthorizerFromEnvironment(server)
 	if err != nil {
 		return err
 	}

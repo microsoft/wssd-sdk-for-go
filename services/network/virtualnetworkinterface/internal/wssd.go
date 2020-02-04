@@ -190,7 +190,7 @@ func (cc *client) getVirtualNetworkInterface(server, group string, c *wssdnetwor
 
 func (c *client) getVirtualNetwork(server, group, networkName string) (*network.VirtualNetwork, error) {
 
-	authorizer, err := auth.NewAuthorizerFromEnvironment()
+	authorizer, err := auth.NewAuthorizerFromEnvironment(server)
 	if err != nil {
 		return nil, err
 	}

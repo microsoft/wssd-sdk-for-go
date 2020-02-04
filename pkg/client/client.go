@@ -43,17 +43,15 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 	// Debug Mode allows us to talk to wssdagent without a proper handshake
 	// This means we can debug and test wssdagent without generating certs
 	// and having proper tokens
-
 	// Check if debug mode is on
 	if ok := isDebugMode(); ok == nil {
-		// Working on a way to have debug mode still include tokens ... but not include
-		// cert generation ... for now that is out of scope
-		// creds := credentials.NewTLS(&tls.Config{InsecureSkipVerify: true})
 		opts = append(opts, grpc.WithInsecure())
 	} else {
-
+		if auth.GetWssdConfigLocation() == "" {
+			log.Fatalf("Please set the HCIAzConfig env variable (WSSD_CONFIG_PATH) with the location of your access file.")
+		}
 		opts = append(opts, grpc.WithTransportCredentials(authorizer.WithTransportAuthorization()))
-		opts = append(opts, grpc.WithPerRPCCredentials(authorizer.WithRPCAuthorization()))
+		//opts = append(opts, grpc.WithPerRPCCredentials(authorizer.WithRPCAuthorization()))
 	}
 
 	return opts
