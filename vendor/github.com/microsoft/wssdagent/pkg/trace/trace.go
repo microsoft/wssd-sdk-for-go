@@ -19,6 +19,7 @@ type Settings struct {
 
 var fileExporter *exporters.FileExporter
 var consoleExporter *exporters.ConsoleExporter
+var etwExporter *exporters.EtwExporter
 
 // Configure initializes tracing
 func Configure(settings *Settings) error {
@@ -28,6 +29,8 @@ func Configure(settings *Settings) error {
 	opentrace.RegisterExporter(fileExporter)
 	consoleExporter = exporters.NewConsoleExporter()
 	opentrace.RegisterExporter(consoleExporter)
+	etwExporter = exporters.NewEtwExporter()
+	opentrace.RegisterExporter(etwExporter)
 	opentrace.ApplyConfig(opentrace.Config{DefaultSampler: opentrace.AlwaysSample()})
 	return registerJaeger(settings)
 }

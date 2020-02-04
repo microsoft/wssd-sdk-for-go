@@ -3,28 +3,31 @@ contrib.go.opencensus.io/exporter/jaeger
 contrib.go.opencensus.io/exporter/jaeger/internal/gen-go/jaeger
 # contrib.go.opencensus.io/exporter/zipkin v0.1.1
 contrib.go.opencensus.io/exporter/zipkin
+# github.com/Microsoft/go-winio v0.4.13-0.20190702183143-881e3d46423d
+github.com/Microsoft/go-winio/pkg/etw
+github.com/Microsoft/go-winio/pkg/guid
 # github.com/apache/thrift v0.12.0
 github.com/apache/thrift/lib/go/thrift
 # github.com/fsnotify/fsnotify v1.4.7
 github.com/fsnotify/fsnotify
-# github.com/golang/protobuf v1.3.1
+# github.com/golang/protobuf v1.3.2
 github.com/golang/protobuf/proto
-github.com/golang/protobuf/ptypes/wrappers
 github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
+github.com/golang/protobuf/ptypes/wrappers
 # github.com/hashicorp/golang-lru v0.5.3
 github.com/hashicorp/golang-lru/simplelru
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
-github.com/hashicorp/hcl/hcl/printer
 github.com/hashicorp/hcl/hcl/ast
 github.com/hashicorp/hcl/hcl/parser
-github.com/hashicorp/hcl/hcl/token
-github.com/hashicorp/hcl/json/parser
+github.com/hashicorp/hcl/hcl/printer
 github.com/hashicorp/hcl/hcl/scanner
 github.com/hashicorp/hcl/hcl/strconv
+github.com/hashicorp/hcl/hcl/token
+github.com/hashicorp/hcl/json/parser
 github.com/hashicorp/hcl/json/scanner
 github.com/hashicorp/hcl/json/token
 # github.com/inconshreveable/mousetrap v1.0.0
@@ -33,31 +36,31 @@ github.com/inconshreveable/mousetrap
 github.com/jmespath/go-jmespath
 # github.com/magiconair/properties v1.8.0
 github.com/magiconair/properties
-# github.com/microsoft/wssdagent v0.0.0-00010101000000-000000000000 => ..\wssdagent
+# github.com/microsoft/wssdagent v0.0.31
 github.com/microsoft/wssdagent/pkg/apis/config
+github.com/microsoft/wssdagent/pkg/errors
+github.com/microsoft/wssdagent/pkg/exporters
+github.com/microsoft/wssdagent/pkg/marshal
+github.com/microsoft/wssdagent/pkg/trace
+github.com/microsoft/wssdagent/rpc/common
 github.com/microsoft/wssdagent/rpc/compute
 github.com/microsoft/wssdagent/rpc/network
 github.com/microsoft/wssdagent/rpc/security
 github.com/microsoft/wssdagent/rpc/storage
-github.com/microsoft/wssdagent/pkg/marshal
-github.com/microsoft/wssdagent/rpc/common
-github.com/microsoft/wssdagent/pkg/errors
-github.com/microsoft/wssdagent/pkg/trace
-github.com/microsoft/wssdagent/pkg/exporters
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
 # github.com/openzipkin/zipkin-go v0.2.2
 github.com/openzipkin/zipkin-go
-github.com/openzipkin/zipkin-go/reporter/http
-github.com/openzipkin/zipkin-go/model
-github.com/openzipkin/zipkin-go/reporter
 github.com/openzipkin/zipkin-go/idgenerator
+github.com/openzipkin/zipkin-go/model
 github.com/openzipkin/zipkin-go/propagation
+github.com/openzipkin/zipkin-go/reporter
+github.com/openzipkin/zipkin-go/reporter/http
 # github.com/pelletier/go-toml v1.2.0
 github.com/pelletier/go-toml
 # github.com/pkg/errors v0.8.1
 github.com/pkg/errors
-# github.com/spf13/afero v1.1.2
+# github.com/spf13/afero v1.2.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
 # github.com/spf13/cast v1.3.0
@@ -71,41 +74,43 @@ github.com/spf13/pflag
 # github.com/spf13/viper v1.4.0
 github.com/spf13/viper
 # go.opencensus.io v0.22.0
-go.opencensus.io/trace
-go.opencensus.io/trace/propagation
-go.opencensus.io/internal
-go.opencensus.io/trace/internal
-go.opencensus.io/trace/tracestate
 go.opencensus.io
-# golang.org/x/net v0.0.0-20190628185345-da137c7871d7
-golang.org/x/net/trace
-golang.org/x/net/internal/timeseries
+go.opencensus.io/internal
+go.opencensus.io/trace
+go.opencensus.io/trace/internal
+go.opencensus.io/trace/propagation
+go.opencensus.io/trace/tracestate
+# golang.org/x/net v0.0.0-20190812203447-cdfb69ac37fc
+golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
-golang.org/x/net/http/httpguts
 golang.org/x/net/idna
+golang.org/x/net/internal/timeseries
+golang.org/x/net/trace
 # golang.org/x/sync v0.0.0-20190423024810-112230192c58
 golang.org/x/sync/semaphore
 # golang.org/x/sys v0.0.0-20191104094858-e8c54fb511f6
 golang.org/x/sys/unix
+golang.org/x/sys/windows
 # golang.org/x/text v0.3.2
-golang.org/x/text/transform
-golang.org/x/text/unicode/norm
 golang.org/x/text/secure/bidirule
+golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
+golang.org/x/text/unicode/norm
 # google.golang.org/api v0.3.2
 google.golang.org/api/support/bundler
 # google.golang.org/genproto v0.0.0-20190701230453-710ae3a149df
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.22.0
-google.golang.org/grpc/credentials
 google.golang.org/grpc
-google.golang.org/grpc/credentials/internal
-google.golang.org/grpc/codes
-google.golang.org/grpc/status
 google.golang.org/grpc/balancer
+google.golang.org/grpc/balancer/base
 google.golang.org/grpc/balancer/roundrobin
+google.golang.org/grpc/binarylog/grpc_binarylog_v1
+google.golang.org/grpc/codes
 google.golang.org/grpc/connectivity
+google.golang.org/grpc/credentials
+google.golang.org/grpc/credentials/internal
 google.golang.org/grpc/encoding
 google.golang.org/grpc/encoding/proto
 google.golang.org/grpc/grpclog
@@ -117,6 +122,7 @@ google.golang.org/grpc/internal/channelz
 google.golang.org/grpc/internal/envconfig
 google.golang.org/grpc/internal/grpcrand
 google.golang.org/grpc/internal/grpcsync
+google.golang.org/grpc/internal/syscall
 google.golang.org/grpc/internal/transport
 google.golang.org/grpc/keepalive
 google.golang.org/grpc/metadata
@@ -127,10 +133,8 @@ google.golang.org/grpc/resolver/dns
 google.golang.org/grpc/resolver/passthrough
 google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
+google.golang.org/grpc/status
 google.golang.org/grpc/tap
-google.golang.org/grpc/balancer/base
-google.golang.org/grpc/binarylog/grpc_binarylog_v1
-google.golang.org/grpc/internal/syscall
 # gopkg.in/yaml.v2 v2.2.2
 gopkg.in/yaml.v2
 # k8s.io/klog v1.0.0

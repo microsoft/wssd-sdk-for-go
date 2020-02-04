@@ -45,7 +45,7 @@ func runE(flags *flags) error {
 	group := viper.GetString("group")
 	server := viper.GetString("server")
 
-	authorizer, err := auth.NewAuthorizerFromEnvironment()
+	authorizer, err := auth.NewAuthorizerFromEnvironment(server)
 	if err != nil {
 		return err
 	}

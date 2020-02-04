@@ -31,22 +31,22 @@ type spanWriteDataConsole struct {
 
 // NewConsoleExporter does
 func NewConsoleExporter() *ConsoleExporter {
-	fe := ConsoleExporter{
+	ce := ConsoleExporter{
 		true,
 		make(map[string][]string),
 		make(chan *spanWriteDataConsole),
 	}
 
-	go fe.monitorLogs()
+	go ce.monitorLogs()
 
-	return &fe
+	return &ce
 }
 
-func (fe *ConsoleExporter) monitorLogs() {
+func (ce *ConsoleExporter) monitorLogs() {
 
-	feChannel := fe.LogChannel
+	ceChannel := ce.LogChannel
 	for {
-		nextSpanMessage, ok := <-feChannel
+		nextSpanMessage, ok := <-ceChannel
 		if !ok {
 			// Channel has been closed
 			break
@@ -81,8 +81,8 @@ func (fe *ConsoleExporter) monitorLogs() {
 					anno.Message))
 		}
 
-		if fe.ParentMap[nextSpanMessage.ID] != nil {
-			for _, span := range fe.ParentMap[nextSpanMessage.ID] {
+		if ce.ParentMap[nextSpanMessage.ID] != nil {
+			for _, span := range ce.ParentMap[nextSpanMessage.ID] {
 				buffer.WriteString(span)
 			}
 		}
@@ -95,19 +95,19 @@ func (fe *ConsoleExporter) monitorLogs() {
 
 		if nextSpanMessage.ParentID == [8]byte{} {
 			fmt.Printf(buffer.String())
-		} else if fe.ParentMap[nextSpanMessage.ParentID.String()] != nil {
-			fe.ParentMap[nextSpanMessage.ParentID.String()] = append(fe.ParentMap[nextSpanMessage.ParentID.String()], buffer.String())
+		} else if ce.ParentMap[nextSpanMessage.ParentID.String()] != nil {
+			ce.ParentMap[nextSpanMessage.ParentID.String()] = append(ce.ParentMap[nextSpanMessage.ParentID.String()], buffer.String())
 		} else {
-			fe.ParentMap[nextSpanMessage.ParentID.String()] = []string{buffer.String()}
+			ce.ParentMap[nextSpanMessage.ParentID.String()] = []string{buffer.String()}
 		}
 	}
 }
 
 // ExportSpan prints information about given span to logs.
-func (fe *ConsoleExporter) ExportSpan(sd *trace.SpanData) {
+func (ce *ConsoleExporter) ExportSpan(sd *trace.SpanData) {
 
 	traceIdentiferID := GetHashedTraceID(sd.SpanContext.TraceID)
-	fe.LogChannel <- &spanWriteDataConsole{
+	ce.LogChannel <- &spanWriteDataConsole{
 		sd.Name,
 		sd.SpanID.String(),
 		sd.StartTime.Format("01-02 15:04:0000005"),

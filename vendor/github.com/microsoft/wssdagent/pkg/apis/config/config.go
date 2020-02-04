@@ -5,11 +5,12 @@ package config
 import (
 	"bytes"
 	"context"
-	"github.com/spf13/viper"
-	"gopkg.in/yaml.v2"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 
 	"github.com/microsoft/wssdagent/pkg/trace"
 )
@@ -43,7 +44,7 @@ func DefaultAgentConfiguration() *WSSDAgentConfiguration {
 	_, span := trace.NewSpan(context.Background(), "Wssdagent DefaultAgentConfiguration Span")
 
 	provSpec := environmentProviderSpec(span)
-	basePath := viper.GetString("BaseDir")
+	basePath := GetBaseDir()
 	ac := WSSDAgentConfiguration{
 		Port:    ServerPort,
 		Address: ListenAddress,
@@ -58,7 +59,10 @@ func DefaultAgentConfiguration() *WSSDAgentConfiguration {
 			"virtualnetworkinterface": newChildAgentConfiguration(path.Join(basePath), "virtualnetworkinterface", provSpec),
 			"loadbalancer":            newChildAgentConfiguration(path.Join(basePath), "loadbalancer", provSpec),
 		},
-		ImageStorePath: "c:/wssdimagestore",
+		ImageStorePath:            "c:/wssdimagestore",
+		CloudAgentCertificatePath: "c:/wssd/cloudagent.pem",
+		NodeAgentCertificatePath:  "c:/wssd/nodeagent.pem",
+		NodeAgentAccessFilePath:   "c:/wssd/cloudconfig",
 	}
 	// Load Default configuration
 	agentConfig, err := yaml.Marshal(ac)
@@ -92,8 +96,12 @@ func GetChildAgentConfiguration(childAgentName string) *ChildAgentConfiguration 
 	return &childAgentConfig
 }
 
+func GetBaseDir() string {
+	return viper.GetString("BaseDir")
+}
+
 func GetPublicKeyConfiguration() string {
-	basePath := viper.GetString("BaseDir")
+	basePath := GetBaseDir()
 	publicKeyName := viper.GetString("PublicKeyName")
 	return path.Join(basePath, publicKeyName)
 }
@@ -103,6 +111,16 @@ func GetTLSServerCertConfiguration() string {
 }
 func GetTLSServerKeyConfiguration() string {
 	return viper.GetString("TLSKeyPath")
+}
+
+func GetDebug() bool {
+	return viper.GetBool("Debug")
+}
+
+func GetLogPath() string {
+	// TODO: Read this from BaseConfiguration.LogPath
+	basePath := GetBaseDir()
+	return path.Join(basePath, "log")
 }
 
 func newChildAgentConfiguration(dataStorePath string, childAgentName string, providerSpec string) ChildAgentConfiguration {
