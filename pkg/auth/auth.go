@@ -18,12 +18,12 @@ const (
 	ClientTokenName   = ".token"
 	ClientCertName    = "wssd.pem"
 	ClientTokenPath   = "WSSD_CLIENT_TOKEN"
-	AzConfigPath      = "AZCONFIG_PATH"
+	WssdConfigPath    = "WSSD_CONFIG_PATH"
 	DefaultWSSDFolder = ".wssd"
 	ServerName        = "ServerName"
 )
 
-type azConfig struct {
+type wssdConfig struct {
 	CloudCertificate  string
 	ClientCertificate string
 	ClientKey         string
@@ -36,7 +36,7 @@ type Authorizer interface {
 
 type ManagedIdentityConfig struct {
 	ClientTokenPath string
-	AzConfigPath    string
+	WssdConfigPath  string
 	ServerName      string
 }
 
@@ -89,7 +89,7 @@ func GetSettingsFromEnvironment(serverName string) (s EnvironmentSettings, err e
 		Values: map[string]string{},
 	}
 	s.Values[ClientTokenPath] = getClientTokenLocation()
-	s.Values[AzConfigPath] = GetAzConfigLocation()
+	s.Values[WssdConfigPath] = GetWssdConfigLocation()
 
 	s.Values[ServerName] = serverName
 
@@ -103,7 +103,7 @@ func (settings EnvironmentSettings) GetAuthorizer() (Authorizer, error) {
 func (settings EnvironmentSettings) GetManagedIdentityConfig() ManagedIdentityConfig {
 	return ManagedIdentityConfig{
 		settings.Values[ClientTokenPath],
-		settings.Values[AzConfigPath],
+		settings.Values[WssdConfigPath],
 		settings.Values[ServerName],
 	}
 }
@@ -111,7 +111,7 @@ func (settings EnvironmentSettings) GetManagedIdentityConfig() ManagedIdentityCo
 func (mc ManagedIdentityConfig) Authorizer() (Authorizer, error) {
 
 	jwtCreds := TokenProviderFromFile(mc.ClientTokenPath)
-	transportCreds := TransportCredentialsFromFile(mc.AzConfigPath, mc.ServerName)
+	transportCreds := TransportCredentialsFromFile(mc.WssdConfigPath, mc.ServerName)
 
 	return NewBearerAuthorizer(jwtCreds, transportCreds), nil
 }
@@ -128,11 +128,11 @@ func TokenProviderFromFile(tokenLocation string) JwtTokenProvider {
 	return JwtTokenProvider{string(data)}
 }
 
-func TransportCredentialsFromFile(azConfigLocation string, server string) credentials.TransportCredentials {
+func TransportCredentialsFromFile(wssdConfigLocation string, server string) credentials.TransportCredentials {
 	clientCerts := []tls.Certificate{}
 	certPool := x509.NewCertPool()
 
-	serverPem, tlsCert, err := readAccessFile(azConfigLocation)
+	serverPem, tlsCert, err := readAccessFile(wssdConfigLocation)
 	if err == nil {
 		clientCerts = append(clientCerts, tlsCert)
 		// Append the client certificates from the CA
@@ -155,7 +155,7 @@ func TransportCredentialsFromFile(azConfigLocation string, server string) creden
 }
 
 func readAccessFile(accessFileLocation string) ([]byte, tls.Certificate, error) {
-	accessFile := azConfig{}
+	accessFile := wssdConfig{}
 	err := marshal.FromJSONFile(accessFileLocation, &accessFile)
 	if err != nil {
 		return []byte{}, tls.Certificate{}, err
@@ -229,8 +229,8 @@ func getClientTokenLocation() string {
 	return clientTokenPath
 }
 
-func GetAzConfigLocation() string {
-	return os.Getenv(AzConfigPath)
+func GetWssdConfigLocation() string {
+	return os.Getenv(WssdConfigPath)
 }
 func SaveToken(tokenStr string) error {
 	return ioutil.WriteFile(

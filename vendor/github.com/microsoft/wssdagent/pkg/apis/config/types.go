@@ -39,10 +39,14 @@ type WSSDAgentConfiguration struct {
 	// if any, concatenated after server cert). If tlsCertFile and
 	// tlsPrivateKeyFile are not provided, a self-signed certificate
 	// and key are generated for the public address and saved to the directory
-	TLSCertificateFile string
-	TLSPrivateKeyFile  string
-	TLSCipherSuites    []string
-	TLSMinVersion      string
+	CloudAgentCertificatePath string
+	NodeAgentCertificatePath  string
+	NodeAgentAccessFilePath   string
+	TLSCipherSuites           []string
+	TLSMinVersion             string
 
 	ProviderConfigurations map[string]ChildAgentConfiguration
+
+	// Debug
+	Debug bool
 }
