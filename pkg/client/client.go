@@ -19,8 +19,8 @@ import (
 )
 
 const (
-	debugModeTLS    = "WSSD_DEBUG_MODE"
-	
+	debugModeTLS = "WSSD_DEBUG_MODE"
+
 	// Workaround to allow wssdctl to build for Linux
 	// Before we were pulling this value from github.com/wssdagent/pkg/apis/config,
 	// and that pkg uses the trace pkg ... which needs to be refactored to build for linux.
