@@ -101,8 +101,6 @@ github.com/lyft/protoc-gen-validate v0.0.13/go.mod h1:XbGvPuh87YZc5TdIa2/I4pLk0Q
 github.com/magiconair/properties v1.8.0 h1:LLgXmsheXeRoUOBOjtwPQCWIYqM/LU1ayDtDePerRcY=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-github.com/microsoft/wssdagent v0.0.32-0.20200205212645-0ab127737b12 h1:KSh3zkfYz1zdR1MRkHnlpDyywryenFF2bKs/1noXatE=
-github.com/microsoft/wssdagent v0.0.32-0.20200205212645-0ab127737b12/go.mod h1:AvLW6Ee7obvgZSckFwwSw0kCqKMa/6+QYZlBxwWWGc4=
 github.com/microsoft/wssdagent v0.0.32-0.20200206015953-4ddc3c7b971e h1:MLu2rvwnv1M1zpPDXKKwtwdVG5V509nidg4WlCEXLr0=
 github.com/microsoft/wssdagent v0.0.32-0.20200206015953-4ddc3c7b971e/go.mod h1:AvLW6Ee7obvgZSckFwwSw0kCqKMa/6+QYZlBxwWWGc4=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=

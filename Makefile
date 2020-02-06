@@ -13,7 +13,7 @@ OUT=bin/wssdctl
 
 PKG := 
 
-all: format ctl ctlexe
+all: vendor ctl ctlexe
 
 clean:
 	rm -rf ${OUT} ${OUTEXE}
