@@ -171,9 +171,6 @@ func (c *client) getWssdNetworkInterfaceIPConfig(ipconfig *network.IPConfigurati
 	if ipconfig.PrefixLength != nil {
 		wssdipconfig.Prefixlength = *ipconfig.PrefixLength
 	}
-	if ipconfig.LoadBalancerBackendAddressPoolIDs != nil {
-		wssdipconfig.Loadbalanceraddresspool = *ipconfig.LoadBalancerBackendAddressPoolIDs
-	}
 
 	return wssdipconfig, nil
 }
@@ -225,10 +222,9 @@ func (c *client) getNetworkIpConfigs(wssdipconfigs []*wssdnetwork.IpConfiguratio
 	for _, wssdipconfig := range wssdipconfigs {
 		ipconfigs = append(ipconfigs, network.IPConfiguration{
 			IPConfigurationProperties: &network.IPConfigurationProperties{
-				IPAddress:                         &wssdipconfig.Ipaddress,
-				PrefixLength:                      &wssdipconfig.Prefixlength,
-				SubnetID:                          &wssdipconfig.Subnetid,
-				LoadBalancerBackendAddressPoolIDs: &wssdipconfig.Loadbalanceraddresspool,
+				IPAddress:    &wssdipconfig.Ipaddress,
+				PrefixLength: &wssdipconfig.Prefixlength,
+				SubnetID:     &wssdipconfig.Subnetid,
 			},
 		})
 	}
