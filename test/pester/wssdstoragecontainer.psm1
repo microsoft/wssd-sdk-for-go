@@ -30,7 +30,7 @@ function CreateSampleContainer() {
 	$Global:sampleContainerSource = "$Script:ScriptPath\test.containerx"
 $yaml = @"
 name: $Global:sampleContainer
-Containerproperties:
+containerproperties:
   path: c:/wssdimagestore	
 "@
 		$yamlFile = "testContainer.yaml"

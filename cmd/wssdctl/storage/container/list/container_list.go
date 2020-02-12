@@ -62,7 +62,7 @@ func runE(flags *flags) error {
 		return err
 	}
 	if containers == nil || len(*containers) == 0 {
-		fmt.Println("No Virtual Hard Disk Resources")
+		fmt.Println("No Container Resources")
 		// Not an error
 		return nil
 	}

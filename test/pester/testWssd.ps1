@@ -156,7 +156,7 @@ Describe 'Container BVT' {
 	It 'Should be able to create a storage container' {
 		$yaml = @"
 name: $script:testContainer
-Containerproperties:
+containerproperties:
   path: c:/containerpath	
 "@
 		$yamlFile = "testContainer.yaml"

@@ -205,7 +205,7 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			StorageProfile:    c.getVirtualMachineStorageProfile(vm.Storage),
 			OsProfile:         c.getVirtualMachineOSProfile(vm.Os),
 			NetworkProfile:    c.getVirtualMachineNetworkProfile(vm.Network),
-			ProvisioningState: c.getVirtualMachineProvisioningState(vm.ProvisionStatus),
+			ProvisioningState: c.getVirtualMachineProvisioningState(vm.Status.ProvisioningStatus),
 		},
 	}
 }
