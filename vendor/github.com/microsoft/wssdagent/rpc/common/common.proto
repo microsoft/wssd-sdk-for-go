@@ -22,12 +22,13 @@ enum ProvisionState {
 	DELETED = 6;
 	UPDATING = 7;
 	UPDATE_FAILED = 8;
-	PROVISIONING = 9;
-	PROVISIONED = 10;
-	PROVISION_FAILED = 11;
-	DEPROVISIONING = 12;
-	DEPROVISIONED = 13;
-	DEPROVISION_FAILED = 14;
+	UPDATED = 9;
+	PROVISIONING = 10;
+	PROVISIONED = 11;
+	PROVISION_FAILED = 12;
+	DEPROVISIONING = 13;
+	DEPROVISIONED = 14;
+	DEPROVISION_FAILED = 15;
 }
 
 enum HealthState {
@@ -38,17 +39,22 @@ enum HealthState {
 }
 
 message Error {
-	string errorMessage = 1;
+	string Message = 1;
+	int32 Code = 2;
 }
 
 message ProvisionStatus {
 	ProvisionState currentState = 1;
-	ProvisionState lastState = 2;
-	Error lastError = 3;
+	ProvisionState previousState = 2;
 }
 
 message Health {
 	HealthState currentState = 1;
-	HealthState lastState = 2;
+	HealthState previousState = 2;
+}
+
+message Status {
+	Health health = 1;
+	ProvisionStatus provisioningStatus = 2;
 	Error lastError = 3;
 }

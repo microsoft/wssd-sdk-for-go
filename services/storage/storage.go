@@ -3,7 +3,7 @@
 
 package storage
 
-// BaseProperties defines the structure of a Load Balancer
+// VirtualHardDiskProperties defines the structure of a Virtual HardDisk
 type VirtualHardDiskProperties struct {
 	// Path
 	Path *string `json:"path,omitempty"`
@@ -49,4 +49,26 @@ type VirtualHardDisk struct {
 	Tags map[string]*string `json:"tags"`
 	// Properties
 	*VirtualHardDiskProperties `json:"properties,omitempty"`
+}
+
+// ContainerProperties defines the structure of a ContainerProperties
+type ContainerProperties struct {
+	// Path
+	Path *string `json:"path,omitempty"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
+}
+
+// VirtualHardDisk defines the structure of a VHD
+type Container struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*ContainerProperties `json:"properties,omitempty"`
 }

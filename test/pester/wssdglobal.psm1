@@ -1,5 +1,6 @@
 $ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 $Global:wssdcloutctl = (Get-Command 'wssdctl.exe').Source
+$Global:debugMode = $false
 
 function Execute-Command(
     $Command,
@@ -21,6 +22,10 @@ function Execute-Command(
 function Execute-WssdCommand(
     $Arguments
 ) {
+    $newArgs = $Arguments
+    if ($Global:debugMode) {
+        $newArgs = "$Arguments --debug"
+    }
+    Execute-Command -Command $Global:wssdcloutctl -Arguments $newArgs
 
-    Execute-Command -Command $Global:wssdcloutctl -Arguments $Arguments
 }
