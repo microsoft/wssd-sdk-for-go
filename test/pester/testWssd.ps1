@@ -1,4 +1,8 @@
 #  
+param(
+   [Parameter()]
+   [Switch] $disableTls
+)
 
 $ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 import-module "$PSScriptRoot\wssdcomputevm.psm1" -Force -Verbose:$false -DisableNameChecking
@@ -8,6 +12,10 @@ import-module "$PSScriptRoot\wssdnetworkvnic.psm1" -Force -Verbose:$false -Disab
 import-module "$PSScriptRoot\wssdstoragevhd.psm1" -Force -Verbose:$false -DisableNameChecking
 import-module "$PSScriptRoot\wssdsecurityvault.psm1" -Force -Verbose:$false -DisableNameChecking
 import-module "$PSScriptRoot\wssdsecuritysecret.psm1" -Force -Verbose:$false -DisableNameChecking
+
+if ($disableTls.IsPresent) {
+	$Global:debugMode = $true
+}
 
 Describe 'Wssd Agent Pre-Requisite' {
 	Context 'Checking for Agent' {
