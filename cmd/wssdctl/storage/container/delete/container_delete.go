@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/microsoft/wssd-sdk-for-go/services/storage/virtualharddisk"
+	"github.com/microsoft/wssd-sdk-for-go/services/storage/container"
 )
 
 type flags struct {
@@ -22,14 +22,14 @@ func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Args:  cobra.NoArgs,
 		Use:   "delete",
-		Short: "delete a specific vhd",
-		Long:  "delete a specific vhd ",
+		Short: "delete a specific container",
+		Long:  "delete a specific container ",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},
 	}
 
-	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the vhd")
+	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the container")
 	cmd.MarkFlagRequired("name")
 
 	return cmd
@@ -44,7 +44,7 @@ func runE(flags *flags) error {
 		return err
 	}
 
-	vhdClient, err := virtualharddisk.NewVirtualHardDiskClient(server, authorizer)
+	containerClient, err := container.NewContainerClient(server, authorizer)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	err = vhdClient.Delete(ctx, group, flags.Name)
+	err = containerClient.Delete(ctx, group, flags.Name)
 	if err != nil {
 		return err
 	}

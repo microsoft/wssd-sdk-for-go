@@ -133,6 +133,17 @@ func GetVirtualHardDiskClient(serverAddress *string, authorizer auth.Authorizer)
 	return storage_pb.NewVirtualHardDiskAgentClient(conn), nil
 }
 
+// GetVirtualHardDiskClient returns the virtual network client to communicate with the wssdagent
+func GetContainerClient(serverAddress *string, authorizer auth.Authorizer) (storage_pb.ContainerAgentClient, error) {
+	opts := getDefaultDialOption(authorizer)
+	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	if err != nil {
+		log.Fatalf("Unable to get ContainerClient. Failed to dial: %v", err)
+	}
+
+	return storage_pb.NewContainerAgentClient(conn), nil
+}
+
 // GetKeyVaultClient returns the keyvault client to communicate with the wssdagent
 func GetKeyVaultClient(serverAddress *string, authorizer auth.Authorizer) (security_pb.KeyVaultAgentClient, error) {
 	opts := getDefaultDialOption(authorizer)

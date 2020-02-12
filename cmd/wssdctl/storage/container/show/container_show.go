@@ -15,21 +15,21 @@ func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Args:  cobra.NoArgs,
 		Use:   "show",
-		Short: "show a specific vhd",
-		Long:  "show a specific vhd ",
+		Short: "show a specific container",
+		Long:  "show a specific container ",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},
 	}
 
-	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the vhd")
+	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the container")
 	cmd.MarkFlagRequired("name")
 
 	return cmd
 }
 
 func runE(flags *flags) error {
-	panic("vhd show not implemented")
+	panic("container show not implemented")
 
 	return nil
 }

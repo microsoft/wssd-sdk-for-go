@@ -66,7 +66,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 
 func getContainersFromResponse(response *wssdstorage.ContainerResponse) *[]storage.Container {
 	containers := []storage.Container{}
-	for _, ctainer := range response.GetContainerSystems() {
+	for _, ctainer := range response.GetContainers() {
 		containers = append(containers, *(getContainer(ctainer)))
 	}
 
@@ -75,13 +75,13 @@ func getContainersFromResponse(response *wssdstorage.ContainerResponse) *[]stora
 
 func getContainerRequest(opType wssdcommonproto.Operation, name string, ctainer *storage.Container) *wssdstorage.ContainerRequest {
 	request := &wssdstorage.ContainerRequest{
-		OperationType:    opType,
-		ContainerSystems: []*wssdstorage.Container{},
+		OperationType: opType,
+		Containers:    []*wssdstorage.Container{},
 	}
 	if ctainer != nil {
-		request.ContainerSystems = append(request.ContainerSystems, getWssdContainer(ctainer))
+		request.Containers = append(request.Containers, getWssdContainer(ctainer))
 	} else if len(name) > 0 {
-		request.ContainerSystems = append(request.ContainerSystems,
+		request.Containers = append(request.Containers,
 			&wssdstorage.Container{
 				Name: name,
 			})
@@ -95,7 +95,7 @@ func getContainer(ctainer *wssdstorage.Container) *storage.Container {
 		Name: &ctainer.Name,
 		ContainerProperties: &storage.ContainerProperties{
 			Path:              &ctainer.Path,
-			ProvisioningState: getContainerProvisioningState(ctainer.ProvisionStatus),
+			ProvisioningState: getContainerProvisioningState(ctainer.Status.ProvisioningStatus),
 		},
 	}
 }

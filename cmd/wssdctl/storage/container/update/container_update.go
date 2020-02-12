@@ -15,21 +15,21 @@ func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Args:  cobra.NoArgs,
 		Use:   "update",
-		Short: "update a specific vhd",
-		Long:  "update a specific vhd ",
+		Short: "update a specific container",
+		Long:  "update a specific container ",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runE(flags)
 		},
 	}
 
-	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the vhd")
+	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the container")
 	cmd.MarkFlagRequired("name")
 
 	return cmd
 }
 
 func runE(flags *flags) error {
-	panic("vhd update not implemented")
+	panic("container update not implemented")
 
 	return nil
 }
