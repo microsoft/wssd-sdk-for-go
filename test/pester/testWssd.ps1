@@ -1,4 +1,8 @@
 #  
+param(
+   [Parameter()]
+   [Switch] $disableTls
+)
 
 $ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 import-module "$PSScriptRoot\wssdcomputevm.psm1" -Force -Verbose:$false -DisableNameChecking
@@ -6,8 +10,13 @@ import-module "$PSScriptRoot\wssdcomputevmss.psm1" -Force -Verbose:$false -Disab
 import-module "$PSScriptRoot\wssdnetworkvnet.psm1" -Force -Verbose:$false -DisableNameChecking
 import-module "$PSScriptRoot\wssdnetworkvnic.psm1" -Force -Verbose:$false -DisableNameChecking
 import-module "$PSScriptRoot\wssdstoragevhd.psm1" -Force -Verbose:$false -DisableNameChecking
+import-module "$PSScriptRoot\wssdstoragecontainer.psm1" -Force -Verbose:$false -DisableNameChecking
 import-module "$PSScriptRoot\wssdsecurityvault.psm1" -Force -Verbose:$false -DisableNameChecking
 import-module "$PSScriptRoot\wssdsecuritysecret.psm1" -Force -Verbose:$false -DisableNameChecking
+
+if ($disableTls.IsPresent) {
+	$Global:debugMode = $true
+}
 
 Describe 'Wssd Agent Pre-Requisite' {
 
@@ -184,6 +193,33 @@ virtualharddiskproperties:
 
 	It 'Should be able to delete a virtual hard disk' {
 		VirtualHardDiskDelete -name  $script:testVirtualHardDisk
+}
+
+Describe 'Container BVT' {
+	$script:testContainer = "testContainer1"
+
+	It 'Should be able to create a storage container' {
+		$yaml = @"
+name: $script:testContainer
+containerproperties:
+  path: c:/containerpath	
+"@
+		$yamlFile = "testContainer.yaml"
+		Set-Content -Path $yamlFile -Value $yaml 
+
+		ContainerCreate $yamlFile  # | Should Not Throw
+	}
+	It 'Should be able to list all storage container' {
+		ContainerList  # | Should Not Throw
+	}
+	<#
+	# Uncomment once implemented
+	It 'Should be able to show a virtual hard disk' {
+		ContainerShow $script:testContainer  # | Should Not Throw
+	}
+	#>
+	It 'Should be able to delete a  storage container' {
+		ContainerDelete $script:testContainer  # | Should Not Throw
 	}
 }
 

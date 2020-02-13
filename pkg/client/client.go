@@ -16,10 +16,19 @@ import (
 	"strings"
 
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
-	"github.com/microsoft/wssdagent/pkg/apis/config"
 )
 
-const debugModeTLS = "WSSD_DEBUG_MODE"
+const (
+	debugModeTLS = "WSSD_DEBUG_MODE"
+
+	// Workaround to allow wssdctl to build for Linux
+	// Before we were pulling this value from github.com/wssdagent/pkg/apis/config,
+	// and that pkg uses the trace pkg ... which needs to be refactored to build for linux.
+	//
+	// In the future we may want to decouple wssdagent usage in the sdk ... so its possible that even when that is fixed,
+	// this value still lives here.
+	KnownServerPort = 45000
+)
 
 // Returns nil if debug mode is on; err if it is not
 func isDebugMode() error {
@@ -34,7 +43,7 @@ func isDebugMode() error {
 }
 
 func getServerEndpoint(serverAddress *string) string {
-	return fmt.Sprintf("%s:%d", *serverAddress, config.ServerPort)
+	return fmt.Sprintf("%s:%d", *serverAddress, KnownServerPort)
 }
 
 func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
@@ -122,6 +131,17 @@ func GetVirtualHardDiskClient(serverAddress *string, authorizer auth.Authorizer)
 	}
 
 	return storage_pb.NewVirtualHardDiskAgentClient(conn), nil
+}
+
+// GetVirtualHardDiskClient returns the virtual network client to communicate with the wssdagent
+func GetContainerClient(serverAddress *string, authorizer auth.Authorizer) (storage_pb.ContainerAgentClient, error) {
+	opts := getDefaultDialOption(authorizer)
+	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	if err != nil {
+		log.Fatalf("Unable to get ContainerClient. Failed to dial: %v", err)
+	}
+
+	return storage_pb.NewContainerAgentClient(conn), nil
 }
 
 // GetKeyVaultClient returns the keyvault client to communicate with the wssdagent

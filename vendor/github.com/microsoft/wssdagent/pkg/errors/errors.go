@@ -21,6 +21,7 @@ var (
 	Failed               error = errors.New("Failed")
 	InvalidGroup         error = errors.New("InvalidGroup")
 	UpdateFailed         error = errors.New("Update Failed")
+	NotInitialized       error = errors.New("Not Initialized")
 	Unknown              error = errors.New("Unknown Reason")
 )
 

@@ -5,6 +5,7 @@ package storage
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage/container"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage/vhd"
 )
 
@@ -22,6 +23,7 @@ func NewCommand() *cobra.Command {
 	}
 
 	cmd.AddCommand(vhd.NewCommand())
+	cmd.AddCommand(container.NewCommand())
 
 	return cmd
 }
