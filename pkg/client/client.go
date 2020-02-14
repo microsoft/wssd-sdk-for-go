@@ -61,11 +61,7 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 	if ok := isDebugMode(); ok == nil {
 		opts = append(opts, grpc.WithInsecure())
 	} else {
-		if auth.GetWssdConfigLocation() == "" {
-			log.Fatalf("Please set the HCIAzConfig env variable (WSSD_CONFIG_PATH) with the location of your access file.")
-		}
 		opts = append(opts, grpc.WithTransportCredentials(authorizer.WithTransportAuthorization()))
-		//opts = append(opts, grpc.WithPerRPCCredentials(authorizer.WithRPCAuthorization()))
 	}
 
 	return opts

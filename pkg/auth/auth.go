@@ -179,7 +179,6 @@ func TransportCredentialsFromFile(wssdConfigLocation string, server string) cred
 		RootCAs:               certPool,
 		VerifyPeerCertificate: verifyPeerCertificate,
 	})
-
 }
 
 func readAccessFileToTls(accessFileLocation string) ([]byte, tls.Certificate, error) {
@@ -188,26 +187,8 @@ func readAccessFileToTls(accessFileLocation string) ([]byte, tls.Certificate, er
 	if err != nil {
 		return []byte{}, tls.Certificate{}, err
 	}
-	serverPem, err := marshal.FromBase64(accessFile.CloudCertificate)
-	if err != nil {
-		return []byte{}, tls.Certificate{}, err
-	}
-	clientPem, err := marshal.FromBase64(accessFile.ClientCertificate)
-	if err != nil {
-		return []byte{}, tls.Certificate{}, err
-	}
-	keyPem, err := marshal.FromBase64(accessFile.ClientKey)
-	if err != nil {
-		return []byte{}, tls.Certificate{}, err
-	}
-	tlsCert, err := tls.X509KeyPair(clientPem, keyPem)
-	if err != nil {
-		return []byte{}, tls.Certificate{}, err
-	}
-
-	return serverPem, tlsCert, nil
+	return AccessFileToTls(accessFile)
 }
-
 func TransportCredentialsFromNode(tlsCert tls.Certificate, serverCertificate []byte, server string) credentials.TransportCredentials {
 
 	certPool := x509.NewCertPool()
@@ -268,7 +249,10 @@ func SaveToken(tokenStr string) error {
 }
 
 func GenerateClientKey(loginconfig LoginConfig) ([]byte, WssdConfig, error) {
-	certBytes, _ := marshal.FromBase64(loginconfig.Certificate)
+	certBytes, err := marshal.FromBase64(loginconfig.Certificate)
+	if err != nil {
+		return []byte{}, WssdConfig{}, err
+	}
 	accessFile, err := readAccessFile(GetWssdConfigLocation())
 	if err != nil {
 		x509CertClient, keyClient, err := certs.GenerateClientCertificate(loginconfig.Name)
@@ -313,4 +297,25 @@ func readAccessFile(accessFileLocation string) (WssdConfig, error) {
 	}
 
 	return accessFile, nil
+}
+
+func AccessFileToTls(accessFile WssdConfig) ([]byte, tls.Certificate, error) {
+	serverPem, err := marshal.FromBase64(accessFile.CloudCertificate)
+	if err != nil {
+		return []byte{}, tls.Certificate{}, err
+	}
+	clientPem, err := marshal.FromBase64(accessFile.ClientCertificate)
+	if err != nil {
+		return []byte{}, tls.Certificate{}, err
+	}
+	keyPem, err := marshal.FromBase64(accessFile.ClientKey)
+	if err != nil {
+		return []byte{}, tls.Certificate{}, err
+	}
+	tlsCert, err := tls.X509KeyPair(clientPem, keyPem)
+	if err != nil {
+		return []byte{}, tls.Certificate{}, err
+	}
+
+	return serverPem, tlsCert, nil
 }
