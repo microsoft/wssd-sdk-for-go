@@ -8,17 +8,17 @@ import (
 	"fmt"
 
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
-	//"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
-	//"github.com/microsoft/wssd-sdk-for-go/services/security"
+	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/authentication"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 type flags struct {
-	Identity bool
-	User     string
+	Identity      bool
+	LoginFilePath string
 }
 
 func NewCommand() *cobra.Command {
@@ -35,8 +35,7 @@ func NewCommand() *cobra.Command {
 
 	cmd.Flags().BoolVar(&flags.Identity, "identity", true, "Uses Managed Identity to Login User")
 	cmd.MarkFlagRequired("identity")
-	cmd.Flags().StringVar(&flags.User, "user", "", "User Name for Managed Identity Login")
-	cmd.MarkFlagRequired("user")
+	cmd.Flags().StringVar(&flags.LoginFilePath, "loginpath", "", "Path for the NodeAgent Certificate")
 
 	return cmd
 }
@@ -45,7 +44,13 @@ func runE(flags *flags) error {
 	group := viper.GetString("group")
 	server := viper.GetString("server")
 
-	authorizer, err := auth.NewAuthorizerFromEnvironment(server)
+	loginconfig := auth.LoginConfig{}
+	err := config.LoadYAMLFile(flags.LoginFilePath, &loginconfig)
+	if err != nil {
+		return err
+	}
+
+	authorizer, err := auth.NewAuthorizerForAuth(loginconfig.Token, loginconfig.Certificate, server)
 	if err != nil {
 		return err
 	}
@@ -59,15 +64,25 @@ func runE(flags *flags) error {
 		return fmt.Errorf("Not Supported")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
-	defer cancel()
-
-	token, err := authenticationClient.Login(ctx, group, flags.User)
+	clientCert, accessFile, err := auth.GenerateClientKey(loginconfig)
 	if err != nil {
 		return err
 	}
 
-	auth.SaveToken(*token)
+	id := security.Identity{
+		Name:        &loginconfig.Name,
+		Certificate: &clientCert,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
+	defer cancel()
+
+	_, err = authenticationClient.Login(ctx, group, &id)
+	if err != nil {
+		return err
+	}
+
+	auth.PrintAccessFile(accessFile)
 
 	return nil
 }

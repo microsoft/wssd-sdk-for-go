@@ -6,8 +6,8 @@ package internal
 import (
 	"context"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
-
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
+	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	wssdsecurity "github.com/microsoft/wssdagent/rpc/security"
 	//log "k8s.io/klog"
 )
@@ -26,8 +26,8 @@ func NewAuthenticationClient(subID string, authorizer auth.Authorizer) (*client,
 }
 
 // Login
-func (c *client) Login(ctx context.Context, group, name string) (*string, error) {
-	request := getAuthenticationRequest(name)
+func (c *client) Login(ctx context.Context, group string, identity *security.Identity) (*string, error) {
+	request := getAuthenticationRequest(identity)
 	response, err := c.AuthenticationAgentClient.Login(ctx, request)
 	if err != nil {
 		return nil, err
@@ -35,10 +35,11 @@ func (c *client) Login(ctx context.Context, group, name string) (*string, error)
 	return &response.Token, nil
 }
 
-func getAuthenticationRequest(name string) *wssdsecurity.AuthenticationRequest {
+func getAuthenticationRequest(identity *security.Identity) *wssdsecurity.AuthenticationRequest {
 	request := &wssdsecurity.AuthenticationRequest{
 		Identity: &wssdsecurity.Identity{
-			Name: name,
+			Name:        *identity.Name,
+			Certificate: *identity.Certificate,
 		},
 	}
 	return request

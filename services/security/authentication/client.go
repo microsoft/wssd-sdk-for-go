@@ -12,7 +12,7 @@ import (
 
 // Service interface
 type Service interface {
-	Login(context.Context, string, string) (*string, error)
+	Login(context.Context, string, *security.Identity) (*string, error)
 }
 
 // Client structure
@@ -32,6 +32,6 @@ func NewAuthenticationClient(cloudFQDN string, authorizer auth.Authorizer) (*Aut
 }
 
 // Get methods invokes the client Get method
-func (c *AuthenticationClient) Login(ctx context.Context, group, name string) (*string, error) {
-	return c.internal.Login(ctx, group, name)
+func (c *AuthenticationClient) Login(ctx context.Context, group string, identity *security.Identity) (*string, error) {
+	return c.internal.Login(ctx, group, identity)
 }

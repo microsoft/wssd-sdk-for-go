@@ -27,6 +27,7 @@ github.com/magiconair/properties
 # github.com/microsoft/wssdagent v0.5.1
 github.com/microsoft/wssdagent/pkg/errors
 github.com/microsoft/wssdagent/pkg/marshal
+github.com/microsoft/wssdagent/pkg/net
 github.com/microsoft/wssdagent/rpc/common
 github.com/microsoft/wssdagent/rpc/compute
 github.com/microsoft/wssdagent/rpc/network

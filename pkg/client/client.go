@@ -27,7 +27,8 @@ const (
 	//
 	// In the future we may want to decouple wssdagent usage in the sdk ... so its possible that even when that is fixed,
 	// this value still lives here.
-	KnownServerPort = 45000
+	KnownServerPort     = 45000
+	KnownAuthServerPort = 45001
 )
 
 // Returns nil if debug mode is on; err if it is not
@@ -44,6 +45,10 @@ func isDebugMode() error {
 
 func getServerEndpoint(serverAddress *string) string {
 	return fmt.Sprintf("%s:%d", *serverAddress, KnownServerPort)
+}
+
+func getAuthServerEndpoint(serverAddress *string) string {
+	return fmt.Sprintf("%s:%d", *serverAddress, KnownAuthServerPort)
 }
 
 func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
@@ -179,8 +184,12 @@ func GetIdentityClient(serverAddress *string, authorizer auth.Authorizer) (secur
 
 // GetAuthenticationClient returns the secret client to communicate with the wssdagent
 func GetAuthenticationClient(serverAddress *string, authorizer auth.Authorizer) (security_pb.AuthenticationAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithTransportCredentials(authorizer.WithTransportAuthorization()))
+	opts = append(opts, grpc.WithPerRPCCredentials(authorizer.WithRPCAuthorization()))
+
+	conn, err := grpc.Dial(getAuthServerEndpoint(serverAddress), opts...)
 	if err != nil {
 		log.Fatalf("Unable to get AuthenticationClient. Failed to dial: %v", err)
 	}

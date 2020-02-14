@@ -7,6 +7,8 @@ import (
 	context "context"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
+	"github.com/microsoft/wssdagent/pkg/certs"
 	"github.com/microsoft/wssdagent/pkg/marshal"
 	"google.golang.org/grpc/credentials"
 	"io/ioutil"
@@ -23,7 +25,7 @@ const (
 	ServerName        = "ServerName"
 )
 
-type wssdConfig struct {
+type WssdConfig struct {
 	CloudCertificate  string
 	ClientCertificate string
 	ClientKey         string
@@ -38,6 +40,12 @@ type ManagedIdentityConfig struct {
 	ClientTokenPath string
 	WssdConfigPath  string
 	ServerName      string
+}
+
+type LoginConfig struct {
+	Name        string
+	Token       string
+	Certificate string
 }
 
 func (ba *BearerAuthorizer) WithRPCAuthorization() credentials.PerRPCCredentials {
@@ -82,6 +90,26 @@ func NewAuthorizerFromEnvironment(serverName string) (Authorizer, error) {
 func NewAuthorizerFromInput(tlsCert tls.Certificate, serverCertificate []byte, server string) (Authorizer, error) {
 	transportCreds := TransportCredentialsFromNode(tlsCert, serverCertificate, server)
 	return NewBearerAuthorizer(JwtTokenProvider{}, transportCreds), nil
+}
+
+func NewAuthorizerForAuth(tokenString string, certificate string, server string) (Authorizer, error) {
+
+	serverPem, err := marshal.FromBase64(certificate)
+	if err != nil {
+		return NewBearerAuthorizer(JwtTokenProvider{}, credentials.NewTLS(nil)), fmt.Errorf("hey broken .. marshaling")
+	}
+
+	certPool := x509.NewCertPool()
+	// Append the client certificates from the CA
+	if ok := certPool.AppendCertsFromPEM(serverPem); !ok {
+		return NewBearerAuthorizer(JwtTokenProvider{}, credentials.NewTLS(nil)), fmt.Errorf("hey broken .. appending")
+	}
+	transportCreds := credentials.NewTLS(&tls.Config{
+		ServerName: server,
+		RootCAs:    certPool,
+	})
+
+	return NewBearerAuthorizer(JwtTokenProvider{tokenString}, transportCreds), nil
 }
 
 func GetSettingsFromEnvironment(serverName string) (s EnvironmentSettings, err error) {
@@ -132,7 +160,7 @@ func TransportCredentialsFromFile(wssdConfigLocation string, server string) cred
 	clientCerts := []tls.Certificate{}
 	certPool := x509.NewCertPool()
 
-	serverPem, tlsCert, err := readAccessFile(wssdConfigLocation)
+	serverPem, tlsCert, err := readAccessFileToTls(wssdConfigLocation)
 	if err == nil {
 		clientCerts = append(clientCerts, tlsCert)
 		// Append the client certificates from the CA
@@ -154,8 +182,8 @@ func TransportCredentialsFromFile(wssdConfigLocation string, server string) cred
 
 }
 
-func readAccessFile(accessFileLocation string) ([]byte, tls.Certificate, error) {
-	accessFile := wssdConfig{}
+func readAccessFileToTls(accessFileLocation string) ([]byte, tls.Certificate, error) {
+	accessFile := WssdConfig{}
 	err := marshal.FromJSONFile(accessFileLocation, &accessFile)
 	if err != nil {
 		return []byte{}, tls.Certificate{}, err
@@ -237,4 +265,52 @@ func SaveToken(tokenStr string) error {
 		getClientTokenLocation(),
 		[]byte(tokenStr),
 		0644)
+}
+
+func GenerateClientKey(loginconfig LoginConfig) ([]byte, WssdConfig, error) {
+	certBytes, _ := marshal.FromBase64(loginconfig.Certificate)
+	accessFile, err := readAccessFile(GetWssdConfigLocation())
+	if err != nil {
+		x509CertClient, keyClient, err := certs.GenerateClientCertificate(loginconfig.Name)
+		if err != nil {
+			return []byte{}, WssdConfig{}, err
+		}
+
+		certBytesClient := certs.EncodeCertPEM(x509CertClient)
+		keyBytesClient := certs.EncodePrivateKeyPEM(keyClient)
+
+		accessFile = WssdConfig{
+			CloudCertificate:  "",
+			ClientCertificate: marshal.ToBase64(string(certBytesClient)),
+			ClientKey:         marshal.ToBase64(string(keyBytesClient)),
+		}
+	}
+
+	if accessFile.CloudCertificate != "" {
+		serverPem, err := marshal.FromBase64(accessFile.CloudCertificate)
+		if err != nil {
+			return []byte{}, WssdConfig{}, err
+		}
+
+		if string(certBytes) != string(serverPem) {
+			certBytes = append(certBytes, serverPem...)
+		}
+	}
+
+	accessFile.CloudCertificate = marshal.ToBase64(string(certBytes))
+	return []byte(accessFile.ClientCertificate), accessFile, nil
+}
+
+func PrintAccessFile(accessFile WssdConfig) error {
+	return marshal.ToJSONFile(accessFile, GetWssdConfigLocation())
+}
+
+func readAccessFile(accessFileLocation string) (WssdConfig, error) {
+	accessFile := WssdConfig{}
+	err := marshal.FromJSONFile(accessFileLocation, &accessFile)
+	if err != nil {
+		return WssdConfig{}, err
+	}
+
+	return accessFile, nil
 }

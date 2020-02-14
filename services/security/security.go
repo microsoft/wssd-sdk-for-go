@@ -35,7 +35,8 @@ type Identity struct {
 	// Type
 	Type *string `json:"type,omitempty"`
 	// Tags - Custom resource tags
-	Tags map[string]*string `json:"tags"`
+	Certificate *[]byte            `json:"certificate,omitempty"`
+	Tags        map[string]*string `json:"tags"`
 	// Properties
 	*IdentityProperties `json:"properties,omitempty"`
 }
