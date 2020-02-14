@@ -11,7 +11,8 @@ import (
 
 // HardwareProfile
 type HardwareProfile struct {
-	VMSize *string `json:"vmSize,omitempty"`
+	// VMSize - Specifies the size of the virtual machine.
+	VMSize VirtualMachineSizeTypes `json:"vmSize,omitempty"`
 }
 
 type OperatingSystemTypes string
@@ -122,7 +123,9 @@ type NetworkProfile struct {
 }
 
 type VirtualMachineProperties struct {
-	// StorageProfile
+	// HardwareProfile - Specifies the hardware settings for the virtual machine.
+	HardwareProfile *HardwareProfile `json:"hardwareProfile,omitempty"`
+	// StorageProfile - Specifies the storage settings for the virtual machine disks.
 	StorageProfile *StorageProfile `json:"storageProfile,omitempty"`
 	// OsProfile
 	OsProfile *OSProfile `json:"osProfile,omitempty"`
@@ -212,7 +215,9 @@ const (
 
 // VirtualMachineScaleSetVMProfileProperties
 type VirtualMachineScaleSetVMProfileProperties struct {
-	// StorageProfile
+	// HardwareProfile - Specifies the hardware settings for the virtual machine.
+	HardwareProfile *HardwareProfile `json:"hardwareProfile,omitempty"`
+	// StorageProfile - Specifies the storage settings for the virtual machine disks.
 	StorageProfile *StorageProfile `json:"storageProfile,omitempty"`
 	// OsProfile
 	OsProfile *OSProfile `json:"osProfile,omitempty"`
