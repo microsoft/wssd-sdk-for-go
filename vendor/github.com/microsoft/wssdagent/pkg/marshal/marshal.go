@@ -75,6 +75,14 @@ func FromBase64(data string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(data)
 }
 
+func ToBase64URL(data string) string {
+	return base64.URLEncoding.EncodeToString([]byte(data))
+}
+
+func FromBase64URL(data string) ([]byte, error) {
+	return base64.URLEncoding.DecodeString(data)
+}
+
 func ToYAML(data interface{}) (string, error) {
 	yamlBytes, err := yaml.Marshal(data)
 	if err != nil {
