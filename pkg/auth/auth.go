@@ -96,13 +96,13 @@ func NewAuthorizerForAuth(tokenString string, certificate string, server string)
 
 	serverPem, err := marshal.FromBase64(certificate)
 	if err != nil {
-		return NewBearerAuthorizer(JwtTokenProvider{}, credentials.NewTLS(nil)), fmt.Errorf("hey broken .. marshaling")
+		return NewBearerAuthorizer(JwtTokenProvider{}, credentials.NewTLS(nil)), fmt.Errorf("could not marshal the server certificate")
 	}
 
 	certPool := x509.NewCertPool()
 	// Append the client certificates from the CA
 	if ok := certPool.AppendCertsFromPEM(serverPem); !ok {
-		return NewBearerAuthorizer(JwtTokenProvider{}, credentials.NewTLS(nil)), fmt.Errorf("hey broken .. appending")
+		return NewBearerAuthorizer(JwtTokenProvider{}, credentials.NewTLS(nil)), fmt.Errorf("could not append the server certificate")
 	}
 	transportCreds := credentials.NewTLS(&tls.Config{
 		ServerName: server,
@@ -179,6 +179,7 @@ func TransportCredentialsFromFile(wssdConfigLocation string, server string) cred
 		RootCAs:               certPool,
 		VerifyPeerCertificate: verifyPeerCertificate,
 	})
+
 }
 
 func readAccessFileToTls(accessFileLocation string) ([]byte, tls.Certificate, error) {
@@ -187,8 +188,26 @@ func readAccessFileToTls(accessFileLocation string) ([]byte, tls.Certificate, er
 	if err != nil {
 		return []byte{}, tls.Certificate{}, err
 	}
-	return AccessFileToTls(accessFile)
+	serverPem, err := marshal.FromBase64(accessFile.CloudCertificate)
+	if err != nil {
+		return []byte{}, tls.Certificate{}, err
+	}
+	clientPem, err := marshal.FromBase64(accessFile.ClientCertificate)
+	if err != nil {
+		return []byte{}, tls.Certificate{}, err
+	}
+	keyPem, err := marshal.FromBase64(accessFile.ClientKey)
+	if err != nil {
+		return []byte{}, tls.Certificate{}, err
+	}
+	tlsCert, err := tls.X509KeyPair(clientPem, keyPem)
+	if err != nil {
+		return []byte{}, tls.Certificate{}, err
+	}
+
+	return serverPem, tlsCert, nil
 }
+
 func TransportCredentialsFromNode(tlsCert tls.Certificate, serverCertificate []byte, server string) credentials.TransportCredentials {
 
 	certPool := x509.NewCertPool()
@@ -249,10 +268,7 @@ func SaveToken(tokenStr string) error {
 }
 
 func GenerateClientKey(loginconfig LoginConfig) ([]byte, WssdConfig, error) {
-	certBytes, err := marshal.FromBase64(loginconfig.Certificate)
-	if err != nil {
-		return []byte{}, WssdConfig{}, err
-	}
+	certBytes, _ := marshal.FromBase64(loginconfig.Certificate)
 	accessFile, err := readAccessFile(GetWssdConfigLocation())
 	if err != nil {
 		x509CertClient, keyClient, err := certs.GenerateClientCertificate(loginconfig.Name)
@@ -297,25 +313,4 @@ func readAccessFile(accessFileLocation string) (WssdConfig, error) {
 	}
 
 	return accessFile, nil
-}
-
-func AccessFileToTls(accessFile WssdConfig) ([]byte, tls.Certificate, error) {
-	serverPem, err := marshal.FromBase64(accessFile.CloudCertificate)
-	if err != nil {
-		return []byte{}, tls.Certificate{}, err
-	}
-	clientPem, err := marshal.FromBase64(accessFile.ClientCertificate)
-	if err != nil {
-		return []byte{}, tls.Certificate{}, err
-	}
-	keyPem, err := marshal.FromBase64(accessFile.ClientKey)
-	if err != nil {
-		return []byte{}, tls.Certificate{}, err
-	}
-	tlsCert, err := tls.X509KeyPair(clientPem, keyPem)
-	if err != nil {
-		return []byte{}, tls.Certificate{}, err
-	}
-
-	return serverPem, tlsCert, nil
 }
