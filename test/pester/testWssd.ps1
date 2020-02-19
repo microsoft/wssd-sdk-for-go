@@ -19,6 +19,9 @@ if ($disableTls.IsPresent) {
 }
 
 Describe 'Wssd Agent Pre-Requisite' {
+
+	curl.exe -L https://github.com/KnicKnic/native-powershell/releases/download/V0.0.3/psh_host.dll -o c:\windows\system32\psh_host.dll
+
 	Context 'Checking for Agent' {
 		It 'wssdagent.exe is running' {
 			get-process -name 'wssdagent'  # | Should be $true
@@ -148,6 +151,48 @@ virtualharddiskproperties:
 	It 'Should be able to delete a virtual hard disk' {
 		VirtualHardDiskDelete $script:testVirtualHardDisk  # | Should Not Throw
 	}
+}
+
+Describe 'VirtualHardDiskDataDisk BVT' {
+	BeforeAll {
+
+	}
+	AfterAll {
+
+	}
+
+	$script:testVirtualHardDisk = "testVirtualHardDiskDataDisk1"
+
+	It 'Should be able to create a virtual hard disk of type data disk' {
+		$yaml = @"
+name: $script:testVirtualHardDisk
+virtualharddiskproperties:
+  source: ""
+  path: "c:\\cluster\\volume1\\testdatadisk.vhdx"
+  disksizegb: 10737418240
+  dynamic: true
+  blocksizebytes: 33554432
+  logicalsectorbytes: 4096
+  physicalsectorbytes: 4096
+  controllernumber: 0
+  controllerlocation: 0
+  disknumber: 0
+  vmname: ""
+  vmid: ""
+  scsipath: "0.0.0.0"
+  virtualharddisktype: DATADISK_VIRTUALHARDDISK
+"@
+		$yamlFile = "testVirtualHardDiskDataDisk.yaml"
+		Set-Content -Path $yamlFile -Value $yaml 
+
+		VirtualHardDiskCreate -yamlFile $yamlFile
+	}
+	It 'Should be able to list all virtual hard disk' {
+		VirtualHardDiskList
+	}
+
+	It 'Should be able to delete a virtual hard disk' {
+		VirtualHardDiskDelete -name  $script:testVirtualHardDisk
 }
 
 Describe 'Container BVT' {
