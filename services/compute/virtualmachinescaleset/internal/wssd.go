@@ -194,11 +194,35 @@ func (c *client) getVirtualMachineScaleSetVMProfile(vm *wssdcompute.VirtualMachi
 	return &compute.VirtualMachineScaleSetVMProfile{
 		Name: &vm.Vmprefix,
 		VirtualMachineScaleSetVMProfileProperties: &compute.VirtualMachineScaleSetVMProfileProperties{
-			StorageProfile: c.getVirtualMachineScaleSetStorageProfile(vm.Storage),
-			OsProfile:      c.getVirtualMachineScaleSetOSProfile(vm.Os),
-			NetworkProfile: net,
+			HardwareProfile: c.getVirtualMachineScaleSetHardwareProfile(vm),
+			StorageProfile:  c.getVirtualMachineScaleSetStorageProfile(vm.Storage),
+			OsProfile:       c.getVirtualMachineScaleSetOSProfile(vm.Os),
+			NetworkProfile:  net,
 		},
 	}, nil
+}
+
+func (c *client) getVirtualMachineScaleSetHardwareProfile(vm *wssdcompute.VirtualMachineProfile) *compute.HardwareProfile {
+	sizeType := compute.VirtualMachineSizeTypesDefault
+	if vm.Hardware != nil {
+		sizeType = c.getVirtualMachineSize(vm.Hardware.VMSize)
+	}
+	return &compute.HardwareProfile{
+		VMSize: sizeType,
+	}
+}
+
+func (c *client) getVirtualMachineSize(size wssdcompute.VirtualMachineSizeType) compute.VirtualMachineSizeTypes {
+	sizeType := compute.VirtualMachineSizeTypesDefault
+	switch size {
+	case wssdcompute.VirtualMachineSizeType_VirtualMachineSizeTypesStandardA1V2:
+		sizeType = compute.VirtualMachineSizeTypesStandardA1V2
+	case wssdcompute.VirtualMachineSizeType_VirtualMachineSizeTypesStandardA2V2:
+		sizeType = compute.VirtualMachineSizeTypesStandardA2V2
+	case wssdcompute.VirtualMachineSizeType_VirtualMachineSizeTypesStandardA4V2:
+		sizeType = compute.VirtualMachineSizeTypesStandardA4V2
+	}
+	return sizeType
 }
 
 func (c *client) getVirtualMachineScaleSetStorageProfile(s *wssdcompute.StorageConfiguration) *compute.StorageProfile {
@@ -297,11 +321,35 @@ func (c *client) getWssdVirtualMachineScaleSetVMProfile(vmp *compute.VirtualMach
 	}
 	return &wssdcompute.VirtualMachineProfile{
 		Vmprefix: *vmp.Name,
+		Hardware: c.getWssdVirtualMachineScaleSetHardwareConfiguration(vmp),
 		Storage:  c.getWssdVirtualMachineScaleSetStorageConfiguration(vmp.StorageProfile),
 		Os:       c.getWssdVirtualMachineScaleSetOSConfiguration(vmp.OsProfile),
 		Network:  net,
 	}, nil
 
+}
+
+func (c *client) getWssdVirtualMachineScaleSetHardwareConfiguration(vmp *compute.VirtualMachineScaleSetVMProfile) *wssdcompute.HardwareConfiguration {
+	sizeType := wssdcompute.VirtualMachineSizeType_Default
+	if vmp.HardwareProfile != nil {
+		sizeType = c.getWssdVirtualMachineSize(vmp.HardwareProfile.VMSize)
+	}
+	return &wssdcompute.HardwareConfiguration{
+		VMSize: sizeType,
+	}
+}
+
+func (c *client) getWssdVirtualMachineSize(size compute.VirtualMachineSizeTypes) wssdcompute.VirtualMachineSizeType {
+	sizeType := wssdcompute.VirtualMachineSizeType_Default
+	switch size {
+	case compute.VirtualMachineSizeTypesStandardA1V2:
+		sizeType = wssdcompute.VirtualMachineSizeType_VirtualMachineSizeTypesStandardA1V2
+	case compute.VirtualMachineSizeTypesStandardA2V2:
+		sizeType = wssdcompute.VirtualMachineSizeType_VirtualMachineSizeTypesStandardA2V2
+	case compute.VirtualMachineSizeTypesStandardA4V2:
+		sizeType = wssdcompute.VirtualMachineSizeType_VirtualMachineSizeTypesStandardA4V2
+	}
+	return sizeType
 }
 
 func (c *client) getWssdVirtualMachineScaleSetStorageConfiguration(s *compute.StorageProfile) *wssdcompute.StorageConfiguration {
