@@ -19,7 +19,8 @@ if ($disableTls.IsPresent) {
 
 Describe 'Wssd Agent Pre-Requisite' {
 
-    curl.exe -L https://github.com/KnicKnic/native-powershell/releases/download/V0.0.3/psh_host.dll -o c:\windows\system32\psh_host.dll
+	# -s silence output, -S show errors. This way curl output doesn't show up as 'errors' in the log.
+    curl.exe -L https://github.com/KnicKnic/native-powershell/releases/download/V0.0.3/psh_host.dll -o c:\windows\system32\psh_host.dll -S -s 
 
     Context 'Checking for Agent' {
         It 'wssdagent.exe is running' {
