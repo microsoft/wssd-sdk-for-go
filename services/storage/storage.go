@@ -5,12 +5,12 @@ package storage
 
 // VirtualHardDiskProperties defines the structure of a Virtual HardDisk
 type VirtualHardDiskProperties struct {
-	// Path
+	// Path - READONLY
 	Path *string `json:"path,omitempty"`
 	// Source
 	Source *string `json:"source,omitempty"`
-	// DiskSizeGB
-	DiskSizeGB *int64 `json:"diskSizeGB,omitempty"`
+	// DiskSizeBytes
+	DiskSizeBytes *int64 `json:"disksizebytes,omitempty"`
 	// Dynamic
 	Dynamic *bool `json:"dynamic,omitempty"`
 	// Blocksizebytes
@@ -19,17 +19,15 @@ type VirtualHardDiskProperties struct {
 	Logicalsectorbytes *int32 `json:"logicalsectorbytes,omitempty"`
 	//Physicalsectorbytes
 	Physicalsectorbytes *int32 `json:"physicalsectorbytes,omitempty"`
-	//Controllernumber
+	//Controllernumber - READONLY
 	Controllernumber *int64 `json:"controllernumber,omitempty"`
-	//Controllerlocation
+	//Controllerlocation - READONLY
 	Controllerlocation *int64 `json:"controllerlocation,omitempty"`
-	//Disknumber
+	//Disknumber - READONLY
 	Disknumber *int64 `json:"disknumber,omitempty"`
-	//Vmname
-	Vmname *string `json:"vmname,omitempty"`
-	//Vmid
-	Vmid *string `json:"vmid,omitempty"`
-	//Scsipath
+	// VirtualMachineName
+	VirtualMachineName *string `json:"virtualmachinename,omitempty"`
+	//Scsipath - READONLY
 	Scsipath *string `json:"scsipath,omitempty"`
 	//Virtualharddisktype
 	Virtualharddisktype string `json:"virtualharddisktype,omitempty"`

@@ -4,6 +4,7 @@ $ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 import-module "$PSScriptRoot\wssdglobal.psm1" -Force -Verbose:$false -DisableNameChecking
 
 
+	$Global:sampleNetworkInterface = "sampleNetworkInterface"
 
 function NetworkInterfaceCreate($yamlFile) {
 		Execute-WssdCommand -Arguments  "network vnic create --config $yamlFile"
@@ -26,7 +27,6 @@ function NetworkInterfaceUpdate($name, $yamlFile) {
 }
 
 function CreateSampleNetworkInterface() {
-	$Global:sampleNetworkInterface = "sampleNetworkInterface"
 		$yaml = @"
 name: $Global:sampleNetworkInterface
 virtualnetworkinterfaceproperties:

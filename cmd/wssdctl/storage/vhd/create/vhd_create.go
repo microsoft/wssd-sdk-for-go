@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"github.com/microsoft/wssdagent/pkg/errors"
+
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
@@ -41,7 +43,7 @@ func NewCommand() *cobra.Command {
 func runE(flags *flags) error {
 
 	server := viper.GetString("server")
-	group := viper.GetString("group")
+	container := viper.GetString("container")
 
 	authorizer, err := auth.NewAuthorizerFromEnvironment(server)
 	if err != nil {
@@ -62,7 +64,11 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	_, err = vhdClient.CreateOrUpdate(ctx, group, *(vhdConfig.Name), &vhdConfig)
+	if vhdConfig.Name == nil {
+		return errors.Wrapf(errors.InvalidInput, "Missing Name")
+	}
+
+	_, err = vhdClient.CreateOrUpdate(ctx, container, *(vhdConfig.Name), &vhdConfig)
 	if err != nil {
 		return err
 	}

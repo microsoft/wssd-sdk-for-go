@@ -42,7 +42,7 @@ func NewCommand() *cobra.Command {
 
 func runE(flags *flags) error {
 	server := viper.GetString("server")
-	group := viper.GetString("group")
+	container := viper.GetString("container")
 
 	authorizer, err := auth.NewAuthorizerFromEnvironment(server)
 	if err != nil {
@@ -57,7 +57,7 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	vhds, err := vhdClient.Get(ctx, group, flags.Name)
+	vhds, err := vhdClient.Get(ctx, container, flags.Name)
 	if err != nil {
 		return err
 	}

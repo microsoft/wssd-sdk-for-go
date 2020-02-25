@@ -25,6 +25,8 @@ func NewCommand() *cobra.Command {
 		Long:  "vhd resource",
 	}
 
+	cmd.MarkPersistentFlagRequired("container")
+
 	cmd.AddCommand(create.NewCommand())
 	cmd.AddCommand(delete.NewCommand())
 	cmd.AddCommand(list.NewCommand())

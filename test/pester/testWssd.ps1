@@ -19,9 +19,7 @@ if ($disableTls.IsPresent) {
 
 Describe 'Wssd Agent Pre-Requisite' {
 
-	# -s silence output, -S show errors. This way curl output doesn't show up as 'errors' in the log.
-    # curl.exe -L https://github.com/KnicKnic/native-powershell/releases/download/V0.0.3/psh_host.dll -o c:\windows\system32\psh_host.dll -S -s 
-
+	
     Context 'Checking for Agent' {
         It 'wssdagent.exe is running' {
             get-process -name 'wssdagent'  # | Should be $true
@@ -33,6 +31,39 @@ Describe 'Wssd Agent Pre-Requisite' {
     }
 }
 
+Describe 'Container BVT' {
+    $script:testContainer = "testContainer1"
+
+    It 'Should be able to create a storage container' {
+        $yaml = @"
+name: $script:testContainer
+containerproperties:
+  path: c:/containerpath	
+"@
+        $yamlFile = "testContainer.yaml"
+        Set-Content -Path $yamlFile -Value $yaml 
+
+        ContainerCreate $yamlFile  # | Should Not Throw
+    }
+    It 'Should be able to list all storage container' {
+        ContainerList  # | Should Not Throw
+    }
+    <#
+	# Uncomment once implemented
+	It 'Should be able to show a storage container' {
+		ContainerShow $script:testContainer  # | Should Not Throw
+	}
+	#>
+    It 'Should not be able to delete a storage container while VHDs are using it' {
+        CreateSampleVirtualHardDisk -container $script:testContainer
+        { ContainerDelete $script:testContainer  } | Should Throw
+        DeleteSampleVirtualHardDisk  -container $script:testContainer
+    }
+
+    It 'Should be able to delete a  storage container' {
+        ContainerDelete $script:testContainer  # | Should Not Throw
+    }
+}
 
 Describe 'VirtualNetwork BVT' {
     $script:testVirtualNetwork = "Default Switch"
@@ -68,7 +99,6 @@ Describe 'NetworkInterface BVT' {
     AfterAll {
         DeleteSampleVirtualNetwork
     }
-
 
     <#
 	It 'Should be able to create a network interface with an IPAddress' {
@@ -120,27 +150,63 @@ virtualnetworkinterfaceproperties:
 
 Describe 'VirtualHardDisk BVT' {
     BeforeAll {
-        CreateVMMSVhd
+        CreateSampleContainer
+        CreateSampleVirtualHardDisk -container $global:sampleContainer
     }
     AfterAll {
-        CleanupVMMSVhd
+        DeleteSampleVirtualHardDisk -container $global:sampleContainer
+        DeleteSampleContainer
     }
 
-    $script:testVirtualHardDisk = "testVirtualHardDisk1"
+    $script:testOSVirtualHardDisk = "testOSVirtualHardDisk"
+    $script:testCloneVirtualHardDisk = "testcloneVirtualHardDisk"
+    $script:testDataVirtualHardDisk = "testDataVirtualHardDisk"
 
-    It 'Should be able to create a virtual hard disk' {
+    It 'Should be able to upload a virtual hard disk' {
         $yaml = @"
-name: $script:testVirtualHardDisk
+name: $script:testOSVirtualHardDisk
 virtualharddiskproperties:
   source: $Global:testVirtualHardDiskSource	
 "@
-        $yamlFile = "testVirtualHardDisk.yaml"
+        $yamlFile = "testUploadVirtualHardDisk.yaml"
         Set-Content -Path $yamlFile -Value $yaml 
 
-        VirtualHardDiskCreate $yamlFile  # | Should Not Throw
+        VirtualHardDiskCreate -yamlFile $yamlFile -container $global:sampleContainer  # | Should Not Throw
+    }
+    It 'Should be able to clone a virtual hard disk' {
+        $yaml = @"
+name: $script:testCloneVirtualHardDisk
+virtualharddiskproperties:
+  source: $Global:sampleVirtualHardDisk
+"@
+        $yamlFile = "testCloneVirtualHardDisk.yaml"
+        Set-Content -Path $yamlFile -Value $yaml 
+
+        VirtualHardDiskCreate -yamlFile $yamlFile -container $global:sampleContainer  # | Should Not Throw
+    }
+
+    It 'Should be able to create a data virtual hard disk' {
+        $yaml = @"
+name: $script:testDataVirtualHardDisk
+virtualharddiskproperties:
+  disksizebytes: 10737418240
+  dynamic: true
+  blocksizebytes: 33554432
+  logicalsectorbytes: 4096
+  physicalsectorbytes: 4096
+  virtualharddisktype: DATADISK_VIRTUALHARDDISK
+"@
+        $yamlFile = "testVirtualHardDiskDataDisk.yaml"
+        Set-Content -Path $yamlFile -Value $yaml 
+
+        VirtualHardDiskCreate -yamlFile $yamlFile -container $global:sampleContainer 
     }
     It 'Should be able to list all virtual hard disk' {
-        VirtualHardDiskList  # | Should Not Throw
+        VirtualHardDiskList -container $global:sampleContainer  # | Should Not Throw
+    }
+
+    It 'Should be able to resize the virtual hard disk data disk' {
+        ResizeVirtualHardDiskDataDisk -name $script:testDataVirtualHardDisk -sizeBytes 21474836480 ‬ -container $global:sampleContainer  # | Should Not Throw
     }
     <#
 	# Uncomment once implemented
@@ -149,79 +215,9 @@ virtualharddiskproperties:
 	}
 	#>
     It 'Should be able to delete a virtual hard disk' {
-        VirtualHardDiskDelete $script:testVirtualHardDisk  # | Should Not Throw
-    }
-}
-    <#
-
-Describe 'VirtualHardDiskDataDisk BVT' {
-    BeforeAll {
-
-    }
-    AfterAll {
-
-    }
-
-    $script:testVirtualHardDisk = "testVirtualHardDiskDataDisk1"
-
-    It 'Should be able to create a virtual hard disk of type data disk' {
-        $yaml = @"
-name: $script:testVirtualHardDisk
-virtualharddiskproperties:
-  source: ""
-  path: "c:\\cluster\\volume1\\testdatadisk.vhdx"
-  disksizegb: 10737418240
-  dynamic: true
-  blocksizebytes: 33554432
-  logicalsectorbytes: 4096
-  physicalsectorbytes: 4096
-  controllernumber: 0
-  controllerlocation: 0
-  disknumber: 0
-  vmname: ""
-  vmid: ""
-  scsipath: "0.0.0.0"
-  virtualharddisktype: DATADISK_VIRTUALHARDDISK
-"@
-        $yamlFile = "testVirtualHardDiskDataDisk.yaml"
-        Set-Content -Path $yamlFile -Value $yaml 
-
-        VirtualHardDiskCreate -yamlFile $yamlFile
-    }
-    It 'Should be able to list all virtual hard disk' {
-        VirtualHardDiskList
-    }
-
-    It 'Should be able to delete a virtual hard disk' {
-        VirtualHardDiskDelete -name  $script:testVirtualHardDisk
-    }
-}
-#>
-Describe 'Container BVT' {
-    $script:testContainer = "testContainer1"
-
-    It 'Should be able to create a storage container' {
-        $yaml = @"
-name: $script:testContainer
-containerproperties:
-  path: c:/containerpath	
-"@
-        $yamlFile = "testContainer.yaml"
-        Set-Content -Path $yamlFile -Value $yaml 
-
-        ContainerCreate $yamlFile  # | Should Not Throw
-    }
-    It 'Should be able to list all storage container' {
-        ContainerList  # | Should Not Throw
-    }
-    <#
-	# Uncomment once implemented
-	It 'Should be able to show a virtual hard disk' {
-		ContainerShow $script:testContainer  # | Should Not Throw
-	}
-	#>
-    It 'Should be able to delete a  storage container' {
-        ContainerDelete $script:testContainer  # | Should Not Throw
+        VirtualHardDiskDelete -name $script:testOSVirtualHardDisk  -container $global:sampleContainer # | Should Not Throw
+        VirtualHardDiskDelete -name $script:testCloneVirtualHardDisk  -container $global:sampleContainer # | Should Not Throw
+        VirtualHardDiskDelete -name $script:testDataVirtualHardDisk  -container $global:sampleContainer # | Should Not Throw
     }
 }
 
@@ -289,15 +285,19 @@ Describe 'VirtualMachine BVT' {
     $script:testVirtualMachine = "testVirtualMachine1"
 
     BeforeAll {
+        CreateSampleContainer
         CreateSampleVirtualNetwork
         CreateSampleNetworkInterface
-        CreateSampleVirtualHardDisk
+        CreateSampleVirtualHardDisk -container $global:sampleContainer
+        CreateSampleVirtualHardDiskDataDisk -container $global:sampleContainer
     }
 
     AfterAll {
         DeleteSampleNetworkInterface
         DeleteSampleVirtualNetwork
-        DeleteSampleVirtualHardDisk
+        DeleteSampleVirtualHardDiskDataDisk -container $global:sampleContainer
+        DeleteSampleVirtualHardDisk -container $global:sampleContainer
+        DeleteSampleContainer
     }
 
     It 'Should be able to create a virtual machine' {
@@ -338,6 +338,14 @@ virtualmachineproperties:
         VirtualMachineShow $script:testVirtualMachine  # | Should Not Throw
     }
 
+    It 'Should be able to attach a data disk to a virtual machine' {
+        AttachVirtualHardDiskDataDisk -name $Global:sampleVirtualHardDiskDataDisk -container $global:sampleContainer -vmName   $script:testVirtualMachine
+    }
+
+    It 'Should be able to detach a data disk to a virtual machine' {
+        DetachVirtualHardDiskDataDisk -name $Global:sampleVirtualHardDiskDataDisk -container $global:sampleContainer -vmName   $script:testVirtualMachine
+    }
+
     It 'Should be able to delete a virtual machine' {
         VirtualMachineDelete $script:testVirtualMachine  # | Should Not Throw
     }
@@ -345,13 +353,15 @@ virtualmachineproperties:
 
 Describe 'VirtualMachineScaleSet BVT' {
     BeforeAll {
+        CreateSampleContainer
         CreateSampleVirtualNetwork
-        CreateSampleVirtualHardDisk
+        CreateSampleVirtualHardDisk -container $global:sampleContainer
     }
 
     AfterAll {
+        DeleteSampleVirtualHardDisk -container $global:sampleContainer
         DeleteSampleVirtualNetwork
-        DeleteSampleVirtualHardDisk
+        DeleteSampleContainer
     }
     $script:testVirtualMachineScaleSet = "testVirtualMachineScaleSet1"
 
