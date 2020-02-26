@@ -20,7 +20,7 @@ if ($disableTls.IsPresent) {
 Describe 'Wssd Agent Pre-Requisite' {
 
 	# -s silence output, -S show errors. This way curl output doesn't show up as 'errors' in the log.
-    curl.exe -L https://github.com/KnicKnic/native-powershell/releases/download/V0.0.3/psh_host.dll -o c:\windows\system32\psh_host.dll -S -s 
+    # curl.exe -L https://github.com/KnicKnic/native-powershell/releases/download/V0.0.3/psh_host.dll -o c:\windows\system32\psh_host.dll -S -s 
 
     Context 'Checking for Agent' {
         It 'wssdagent.exe is running' {
@@ -152,6 +152,7 @@ virtualharddiskproperties:
         VirtualHardDiskDelete $script:testVirtualHardDisk  # | Should Not Throw
     }
 }
+    <#
 
 Describe 'VirtualHardDiskDataDisk BVT' {
     BeforeAll {
@@ -195,7 +196,7 @@ virtualharddiskproperties:
         VirtualHardDiskDelete -name  $script:testVirtualHardDisk
     }
 }
-
+#>
 Describe 'Container BVT' {
     $script:testContainer = "testContainer1"
 
