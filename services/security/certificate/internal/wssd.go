@@ -112,6 +112,7 @@ func getCertificate(cert *wssdsecurity.Certificate) *security.Certificate {
 	return &security.Certificate{
 		ID:   &cert.Id,
 		Name: &cert.Name,
+		Cer:  &cert.Certificate,
 		Attributes: &security.CertificateAttributes{
 			NotBefore: &cert.NotBefore,
 			Expires:   &cert.NotAfter,
