@@ -20,6 +20,8 @@ var (
 	InvalidFilter        error = errors.New("Invalid Filter")
 	Failed               error = errors.New("Failed")
 	InvalidGroup         error = errors.New("InvalidGroup")
+	InvalidVersion       error = errors.New("InvalidVersion")
+	OldVersion           error = errors.New("OldVersion")
 	UpdateFailed         error = errors.New("Update Failed")
 	NotInitialized       error = errors.New("Not Initialized")
 	Unknown              error = errors.New("Unknown Reason")

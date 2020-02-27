@@ -8,21 +8,23 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+
 	"github.com/microsoft/wssdagent/pkg/certs"
 	"github.com/microsoft/wssdagent/pkg/marshal"
 	"google.golang.org/grpc/credentials"
-	"io/ioutil"
-	"os"
-	"path"
 )
 
 const (
-	ClientTokenName   = ".token"
-	ClientCertName    = "wssd.pem"
-	ClientTokenPath   = "WSSD_CLIENT_TOKEN"
-	WssdConfigPath    = "WSSD_CONFIG_PATH"
-	DefaultWSSDFolder = ".wssd"
-	ServerName        = "ServerName"
+	ClientTokenName       = ".token"
+	ClientCertName        = "wssd.pem"
+	ClientTokenPath       = "WSSD_CLIENT_TOKEN"
+	WssdConfigPath        = "WSSD_CONFIG_PATH"
+	DefaultWSSDFolder     = ".wssd"
+	AccessFileDefaultName = "cloudconfig"
+	ServerName            = "ServerName"
 )
 
 type WssdConfig struct {
@@ -96,13 +98,13 @@ func NewAuthorizerForAuth(tokenString string, certificate string, server string)
 
 	serverPem, err := marshal.FromBase64(certificate)
 	if err != nil {
-		return NewBearerAuthorizer(JwtTokenProvider{}, credentials.NewTLS(nil)), fmt.Errorf("hey broken .. marshaling")
+		return NewBearerAuthorizer(JwtTokenProvider{}, credentials.NewTLS(nil)), fmt.Errorf("could not marshal the server certificate")
 	}
 
 	certPool := x509.NewCertPool()
 	// Append the client certificates from the CA
 	if ok := certPool.AppendCertsFromPEM(serverPem); !ok {
-		return NewBearerAuthorizer(JwtTokenProvider{}, credentials.NewTLS(nil)), fmt.Errorf("hey broken .. appending")
+		return NewBearerAuthorizer(JwtTokenProvider{}, credentials.NewTLS(nil)), fmt.Errorf("could not append the server certificate")
 	}
 	transportCreds := credentials.NewTLS(&tls.Config{
 		ServerName: server,
@@ -230,16 +232,30 @@ func getClientTokenLocation() string {
 
 		// Create the default token path and set the
 		// env variable
-		defaultPath := path.Join(wd, DefaultWSSDFolder)
+		defaultPath := filepath.Join(wd, DefaultWSSDFolder)
 		os.MkdirAll(defaultPath, os.ModePerm)
-		clientTokenPath = path.Join(defaultPath, ClientTokenName)
+		clientTokenPath = filepath.Join(defaultPath, ClientTokenName)
 		os.Setenv(ClientTokenPath, clientTokenPath)
 	}
 	return clientTokenPath
 }
 
 func GetWssdConfigLocation() string {
-	return os.Getenv(WssdConfigPath)
+	wssdConfigPath := os.Getenv(WssdConfigPath)
+	if wssdConfigPath == "" {
+		wd, err := os.UserHomeDir()
+		if err != nil {
+			panic(err)
+		}
+
+		// Create the default config path and set the
+		// env variable
+		defaultPath := filepath.Join(wd, DefaultWSSDFolder)
+		os.MkdirAll(defaultPath, os.ModePerm)
+		wssdConfigPath = filepath.Join(defaultPath, AccessFileDefaultName)
+		os.Setenv(WssdConfigPath, wssdConfigPath)
+	}
+	return wssdConfigPath
 }
 func SaveToken(tokenStr string) error {
 	return ioutil.WriteFile(

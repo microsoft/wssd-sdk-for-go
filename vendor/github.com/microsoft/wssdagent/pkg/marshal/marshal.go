@@ -3,6 +3,7 @@
 package marshal
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -34,6 +35,15 @@ func ToJSON(data interface{}) (string, error) {
 }
 func ToJSONBytes(data interface{}) ([]byte, error) {
 	return json.Marshal(data)
+}
+
+// json.Marshal writes some characters (e.g. '<') as unicode. This stops that to make logsa easier to read.
+func ToUnescapedJSONBytes(data interface{}) ([]byte, error) {
+	var buffer bytes.Buffer
+	e := json.NewEncoder(&buffer)
+	e.SetEscapeHTML(false)
+	err := e.Encode(data)
+	return buffer.Bytes(), err
 }
 
 // ToJSONFile writes the data to path in YAML format

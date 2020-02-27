@@ -45,6 +45,7 @@ func runE(flags *flags) error {
 	server := viper.GetString("server")
 
 	loginconfig := auth.LoginConfig{}
+
 	err := config.LoadYAMLFile(flags.LoginFilePath, &loginconfig)
 	if err != nil {
 		return err
