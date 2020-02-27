@@ -171,7 +171,7 @@ func (c *client) getVirtualMachineScaleSet(vmss *wssdcompute.VirtualMachineScale
 		},
 		VirtualMachineScaleSetProperties: &compute.VirtualMachineScaleSetProperties{
 			VirtualMachineProfile: vmprofile,
-			ProvisioningState:     c.getVirtualMachineScaleSetProvisioningState(vmss.Status.ProvisioningStatus),
+			ProvisioningState:     c.getVirtualMachineScaleSetProvisioningState(vmss.Status.GetProvisioningStatus()),
 		},
 	}, nil
 }

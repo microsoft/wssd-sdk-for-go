@@ -95,7 +95,7 @@ func getContainer(ctainer *wssdstorage.Container) *storage.Container {
 		Name: &ctainer.Name,
 		ContainerProperties: &storage.ContainerProperties{
 			Path:              &ctainer.Path,
-			ProvisioningState: getContainerProvisioningState(ctainer.Status.ProvisioningStatus),
+			ProvisioningState: getContainerProvisioningState(ctainer.Status.GetProvisioningStatus()),
 		},
 	}
 }
