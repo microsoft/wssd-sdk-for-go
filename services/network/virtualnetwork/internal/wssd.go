@@ -210,7 +210,7 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 		VirtualNetworkProperties: &network.VirtualNetworkProperties{
 			// TODO: MACPool (it is currently missing from network.VirtualNetwork)
 			Subnets:           getNetworkSubnets(c.Ipams),
-			ProvisioningState: getVirtualNetworkProvisioningState(c.Status.ProvisioningStatus),
+			ProvisioningState: getVirtualNetworkProvisioningState(c.Status.GetProvisioningStatus()),
 		},
 	}
 
