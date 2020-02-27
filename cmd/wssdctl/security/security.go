@@ -5,6 +5,7 @@ package security
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/certificate"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/identity"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/keyvault"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security/login"
@@ -26,6 +27,6 @@ func NewCommand() *cobra.Command {
 	cmd.AddCommand(keyvault.NewCommand())
 	cmd.AddCommand(identity.NewCommand())
 	cmd.AddCommand(login.NewCommand())
-
+	cmd.AddCommand(certificate.NewCommand())
 	return cmd
 }

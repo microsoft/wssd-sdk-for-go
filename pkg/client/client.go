@@ -178,6 +178,17 @@ func GetIdentityClient(serverAddress *string, authorizer auth.Authorizer) (secur
 	return security_pb.NewIdentityAgentClient(conn), nil
 }
 
+// GetCertificateClient returns the secret client to communicate with the wssdagent
+func GetCertificateClient(serverAddress *string, authorizer auth.Authorizer) (security_pb.CertificateAgentClient, error) {
+	opts := getDefaultDialOption(authorizer)
+	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	if err != nil {
+		log.Fatalf("Unable to get CertificateClient. Failed to dial: %v", err)
+	}
+
+	return security_pb.NewCertificateAgentClient(conn), nil
+}
+
 // GetAuthenticationClient returns the secret client to communicate with the wssdagent
 func GetAuthenticationClient(serverAddress *string, authorizer auth.Authorizer) (security_pb.AuthenticationAgentClient, error) {
 
