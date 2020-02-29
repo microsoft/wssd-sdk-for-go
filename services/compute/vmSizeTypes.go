@@ -12,8 +12,8 @@ func GetWssdVirtualMachineSizeFromVirtualMachineSize(size VirtualMachineSizeType
 	sizeString := string(size)
 
 	// Find the corresponding string in size map
-	value, ok := wssdcompute.VirtualMachineSizeType_value[sizeString]
-	if !ok {
+	value, found := wssdcompute.VirtualMachineSizeType_value[sizeString]
+	if !found {
 		return wssdcompute.VirtualMachineSizeType_Default // Not found, return default
 	}
 	return wssdcompute.VirtualMachineSizeType(value)
@@ -21,8 +21,8 @@ func GetWssdVirtualMachineSizeFromVirtualMachineSize(size VirtualMachineSizeType
 
 func GetVirtualMachineSizeFromWssdVirtualMachineSize(size wssdcompute.VirtualMachineSizeType) VirtualMachineSizeTypes {
 	sizeInt := int32(size)
-	value, ok := wssdcompute.VirtualMachineSizeType_name[sizeInt]
-	if !ok {
+	value, found := wssdcompute.VirtualMachineSizeType_name[sizeInt]
+	if !found {
 		return VirtualMachineSizeTypesDefault // Not found, return default
 	}
 	return VirtualMachineSizeTypes(value)
