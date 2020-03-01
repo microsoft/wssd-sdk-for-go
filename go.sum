@@ -103,8 +103,8 @@ github.com/lyft/protoc-gen-validate v0.0.13/go.mod h1:XbGvPuh87YZc5TdIa2/I4pLk0Q
 github.com/magiconair/properties v1.8.0 h1:LLgXmsheXeRoUOBOjtwPQCWIYqM/LU1ayDtDePerRcY=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-github.com/microsoft/wssdagent v0.5.13 h1:G0JtE1sBOZ4AD3nxFoVKjGlEyoUsRqQilQJVJKWvYoY=
-github.com/microsoft/wssdagent v0.5.13/go.mod h1:auMWJ0BIBq3PtExYetO23AaZW1cC9kiZhetlCpIQ1aE=
+github.com/microsoft/wssdagent v0.5.14 h1:9REO1sQiGIi3zbTsXN6c/NJKmY0fEDYXV7MF9rrC/dY=
+github.com/microsoft/wssdagent v0.5.14/go.mod h1:auMWJ0BIBq3PtExYetO23AaZW1cC9kiZhetlCpIQ1aE=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2 h1:fmNYVwqnSfB9mZU6OS2O6GsXM+wcskZDuKQzvN1EDeE=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
