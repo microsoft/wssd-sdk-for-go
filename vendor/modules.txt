@@ -24,7 +24,7 @@ github.com/inconshreveable/mousetrap
 github.com/jmespath/go-jmespath
 # github.com/magiconair/properties v1.8.0
 github.com/magiconair/properties
-# github.com/microsoft/wssdagent v0.5.13
+# github.com/microsoft/wssdagent v0.5.15
 github.com/microsoft/wssdagent/pkg/certs
 github.com/microsoft/wssdagent/pkg/errors
 github.com/microsoft/wssdagent/pkg/marshal

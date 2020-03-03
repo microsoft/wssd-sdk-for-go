@@ -3,6 +3,32 @@
 
 package compute
 
+import (
+	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
+)
+
+func GetWssdVirtualMachineSizeFromVirtualMachineSize(size VirtualMachineSizeTypes) wssdcompute.VirtualMachineSizeType {
+	// Convert sdk enum to string representation
+	sizeString := string(size)
+
+	// Find the corresponding string in size map
+	value, found := wssdcompute.VirtualMachineSizeType_value[sizeString]
+	if !found {
+		// Not found, user supplied unsupported size
+		return wssdcompute.VirtualMachineSizeType_Unsupported
+	}
+	return wssdcompute.VirtualMachineSizeType(value)
+}
+
+func GetVirtualMachineSizeFromWssdVirtualMachineSize(size wssdcompute.VirtualMachineSizeType) VirtualMachineSizeTypes {
+	sizeInt := int32(size)
+	value, found := wssdcompute.VirtualMachineSizeType_name[sizeInt]
+	if !found {
+		return VirtualMachineSizeTypesDefault // Not found, return default
+	}
+	return VirtualMachineSizeTypes(value)
+}
+
 // VirtualMachineSizeTypes enumerates the values for virtual machine size types.
 type VirtualMachineSizeTypes string
 
@@ -12,6 +38,8 @@ type VirtualMachineSizeTypes string
 const (
 	// VirtualMachineSizeTypesDefault ...
 	VirtualMachineSizeTypesDefault VirtualMachineSizeTypes = "Default"
+	// VirtualMachineSizeTypesStandardK8SV1 ...
+	VirtualMachineSizeTypesStandardK8SV1 VirtualMachineSizeTypes = "Standard_K8S_v1"
 	// VirtualMachineSizeTypesBasicA0 ...
 	VirtualMachineSizeTypesBasicA0 VirtualMachineSizeTypes = "Basic_A0"
 	// VirtualMachineSizeTypesBasicA1 ...
@@ -72,6 +100,10 @@ const (
 	VirtualMachineSizeTypesStandardB4ms VirtualMachineSizeTypes = "Standard_B4ms"
 	// VirtualMachineSizeTypesStandardB8ms ...
 	VirtualMachineSizeTypesStandardB8ms VirtualMachineSizeTypes = "Standard_B8ms"
+	// VirtualMachineSizeTypesStandardDV2 ...
+	VirtualMachineSizeTypesStandardDV2 VirtualMachineSizeTypes = "Standard_D_v2"
+	// VirtualMachineSizeTypesStandardDV3 ...
+	VirtualMachineSizeTypesStandardDV3 VirtualMachineSizeTypes = "Standard_D_v3"
 	// VirtualMachineSizeTypesStandardD1 ...
 	VirtualMachineSizeTypesStandardD1 VirtualMachineSizeTypes = "Standard_D1"
 	// VirtualMachineSizeTypesStandardD11 ...
