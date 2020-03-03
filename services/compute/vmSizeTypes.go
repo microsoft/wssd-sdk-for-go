@@ -14,7 +14,8 @@ func GetWssdVirtualMachineSizeFromVirtualMachineSize(size VirtualMachineSizeType
 	// Find the corresponding string in size map
 	value, found := wssdcompute.VirtualMachineSizeType_value[sizeString]
 	if !found {
-		return wssdcompute.VirtualMachineSizeType_Default // Not found, return default
+		// Not found, user supplied unsupported size
+		return wssdcompute.VirtualMachineSizeType_Unsupported
 	}
 	return wssdcompute.VirtualMachineSizeType(value)
 }
