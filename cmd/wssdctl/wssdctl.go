@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/logging"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/network"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/security"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage"
@@ -60,6 +61,7 @@ func NewCommand() *cobra.Command {
 	cmd.AddCommand(network.NewCommand())
 	cmd.AddCommand(storage.NewCommand())
 	cmd.AddCommand(security.NewCommand())
+	cmd.AddCommand(logging.NewCommand())
 
 	return cmd
 
