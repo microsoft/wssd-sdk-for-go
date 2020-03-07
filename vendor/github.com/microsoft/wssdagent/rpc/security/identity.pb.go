@@ -221,7 +221,9 @@ func init() {
 	proto.RegisterType((*Identity)(nil), "wssd.security.Identity")
 }
 
-func init() { proto.RegisterFile("identity.proto", fileDescriptor_61c7956abb761639) }
+func init() {
+	proto.RegisterFile("identity.proto", fileDescriptor_61c7956abb761639)
+}
 
 var fileDescriptor_61c7956abb761639 = []byte{
 	// 408 bytes of a gzipped FileDescriptorProto
@@ -255,11 +257,11 @@ var fileDescriptor_61c7956abb761639 = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConnInterface
+var _ grpc.ClientConn
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+const _ = grpc.SupportPackageIsVersion4
 
 // IdentityAgentClient is the client API for IdentityAgent service.
 //
@@ -269,10 +271,10 @@ type IdentityAgentClient interface {
 }
 
 type identityAgentClient struct {
-	cc grpc.ClientConnInterface
+	cc *grpc.ClientConn
 }
 
-func NewIdentityAgentClient(cc grpc.ClientConnInterface) IdentityAgentClient {
+func NewIdentityAgentClient(cc *grpc.ClientConn) IdentityAgentClient {
 	return &identityAgentClient{cc}
 }
 

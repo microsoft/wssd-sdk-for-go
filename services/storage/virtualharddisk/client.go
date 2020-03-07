@@ -34,16 +34,16 @@ func NewVirtualHardDiskClient(cloudFQDN string, authorizer auth.Authorizer) (*Vi
 }
 
 // Get methods invokes the client Get method
-func (c *VirtualHardDiskClient) Get(ctx context.Context, group, name string) (*[]storage.VirtualHardDisk, error) {
-	return c.internal.Get(ctx, group, name)
+func (c *VirtualHardDiskClient) Get(ctx context.Context, container, name string) (*[]storage.VirtualHardDisk, error) {
+	return c.internal.Get(ctx, container, name)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
-func (c *VirtualHardDiskClient) CreateOrUpdate(ctx context.Context, group, name string, storage *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
-	return c.internal.CreateOrUpdate(ctx, group, name, storage)
+func (c *VirtualHardDiskClient) CreateOrUpdate(ctx context.Context, container, name string, storage *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
+	return c.internal.CreateOrUpdate(ctx, container, name, storage)
 }
 
 // Delete methods invokes delete of the storage resource
-func (c *VirtualHardDiskClient) Delete(ctx context.Context, group, name string) error {
-	return c.internal.Delete(ctx, group, name)
+func (c *VirtualHardDiskClient) Delete(ctx context.Context, container, name string) error {
+	return c.internal.Delete(ctx, container, name)
 }

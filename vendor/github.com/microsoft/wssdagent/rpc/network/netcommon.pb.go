@@ -87,7 +87,9 @@ func init() {
 	proto.RegisterType((*Dns)(nil), "wssd.network.Dns")
 }
 
-func init() { proto.RegisterFile("netcommon.proto", fileDescriptor_f4897f8092d214a0) }
+func init() {
+	proto.RegisterFile("netcommon.proto", fileDescriptor_f4897f8092d214a0)
+}
 
 var fileDescriptor_f4897f8092d214a0 = []byte{
 	// 168 bytes of a gzipped FileDescriptorProto

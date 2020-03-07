@@ -3,31 +3,33 @@
 $ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 import-module "$PSScriptRoot\wssdglobal.psm1" -Force -Verbose:$false -DisableNameChecking
 
-
-function VirtualHardDiskCreate($yamlFile) {
-		Execute-WssdCommand -Arguments  "storage vhd create --config $yamlFile"
-}
-
-function VirtualHardDiskDelete($name) {
-		Execute-WssdCommand -Arguments  "storage vhd delete --name $name"
-}
-
-function VirtualHardDiskShow($name) {
-		Execute-WssdCommand -Arguments  "storage vhd show --name $name"
-}
-
-function VirtualHardDiskList() {
-		Execute-WssdCommand -Arguments  "storage vhd list"
-}
-
-function VirtualHardDiskUpdate($name, $yamlFile) {
-		Execute-WssdCommand -Arguments  "storage vhd update --name $name --config $yamlFile"
-}
-
-function CreateSampleVirtualHardDisk() {
+	$Global:testVirtualHardDiskSource = "$Script:ScriptPath\test.vhdx"
 	$Global:sampleVirtualHardDisk = "sampleVirtualHardDisk"
-	$pwd = (pwd).Path
 	$Global:sampleVirtualHardDiskSource = "$Script:ScriptPath\test.vhdx"
+	$Global:sampleVirtualHardDiskDataDisk = "sampleVirtualHardDiskDataDisk"
+
+function VirtualHardDiskCreate($containerName, $yamlFile) {
+		Execute-WssdCommand -Arguments  "storage vhd create --config $yamlFile --container $containerName"
+}
+
+function VirtualHardDiskDelete($name, $containerName) {
+		Execute-WssdCommand -Arguments  "storage vhd delete --name $name --container $containerName"
+}
+
+function VirtualHardDiskShow($name, $containerName) {
+		Execute-WssdCommand -Arguments  "storage vhd show --name $name --container $containerName"
+}
+
+function VirtualHardDiskList($containerName) {
+		Execute-WssdCommand -Arguments  "storage vhd list --container $containerName"
+}
+
+function VirtualHardDiskUpdate($name, $containerName, $yamlFile) {
+		Execute-WssdCommand -Arguments  "storage vhd update --name $name --config $yamlFile --container $containerName"
+}
+
+function CreateSampleVirtualHardDisk($containerName) {
+	$pwd = (pwd).Path
 $yaml = @"
 name: $Global:sampleVirtualHardDisk
 virtualharddiskproperties:
@@ -36,47 +38,61 @@ virtualharddiskproperties:
 		$yamlFile = "testVirtualHardDisk.yaml"
 		Set-Content -Path $yamlFile -Value $yaml 
 
-		VirtualHardDiskCreate $yamlFile
+		VirtualHardDiskCreate -yamlFile $yamlFile -container $containerName
 }
 
-function CreateSampleVirtualHardDiskDataDisk() {
-	$script:sampleVirtualHardDisk = "sampleVirtualHardDisk"
+function CreateSampleVirtualHardDiskDataDisk($containerName) {
 
-	It 'Should be able to create a virtual hard disk of type data disk' {
-		$yaml = @"
-name: $Global:sampleVirtualHardDisk
+	$yaml = @"
+name: $Global:sampleVirtualHardDiskDataDisk
 virtualharddiskproperties:
-  source: ""
-  path: "c:\\cluster\\volume1\\testdatadisk.vhdx"
-  disksizegb: 10737418240
+  disksizebytes: 10737418240
   dynamic: true
   blocksizebytes: 33554432
   logicalsectorbytes: 4096
   physicalsectorbytes: 4096
-  controllernumber: 0
-  controllerlocation: 0
-  disknumber: 0
-  vmname: ""
-  vmid: ""
-  scsipath: "0.0.0.0"
+  virtualmachinename: ""
   virtualharddisktype: DATADISK_VIRTUALHARDDISK	
 "@
-		$yamlFile = "testVirtualHardDiskDataDisk.yaml"
-		Set-Content -Path $yamlFile -Value $yaml 
+	$yamlFile = "testVirtualHardDiskDataDisk.yaml"
+	Set-Content -Path $yamlFile -Value $yaml 
 
-		VirtualHardDiskCreate $yamlFile
-	}
+	VirtualHardDiskCreate -yamlFile $yamlFile -container $containerName
 }
 
-function DeleteSampleVirtualHardDisk() {
-	VirtualHardDiskDelete $Global:sampleVirtualHardDisk
+function DeleteSampleVirtualHardDisk($containerName) {
+	VirtualHardDiskDelete $Global:sampleVirtualHardDisk -container $containerName
 }
 
-function CreateVMMSVhd() {
-	$Global:testVirtualHardDiskSource = "$Script:ScriptPath\test.vhdx"
+function DeleteSampleVirtualHardDiskDataDisk($containerName) {
+	VirtualHardDiskDelete $Global:sampleVirtualHardDiskDataDisk -container $containerName
 }
 
-function CleanupVMMSVhd() {
+function AttachVirtualHardDiskDataDisk($name, $vmName, $containerName) {
+	Execute-WssdCommand -Arguments  "storage vhd show --name $name --container $containerName" > out.yaml
+	$yaml = Get-Content -Path out.Yaml
+	$yaml = $yaml.Replace('virtualmachinename: ""', "virtualmachinename: $vmName")
+	$yamlFile = "testVirtualHardDiskDataDiskUpdate.yaml"
+	Set-Content -Path $yamlFile -Value $yaml 
+	VirtualHardDiskCreate -yamlFile $yamlFile -container $containerName
+}
+
+function ResizeVirtualHardDiskDataDisk($name, $sizeBytes, $containerName) {
+	Execute-WssdCommand -Arguments  "storage vhd show --name $name --container $containerName" > out.yaml
+	$yaml = Get-Content -Path out.Yaml
+	$yaml = $yaml.Replace('disksizebytes: 10737418240', "disksizebytes: $sizeBytes")
+	$yamlFile = "testVirtualHardDiskDataDiskUpdate.yaml"
+	Set-Content -Path $yamlFile -Value $yaml 
+	VirtualHardDiskCreate -yamlFile $yamlFile -container $containerName
+}
+
+function DetachVirtualHardDiskDataDisk($name, $vmName, $containerName) {
+	Execute-WssdCommand -Arguments  "storage vhd show --name $name --container $containerName" > out.yaml
+	$yaml = Get-Content -Path out.Yaml
+	$yaml = $yaml.Replace("virtualmachinename: $vmName", 'virtualmachinename: ""')
+	$yamlFile = "testVirtualHardDiskDataDiskUpdate.yaml"
+	Set-Content -Path $yamlFile -Value $yaml 
+	VirtualHardDiskCreate -yamlFile $yamlFile -container $containerName
 }
 
 Export-ModuleMember VirtualHardDiskCreate
@@ -86,6 +102,10 @@ Export-ModuleMember VirtualHardDiskList
 Export-ModuleMember VirtualHardDiskUpdate
 Export-ModuleMember CreateSampleVirtualHardDisk
 Export-ModuleMember CreateSampleVirtualHardDiskDataDisk
+Export-ModuleMember DeleteSampleVirtualHardDiskDataDisk
 Export-ModuleMember DeleteSampleVirtualHardDisk
+Export-ModuleMember AttachVirtualHardDiskDataDisk
+Export-ModuleMember DetachVirtualHardDiskDataDisk
+Export-ModuleMember ResizeVirtualHardDiskDataDisk
 Export-ModuleMember CreateVMMSVhd
 Export-ModuleMember CleanupVMMSVhd

@@ -2,6 +2,7 @@
 
 $ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 import-module "$PSScriptRoot\wssdglobal.psm1" -Force -Verbose:$false -DisableNameChecking
+	$Global:sampleVirtualNetwork = "Default Switch"
 
 
 function VirtualNetworkCreate($yamlFile) {
@@ -25,7 +26,6 @@ function VirtualNetworkUpdate($name, $yamlFile) {
 }
 
 function CreateSampleVirtualNetwork() {
-	$Global:sampleVirtualNetwork = "Default Switch"
 	$yaml = @"
 name: $Global:sampleVirtualNetwork
 type: "ICS"

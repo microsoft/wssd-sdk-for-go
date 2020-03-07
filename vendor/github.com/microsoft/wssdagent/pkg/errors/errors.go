@@ -15,7 +15,7 @@ var (
 	InvalidInput         error = errors.New("Invalid Input")
 	NotSupported         error = errors.New("Not Supported")
 	AlreadyExists        error = errors.New("Already Exists")
-	AlreadyInUse         error = errors.New("Already In Use")
+	InUse                error = errors.New("In Use")
 	Duplicates           error = errors.New("Duplicates")
 	InvalidFilter        error = errors.New("Invalid Filter")
 	Failed               error = errors.New("Failed")

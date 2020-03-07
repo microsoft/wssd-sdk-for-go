@@ -374,7 +374,9 @@ func init() {
 	proto.RegisterType((*VirtualMachineScaleSet)(nil), "wssd.compute.VirtualMachineScaleSet")
 }
 
-func init() { proto.RegisterFile("virtualmachinescaleset.proto", fileDescriptor_d2ef1a2fddc3eb6a) }
+func init() {
+	proto.RegisterFile("virtualmachinescaleset.proto", fileDescriptor_d2ef1a2fddc3eb6a)
+}
 
 var fileDescriptor_d2ef1a2fddc3eb6a = []byte{
 	// 611 bytes of a gzipped FileDescriptorProto
@@ -421,11 +423,11 @@ var fileDescriptor_d2ef1a2fddc3eb6a = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConnInterface
+var _ grpc.ClientConn
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+const _ = grpc.SupportPackageIsVersion4
 
 // VirtualMachineScaleSetAgentClient is the client API for VirtualMachineScaleSetAgent service.
 //
@@ -435,10 +437,10 @@ type VirtualMachineScaleSetAgentClient interface {
 }
 
 type virtualMachineScaleSetAgentClient struct {
-	cc grpc.ClientConnInterface
+	cc *grpc.ClientConn
 }
 
-func NewVirtualMachineScaleSetAgentClient(cc grpc.ClientConnInterface) VirtualMachineScaleSetAgentClient {
+func NewVirtualMachineScaleSetAgentClient(cc *grpc.ClientConn) VirtualMachineScaleSetAgentClient {
 	return &virtualMachineScaleSetAgentClient{cc}
 }
 

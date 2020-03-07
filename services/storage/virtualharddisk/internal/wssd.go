@@ -11,6 +11,7 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
+	"github.com/microsoft/wssdagent/pkg/errors"
 	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
 	wssdstorage "github.com/microsoft/wssdagent/rpc/storage"
 	log "k8s.io/klog"
@@ -30,8 +31,11 @@ func NewVirtualHardDiskClient(subID string, authorizer auth.Authorizer) (*client
 }
 
 // Get
-func (c *client) Get(ctx context.Context, group, name string) (*[]storage.VirtualHardDisk, error) {
-	request := getVirtualHardDiskRequest(wssdcommonproto.Operation_GET, name, nil)
+func (c *client) Get(ctx context.Context, containerName, name string) (*[]storage.VirtualHardDisk, error) {
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_GET, name, containerName, nil)
+	if err != nil {
+		return nil, err
+	}
 	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -40,8 +44,11 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]storage.Virtua
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
-	request := getVirtualHardDiskRequest(wssdcommonproto.Operation_POST, name, sg)
+func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string, sg *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_POST, name, containerName, sg)
+	if err != nil {
+		return nil, err
+	}
 	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[VirtualHardDisk] Create failed with error %v", err)
@@ -58,9 +65,12 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *sto
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, group, name string) error {
-	request := getVirtualHardDiskRequest(wssdcommonproto.Operation_DELETE, name, nil)
-	_, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
+func (c *client) Delete(ctx context.Context, containerName, name string) error {
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_DELETE, name, containerName, nil)
+	if err != nil {
+		return err
+	}
+	_, err = c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	return err
 }
 
@@ -73,20 +83,25 @@ func getVirtualHardDisksFromResponse(response *wssdstorage.VirtualHardDiskRespon
 	return &virtualHardDisks
 }
 
-func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name string, vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHardDiskRequest {
+func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, containerName string, vhd *storage.VirtualHardDisk) (*wssdstorage.VirtualHardDiskRequest, error) {
 	request := &wssdstorage.VirtualHardDiskRequest{
 		OperationType:          opType,
 		VirtualHardDiskSystems: []*wssdstorage.VirtualHardDisk{},
 	}
-	if vhd != nil {
-		request.VirtualHardDiskSystems = append(request.VirtualHardDiskSystems, getWssdVirtualHardDisk(vhd))
-	} else if len(name) > 0 {
-		request.VirtualHardDiskSystems = append(request.VirtualHardDiskSystems,
-			&wssdstorage.VirtualHardDisk{
-				Name: name,
-			})
+
+	wssdvhd := &wssdstorage.VirtualHardDisk{
+		Name:          name,
+		ContainerName: containerName,
 	}
-	return request
+	var err error
+	if vhd != nil {
+		wssdvhd, err = getWssdVirtualHardDisk(containerName, vhd)
+		if err != nil {
+			return nil, err
+		}
+	}
+	request.VirtualHardDiskSystems = append(request.VirtualHardDiskSystems, wssdvhd)
+	return request, nil
 }
 
 func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDisk {
@@ -97,7 +112,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 		VirtualHardDiskProperties: &storage.VirtualHardDiskProperties{
 			Source:              &vhd.Source,
 			Path:                &vhd.Path,
-			DiskSizeGB:          &vhd.Size,
+			DiskSizeBytes:       &vhd.Size,
 			Dynamic:             &vhd.Dynamic,
 			Blocksizebytes:      &vhd.Blocksizebytes,
 			Logicalsectorbytes:  &vhd.Logicalsectorbytes,
@@ -105,7 +120,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			Controllernumber:    &vhd.Controllernumber,
 			Controllerlocation:  &vhd.Controllerlocation,
 			Disknumber:          &vhd.Disknumber,
-			Vmname:              &vhd.Vmname,
+			VirtualMachineName:  &vhd.VirtualmachineName,
 			Scsipath:            &vhd.Scsipath,
 			Virtualharddisktype: vhd.Virtualharddisktype.String(),
 			ProvisioningState:   getVirtualHardDiskProvisioningState(vhd.Status.GetProvisioningStatus()),
@@ -122,72 +137,46 @@ func getVirtualHardDiskProvisioningState(status *wssdcommonproto.ProvisionStatus
 	return &stateString
 }
 
-func getWssdVirtualHardDisk(vhd *storage.VirtualHardDisk) *wssdstorage.VirtualHardDisk {
-
-	var disk wssdstorage.VirtualHardDisk
-
-	if vhd.Name != nil {
-		disk.Name = *vhd.Name
+func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) (*wssdstorage.VirtualHardDisk, error) {
+	disk := wssdstorage.VirtualHardDisk{
+		ContainerName: containerName,
 	}
-	if vhd.Source != nil {
+
+	if vhd.Name == nil {
+		return nil, errors.Wrapf(errors.InvalidInput, "Missing Name")
+	}
+
+	disk.Name = *vhd.Name
+	disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
+
+	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
+		if vhd.Source == nil {
+			return nil, errors.Wrapf(errors.InvalidInput, "Missing Source")
+		}
 		disk.Source = *vhd.Source
-	}
-	if vhd.Path != nil {
-		disk.Path = *vhd.Path
-	}
-	if vhd.DiskSizeGB != nil {
-		disk.Size = *vhd.DiskSizeGB
-	}
-	if vhd.Dynamic != nil {
-		disk.Dynamic = *vhd.Dynamic
-	}
-	if vhd.Blocksizebytes != nil {
-		disk.Blocksizebytes = *vhd.Blocksizebytes
-	}
-	if vhd.Logicalsectorbytes != nil {
-		disk.Logicalsectorbytes = *vhd.Logicalsectorbytes
-	}
-	if vhd.Physicalsectorbytes != nil {
-		disk.Physicalsectorbytes = *vhd.Physicalsectorbytes
-	}
-	if vhd.Controllerlocation != nil {
-		disk.Controllerlocation = *vhd.Controllerlocation
-	}
-	if vhd.Controllernumber != nil {
-		disk.Controllernumber = *vhd.Controllernumber
-	}
-	if vhd.Disknumber != nil {
-		disk.Disknumber = *vhd.Disknumber
-	}
-	if vhd.Vmname != nil {
-		disk.Vmname = *vhd.Vmname
+	} else {
+		if vhd.DiskSizeBytes == nil {
+			return nil, errors.Wrapf(errors.InvalidInput, "Missing DiskSize")
+		}
+		disk.Size = *vhd.DiskSizeBytes
+		if vhd.Dynamic != nil {
+			disk.Dynamic = *vhd.Dynamic
+		}
+		if vhd.Blocksizebytes != nil {
+			disk.Blocksizebytes = *vhd.Blocksizebytes
+		}
+		if vhd.Logicalsectorbytes != nil {
+			disk.Logicalsectorbytes = *vhd.Logicalsectorbytes
+		}
+		if vhd.Physicalsectorbytes != nil {
+			disk.Physicalsectorbytes = *vhd.Physicalsectorbytes
+		}
+		if vhd.VirtualMachineName != nil {
+			disk.VirtualmachineName = *vhd.VirtualMachineName
+		}
 	}
 
-	if vhd.Scsipath != nil {
-		disk.Scsipath = *vhd.Scsipath
-	}
-
-	if vhd.Virtualharddisktype != "" {
-		disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
-	}
-
-	return &disk
-	// 	return &wssdstorage.VirtualHardDisk{
-	// 		Name:                *vhd.Name,
-	// 		Source:              *vhd.Source,
-	// 		Path:                *vhd.Path,
-	// 		Size:                *vhd.DiskSizeGB,
-	// 		Dynamic:             *vhd.Dynamic,
-	// 		Blocksizebytes:      *vhd.Blocksizebytes,
-	// 		Logicalsectorbytes:  *vhd.Logicalsectorbytes,
-	// 		Physicalsectorbytes: *vhd.Physicalsectorbytes,
-	// 		Controllerlocation:  *vhd.Controllerlocation,
-	// 		Controllernumber:    *vhd.Controllernumber,
-	// 		Disknumber:          *vhd.Disknumber,
-	// 		Vmname:              *vhd.Vmname,
-	// 		Scsipath:            *vhd.Scsipath,
-	// 		Virtualharddisktype: *vhd.Virtualharddisktype,
-	// 	}
+	return &disk, nil
 }
 
 func getVirtualharddisktype(enum string) wssdstorage.VirtualHardDiskType {

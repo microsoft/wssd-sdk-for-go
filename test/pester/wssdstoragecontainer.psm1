@@ -3,6 +3,7 @@
 $ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 import-module "$PSScriptRoot\wssdglobal.psm1" -Force -Verbose:$false -DisableNameChecking
 
+	$Global:sampleContainer = "sampleContainer"
 
 function ContainerCreate($yamlFile) {
 		Execute-WssdCommand -Arguments  "storage container create --config $yamlFile"
@@ -25,7 +26,6 @@ function ContainerUpdate($name, $yamlFile) {
 }
 
 function CreateSampleContainer() {
-	$Global:sampleContainer = "sampleContainer"
 	$pwd = (pwd).Path
 	$Global:sampleContainerSource = "$Script:ScriptPath\test.containerx"
 $yaml = @"

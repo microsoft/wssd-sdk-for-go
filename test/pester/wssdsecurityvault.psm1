@@ -3,6 +3,7 @@
 $ScriptPath = Split-Path $MyInvocation.MyCommand.Path
 import-module "$PSScriptRoot\wssdglobal.psm1" -Force -Verbose:$false -DisableNameChecking
 
+	$Global:sampleKeyVault = "sampleKeyVault1"
 
 
 function KeyVaultCreate($yamlFile) {
@@ -26,7 +27,6 @@ function KeyVaultUpdate($name, $yamlFile) {
 }
 
 function CreateSampleKeyVault() {
-	$Global:sampleKeyVault = "sampleKeyVault1"
 	$yaml = @"
 name: $Global:sampleKeyVault 		
 "@

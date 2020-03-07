@@ -24,7 +24,7 @@ github.com/inconshreveable/mousetrap
 github.com/jmespath/go-jmespath
 # github.com/magiconair/properties v1.8.0
 github.com/magiconair/properties
-# github.com/microsoft/wssdagent v0.5.15
+# github.com/microsoft/wssdagent v0.6.1
 github.com/microsoft/wssdagent/pkg/certs
 github.com/microsoft/wssdagent/pkg/errors
 github.com/microsoft/wssdagent/pkg/marshal
@@ -108,5 +108,7 @@ google.golang.org/grpc/status
 google.golang.org/grpc/tap
 # gopkg.in/yaml.v2 v2.2.4
 gopkg.in/yaml.v2
+# gopkg.in/yaml.v3 v3.0.0-20200121175148-a6ecf24a6d71
+gopkg.in/yaml.v3
 # k8s.io/klog v1.0.0
 k8s.io/klog

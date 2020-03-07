@@ -53,6 +53,9 @@ func NewCommand() *cobra.Command {
 	cmd.PersistentFlags().String("group", "dummpGroup", "Group Name")
 	viper.BindPFlag("group", cmd.PersistentFlags().Lookup("group"))
 
+	cmd.PersistentFlags().String("container", "", "Storage Container Name")
+	viper.BindPFlag("container", cmd.PersistentFlags().Lookup("container"))
+
 	cmd.AddCommand(compute.NewCommand())
 	cmd.AddCommand(network.NewCommand())
 	cmd.AddCommand(storage.NewCommand())
