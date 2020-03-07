@@ -124,7 +124,9 @@ func init() {
 	proto.RegisterType((*AuthenticationResponse)(nil), "wssd.security.AuthenticationResponse")
 }
 
-func init() { proto.RegisterFile("authentication.proto", fileDescriptor_d0dbc99083440df2) }
+func init() {
+	proto.RegisterFile("authentication.proto", fileDescriptor_d0dbc99083440df2)
+}
 
 var fileDescriptor_d0dbc99083440df2 = []byte{
 	// 274 bytes of a gzipped FileDescriptorProto
@@ -150,11 +152,11 @@ var fileDescriptor_d0dbc99083440df2 = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConnInterface
+var _ grpc.ClientConn
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+const _ = grpc.SupportPackageIsVersion4
 
 // AuthenticationAgentClient is the client API for AuthenticationAgent service.
 //
@@ -164,10 +166,10 @@ type AuthenticationAgentClient interface {
 }
 
 type authenticationAgentClient struct {
-	cc grpc.ClientConnInterface
+	cc *grpc.ClientConn
 }
 
-func NewAuthenticationAgentClient(cc grpc.ClientConnInterface) AuthenticationAgentClient {
+func NewAuthenticationAgentClient(cc *grpc.ClientConn) AuthenticationAgentClient {
 	return &authenticationAgentClient{cc}
 }
 

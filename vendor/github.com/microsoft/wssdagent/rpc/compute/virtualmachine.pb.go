@@ -721,7 +721,9 @@ func init() {
 	proto.RegisterType((*VirtualMachine)(nil), "wssd.compute.VirtualMachine")
 }
 
-func init() { proto.RegisterFile("virtualmachine.proto", fileDescriptor_f620cdfcc6a9426c) }
+func init() {
+	proto.RegisterFile("virtualmachine.proto", fileDescriptor_f620cdfcc6a9426c)
+}
 
 var fileDescriptor_f620cdfcc6a9426c = []byte{
 	// 933 bytes of a gzipped FileDescriptorProto
@@ -788,11 +790,11 @@ var fileDescriptor_f620cdfcc6a9426c = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConnInterface
+var _ grpc.ClientConn
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+const _ = grpc.SupportPackageIsVersion4
 
 // VirtualMachineAgentClient is the client API for VirtualMachineAgent service.
 //
@@ -802,10 +804,10 @@ type VirtualMachineAgentClient interface {
 }
 
 type virtualMachineAgentClient struct {
-	cc grpc.ClientConnInterface
+	cc *grpc.ClientConn
 }
 
-func NewVirtualMachineAgentClient(cc grpc.ClientConnInterface) VirtualMachineAgentClient {
+func NewVirtualMachineAgentClient(cc *grpc.ClientConn) VirtualMachineAgentClient {
 	return &virtualMachineAgentClient{cc}
 }
 

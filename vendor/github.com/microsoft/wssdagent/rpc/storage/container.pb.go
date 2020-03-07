@@ -232,7 +232,9 @@ func init() {
 	proto.RegisterType((*Container)(nil), "wssd.storage.Container")
 }
 
-func init() { proto.RegisterFile("container.proto", fileDescriptor_7afe31759757e49a) }
+func init() {
+	proto.RegisterFile("container.proto", fileDescriptor_7afe31759757e49a)
+}
 
 var fileDescriptor_7afe31759757e49a = []byte{
 	// 402 bytes of a gzipped FileDescriptorProto
@@ -266,11 +268,11 @@ var fileDescriptor_7afe31759757e49a = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConnInterface
+var _ grpc.ClientConn
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+const _ = grpc.SupportPackageIsVersion4
 
 // ContainerAgentClient is the client API for ContainerAgent service.
 //
@@ -280,10 +282,10 @@ type ContainerAgentClient interface {
 }
 
 type containerAgentClient struct {
-	cc grpc.ClientConnInterface
+	cc *grpc.ClientConn
 }
 
-func NewContainerAgentClient(cc grpc.ClientConnInterface) ContainerAgentClient {
+func NewContainerAgentClient(cc *grpc.ClientConn) ContainerAgentClient {
 	return &containerAgentClient{cc}
 }
 
