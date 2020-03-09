@@ -14,6 +14,7 @@ import (
 	log "k8s.io/klog"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 )
@@ -30,6 +31,15 @@ const (
 	KnownServerPort     = 45000
 	KnownAuthServerPort = 45001
 )
+
+var (
+	mux             sync.Mutex
+	connectionCache map[string]*grpc.ClientConn
+)
+
+func init() {
+	connectionCache = map[string]*grpc.ClientConn{}
+}
 
 // Returns nil if debug mode is on; err if it is not
 func isDebugMode() error {
@@ -67,10 +77,30 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 	return opts
 }
 
+func getClientConnection(serverAddress *string, authorizer auth.Authorizer) (*grpc.ClientConn, error) {
+	mux.Lock()
+	defer mux.Unlock()
+	endpoint := getServerEndpoint(serverAddress)
+
+	conn, ok := connectionCache[endpoint]
+	if ok {
+		return conn, nil
+	}
+
+	opts := getDefaultDialOption(authorizer)
+	conn, err := grpc.Dial(endpoint, opts...)
+	if err != nil {
+		log.Fatalf("Failed to dial: %v", err)
+	}
+
+	connectionCache[endpoint] = conn
+
+	return conn, nil
+}
+
 // GetVirtualNetworkClient returns the virtual network client to communicate with the wssdagent
 func GetVirtualNetworkClient(serverAddress *string, authorizer auth.Authorizer) (network_pb.VirtualNetworkAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get VirtualNetworkClient. Failed to dial: %v", err)
 	}
@@ -80,9 +110,7 @@ func GetVirtualNetworkClient(serverAddress *string, authorizer auth.Authorizer) 
 
 // GetVirtualNetworkInterfaceClient returns the virtual network interface client to communicate with the wssd agent
 func GetVirtualNetworkInterfaceClient(serverAddress *string, authorizer auth.Authorizer) (network_pb.VirtualNetworkInterfaceAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get VirtualNetworkInterfaceClient. Failed to dial: %v", err)
 	}
@@ -92,8 +120,7 @@ func GetVirtualNetworkInterfaceClient(serverAddress *string, authorizer auth.Aut
 
 // GetLoadBalancerClient returns the loadbalancer client to communicate with the wssd agent
 func GetLoadBalancerClient(serverAddress *string, authorizer auth.Authorizer) (network_pb.LoadBalancerAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get LoadBalancerClient. Failed to dial: %v", err)
 	}
@@ -103,8 +130,7 @@ func GetLoadBalancerClient(serverAddress *string, authorizer auth.Authorizer) (n
 
 // GetVirtualMachineClient returns the virtual machine client to comminicate with the wssd agent
 func GetVirtualMachineClient(serverAddress *string, authorizer auth.Authorizer) (compute_pb.VirtualMachineAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get VirtualMachineClient. Failed to dial: %v", err)
 	}
@@ -114,8 +140,7 @@ func GetVirtualMachineClient(serverAddress *string, authorizer auth.Authorizer) 
 
 // GetVirtualMachineScaleSetClient returns the virtual machine client to comminicate with the wssd agent
 func GetVirtualMachineScaleSetClient(serverAddress *string, authorizer auth.Authorizer) (compute_pb.VirtualMachineScaleSetAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get VirtualMachineScaleSetClient. Failed to dial: %v", err)
 	}
@@ -125,8 +150,7 @@ func GetVirtualMachineScaleSetClient(serverAddress *string, authorizer auth.Auth
 
 // GetVirtualHardDiskClient returns the virtual network client to communicate with the wssdagent
 func GetVirtualHardDiskClient(serverAddress *string, authorizer auth.Authorizer) (storage_pb.VirtualHardDiskAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get VirtualHardDiskClient. Failed to dial: %v", err)
 	}
@@ -136,8 +160,7 @@ func GetVirtualHardDiskClient(serverAddress *string, authorizer auth.Authorizer)
 
 // GetVirtualHardDiskClient returns the virtual network client to communicate with the wssdagent
 func GetContainerClient(serverAddress *string, authorizer auth.Authorizer) (storage_pb.ContainerAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get ContainerClient. Failed to dial: %v", err)
 	}
@@ -147,8 +170,7 @@ func GetContainerClient(serverAddress *string, authorizer auth.Authorizer) (stor
 
 // GetKeyVaultClient returns the keyvault client to communicate with the wssdagent
 func GetKeyVaultClient(serverAddress *string, authorizer auth.Authorizer) (security_pb.KeyVaultAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get KeyVaultClient. Failed to dial: %v", err)
 	}
@@ -158,8 +180,7 @@ func GetKeyVaultClient(serverAddress *string, authorizer auth.Authorizer) (secur
 
 // GetSecretClient returns the secret client to communicate with the wssdagent
 func GetSecretClient(serverAddress *string, authorizer auth.Authorizer) (security_pb.SecretAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get KeyVaultClient. Failed to dial: %v", err)
 	}
@@ -169,8 +190,7 @@ func GetSecretClient(serverAddress *string, authorizer auth.Authorizer) (securit
 
 // GetIdentityClient returns the secret client to communicate with the wssdagent
 func GetIdentityClient(serverAddress *string, authorizer auth.Authorizer) (security_pb.IdentityAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get IdentityClient. Failed to dial: %v", err)
 	}
@@ -180,8 +200,7 @@ func GetIdentityClient(serverAddress *string, authorizer auth.Authorizer) (secur
 
 // GetCertificateClient returns the secret client to communicate with the wssdagent
 func GetCertificateClient(serverAddress *string, authorizer auth.Authorizer) (security_pb.CertificateAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get CertificateClient. Failed to dial: %v", err)
 	}
