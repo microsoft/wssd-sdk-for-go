@@ -15,6 +15,8 @@ PKG :=
 
 all: format ctl ctlexe
 
+nofmt: ctl ctlexe
+
 clean:
 	rm -rf ${OUT} ${OUTEXE}
 ctlexe:

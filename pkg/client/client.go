@@ -5,6 +5,7 @@ package client
 
 import (
 	"fmt"
+	admin_pb "github.com/microsoft/wssdagent/rpc/admin"
 	compute_pb "github.com/microsoft/wssdagent/rpc/compute"
 	network_pb "github.com/microsoft/wssdagent/rpc/network"
 	security_pb "github.com/microsoft/wssdagent/rpc/security"
@@ -136,6 +137,17 @@ func GetVirtualMachineClient(serverAddress *string, authorizer auth.Authorizer) 
 	}
 
 	return compute_pb.NewVirtualMachineAgentClient(conn), nil
+}
+
+// GetLogClient returns the log client to communicate with the wssd agent
+func GetLogClient(serverAddress *string, authorizer auth.Authorizer) (admin_pb.LogAgentClient, error) {
+	opts := getDefaultDialOption(authorizer)
+	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	if err != nil {
+		log.Fatalf("Unable to get LogClient. Failed to dial: %v", err)
+	}
+
+	return admin_pb.NewLogAgentClient(conn), nil
 }
 
 // GetVirtualMachineScaleSetClient returns the virtual machine client to comminicate with the wssd agent
