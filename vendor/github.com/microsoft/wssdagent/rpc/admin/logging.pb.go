@@ -116,9 +116,7 @@ func init() {
 	proto.RegisterType((*LogFileResponse)(nil), "wssd.admin.LogFileResponse")
 }
 
-func init() {
-	proto.RegisterFile("logging.proto", fileDescriptor_9c8ad1e4de00dd2b)
-}
+func init() { proto.RegisterFile("logging.proto", fileDescriptor_9c8ad1e4de00dd2b) }
 
 var fileDescriptor_9c8ad1e4de00dd2b = []byte{
 	// 243 bytes of a gzipped FileDescriptorProto

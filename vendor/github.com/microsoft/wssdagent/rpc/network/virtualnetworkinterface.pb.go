@@ -311,9 +311,7 @@ func init() {
 	proto.RegisterType((*VirtualNetworkInterface)(nil), "wssd.network.VirtualNetworkInterface")
 }
 
-func init() {
-	proto.RegisterFile("virtualnetworkinterface.proto", fileDescriptor_3db92eb5944c0691)
-}
+func init() { proto.RegisterFile("virtualnetworkinterface.proto", fileDescriptor_3db92eb5944c0691) }
 
 var fileDescriptor_3db92eb5944c0691 = []byte{
 	// 543 bytes of a gzipped FileDescriptorProto
@@ -355,11 +353,11 @@ var fileDescriptor_3db92eb5944c0691 = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConn
+var _ grpc.ClientConnInterface
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
+const _ = grpc.SupportPackageIsVersion6
 
 // VirtualNetworkInterfaceAgentClient is the client API for VirtualNetworkInterfaceAgent service.
 //
@@ -369,10 +367,10 @@ type VirtualNetworkInterfaceAgentClient interface {
 }
 
 type virtualNetworkInterfaceAgentClient struct {
-	cc *grpc.ClientConn
+	cc grpc.ClientConnInterface
 }
 
-func NewVirtualNetworkInterfaceAgentClient(cc *grpc.ClientConn) VirtualNetworkInterfaceAgentClient {
+func NewVirtualNetworkInterfaceAgentClient(cc grpc.ClientConnInterface) VirtualNetworkInterfaceAgentClient {
 	return &virtualNetworkInterfaceAgentClient{cc}
 }
 

@@ -205,9 +205,7 @@ func init() {
 	proto.RegisterType((*KeyVault)(nil), "wssd.security.KeyVault")
 }
 
-func init() {
-	proto.RegisterFile("keyvault.proto", fileDescriptor_4c3d44d2a4b8394c)
-}
+func init() { proto.RegisterFile("keyvault.proto", fileDescriptor_4c3d44d2a4b8394c) }
 
 var fileDescriptor_4c3d44d2a4b8394c = []byte{
 	// 388 bytes of a gzipped FileDescriptorProto
@@ -240,11 +238,11 @@ var fileDescriptor_4c3d44d2a4b8394c = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConn
+var _ grpc.ClientConnInterface
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
+const _ = grpc.SupportPackageIsVersion6
 
 // KeyVaultAgentClient is the client API for KeyVaultAgent service.
 //
@@ -254,10 +252,10 @@ type KeyVaultAgentClient interface {
 }
 
 type keyVaultAgentClient struct {
-	cc *grpc.ClientConn
+	cc grpc.ClientConnInterface
 }
 
-func NewKeyVaultAgentClient(cc *grpc.ClientConn) KeyVaultAgentClient {
+func NewKeyVaultAgentClient(cc grpc.ClientConnInterface) KeyVaultAgentClient {
 	return &keyVaultAgentClient{cc}
 }
 

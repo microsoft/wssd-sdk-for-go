@@ -229,9 +229,7 @@ func init() {
 	proto.RegisterType((*Secret)(nil), "wssd.security.Secret")
 }
 
-func init() {
-	proto.RegisterFile("secret.proto", fileDescriptor_6acf428160d7a216)
-}
+func init() { proto.RegisterFile("secret.proto", fileDescriptor_6acf428160d7a216) }
 
 var fileDescriptor_6acf428160d7a216 = []byte{
 	// 400 bytes of a gzipped FileDescriptorProto
@@ -264,11 +262,11 @@ var fileDescriptor_6acf428160d7a216 = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConn
+var _ grpc.ClientConnInterface
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
+const _ = grpc.SupportPackageIsVersion6
 
 // SecretAgentClient is the client API for SecretAgent service.
 //
@@ -278,10 +276,10 @@ type SecretAgentClient interface {
 }
 
 type secretAgentClient struct {
-	cc *grpc.ClientConn
+	cc grpc.ClientConnInterface
 }
 
-func NewSecretAgentClient(cc *grpc.ClientConn) SecretAgentClient {
+func NewSecretAgentClient(cc grpc.ClientConnInterface) SecretAgentClient {
 	return &secretAgentClient{cc}
 }
 

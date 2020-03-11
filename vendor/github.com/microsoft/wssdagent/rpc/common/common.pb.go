@@ -352,9 +352,7 @@ func init() {
 	proto.RegisterType((*Status)(nil), "wssd.Status")
 }
 
-func init() {
-	proto.RegisterFile("common.proto", fileDescriptor_555bd8c177793206)
-}
+func init() { proto.RegisterFile("common.proto", fileDescriptor_555bd8c177793206) }
 
 var fileDescriptor_555bd8c177793206 = []byte{
 	// 505 bytes of a gzipped FileDescriptorProto
