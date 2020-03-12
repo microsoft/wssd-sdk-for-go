@@ -239,9 +239,7 @@ func init() {
 	proto.RegisterType((*Certificate)(nil), "wssd.security.Certificate")
 }
 
-func init() {
-	proto.RegisterFile("certificate.proto", fileDescriptor_c0d34c34dd33be4b)
-}
+func init() { proto.RegisterFile("certificate.proto", fileDescriptor_c0d34c34dd33be4b) }
 
 var fileDescriptor_c0d34c34dd33be4b = []byte{
 	// 430 bytes of a gzipped FileDescriptorProto
@@ -276,11 +274,11 @@ var fileDescriptor_c0d34c34dd33be4b = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConn
+var _ grpc.ClientConnInterface
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
+const _ = grpc.SupportPackageIsVersion6
 
 // CertificateAgentClient is the client API for CertificateAgent service.
 //
@@ -292,10 +290,10 @@ type CertificateAgentClient interface {
 }
 
 type certificateAgentClient struct {
-	cc *grpc.ClientConn
+	cc grpc.ClientConnInterface
 }
 
-func NewCertificateAgentClient(cc *grpc.ClientConn) CertificateAgentClient {
+func NewCertificateAgentClient(cc grpc.ClientConnInterface) CertificateAgentClient {
 	return &certificateAgentClient{cc}
 }
 

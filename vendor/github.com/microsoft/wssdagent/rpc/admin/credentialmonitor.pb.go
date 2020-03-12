@@ -189,9 +189,7 @@ func init() {
 	proto.RegisterType((*CredentialMonitor)(nil), "wssd.admin.CredentialMonitor")
 }
 
-func init() {
-	proto.RegisterFile("credentialmonitor.proto", fileDescriptor_0e30998b3c2b899e)
-}
+func init() { proto.RegisterFile("credentialmonitor.proto", fileDescriptor_0e30998b3c2b899e) }
 
 var fileDescriptor_0e30998b3c2b899e = []byte{
 	// 281 bytes of a gzipped FileDescriptorProto

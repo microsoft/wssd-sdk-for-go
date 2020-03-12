@@ -109,7 +109,6 @@ func ToYAMLFile(data interface{}, path string) error {
 	enc, err := ToYAMLBytes(data)
 	if err != nil {
 		return err
-
 	}
 
 	err = ioutil.WriteFile(path, enc, 0644)
