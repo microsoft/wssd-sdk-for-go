@@ -353,11 +353,11 @@ var fileDescriptor_3db92eb5944c0691 = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConnInterface
+var _ grpc.ClientConn
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+const _ = grpc.SupportPackageIsVersion4
 
 // VirtualNetworkInterfaceAgentClient is the client API for VirtualNetworkInterfaceAgent service.
 //
@@ -367,10 +367,10 @@ type VirtualNetworkInterfaceAgentClient interface {
 }
 
 type virtualNetworkInterfaceAgentClient struct {
-	cc grpc.ClientConnInterface
+	cc *grpc.ClientConn
 }
 
-func NewVirtualNetworkInterfaceAgentClient(cc grpc.ClientConnInterface) VirtualNetworkInterfaceAgentClient {
+func NewVirtualNetworkInterfaceAgentClient(cc *grpc.ClientConn) VirtualNetworkInterfaceAgentClient {
 	return &virtualNetworkInterfaceAgentClient{cc}
 }
 

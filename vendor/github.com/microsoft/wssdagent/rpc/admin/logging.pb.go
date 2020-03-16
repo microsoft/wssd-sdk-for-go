@@ -140,11 +140,11 @@ var fileDescriptor_9c8ad1e4de00dd2b = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConnInterface
+var _ grpc.ClientConn
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+const _ = grpc.SupportPackageIsVersion4
 
 // LogAgentClient is the client API for LogAgent service.
 //
@@ -154,10 +154,10 @@ type LogAgentClient interface {
 }
 
 type logAgentClient struct {
-	cc grpc.ClientConnInterface
+	cc *grpc.ClientConn
 }
 
-func NewLogAgentClient(cc grpc.ClientConnInterface) LogAgentClient {
+func NewLogAgentClient(cc *grpc.ClientConn) LogAgentClient {
 	return &logAgentClient{cc}
 }
 

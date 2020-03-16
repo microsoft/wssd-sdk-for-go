@@ -274,11 +274,11 @@ var fileDescriptor_c0d34c34dd33be4b = []byte{
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
-var _ grpc.ClientConnInterface
+var _ grpc.ClientConn
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
+const _ = grpc.SupportPackageIsVersion4
 
 // CertificateAgentClient is the client API for CertificateAgent service.
 //
@@ -290,10 +290,10 @@ type CertificateAgentClient interface {
 }
 
 type certificateAgentClient struct {
-	cc grpc.ClientConnInterface
+	cc *grpc.ClientConn
 }
 
-func NewCertificateAgentClient(cc grpc.ClientConnInterface) CertificateAgentClient {
+func NewCertificateAgentClient(cc *grpc.ClientConn) CertificateAgentClient {
 	return &certificateAgentClient{cc}
 }
 
