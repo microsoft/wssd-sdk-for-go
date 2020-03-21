@@ -5,10 +5,10 @@ package internal
 
 import (
 	"context"
+	wssdsecurity "github.com/microsoft/moc/rpc/nodeagent/security"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
-	wssdsecurity "github.com/microsoft/wssdagent/rpc/security"
 	//log "k8s.io/klog"
 )
 

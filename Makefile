@@ -1,12 +1,16 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT license.
 GOCMD=go
-GOBUILD=$(GOCMD) build -v -mod=vendor
+GOBUILD=$(GOCMD) build -v #-mod=vendor
 GOHOSTOS=$(strip $(shell $(GOCMD) env get GOHOSTOS))
 
 TAG ?= $(shell git describe --tags)
 COMMIT ?= $(shell git describe --always)
 BUILD_DATE ?= $(shell date -u +%m/%d/%Y)
+# Private repo workaround
+export GOPRIVATE = github.com/microsoft
+# Active module mode, as we use go modules to manage dependencies
+export GO111MODULE=on
 
 OUTEXE=bin/wssdctl.exe
 OUT=bin/wssdctl
@@ -20,14 +24,13 @@ nofmt: ctl ctlexe
 clean:
 	rm -rf ${OUT} ${OUTEXE}
 ctlexe:
-	GO111MODULE=on GOARCH=amd64 GOOS=windows $(GOBUILD) -ldflags "-X main.version=$(TAG) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)" -o ${OUTEXE} github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl
+	GOARCH=amd64 GOOS=windows $(GOBUILD) -ldflags "-X main.version=$(TAG) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)" -o ${OUTEXE} github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl
 ctl:
-	GO111MODULE=on GOARCH=amd64 $(GOBUILD) -ldflags "-X main.version=$(TAG) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)" -o ${OUT} github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl
+	GOARCH=amd64 $(GOBUILD) -ldflags "-X main.version=$(TAG) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)" -o ${OUT} github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl
 format:
 	gofmt -s -w cmd/ common/ pkg/ services/ test/ tools/
 
 .PHONY: vendor
 vendor:
-	GO111MODULE=on GOPRIVATE="github.com/microsoft" go get github.com/microsoft/wssdagent 
-	GO111MODULE=on go mod vendor
-	GO111MODULE=on go mod tidy
+	mod vendor
+	go mod tidy

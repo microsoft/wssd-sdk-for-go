@@ -9,9 +9,9 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 
+	wssdcommonproto "github.com/microsoft/moc/rpc/common"
+	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
-	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
-	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
 )
 
 type client struct {

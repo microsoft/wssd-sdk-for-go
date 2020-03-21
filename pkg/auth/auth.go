@@ -12,8 +12,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/microsoft/wssdagent/pkg/certs"
-	"github.com/microsoft/wssdagent/pkg/marshal"
+	"github.com/microsoft/moc/pkg/certs"
+	"github.com/microsoft/moc/pkg/marshal"
 	"google.golang.org/grpc/credentials"
 )
 

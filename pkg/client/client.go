@@ -5,11 +5,11 @@ package client
 
 import (
 	"fmt"
-	admin_pb "github.com/microsoft/wssdagent/rpc/admin"
-	compute_pb "github.com/microsoft/wssdagent/rpc/compute"
-	network_pb "github.com/microsoft/wssdagent/rpc/network"
-	security_pb "github.com/microsoft/wssdagent/rpc/security"
-	storage_pb "github.com/microsoft/wssdagent/rpc/storage"
+	admin_pb "github.com/microsoft/moc/rpc/nodeagent/admin"
+	compute_pb "github.com/microsoft/moc/rpc/nodeagent/compute"
+	network_pb "github.com/microsoft/moc/rpc/nodeagent/network"
+	security_pb "github.com/microsoft/moc/rpc/nodeagent/security"
+	storage_pb "github.com/microsoft/moc/rpc/nodeagent/storage"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	log "k8s.io/klog"
@@ -24,7 +24,7 @@ const (
 	debugModeTLS = "WSSD_DEBUG_MODE"
 
 	// Workaround to allow wssdctl to build for Linux
-	// Before we were pulling this value from github.com/wssdagent/pkg/apis/config,
+	// Before we were pulling this value from github.com/moc/pkg/apis/config,
 	// and that pkg uses the trace pkg ... which needs to be refactored to build for linux.
 	//
 	// In the future we may want to decouple wssdagent usage in the sdk ... so its possible that even when that is fixed,

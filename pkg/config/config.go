@@ -6,7 +6,7 @@ package config
 import (
 	"fmt"
 	"github.com/jmespath/go-jmespath"
-	"github.com/microsoft/wssdagent/pkg/marshal"
+	"github.com/microsoft/moc/pkg/marshal"
 	"io/ioutil"
 	"reflect"
 )

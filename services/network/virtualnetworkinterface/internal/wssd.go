@@ -9,12 +9,12 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
+	"github.com/microsoft/moc/pkg/errors"
+	wssdcommonproto "github.com/microsoft/moc/rpc/common"
+	wssdnetwork "github.com/microsoft/moc/rpc/nodeagent/network"
 	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	virtualnetwork "github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
-	"github.com/microsoft/wssdagent/pkg/errors"
-	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
-	wssdnetwork "github.com/microsoft/wssdagent/rpc/network"
 )
 
 type client struct {

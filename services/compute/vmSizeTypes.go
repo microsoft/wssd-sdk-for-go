@@ -4,7 +4,7 @@
 package compute
 
 import (
-	wssdcompute "github.com/microsoft/wssdagent/rpc/compute"
+	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
 )
 
 func GetWssdVirtualMachineSizeFromVirtualMachineSize(size VirtualMachineSizeTypes) wssdcompute.VirtualMachineSizeType {
