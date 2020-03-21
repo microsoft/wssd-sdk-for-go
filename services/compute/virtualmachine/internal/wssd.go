@@ -112,7 +112,7 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) *wssdcompute.
 }
 
 func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualMachine) *wssdcompute.HardwareConfiguration {
-	sizeType := wssdcompute.VirtualMachineSizeType_Default
+	sizeType := wssdcommonproto.VirtualMachineSizeType_Default
 	if vm.HardwareProfile != nil {
 		sizeType = compute.GetWssdVirtualMachineSizeFromVirtualMachineSize(vm.HardwareProfile.VMSize)
 	}
@@ -193,11 +193,11 @@ func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wss
 		Administrator: adminuser,
 		Users:         []*wssdcompute.UserConfiguration{},
 		Publickeys:    publickeys,
-		Ostype:        wssdcompute.OperatingSystemType_WINDOWS,
+		Ostype:        wssdcommonproto.OperatingSystemType_WINDOWS,
 	}
 
 	if s.LinuxConfiguration != nil {
-		osconfig.Ostype = wssdcompute.OperatingSystemType_LINUX
+		osconfig.Ostype = wssdcommonproto.OperatingSystemType_LINUX
 	}
 
 	if s.CustomData != nil {

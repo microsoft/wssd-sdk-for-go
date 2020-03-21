@@ -4,25 +4,25 @@
 package compute
 
 import (
-	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
+	"github.com/microsoft/moc/rpc/common"
 )
 
-func GetWssdVirtualMachineSizeFromVirtualMachineSize(size VirtualMachineSizeTypes) wssdcompute.VirtualMachineSizeType {
+func GetWssdVirtualMachineSizeFromVirtualMachineSize(size VirtualMachineSizeTypes) common.VirtualMachineSizeType {
 	// Convert sdk enum to string representation
 	sizeString := string(size)
 
 	// Find the corresponding string in size map
-	value, found := wssdcompute.VirtualMachineSizeType_value[sizeString]
+	value, found := common.VirtualMachineSizeType_value[sizeString]
 	if !found {
 		// Not found, user supplied unsupported size
-		return wssdcompute.VirtualMachineSizeType_Unsupported
+		return common.VirtualMachineSizeType_Unsupported
 	}
-	return wssdcompute.VirtualMachineSizeType(value)
+	return common.VirtualMachineSizeType(value)
 }
 
-func GetVirtualMachineSizeFromWssdVirtualMachineSize(size wssdcompute.VirtualMachineSizeType) VirtualMachineSizeTypes {
+func GetVirtualMachineSizeFromWssdVirtualMachineSize(size common.VirtualMachineSizeType) VirtualMachineSizeTypes {
 	sizeInt := int32(size)
-	value, found := wssdcompute.VirtualMachineSizeType_name[sizeInt]
+	value, found := common.VirtualMachineSizeType_name[sizeInt]
 	if !found {
 		return VirtualMachineSizeTypesDefault // Not found, return default
 	}
