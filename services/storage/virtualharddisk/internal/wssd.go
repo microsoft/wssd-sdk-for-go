@@ -10,10 +10,10 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 
+	"github.com/microsoft/moc/pkg/errors"
+	wssdcommonproto "github.com/microsoft/moc/rpc/common"
+	wssdstorage "github.com/microsoft/moc/rpc/nodeagent/storage"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
-	"github.com/microsoft/wssdagent/pkg/errors"
-	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
-	wssdstorage "github.com/microsoft/wssdagent/rpc/storage"
 	log "k8s.io/klog"
 )
 

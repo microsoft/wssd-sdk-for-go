@@ -335,3 +335,5 @@ ASALocalRun/
 
 # Ignore output executables
 *.exe
+# Ignore vendor dir
+vendor/

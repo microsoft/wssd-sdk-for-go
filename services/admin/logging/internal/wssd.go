@@ -5,10 +5,10 @@ package internal
 
 import (
 	"context"
+	loggingHelpers "github.com/microsoft/moc/pkg/logging"
+	wssdadmin "github.com/microsoft/moc/rpc/nodeagent/admin"
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
-	loggingHelpers "github.com/microsoft/wssdagent/pkg/logging"
-	wssdadmin "github.com/microsoft/wssdagent/rpc/admin"
 	"io"
 )
 

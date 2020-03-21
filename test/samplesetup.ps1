@@ -21,4 +21,4 @@ start ./wssdcloudagent.exe
 
 scp madhanm@NetAppLinux:~/repo/gopath/src/github.com/microsoft/wssdcloud-sdk-for-go/test/pester/* cloud/test
 scp madhanm@NetAppLinux:~/repo/gopath/src/github.com/microsoft/wssd-sdk-for-go/test/pester/* node/test
-scp madhanm@NetAppLinux:~/repo/gopath/src/github.com/microsoft/wssdagent/pkg/psdriver/scripts/vhd.ps1 .
+scp madhanm@NetAppLinux:~/repo/gopath/src/github.com/microsoft/moc/pkg/psdriver/scripts/vhd.ps1 .

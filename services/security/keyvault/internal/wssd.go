@@ -9,9 +9,9 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 
+	wssdcommonproto "github.com/microsoft/moc/rpc/common"
+	wssdsecurity "github.com/microsoft/moc/rpc/nodeagent/security"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
-	wssdcommonproto "github.com/microsoft/wssdagent/rpc/common"
-	wssdsecurity "github.com/microsoft/wssdagent/rpc/security"
 	log "k8s.io/klog"
 )
 
