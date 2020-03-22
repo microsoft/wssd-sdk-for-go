@@ -144,7 +144,7 @@ func getWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 	if c.DNSSettings == nil {
 		return wssdvnet
 	}
-	wssdvnet.Dns = &wssdnetwork.Dns{
+	wssdvnet.Dns = &wssdcommonproto.Dns{
 		Domain:  *c.DNSSettings.Domain,
 		Search:  *c.DNSSettings.Search,
 		Servers: *c.DNSSettings.Servers,
