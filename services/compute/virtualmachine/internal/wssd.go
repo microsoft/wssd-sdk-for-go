@@ -107,6 +107,11 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) *wssdcompute.
 	wssdvm.Storage = c.getWssdVirtualMachineStorageConfiguration(vm.StorageProfile)
 	wssdvm.Os = c.getWssdVirtualMachineOSConfiguration(vm.OsProfile)
 	wssdvm.Network = c.getWssdVirtualMachineNetworkConfiguration(vm.NetworkProfile)
+
+	if vm.DisableHighAvailability != nil {
+		wssdvm.DisableHighAvailability = *vm.DisableHighAvailability
+	}
+
 	return wssdvm
 
 }
@@ -122,9 +127,14 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 }
 
 func (c *client) getWssdVirtualMachineStorageConfiguration(s *compute.StorageProfile) *wssdcompute.StorageConfiguration {
+	vmConfigContainerName := ""
+	if s.VmConfigContainerName != nil {
+		vmConfigContainerName = *s.VmConfigContainerName
+	}
 	return &wssdcompute.StorageConfiguration{
-		Osdisk:    c.getWssdVirtualMachineStorageConfigurationOsDisk(s.OsDisk),
-		Datadisks: c.getWssdVirtualMachineStorageConfigurationDataDisks(s.DataDisks),
+		Osdisk:                c.getWssdVirtualMachineStorageConfigurationOsDisk(s.OsDisk),
+		Datadisks:             c.getWssdVirtualMachineStorageConfigurationDataDisks(s.DataDisks),
+		VmConfigContainerName: vmConfigContainerName,
 	}
 }
 
@@ -213,11 +223,12 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 		Name: &vm.Name,
 		ID:   &vm.Id,
 		VirtualMachineProperties: &compute.VirtualMachineProperties{
-			HardwareProfile:   c.getVirtualMachineHardwareProfile(vm),
-			StorageProfile:    c.getVirtualMachineStorageProfile(vm.Storage),
-			OsProfile:         c.getVirtualMachineOSProfile(vm.Os),
-			NetworkProfile:    c.getVirtualMachineNetworkProfile(vm.Network),
-			ProvisioningState: c.getVirtualMachineProvisioningState(vm.Status.GetProvisioningStatus()),
+			HardwareProfile:         c.getVirtualMachineHardwareProfile(vm),
+			StorageProfile:          c.getVirtualMachineStorageProfile(vm.Storage),
+			OsProfile:               c.getVirtualMachineOSProfile(vm.Os),
+			NetworkProfile:          c.getVirtualMachineNetworkProfile(vm.Network),
+			ProvisioningState:       c.getVirtualMachineProvisioningState(vm.Status.GetProvisioningStatus()),
+			DisableHighAvailability: &vm.DisableHighAvailability,
 		},
 	}
 }
@@ -243,8 +254,9 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 
 func (c *client) getVirtualMachineStorageProfile(s *wssdcompute.StorageConfiguration) *compute.StorageProfile {
 	return &compute.StorageProfile{
-		OsDisk:    c.getVirtualMachineStorageProfileOsDisk(s.Osdisk),
-		DataDisks: c.getVirtualMachineStorageProfileDataDisks(s.Datadisks),
+		OsDisk:                c.getVirtualMachineStorageProfileOsDisk(s.Osdisk),
+		DataDisks:             c.getVirtualMachineStorageProfileDataDisks(s.Datadisks),
+		VmConfigContainerName: &s.VmConfigContainerName,
 	}
 }
 

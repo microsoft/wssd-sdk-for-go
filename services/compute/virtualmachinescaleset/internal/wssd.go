@@ -173,6 +173,7 @@ func (c *client) getVirtualMachineScaleSet(vmss *wssdcompute.VirtualMachineScale
 			VirtualMachineProfile: vmprofile,
 			ProvisioningState:     c.getVirtualMachineScaleSetProvisioningState(vmss.Status.GetProvisioningStatus()),
 		},
+		DisableHighAvailability: &vmss.DisableHighAvailability,
 	}, nil
 }
 
@@ -214,8 +215,9 @@ func (c *client) getVirtualMachineScaleSetHardwareProfile(vm *wssdcompute.Virtua
 
 func (c *client) getVirtualMachineScaleSetStorageProfile(s *wssdcompute.StorageConfiguration) *compute.StorageProfile {
 	return &compute.StorageProfile{
-		OsDisk:    c.getVirtualMachineScaleSetStorageProfileOsDisk(s.Osdisk),
-		DataDisks: c.getVirtualMachineScaleSetStorageProfileDataDisks(s.Datadisks),
+		OsDisk:                c.getVirtualMachineScaleSetStorageProfileOsDisk(s.Osdisk),
+		DataDisks:             c.getVirtualMachineScaleSetStorageProfileDataDisks(s.Datadisks),
+		VmConfigContainerName: &s.VmConfigContainerName,
 	}
 }
 
@@ -291,13 +293,20 @@ func (c *client) getWssdVirtualMachineScaleSet(vmss *compute.VirtualMachineScale
 	if err != nil {
 		return nil, err
 	}
+
+	var disableHighAvailability bool = false
+	if vmss.DisableHighAvailability != nil {
+		disableHighAvailability = *vmss.DisableHighAvailability
+	}
+
 	return &wssdcompute.VirtualMachineScaleSet{
 		Name: *(vmss.Name),
 		Sku: &wssdcompute.Sku{
 			Name:     *(vmss.Sku.Name),
 			Capacity: *(vmss.Sku.Capacity),
 		},
-		Virtualmachineprofile: vm,
+		Virtualmachineprofile:   vm,
+		DisableHighAvailability: disableHighAvailability,
 	}, nil
 }
 
@@ -306,6 +315,7 @@ func (c *client) getWssdVirtualMachineScaleSetVMProfile(vmp *compute.VirtualMach
 	if err != nil {
 		return nil, err
 	}
+
 	return &wssdcompute.VirtualMachineProfile{
 		Vmprefix: *vmp.Name,
 		Hardware: c.getWssdVirtualMachineScaleSetHardwareConfiguration(vmp),
@@ -327,9 +337,14 @@ func (c *client) getWssdVirtualMachineScaleSetHardwareConfiguration(vmp *compute
 }
 
 func (c *client) getWssdVirtualMachineScaleSetStorageConfiguration(s *compute.StorageProfile) *wssdcompute.StorageConfiguration {
+	vmConfigContainerName := ""
+	if s.VmConfigContainerName != nil {
+		vmConfigContainerName = *s.VmConfigContainerName
+	}
 	return &wssdcompute.StorageConfiguration{
-		Osdisk:    c.getWssdVirtualMachineScaleSetStorageConfigurationOsDisk(s.OsDisk),
-		Datadisks: c.getWssdVirtualMachineScaleSetStorageConfigurationDataDisks(s.DataDisks),
+		Osdisk:                c.getWssdVirtualMachineScaleSetStorageConfigurationOsDisk(s.OsDisk),
+		Datadisks:             c.getWssdVirtualMachineScaleSetStorageConfigurationDataDisks(s.DataDisks),
+		VmConfigContainerName: vmConfigContainerName,
 	}
 }
 
