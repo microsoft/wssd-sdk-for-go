@@ -65,7 +65,10 @@ type StorageProfile struct {
 	OsDisk *OSDisk `json:"osDisk,omitempty"`
 	// DataDisks
 	DataDisks *[]DataDisk `json:"dataDisks,omitempty"`
+	// VmConfigContainerName
+	VmConfigContainerName *string `json:"vmConfigContainerName,omitempty"`
 }
+
 type SSHPublicKey struct {
 	// Path - Specifies the full path on the created VM where ssh public key is stored. If the file already exists, the specified key is appended to the file. Example: /home/user/.ssh/authorized_keys
 	Path *string `json:"path,omitempty"`
@@ -133,6 +136,8 @@ type VirtualMachineProperties struct {
 	NetworkProfile *NetworkProfile `json:"networkProfile,omitempty"`
 	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
 	ProvisioningState *string `json:"provisioningState,omitempty"`
+	// DisableHighAvailability
+	DisableHighAvailability *bool `json:"disableHighAvailability,omitempty"`
 }
 type VirtualMachine struct {
 	// ID
@@ -303,4 +308,6 @@ type VirtualMachineScaleSet struct {
 	Identity *VirtualMachineScaleSetIdentity `json:"identity,omitempty"`
 	// Properties
 	*VirtualMachineScaleSetProperties `json:"properties,omitempty"`
+	// DisableHighAvailability
+	DisableHighAvailability *bool `json:"disableHighAvailability,omitempty"`
 }
