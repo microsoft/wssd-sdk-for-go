@@ -5,7 +5,7 @@ package container
 
 import (
 	"context"
-	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
+	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage/container/internal"
 )

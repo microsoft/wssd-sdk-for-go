@@ -7,11 +7,11 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
 	wssdnetwork "github.com/microsoft/moc/rpc/nodeagent/network"
-	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"

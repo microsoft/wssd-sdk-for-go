@@ -5,7 +5,7 @@ package virtualnetworkinterface
 
 import (
 	"context"
-	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
+	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetworkinterface/internal"
 )
