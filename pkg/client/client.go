@@ -17,7 +17,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
+	"github.com/microsoft/moc/pkg/auth"
 )
 
 const (

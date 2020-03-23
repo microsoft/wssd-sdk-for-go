@@ -5,7 +5,7 @@ package secret
 
 import (
 	"context"
-	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
+	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault/secret/internal"

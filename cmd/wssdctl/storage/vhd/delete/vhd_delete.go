@@ -6,7 +6,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
+	"github.com/microsoft/moc/pkg/auth"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 

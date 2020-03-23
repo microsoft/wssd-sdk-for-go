@@ -12,7 +12,7 @@ import (
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
 
-	wssdcommon "github.com/microsoft/wssd-sdk-for-go/common"
+	wssdcommon "github.com/microsoft/moc/common"
 )
 
 type flags struct {

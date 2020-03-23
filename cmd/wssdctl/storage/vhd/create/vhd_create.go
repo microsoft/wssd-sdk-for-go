@@ -11,8 +11,8 @@ import (
 
 	"github.com/microsoft/moc/pkg/errors"
 
-	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
-	"github.com/microsoft/wssd-sdk-for-go/pkg/config"
+	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/config"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage/virtualharddisk"
 )

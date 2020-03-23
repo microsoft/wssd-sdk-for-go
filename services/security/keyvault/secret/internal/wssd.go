@@ -6,7 +6,7 @@ package internal
 import (
 	"context"
 	"fmt"
-	"github.com/microsoft/wssd-sdk-for-go/pkg/auth"
+	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"

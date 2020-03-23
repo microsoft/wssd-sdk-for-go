@@ -28,7 +28,7 @@ ctlexe:
 ctl:
 	GOARCH=amd64 $(GOBUILD) -ldflags "-X main.version=$(TAG) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)" -o ${OUT} github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl
 format:
-	gofmt -s -w cmd/ common/ pkg/ services/ test/ tools/
+	gofmt -s -w cmd/ pkg/ services/ test/ tools/
 
 .PHONY: vendor
 vendor:
