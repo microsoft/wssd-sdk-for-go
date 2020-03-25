@@ -5,6 +5,11 @@ package client
 
 import (
 	"fmt"
+	"os"
+	"strings"
+	"sync"
+	"time"
+
 	admin_pb "github.com/microsoft/moc/rpc/nodeagent/admin"
 	compute_pb "github.com/microsoft/moc/rpc/nodeagent/compute"
 	network_pb "github.com/microsoft/moc/rpc/nodeagent/network"
@@ -12,10 +17,8 @@ import (
 	storage_pb "github.com/microsoft/moc/rpc/nodeagent/storage"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
 	log "k8s.io/klog"
-	"os"
-	"strings"
-	"sync"
 
 	"github.com/microsoft/moc/pkg/auth"
 )
@@ -90,6 +93,13 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 	} else {
 		opts = append(opts, grpc.WithTransportCredentials(authorizer.WithTransportAuthorization()))
 	}
+
+	opts = append(opts, grpc.WithKeepaliveParams(
+		keepalive.ClientParameters{
+			Time:                1 * time.Minute,
+			Timeout:             20 * time.Second,
+			PermitWithoutStream: true,
+		}))
 
 	return opts
 }
