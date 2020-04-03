@@ -34,13 +34,12 @@ type VirtualMachineSizeTypes string
 
 // For more information about virtual machine sizes, see 'Sizes for virtual machines':
 //  https://docs.microsoft.com/en-us/azure/virtual-machines/windows/sizes
-
+//  NOTE: Kubernetes requires 2 CPU cores. [ERROR NumCPU]: the number of available CPUs 1 is less than the required 2.
 /*
 The following Size Types are supported:
 
 				CPU  GBRAM
 Default            4    4
-Standard_A1_v2     1    2
 Standard_A2_v2     2    4
 Standard_A4_v2     4    8
 -
