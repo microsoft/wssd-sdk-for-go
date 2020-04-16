@@ -6,9 +6,10 @@ package internal
 import (
 	"context"
 	"fmt"
-	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
+	"github.com/microsoft/moc/pkg/auth"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdnetwork "github.com/microsoft/moc/rpc/nodeagent/network"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -210,7 +211,8 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 		VirtualNetworkProperties: &network.VirtualNetworkProperties{
 			// TODO: MACPool (it is currently missing from network.VirtualNetwork)
 			Subnets:           getNetworkSubnets(c.Ipams),
-			ProvisioningState: getVirtualNetworkProvisioningState(c.Status.GetProvisioningStatus()),
+			ProvisioningState: status.GetProvisioningState(c.Status.GetProvisioningStatus()),
+			Statuses:          status.GetStatuses(c.Status),
 		},
 	}
 
@@ -226,15 +228,6 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 	}
 
 	return vnet
-}
-
-func getVirtualNetworkProvisioningState(status *wssdcommonproto.ProvisionStatus) *string {
-	provisionState := wssdcommonproto.ProvisionState_UNKNOWN
-	if status != nil {
-		provisionState = status.CurrentState
-	}
-	stateString := provisionState.String()
-	return &stateString
 }
 
 func getNetworkSubnets(ipams []*wssdnetwork.Ipam) *[]network.Subnet {

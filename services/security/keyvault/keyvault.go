@@ -8,6 +8,10 @@ type SecretProperties struct {
 	VaultName *string `json:"vaultname"`
 	// FileName
 	FileName *string `json:"filename"`
+	// State - State would container ProvisioningState-SubState
+	Statuses map[string]*string `json:"statuses"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
 }
 
 // Secret defines the structure of a secret

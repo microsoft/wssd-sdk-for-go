@@ -5,10 +5,11 @@ package internal
 
 import (
 	"context"
-	"fmt"
-	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 
+	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/errors"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdsecurity "github.com/microsoft/moc/rpc/nodeagent/security"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -50,7 +51,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *sec
 	vault := getKeyVaultsFromResponse(response)
 
 	if len(*vault) == 0 {
-		return nil, fmt.Errorf("[KeyVault][Create] Unexpected error: Creating a security returned no result")
+		return nil, errors.New("[KeyVault][Create] Unexpected error: Creating a security returned no result")
 	}
 
 	return &((*vault)[0]), err
@@ -63,7 +64,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 		return err
 	}
 	if len(*vault) == 0 {
-		return fmt.Errorf("Keyvault [%s] not found", name)
+		return errors.Wrapf(errors.NotFound, "Keyvault [%s] not found", name)
 	}
 
 	request := getKeyVaultRequest(wssdcommonproto.Operation_DELETE, name, &(*vault)[0])
@@ -100,7 +101,10 @@ func getKeyVault(vault *wssdsecurity.KeyVault) *security.KeyVault {
 	return &security.KeyVault{
 		ID:   &vault.Id,
 		Name: &vault.Name,
-		//	Source : &vault.Source,
+		KeyVaultProperties: &security.KeyVaultProperties{
+			ProvisioningState: status.GetProvisioningState(vault.GetStatus().GetProvisioningStatus()),
+			Statuses:          status.GetStatuses(vault.GetStatus()),
+		},
 	}
 }
 

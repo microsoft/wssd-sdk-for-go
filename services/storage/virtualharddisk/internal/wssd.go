@@ -7,9 +7,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 
+	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdstorage "github.com/microsoft/moc/rpc/nodeagent/storage"
@@ -123,18 +124,10 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			VirtualMachineName:  &vhd.VirtualmachineName,
 			Scsipath:            &vhd.Scsipath,
 			Virtualharddisktype: vhd.Virtualharddisktype.String(),
-			ProvisioningState:   getVirtualHardDiskProvisioningState(vhd.Status.GetProvisioningStatus()),
+			ProvisioningState:   status.GetProvisioningState(vhd.Status.GetProvisioningStatus()),
+			Statuses:            status.GetStatuses(vhd.Status),
 		},
 	}
-}
-
-func getVirtualHardDiskProvisioningState(status *wssdcommonproto.ProvisionStatus) *string {
-	provisionState := wssdcommonproto.ProvisionState_UNKNOWN
-	if status != nil {
-		provisionState = status.CurrentState
-	}
-	stateString := provisionState.String()
-	return &stateString
 }
 
 func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) (*wssdstorage.VirtualHardDisk, error) {

@@ -7,9 +7,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
+	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdnetwork "github.com/microsoft/moc/rpc/nodeagent/network"
@@ -144,6 +145,10 @@ func (c *client) getNetworkLoadBalancer(group string, wssdLB *wssdnetwork.LoadBa
 	networkLB = &network.LoadBalancer{
 		Name: &wssdLB.Name,
 		ID:   &wssdLB.Id,
+		LoadBalancerProperties: &network.LoadBalancerProperties{
+			ProvisioningState: status.GetProvisioningState(wssdLB.Status.GetProvisioningStatus()),
+			Statuses:          status.GetStatuses(wssdLB.Status),
+		},
 	}
 
 	return networkLB, nil

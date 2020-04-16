@@ -33,6 +33,8 @@ type VirtualHardDiskProperties struct {
 	Virtualharddisktype string `json:"virtualharddisktype,omitempty"`
 	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
 	ProvisioningState *string `json:"provisioningState,omitempty"`
+	// Statuses - Status
+	Statuses map[string]*string `json:"statuses"`
 }
 
 // VirtualHardDisk defines the structure of a VHD
@@ -55,6 +57,8 @@ type ContainerProperties struct {
 	Path *string `json:"path,omitempty"`
 	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
 	ProvisioningState *string `json:"provisioningState,omitempty"`
+	// Statuses - Status
+	Statuses map[string]*string `json:"statuses"`
 }
 
 // VirtualHardDisk defines the structure of a VHD
