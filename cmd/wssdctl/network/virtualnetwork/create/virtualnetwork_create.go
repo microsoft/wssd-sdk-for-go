@@ -11,6 +11,7 @@ import (
 
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/config"
+	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
 )
@@ -62,6 +63,10 @@ func runE(flags *flags) error {
 	// Wait up to one minute for network creation
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
+
+	if vnetconfig.Name == nil {
+		return errors.Wrapf(errors.InvalidInput, "The YAML is missing the 'Name' element")
+	}
 
 	_, err = vnetclient.CreateOrUpdate(ctx, group, *(vnetconfig.Name), &vnetconfig)
 	if err != nil {

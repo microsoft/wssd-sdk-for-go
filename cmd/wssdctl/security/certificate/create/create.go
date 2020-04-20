@@ -12,6 +12,7 @@ import (
 
 	wssdcommon "github.com/microsoft/moc/common"
 	"github.com/microsoft/moc/pkg/config"
+	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/certificate"
 )
@@ -61,6 +62,10 @@ func runE(flags *flags) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
+
+	if certconfig.Name == nil {
+		return errors.Wrapf(errors.InvalidInput, "The YAML is missing the 'Name' element")
+	}
 
 	lbs, err := certclient.CreateOrUpdate(ctx, group, *(certconfig.Name), &certconfig)
 	if err != nil {

@@ -10,6 +10,7 @@ import (
 	wssdcommon "github.com/microsoft/moc/common"
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/config"
+	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/identity"
 	"github.com/spf13/cobra"
@@ -62,6 +63,11 @@ func runE(flags *flags) error {
 		if err != nil {
 			return err
 		}
+
+		if idConfig.Name == nil {
+			return errors.Wrapf(errors.InvalidInput, "The YAML is missing the 'Name' element")
+		}
+
 		identityName = *idConfig.Name
 	} else {
 		if flags.Name == "" {

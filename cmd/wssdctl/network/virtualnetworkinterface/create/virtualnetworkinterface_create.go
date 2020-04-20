@@ -10,6 +10,7 @@ import (
 
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/config"
+	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	"github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetworkinterface"
 
@@ -61,6 +62,10 @@ func runE(flags *flags) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
+
+	if vnicconfig.Name == nil {
+		return errors.Wrapf(errors.InvalidInput, "The YAML is missing the 'Name' element")
+	}
 
 	_, err = vnicclient.CreateOrUpdate(ctx, group, *(vnicconfig.Name), &vnicconfig)
 	if err != nil {

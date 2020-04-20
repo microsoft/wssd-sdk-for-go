@@ -10,6 +10,7 @@ import (
 	wssdcommon "github.com/microsoft/moc/common"
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/config"
+	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 	"github.com/spf13/cobra"
@@ -63,6 +64,11 @@ func runE(flags *flags) error {
 		if err != nil {
 			return err
 		}
+
+		if kvConfig.Name == nil {
+			return errors.Wrapf(errors.InvalidInput, "The YAML is missing the 'Name' element")
+		}
+
 		vaultName = *kvConfig.Name
 	} else {
 		if flags.Name == "" {

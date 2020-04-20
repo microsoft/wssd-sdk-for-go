@@ -38,7 +38,20 @@ func NewCommand() *cobra.Command {
 		SilenceUsage: true,
 		Version:      "0.01",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runE(flags)
+			cmd.HelpFunc()(cmd, args)
+			return nil
+		},
+	}
+
+	helpCmd := &cobra.Command{
+		Args:         cobra.NoArgs,
+		Use:          "/?",
+		Short:        "Help for wssdcloudctl",
+		Long:         "Help for wssdcloudctl",
+		SilenceUsage: true,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cmd.HelpFunc()(cmd.Parent(), args)
+			return nil
 		},
 	}
 
@@ -62,14 +75,10 @@ func NewCommand() *cobra.Command {
 	cmd.AddCommand(storage.NewCommand())
 	cmd.AddCommand(security.NewCommand())
 	cmd.AddCommand(logging.NewCommand())
+	cmd.AddCommand(helpCmd)
 
 	return cmd
 
-}
-
-func runE(flags *Flags) error {
-	viper.SetDefault("Debug", flags.Debug)
-	return nil
 }
 
 func Run() error {

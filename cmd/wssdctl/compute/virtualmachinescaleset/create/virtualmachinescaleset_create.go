@@ -10,6 +10,7 @@ import (
 
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/config"
+	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachinescaleset"
 
@@ -58,6 +59,10 @@ func runE(flags *flags) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
+
+	if vmconfig.Name == nil {
+		return errors.Wrapf(errors.InvalidInput, "The YAML is missing the 'Name' element")
+	}
 
 	_, err = client.CreateOrUpdate(ctx, group, *(vmconfig.Name), &vmconfig)
 	if err != nil {
