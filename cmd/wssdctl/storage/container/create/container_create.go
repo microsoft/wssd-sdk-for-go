@@ -11,6 +11,7 @@ import (
 
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/config"
+	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage/container"
 )
@@ -61,6 +62,10 @@ func runE(flags *flags) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
+
+	if containerConfig.Name == nil {
+		return errors.Wrapf(errors.InvalidInput, "The YAML is missing the 'Name' element")
+	}
 
 	_, err = containerClient.CreateOrUpdate(ctx, group, *(containerConfig.Name), &containerConfig)
 	if err != nil {

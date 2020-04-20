@@ -9,10 +9,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/microsoft/moc/pkg/errors"
-
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/config"
+	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage/virtualharddisk"
 )
@@ -65,7 +64,7 @@ func runE(flags *flags) error {
 	defer cancel()
 
 	if vhdConfig.Name == nil {
-		return errors.Wrapf(errors.InvalidInput, "Missing Name")
+		return errors.Wrapf(errors.InvalidInput, "The YAML is missing the 'Name' element")
 	}
 
 	_, err = vhdClient.CreateOrUpdate(ctx, container, *(vhdConfig.Name), &vhdConfig)

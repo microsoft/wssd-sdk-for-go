@@ -95,6 +95,8 @@ github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czP
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
 github.com/microsoft/moc v0.8.0-alpha.8 h1://jYnIzykjiBAXGHt/4mAsUp/P0Q9aJepIQwxqG446Q=
 github.com/microsoft/moc v0.8.0-alpha.8/go.mod h1:PqGEjmA+zZGxByg/hUfdpPyLGct8FaPuy2QNV/ooXok=
+github.com/microsoft/moc v0.8.0-alpha.10 h1:N4XGg3JrSELcS6PLuc2iqLF52YofQYebWo+Qa9vU5eQ=
+github.com/microsoft/moc v0.8.0-alpha.10/go.mod h1:PqGEjmA+zZGxByg/hUfdpPyLGct8FaPuy2QNV/ooXok=
 github.com/microsoft/wmi v0.1.1/go.mod h1:oOGdx0ldEw0MQPbY7f7SAikscrHoZynFFgx/9+V+SbY=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2 h1:fmNYVwqnSfB9mZU6OS2O6GsXM+wcskZDuKQzvN1EDeE=

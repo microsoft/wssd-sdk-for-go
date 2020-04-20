@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/golang/protobuf v1.3.3 // indirect
-	github.com/microsoft/moc v0.8.0-alpha.8
+	github.com/microsoft/moc v0.8.0-alpha.10
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.6.2
 	google.golang.org/grpc v1.27.1
