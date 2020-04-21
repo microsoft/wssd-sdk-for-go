@@ -18,7 +18,9 @@ import (
 
 type flags struct {
 	// Name of the Virtual Harddisk to get
-	Name string
+	Name   string
+	Output string
+	Query  string
 }
 
 func NewCommand() *cobra.Command {
@@ -36,6 +38,8 @@ func NewCommand() *cobra.Command {
 
 	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the virtual machine resource")
 	cmd.MarkFlagRequired("name")
+	cmd.Flags().StringVar(&flags.Output, "output", "yaml", "Output Format [yaml, json, csv, tsv]")
+	cmd.Flags().StringVar(&flags.Query, "query", "", "Output Format")
 
 	return cmd
 }
@@ -49,7 +53,7 @@ func runE(flags *flags) error {
 		return err
 	}
 
-	vmclient, err := virtualharddisk.NewVirtualHardDiskClient(server, authorizer)
+	vhdclient, err := virtualharddisk.NewVirtualHardDiskClient(server, authorizer)
 	if err != nil {
 		return err
 	}
@@ -57,15 +61,15 @@ func runE(flags *flags) error {
 	ctx, cancel := context.WithTimeout(context.Background(), wssdcommon.DefaultServerContextTimeout)
 	defer cancel()
 
-	vms, err := vmclient.Get(ctx, container, flags.Name)
+	vhds, err := vhdclient.Get(ctx, container, flags.Name)
 	if err != nil {
 		return err
 	}
-	if vms == nil || len(*vms) == 0 {
+	if vhds == nil || len(*vhds) == 0 {
 		return fmt.Errorf("Unable to find Virtual Harddisk [%s]", flags.Name)
 	}
 
-	config.PrintYAMLList(*vms)
+	config.PrintFormatList(*vhds, flags.Query, flags.Output)
 
 	return nil
 }

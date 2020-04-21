@@ -17,7 +17,9 @@ import (
 )
 
 type flags struct {
-	Name string
+	Name   string
+	Output string
+	Query  string
 }
 
 func NewCommand() *cobra.Command {
@@ -34,6 +36,8 @@ func NewCommand() *cobra.Command {
 
 	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the virtual network resource")
 	cmd.MarkFlagRequired("name")
+	cmd.Flags().StringVar(&flags.Output, "output", "yaml", "Output Format [yaml, json, csv, tsv]")
+	cmd.Flags().StringVar(&flags.Query, "query", "", "Output Format")
 
 	return cmd
 }
@@ -64,7 +68,7 @@ func runE(flags *flags) error {
 		return fmt.Errorf("Unable to find Virtual Network [%s]", flags.Name)
 	}
 
-	config.PrintYAML(networks)
+	config.PrintFormatList(networks, flags.Query, flags.Output)
 
 	return nil
 }

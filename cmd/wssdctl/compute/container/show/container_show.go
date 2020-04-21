@@ -9,6 +9,8 @@ import (
 type flags struct {
 	Name     string
 	FilePath string
+	Output   string
+	Query    string
 }
 
 func NewCommand() *cobra.Command {
@@ -25,6 +27,8 @@ func NewCommand() *cobra.Command {
 	}
 	cmd.Flags().StringVar(&flags.FilePath, "config", "", "configuration file path")
 	cmd.MarkFlagRequired("config")
+	cmd.Flags().StringVar(&flags.Output, "output", "yaml", "Output Format [yaml, json, csv, tsv]")
+	cmd.Flags().StringVar(&flags.Query, "query", "", "Output Format")
 
 	return cmd
 }
