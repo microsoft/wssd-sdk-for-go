@@ -9,8 +9,8 @@ import (
 type flags struct {
 	Name     string
 	FilePath string
-	Output string
-	Query  string
+	Output   string
+	Query    string
 }
 
 func NewCommand() *cobra.Command {
