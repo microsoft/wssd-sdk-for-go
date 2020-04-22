@@ -7,9 +7,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 
+	"github.com/microsoft/moc/pkg/auth"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdstorage "github.com/microsoft/moc/rpc/nodeagent/storage"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -95,18 +96,10 @@ func getContainer(ctainer *wssdstorage.Container) *storage.Container {
 		Name: &ctainer.Name,
 		ContainerProperties: &storage.ContainerProperties{
 			Path:              &ctainer.Path,
-			ProvisioningState: getContainerProvisioningState(ctainer.Status.GetProvisioningStatus()),
+			ProvisioningState: status.GetProvisioningState(ctainer.Status.GetProvisioningStatus()),
+			Statuses:          status.GetStatuses(ctainer.Status),
 		},
 	}
-}
-
-func getContainerProvisioningState(status *wssdcommonproto.ProvisionStatus) *string {
-	provisionState := wssdcommonproto.ProvisionState_UNKNOWN
-	if status != nil {
-		provisionState = status.CurrentState
-	}
-	stateString := provisionState.String()
-	return &stateString
 }
 
 func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {

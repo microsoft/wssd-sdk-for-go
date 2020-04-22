@@ -6,10 +6,11 @@ package internal
 import (
 	"context"
 	"fmt"
-	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
 	wssdcommon "github.com/microsoft/moc/common"
+	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdnetwork "github.com/microsoft/moc/rpc/nodeagent/network"
@@ -180,8 +181,10 @@ func (cc *client) getVirtualNetworkInterface(server, group string, c *wssdnetwor
 		Name: &c.Name,
 		ID:   &c.Id,
 		VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
-			MACAddress:       &c.Macaddress,
-			IPConfigurations: cc.getNetworkIpConfigs(c.Ipconfigs),
+			MACAddress:        &c.Macaddress,
+			IPConfigurations:  cc.getNetworkIpConfigs(c.Ipconfigs),
+			ProvisioningState: status.GetProvisioningState(c.Status.GetProvisioningStatus()),
+			Statuses:          status.GetStatuses(c.Status),
 		},
 	}
 

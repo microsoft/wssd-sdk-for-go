@@ -12,6 +12,8 @@ import (
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
 	wssdnetwork "github.com/microsoft/moc/rpc/nodeagent/network"
+
+	"github.com/microsoft/moc/pkg/status"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine"
@@ -171,7 +173,8 @@ func (c *client) getVirtualMachineScaleSet(vmss *wssdcompute.VirtualMachineScale
 		},
 		VirtualMachineScaleSetProperties: &compute.VirtualMachineScaleSetProperties{
 			VirtualMachineProfile: vmprofile,
-			ProvisioningState:     c.getVirtualMachineScaleSetProvisioningState(vmss.Status.GetProvisioningStatus()),
+			ProvisioningState:     status.GetProvisioningState(vmss.Status.GetProvisioningStatus()),
+			Statuses:              status.GetStatuses(vmss.Status),
 		},
 		DisableHighAvailability: &vmss.DisableHighAvailability,
 	}, nil

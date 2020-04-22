@@ -180,6 +180,10 @@ type LoadBalancerProperties struct {
 	BackendAddressPools *[]BackendAddressPool `json:"backendAddressPools,omitempty"`
 	// LoadBalancingRules
 	LoadBalancingRules *[]LoadBalancingRule `json:"loadBalancingRules,omitempty"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
+	// Statuses - Status
+	Statuses map[string]*string `json:"statuses"`
 }
 
 // LoadBalancer defines the structure of a Load Balancer
@@ -207,6 +211,8 @@ type VirtualNetworkProperties struct {
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// Subnets that could hold ipv4 and ipv6 subnets
 	Subnets *[]Subnet `json:"subnets,omitempty"`
+	// Statuses - Status
+	Statuses map[string]*string `json:"statuses"`
 }
 
 // VirtualNetwork defines the structure of a VNET
@@ -276,6 +282,10 @@ type VirtualNetworkInterfaceProperties struct {
 	EnableDHCPGuard *bool `json:"enableDHCPGuard,omitempty"`
 	// EnableRouterAdvertisementGuard
 	EnableRouterAdvertisementGuard *bool `json:"enableRouterAdvertisementGuard,omitempty"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
+	// Statuses - Status
+	Statuses map[string]*string `json:"statuses"`
 }
 
 // VirtualNetwork defines the structure of a VNET

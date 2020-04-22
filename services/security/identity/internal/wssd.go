@@ -6,9 +6,10 @@ package internal
 import (
 	"context"
 	"fmt"
-	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 
+	"github.com/microsoft/moc/pkg/auth"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdsecurity "github.com/microsoft/moc/rpc/nodeagent/security"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -100,6 +101,10 @@ func getIdentity(identity *wssdsecurity.Identity) *security.Identity {
 	return &security.Identity{
 		ID:   &identity.Id,
 		Name: &identity.Name,
+		IdentityProperties: &security.IdentityProperties{
+			ProvisioningState: status.GetProvisioningState(identity.GetStatus().GetProvisioningStatus()),
+			Statuses:          status.GetStatuses(identity.GetStatus()),
+		},
 	}
 }
 

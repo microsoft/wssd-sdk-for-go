@@ -138,6 +138,9 @@ type VirtualMachineProperties struct {
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// DisableHighAvailability
 	DisableHighAvailability *bool `json:"disableHighAvailability,omitempty"`
+	// State - State would container PowerState/ProvisioningState-SubState
+	// https://docs.microsoft.com/en-us/azure/virtual-machines/windows/states-lifecycle
+	Statuses map[string]*string `json:"statuses"`
 }
 type VirtualMachine struct {
 	// ID
@@ -290,6 +293,8 @@ type VirtualMachineScaleSetProperties struct {
 	VirtualMachineProfile *VirtualMachineScaleSetVMProfile `json:"virtualMachineProfile,omitempty"`
 	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
 	ProvisioningState *string `json:"provisioningState,omitempty"`
+	// State - State would container PowerState/ProvisioningState-SubState
+	Statuses map[string]*string `json:"statuses"`
 }
 
 // VirtualMachineScaleSet
@@ -310,4 +315,6 @@ type VirtualMachineScaleSet struct {
 	*VirtualMachineScaleSetProperties `json:"properties,omitempty"`
 	// DisableHighAvailability
 	DisableHighAvailability *bool `json:"disableHighAvailability,omitempty"`
+	// Statuses - Status
+	Statuses map[string]*string `json:"statuses"`
 }

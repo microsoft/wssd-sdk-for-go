@@ -6,6 +6,10 @@ package security
 // KeyVaultProperties defines the structure of a Security Item
 type KeyVaultProperties struct {
 	SecretMap map[string]*string `json:"secretmap"`
+	// State - State would container ProvisioningState-SubState
+	Statuses map[string]*string `json:"statuses"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
 }
 
 // KeyVault defines the structure of a keyvault
@@ -24,6 +28,10 @@ type KeyVault struct {
 
 // IdentityProperties defines the structure of a Security Item
 type IdentityProperties struct {
+	// State - State would container ProvisioningState-SubState
+	Statuses map[string]*string `json:"statuses"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
 }
 
 // Identity defines the structure of a identity
@@ -55,6 +63,10 @@ type CertificateAttributes struct {
 	Created *int64 `json:"created,omitempty"`
 	// Updated - READ-ONLY; Last updated time in seconds since 1970-01-01T00:00:00Z
 	Updated *int64 `json:"updated,omitempty"`
+	// State - State would container ProvisioningState-SubState
+	Statuses map[string]*string `json:"statuses"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
 }
 
 // Certificate a certificate consists of a certificate (X509) plus its attributes.

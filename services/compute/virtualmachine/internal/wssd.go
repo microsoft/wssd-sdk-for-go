@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
@@ -229,19 +230,22 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			StorageProfile:          c.getVirtualMachineStorageProfile(vm.Storage),
 			OsProfile:               c.getVirtualMachineOSProfile(vm.Os),
 			NetworkProfile:          c.getVirtualMachineNetworkProfile(vm.Network),
-			ProvisioningState:       c.getVirtualMachineProvisioningState(vm.Status.GetProvisioningStatus()),
 			DisableHighAvailability: &vm.DisableHighAvailability,
+			ProvisioningState:       status.GetProvisioningState(vm.Status.GetProvisioningStatus()),
+			Statuses:                c.getVirtualMachineStatuses(vm),
 		},
 	}
 }
 
-func (c *client) getVirtualMachineProvisioningState(status *wssdcommonproto.ProvisionStatus) *string {
-	provisionState := wssdcommonproto.ProvisionState_UNKNOWN
-	if status != nil {
-		provisionState = status.CurrentState
-	}
-	stateString := provisionState.String()
+func (c *client) getVirtualMachinePowerState(status wssdcommonproto.PowerState) *string {
+	stateString := status.String()
 	return &stateString
+}
+
+func (c *client) getVirtualMachineStatuses(vm *wssdcompute.VirtualMachine) map[string]*string {
+	statuses := status.GetStatuses(vm.GetStatus())
+	statuses["PowerState"] = c.getVirtualMachinePowerState(vm.GetPowerState())
+	return statuses
 }
 
 func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine) *compute.HardwareProfile {

@@ -5,13 +5,13 @@ package internal
 
 import (
 	"context"
-	"fmt"
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
 	wssdsecurity "github.com/microsoft/moc/rpc/nodeagent/security"
+
+	"github.com/microsoft/moc/pkg/status"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
-	log "k8s.io/klog"
 )
 
 type client struct {
@@ -48,14 +48,14 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *sec
 	}
 	response, err := c.CertificateAgentClient.CreateOrUpdate(ctx, request)
 	if err != nil {
-		log.Errorf("[Certificate] Create failed with error %v", err)
+		err = errors.Wrapf(err, "[Certificate] Create failed with error %v", err)
 		return nil, err
 	}
 
 	cert := getCertificatesFromResponse(response)
 
 	if len(*cert) == 0 {
-		return nil, fmt.Errorf("[Certificate][Create] Unexpected error: Creating a security returned no result")
+		return nil, errors.New("[Certificate][Create] Unexpected error: Creating a security returned no result")
 	}
 
 	return &((*cert)[0]), err
@@ -68,7 +68,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 		return err
 	}
 	if len(*cert) == 0 {
-		return fmt.Errorf("Certificate [%s] not found", name)
+		return errors.Wrapf(errors.NotFound, "Certificate [%s] not found", name)
 	}
 
 	request, err := getCertificateRequest(name, &(*cert)[0])
@@ -114,8 +114,10 @@ func getCertificate(cert *wssdsecurity.Certificate) *security.Certificate {
 		Name: &cert.Name,
 		Cer:  &cert.Certificate,
 		Attributes: &security.CertificateAttributes{
-			NotBefore: &cert.NotBefore,
-			Expires:   &cert.NotAfter,
+			NotBefore:         &cert.NotBefore,
+			Expires:           &cert.NotAfter,
+			ProvisioningState: status.GetProvisioningState(cert.GetStatus().GetProvisioningStatus()),
+			Statuses:          status.GetStatuses(cert.GetStatus()),
 		},
 	}
 }

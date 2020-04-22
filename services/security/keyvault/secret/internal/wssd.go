@@ -5,10 +5,11 @@ package internal
 
 import (
 	"context"
-	"fmt"
-	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 
+	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/errors"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdsecurity "github.com/microsoft/moc/rpc/nodeagent/security"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -54,7 +55,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *key
 	sec := getSecretsFromResponse(response)
 
 	if len(*sec) == 0 {
-		return nil, fmt.Errorf("[Secret][Create] Unexpected error: Creating a secret returned no result")
+		return nil, errors.New("[Secret][Create] Unexpected error: Creating a secret returned no result")
 	}
 
 	return &((*sec)[0]), err
@@ -62,7 +63,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *key
 
 func (c *client) validate(ctx context.Context, group, name string, sg *keyvault.Secret) (err error) {
 	if sg == nil || sg.VaultName == nil || sg.Value == nil {
-		return fmt.Errorf("[Secret][Create] Invalid Input")
+		return errors.Wrapf(errors.InvalidInput, "[Secret][Create] Invalid Input")
 	}
 
 	if sg.Name == nil {
@@ -78,7 +79,7 @@ func (c *client) Delete(ctx context.Context, group, name, vaultName string) erro
 		return err
 	}
 	if len(*secret) == 0 {
-		return fmt.Errorf("Keysecret [%s] not found", name)
+		return errors.Wrapf(errors.NotFound, "Keysecret [%s] not found", name)
 	}
 
 	request := getSecretRequest(wssdcommonproto.Operation_DELETE, name, vaultName, &(*secret)[0])
@@ -125,8 +126,10 @@ func getSecret(sec *wssdsecurity.Secret) *keyvault.Secret {
 		Name:  &sec.Name,
 		Value: &value,
 		SecretProperties: &keyvault.SecretProperties{
-			FileName:  &sec.Filename,
-			VaultName: &sec.VaultName,
+			FileName:          &sec.Filename,
+			VaultName:         &sec.VaultName,
+			ProvisioningState: status.GetProvisioningState(sec.GetStatus().GetProvisioningStatus()),
+			Statuses:          status.GetStatuses(sec.GetStatus()),
 		},
 	}
 }

@@ -1,7 +1,9 @@
 #  
 param(
     [Parameter()]
-    [Switch] $disableTls
+    [Switch] $disableTls,
+    [string] $marinerVhdPath,
+    [string] $imageStore = "c:/wssdimagestore"
 )
 
 import-module "$PSScriptRoot\wssdcomputevm.psm1" -Force -Verbose:$false -DisableNameChecking
@@ -16,6 +18,8 @@ import-module "$PSScriptRoot\wssdsecuritysecret.psm1" -Force -Verbose:$false -Di
 if ($disableTls.IsPresent) {
     $Global:debugMode = $true
 }
+
+$Global:sampleContainerPath = $imageStore
 
 Describe 'Wssd Agent Pre-Requisite' {
 
@@ -298,6 +302,10 @@ Describe 'VirtualMachine BVT' {
         DeleteSampleVirtualHardDiskDataDisk -container $global:sampleContainer
         DeleteSampleVirtualHardDisk -container $global:sampleContainer
         DeleteSampleContainer
+    }
+
+    It 'Should be able to list all virtual machine' {
+        VirtualMachineList  # | Should Not Throw
     }
 
     It 'Should be able to create a virtual machine' {
