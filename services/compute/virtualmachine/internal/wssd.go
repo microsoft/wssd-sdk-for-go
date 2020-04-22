@@ -187,6 +187,8 @@ func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wss
 	publickeys := []*wssdcompute.SSHPublicKey{}
 	if s.LinuxConfiguration != nil {
 		publickeys = c.getWssdVirtualMachineOSSSHPublicKeys(s.LinuxConfiguration.SSH)
+	} else if s.WindowsConfiguration != nil {
+		publickeys = c.getWssdVirtualMachineOSSSHPublicKeys(s.WindowsConfiguration.SSH)
 	}
 
 	adminuser := &wssdcompute.UserConfiguration{}
