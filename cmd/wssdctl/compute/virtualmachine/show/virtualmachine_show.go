@@ -18,7 +18,9 @@ import (
 
 type flags struct {
 	// Name of the Virtual Machine to get
-	Name string
+	Name   string
+	Output string
+	Query  string
 }
 
 func NewCommand() *cobra.Command {
@@ -36,6 +38,8 @@ func NewCommand() *cobra.Command {
 
 	cmd.Flags().StringVar(&flags.Name, "name", "", "name of the virtual machine resource")
 	cmd.MarkFlagRequired("name")
+	cmd.Flags().StringVarP(&flags.Output, "output", "o", "yaml", "Output Format [yaml, json, csv, tsv]")
+	cmd.Flags().StringVarP(&flags.Query, "query", "q", "", "Output Format")
 
 	return cmd
 }
@@ -65,7 +69,7 @@ func runE(flags *flags) error {
 		return fmt.Errorf("Unable to find Virtual Machine [%s]", flags.Name)
 	}
 
-	config.PrintYAMLList(*vms)
+	config.PrintFormatList(*vms, flags.Query, flags.Output)
 
 	return nil
 }

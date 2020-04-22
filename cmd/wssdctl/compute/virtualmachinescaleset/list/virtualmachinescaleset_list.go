@@ -33,8 +33,8 @@ func NewCommand() *cobra.Command {
 			return runE(flags)
 		},
 	}
-	cmd.Flags().StringVar(&flags.Output, "output", "yaml", "Output Format [yaml, json, csv, tsv]")
-	cmd.Flags().StringVar(&flags.Query, "query", "", "Output Format")
+	cmd.Flags().StringVarP(&flags.Output, "output", "o", "yaml", "Output Format [yaml, json, csv, tsv]")
+	cmd.Flags().StringVarP(&flags.Query, "query", "q", "", "Output Format")
 
 	return cmd
 }

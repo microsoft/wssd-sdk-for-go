@@ -42,8 +42,8 @@ func NewCommand() *cobra.Command {
 	cmd.Flags().StringVar(&flags.FilePath, "file-path", "", "name of the secret, comma separated")
 	cmd.MarkFlagRequired("file-path")
 
-	cmd.Flags().StringVar(&flags.Output, "output", "yaml", "Output Format")
-	cmd.Flags().StringVar(&flags.Query, "query", "", "Output Format")
+	cmd.Flags().StringVarP(&flags.Output, "output", "o", "yaml", "Output Format")
+	cmd.Flags().StringVarP(&flags.Query, "query", "q", "", "Output Format")
 
 	return cmd
 }
