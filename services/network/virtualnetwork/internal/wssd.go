@@ -155,6 +155,26 @@ func getWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 	return wssdvnet
 }
 
+func IPAllocationMethodProtobufToSdk(allocation wssdcommonproto.IPAllocationMethod) network.IPAllocationMethod {
+	switch allocation {
+	case wssdcommonproto.IPAllocationMethod_Static:
+		return network.Static
+	case wssdcommonproto.IPAllocationMethod_Dynamic:
+		return network.Dynamic
+	}
+	return network.Dynamic
+}
+
+func IPAllocationMethodSdkToProtobuf(allocation network.IPAllocationMethod) wssdcommonproto.IPAllocationMethod {
+	switch allocation {
+	case network.Static:
+		return wssdcommonproto.IPAllocationMethod_Static
+	case network.Dynamic:
+		return wssdcommonproto.IPAllocationMethod_Dynamic
+	}
+	return wssdcommonproto.IPAllocationMethod_Dynamic
+}
+
 func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 	ipam := wssdnetwork.Ipam{}
 	if subnets == nil {
@@ -173,6 +193,7 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 			}
 			wssdsubnet.Routes = getWssdNetworkRoutes(subnet.SubnetProperties.Routes)
 		}
+		wssdsubnet.Allocation = IPAllocationMethodSdkToProtobuf(subnet.SubnetProperties.IPAllocationMethod)
 
 		ipam.Subnets = append(ipam.Subnets, wssdsubnet)
 	}
@@ -242,6 +263,7 @@ func getNetworkSubnets(ipams []*wssdnetwork.Ipam) *[]network.Subnet {
 					AddressPrefix: &subnet.Cidr,
 					Routes:        getNetworkRoutes(subnet.Routes),
 					// TODO: implement something for IPConfigurationReferences
+					IPAllocationMethod: IPAllocationMethodProtobufToSdk(subnet.Allocation),
 				},
 			})
 		}

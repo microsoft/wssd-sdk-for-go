@@ -44,6 +44,16 @@ type IPConfigurationReference struct {
 	IPConfigurationID *string `json:"ID,omitempty"`
 }
 
+// IPAllocationMethod enumerates the values for ip allocation method.
+type IPAllocationMethod string
+
+const (
+	// Dynamic ...
+	Dynamic IPAllocationMethod = "Dynamic"
+	// Static ...
+	Static IPAllocationMethod = "Static"
+)
+
 // SubnetProperties
 type SubnetProperties struct {
 	// Cidr for this subnet - IPv4, IPv6
@@ -52,6 +62,8 @@ type SubnetProperties struct {
 	Routes *[]Route `json:"routes,omitempty"`
 	// IPConfigurationReferences
 	IPConfigurationReferences *[]IPConfigurationReference `json:"ipConfigurationReferences,omitempty"`
+	// IPAllocationMethod - The IP address allocation method. Possible values include: 'Static', 'Dynamic'
+	IPAllocationMethod IPAllocationMethod `json:"ipAllocationMethod,omitempty"`
 }
 
 // Subnet is assoicated with a Virtual Network.
@@ -245,6 +257,8 @@ type IPConfigurationProperties struct {
 	LoadBalancerBackendAddressPoolIDs *[]string `json:"loadBalancerBackendAddressPools,omitempty"`
 	// LoadBalancerInboundNatPools
 	LoadBalancerInboundNatPoolIDs *[]string `json:"loadBalancerInboundNatPools,omitempty"`
+	// IPAllocationMethod - The IP address allocation method. Possible values include: 'Static', 'Dynamic'
+	IPAllocationMethod IPAllocationMethod `json:"ipAllocationMethod,omitempty"`
 }
 
 // IPConfiguration

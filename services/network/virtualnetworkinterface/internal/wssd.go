@@ -153,6 +153,26 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 	return vnic, nil
 }
 
+func IPAllocationMethodProtobufToSdk(allocation wssdcommonproto.IPAllocationMethod) network.IPAllocationMethod {
+	switch allocation {
+	case wssdcommonproto.IPAllocationMethod_Static:
+		return network.Static
+	case wssdcommonproto.IPAllocationMethod_Dynamic:
+		return network.Dynamic
+	}
+	return network.Dynamic
+}
+
+func IPAllocationMethodSdkToProtobuf(allocation network.IPAllocationMethod) wssdcommonproto.IPAllocationMethod {
+	switch allocation {
+	case network.Static:
+		return wssdcommonproto.IPAllocationMethod_Static
+	case network.Dynamic:
+		return wssdcommonproto.IPAllocationMethod_Dynamic
+	}
+	return wssdcommonproto.IPAllocationMethod_Dynamic
+}
+
 func (c *client) getWssdNetworkInterfaceIPConfig(ipconfig *network.IPConfiguration) (*wssdnetwork.IpConfiguration, error) {
 	if ipconfig.IPConfigurationProperties == nil {
 		return nil, errors.Wrapf(errors.InvalidInput, "Missing IPConfiguration Properties")
@@ -171,6 +191,7 @@ func (c *client) getWssdNetworkInterfaceIPConfig(ipconfig *network.IPConfigurati
 	if ipconfig.PrefixLength != nil {
 		wssdipconfig.Prefixlength = *ipconfig.PrefixLength
 	}
+	wssdipconfig.Allocation = IPAllocationMethodSdkToProtobuf(ipconfig.IPAllocationMethod)
 
 	return wssdipconfig, nil
 }
@@ -222,11 +243,13 @@ func (c *client) getNetworkIpConfigs(wssdipconfigs []*wssdnetwork.IpConfiguratio
 	ipconfigs := []network.IPConfiguration{}
 
 	for _, wssdipconfig := range wssdipconfigs {
+		//assignment := IPAllocationMethodProtobufToSdk(wssdipconfig.IPAllocationMethod)
 		ipconfigs = append(ipconfigs, network.IPConfiguration{
 			IPConfigurationProperties: &network.IPConfigurationProperties{
-				IPAddress:    &wssdipconfig.Ipaddress,
-				PrefixLength: &wssdipconfig.Prefixlength,
-				SubnetID:     &wssdipconfig.Subnetid,
+				IPAddress:          &wssdipconfig.Ipaddress,
+				PrefixLength:       &wssdipconfig.Prefixlength,
+				SubnetID:           &wssdipconfig.Subnetid,
+				IPAllocationMethod: IPAllocationMethodProtobufToSdk(wssdipconfig.Allocation),
 			},
 		})
 	}
