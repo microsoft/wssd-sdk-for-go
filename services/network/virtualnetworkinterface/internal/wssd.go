@@ -153,7 +153,7 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 	return vnic, nil
 }
 
-func IPAllocationMethodProtobufToSdk(allocation wssdcommonproto.IPAllocationMethod) network.IPAllocationMethod {
+func ipAllocationMethodProtobufToSdk(allocation wssdcommonproto.IPAllocationMethod) network.IPAllocationMethod {
 	switch allocation {
 	case wssdcommonproto.IPAllocationMethod_Static:
 		return network.Static
@@ -163,7 +163,7 @@ func IPAllocationMethodProtobufToSdk(allocation wssdcommonproto.IPAllocationMeth
 	return network.Dynamic
 }
 
-func IPAllocationMethodSdkToProtobuf(allocation network.IPAllocationMethod) wssdcommonproto.IPAllocationMethod {
+func ipAllocationMethodSdkToProtobuf(allocation network.IPAllocationMethod) wssdcommonproto.IPAllocationMethod {
 	switch allocation {
 	case network.Static:
 		return wssdcommonproto.IPAllocationMethod_Static
@@ -191,7 +191,7 @@ func (c *client) getWssdNetworkInterfaceIPConfig(ipconfig *network.IPConfigurati
 	if ipconfig.PrefixLength != nil {
 		wssdipconfig.Prefixlength = *ipconfig.PrefixLength
 	}
-	wssdipconfig.Allocation = IPAllocationMethodSdkToProtobuf(ipconfig.IPAllocationMethod)
+	wssdipconfig.Allocation = ipAllocationMethodSdkToProtobuf(ipconfig.IPAllocationMethod)
 
 	return wssdipconfig, nil
 }
@@ -243,13 +243,12 @@ func (c *client) getNetworkIpConfigs(wssdipconfigs []*wssdnetwork.IpConfiguratio
 	ipconfigs := []network.IPConfiguration{}
 
 	for _, wssdipconfig := range wssdipconfigs {
-		//assignment := IPAllocationMethodProtobufToSdk(wssdipconfig.IPAllocationMethod)
 		ipconfigs = append(ipconfigs, network.IPConfiguration{
 			IPConfigurationProperties: &network.IPConfigurationProperties{
 				IPAddress:          &wssdipconfig.Ipaddress,
 				PrefixLength:       &wssdipconfig.Prefixlength,
 				SubnetID:           &wssdipconfig.Subnetid,
-				IPAllocationMethod: IPAllocationMethodProtobufToSdk(wssdipconfig.Allocation),
+				IPAllocationMethod: ipAllocationMethodProtobufToSdk(wssdipconfig.Allocation),
 			},
 		})
 	}
