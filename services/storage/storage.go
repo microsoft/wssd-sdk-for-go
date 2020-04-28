@@ -48,7 +48,7 @@ type VirtualHardDisk struct {
 	// Tags - Custom resource tags
 	Tags map[string]*string `json:"tags"`
 	// Properties
-	*VirtualHardDiskProperties `json:"properties,omitempty"`
+	*VirtualHardDiskProperties `json:"virtualharddiskproperties,omitempty"`
 }
 
 // ContainerProperties defines the structure of a ContainerProperties
