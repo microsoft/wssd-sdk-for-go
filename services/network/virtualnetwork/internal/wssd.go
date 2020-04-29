@@ -139,7 +139,8 @@ func getWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 		return wssdvnet
 	}
 
-	// TODO: MACPool (it is currently missing from network.VirtualNetwork)
+	wssdvnet.MacPool = getWssdMacPool(c.VirtualNetworkProperties.MACPool)
+
 	wssdvnet.Ipams = getWssdNetworkIpams(c.VirtualNetworkProperties.Subnets)
 
 	if c.DNSSettings == nil {
@@ -173,6 +174,24 @@ func ipAllocationMethodSdkToProtobuf(allocation network.IPAllocationMethod) wssd
 		return wssdcommonproto.IPAllocationMethod_Dynamic
 	}
 	return wssdcommonproto.IPAllocationMethod_Dynamic
+}
+
+func getWssdMacPool(macPool *network.MACPool) *wssdnetwork.MacPool {
+	wssdMacPool := wssdnetwork.MacPool{}
+	if macPool == nil {
+		return &wssdMacPool
+	}
+
+	for _, macRange := range *macPool.Ranges {
+		wssdMacRange := &wssdnetwork.MacRange{
+			StartMacAddress: *macRange.StartMACAddress,
+			EndMacAddress:   *macRange.EndMACAddress,
+		}
+
+		wssdMacPool.Ranges = append(wssdMacPool.Ranges, wssdMacRange)
+	}
+
+	return &wssdMacPool
 }
 
 func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
@@ -234,6 +253,7 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 			Subnets:           getNetworkSubnets(c.Ipams),
 			ProvisioningState: status.GetProvisioningState(c.Status.GetProvisioningStatus()),
 			Statuses:          status.GetStatuses(c.Status),
+			MACPool:           getMacPool(c.MacPool),
 		},
 	}
 
@@ -286,4 +306,24 @@ func getNetworkRoutes(wssdroutes []*wssdnetwork.Route) *[]network.Route {
 	}
 
 	return &routes
+}
+
+func getMacPool(wssdMacPool *wssdnetwork.MacPool) *network.MACPool {
+	macPool := network.MACPool{}
+	if wssdMacPool == nil {
+		return &macPool
+	}
+
+	macRanges := []network.MACRange{}
+	for _, wssdMacRange := range wssdMacPool.Ranges {
+		macRange := network.MACRange{
+			StartMACAddress: &wssdMacRange.StartMacAddress,
+			EndMACAddress:   &wssdMacRange.EndMacAddress,
+		}
+
+		macRanges = append(macRanges, macRange)
+	}
+	macPool.Ranges = &macRanges
+
+	return &macPool
 }

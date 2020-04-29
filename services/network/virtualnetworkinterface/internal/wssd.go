@@ -191,6 +191,9 @@ func (c *client) getWssdNetworkInterfaceIPConfig(ipconfig *network.IPConfigurati
 	if ipconfig.PrefixLength != nil {
 		wssdipconfig.Prefixlength = *ipconfig.PrefixLength
 	}
+	if ipconfig.Gateway != nil {
+		wssdipconfig.Gateway = *ipconfig.Gateway
+	}
 	wssdipconfig.Allocation = ipAllocationMethodSdkToProtobuf(ipconfig.IPAllocationMethod)
 
 	return wssdipconfig, nil
@@ -248,6 +251,7 @@ func (c *client) getNetworkIpConfigs(wssdipconfigs []*wssdnetwork.IpConfiguratio
 				IPAddress:          &wssdipconfig.Ipaddress,
 				PrefixLength:       &wssdipconfig.Prefixlength,
 				SubnetID:           &wssdipconfig.Subnetid,
+				Gateway:            &wssdipconfig.Gateway,
 				IPAllocationMethod: ipAllocationMethodProtobufToSdk(wssdipconfig.Allocation),
 			},
 		})

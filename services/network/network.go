@@ -249,6 +249,8 @@ type IPConfigurationProperties struct {
 	PrefixLength *string `json:"prefixlength,omitempty"`
 	// SubnetID
 	SubnetID *string `json:"subnetId,omitempty"`
+	// Gateway
+	Gateway *string `json:"gateway,omitempty"`
 	// Primary indicates that this is the primary IPaddress of the Nic
 	Primary *bool `json:"primary,omitempty"`
 	// VirtualNetworkInterface reference
