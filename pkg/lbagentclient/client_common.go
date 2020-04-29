@@ -64,16 +64,11 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 	// This means we can debug and test wssdagent without generating certs
 	// and having proper tokens
 
-	/**
-	// TODO: Keep LBAgent insecure until we figure out the auth mechanism
 	if ok := isDebugMode(); ok == nil {
 		opts = append(opts, grpc.WithInsecure())
 	} else {
 		opts = append(opts, grpc.WithTransportCredentials(authorizer.WithTransportAuthorization()))
 	}
-	**/
-
-	opts = append(opts, grpc.WithInsecure())
 
 	opts = append(opts, grpc.WithKeepaliveParams(
 		keepalive.ClientParameters{
