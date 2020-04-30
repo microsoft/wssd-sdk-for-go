@@ -139,7 +139,8 @@ func getWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 		return wssdvnet
 	}
 
-	// TODO: MACPool (it is currently missing from network.VirtualNetwork)
+	wssdvnet.MacPool = getWssdMacPool(c.VirtualNetworkProperties.MACPool)
+
 	wssdvnet.Ipams = getWssdNetworkIpams(c.VirtualNetworkProperties.Subnets)
 
 	if c.DNSSettings == nil {
@@ -153,6 +154,44 @@ func getWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 	}
 
 	return wssdvnet
+}
+
+func ipAllocationMethodProtobufToSdk(allocation wssdcommonproto.IPAllocationMethod) network.IPAllocationMethod {
+	switch allocation {
+	case wssdcommonproto.IPAllocationMethod_Static:
+		return network.Static
+	case wssdcommonproto.IPAllocationMethod_Dynamic:
+		return network.Dynamic
+	}
+	return network.Dynamic
+}
+
+func ipAllocationMethodSdkToProtobuf(allocation network.IPAllocationMethod) wssdcommonproto.IPAllocationMethod {
+	switch allocation {
+	case network.Static:
+		return wssdcommonproto.IPAllocationMethod_Static
+	case network.Dynamic:
+		return wssdcommonproto.IPAllocationMethod_Dynamic
+	}
+	return wssdcommonproto.IPAllocationMethod_Dynamic
+}
+
+func getWssdMacPool(macPool *network.MACPool) *wssdnetwork.MacPool {
+	wssdMacPool := wssdnetwork.MacPool{}
+	if macPool == nil || macPool.Ranges == nil {
+		return &wssdMacPool
+	}
+
+	for _, macRange := range *macPool.Ranges {
+		wssdMacRange := &wssdnetwork.MacRange{
+			StartMacAddress: *macRange.StartMACAddress,
+			EndMacAddress:   *macRange.EndMACAddress,
+		}
+
+		wssdMacPool.Ranges = append(wssdMacPool.Ranges, wssdMacRange)
+	}
+
+	return &wssdMacPool
 }
 
 func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
@@ -173,6 +212,7 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 			}
 			wssdsubnet.Routes = getWssdNetworkRoutes(subnet.SubnetProperties.Routes)
 		}
+		wssdsubnet.Allocation = ipAllocationMethodSdkToProtobuf(subnet.SubnetProperties.IPAllocationMethod)
 
 		ipam.Subnets = append(ipam.Subnets, wssdsubnet)
 	}
@@ -213,6 +253,7 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 			Subnets:           getNetworkSubnets(c.Ipams),
 			ProvisioningState: status.GetProvisioningState(c.Status.GetProvisioningStatus()),
 			Statuses:          status.GetStatuses(c.Status),
+			MACPool:           getMacPool(c.MacPool),
 		},
 	}
 
@@ -242,6 +283,7 @@ func getNetworkSubnets(ipams []*wssdnetwork.Ipam) *[]network.Subnet {
 					AddressPrefix: &subnet.Cidr,
 					Routes:        getNetworkRoutes(subnet.Routes),
 					// TODO: implement something for IPConfigurationReferences
+					IPAllocationMethod: ipAllocationMethodProtobufToSdk(subnet.Allocation),
 				},
 			})
 		}
@@ -264,4 +306,24 @@ func getNetworkRoutes(wssdroutes []*wssdnetwork.Route) *[]network.Route {
 	}
 
 	return &routes
+}
+
+func getMacPool(wssdMacPool *wssdnetwork.MacPool) *network.MACPool {
+	macPool := network.MACPool{}
+	if wssdMacPool == nil || wssdMacPool.Ranges == nil {
+		return &macPool
+	}
+
+	macRanges := []network.MACRange{}
+	for _, wssdMacRange := range wssdMacPool.Ranges {
+		macRange := network.MACRange{
+			StartMACAddress: &wssdMacRange.StartMacAddress,
+			EndMACAddress:   &wssdMacRange.EndMacAddress,
+		}
+
+		macRanges = append(macRanges, macRange)
+	}
+	macPool.Ranges = &macRanges
+
+	return &macPool
 }
