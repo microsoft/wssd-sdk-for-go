@@ -310,7 +310,7 @@ func getNetworkRoutes(wssdroutes []*wssdnetwork.Route) *[]network.Route {
 
 func getMacPool(wssdMacPool *wssdnetwork.MacPool) *network.MACPool {
 	macPool := network.MACPool{}
-	if wssdMacPool == nil {
+	if wssdMacPool == nil || wssdMacPool.Ranges == nil {
 		return &macPool
 	}
 
