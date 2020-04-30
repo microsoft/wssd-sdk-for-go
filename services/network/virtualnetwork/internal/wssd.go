@@ -178,7 +178,7 @@ func ipAllocationMethodSdkToProtobuf(allocation network.IPAllocationMethod) wssd
 
 func getWssdMacPool(macPool *network.MACPool) *wssdnetwork.MacPool {
 	wssdMacPool := wssdnetwork.MacPool{}
-	if macPool == nil {
+	if macPool == nil || macPool.Ranges == nil {
 		return &wssdMacPool
 	}
 
