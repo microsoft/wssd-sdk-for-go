@@ -117,7 +117,7 @@ func getClientConnection(serverAddress *string, authorizer auth.Authorizer) (*gr
 	opts := getDefaultDialOption(authorizer)
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
-		log.Fatalf("Failed to dial: %v", err)
+		return nil, err
 	}
 
 	connectionCache[endpoint] = conn
@@ -125,11 +125,30 @@ func getClientConnection(serverAddress *string, authorizer auth.Authorizer) (*gr
 	return conn, nil
 }
 
+// CloseClientConnectionByEndpoint allows a caller to close the current clientconn
+// for a particular endpoint
+func CloseClientConnectionByEndpoint(serverAddress *string) error {
+	mux.Lock()
+	defer mux.Unlock()
+	endpoint := getServerEndpoint(serverAddress)
+
+	conn, ok := connectionCache[endpoint]
+	if ok {
+		err := conn.Close()
+		if err != nil {
+			return err
+		}
+
+		delete(connectionCache, endpoint)
+	}
+	return nil
+}
+
 // GetVirtualNetworkClient returns the virtual network client to communicate with the wssdagent
 func GetVirtualNetworkClient(serverAddress *string, authorizer auth.Authorizer) (network_pb.VirtualNetworkAgentClient, error) {
 	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
-		log.Fatalf("Unable to get VirtualNetworkClient. Failed to dial: %v", err)
+		return nil, err
 	}
 
 	return network_pb.NewVirtualNetworkAgentClient(conn), nil
