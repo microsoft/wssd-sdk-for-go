@@ -19,6 +19,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	log "k8s.io/klog"
+	"go.opencensus.io/plugin/ocgrpc"
 
 	"github.com/microsoft/moc/pkg/auth"
 )
@@ -101,6 +102,7 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 			PermitWithoutStream: true,
 		}))
 
+	opts = append(opts, grpc.WithStatsHandler(&ocgrpc.ClientHandler{}))
 	return opts
 }
 
@@ -282,7 +284,7 @@ func GetAuthenticationClient(serverAddress *string, authorizer auth.Authorizer) 
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithTransportCredentials(authorizer.WithTransportAuthorization()))
 	opts = append(opts, grpc.WithPerRPCCredentials(authorizer.WithRPCAuthorization()))
-
+	opts = append(opts, grpc.WithStatsHandler(&ocgrpc.ClientHandler{}))
 	conn, err := grpc.Dial(getAuthServerEndpoint(serverAddress), opts...)
 	if err != nil {
 		log.Fatalf("Unable to get AuthenticationClient. Failed to dial: %v", err)
