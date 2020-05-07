@@ -16,10 +16,10 @@ import (
 	security_pb "github.com/microsoft/moc/rpc/nodeagent/security"
 	storage_pb "github.com/microsoft/moc/rpc/nodeagent/storage"
 	"github.com/spf13/viper"
+	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	log "k8s.io/klog"
-	"go.opencensus.io/plugin/ocgrpc"
 
 	"github.com/microsoft/moc/pkg/auth"
 )
