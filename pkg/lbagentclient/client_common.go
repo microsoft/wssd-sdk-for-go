@@ -11,9 +11,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/spf13/viper"
-
 	lbagent_pb "github.com/microsoft/moc/rpc/lbagent"
+	admin_pb "github.com/microsoft/moc/rpc/lbagent/admin"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 	log "k8s.io/klog"
@@ -109,4 +109,15 @@ func GetLoadBalancerAgentClient(serverAddress *string, authorizer auth.Authorize
 	}
 
 	return lbagent_pb.NewLoadBalancerAgentClient(conn), nil
+}
+
+// GetHealthClient returns the health client to communicate with the lbagent
+func GetHealthClient(serverAddress *string, authorizer auth.Authorizer) (admin_pb.HealthAgentClient, error) {
+	opts := getDefaultDialOption(authorizer)
+	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	if err != nil {
+		log.Fatalf("Unable to get HealthClient. Failed to dial: %v", err)
+	}
+
+	return admin_pb.NewHealthAgentClient(conn), nil
 }

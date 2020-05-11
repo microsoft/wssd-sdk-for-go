@@ -7,7 +7,6 @@ import (
 	"context"
 
 	"github.com/microsoft/moc/pkg/auth"
-	"github.com/microsoft/moc/pkg/errors"
 	pbcom "github.com/microsoft/moc/rpc/common"
 	pb "github.com/microsoft/moc/rpc/lbagent"
 )
@@ -26,7 +25,16 @@ func newLoadBalancerAgentClient(subID string, authorizer auth.Authorizer) (*clie
 }
 
 func (c *client) Get(ctx context.Context, lbs []*pb.LoadBalancer) ([]*pb.LoadBalancer, error) {
-	return nil, errors.NotSupported
+	request := &pb.LoadBalancerRequest{
+		OperationType: pbcom.Operation_POST,
+		LoadBalancers: lbs,
+	}
+
+	response, err := c.LoadBalancerAgentClient.Get(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	return response.GetLoadBalancers(), nil
 }
 
 // Ensure methods invokes create or update on the client
