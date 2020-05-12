@@ -7,7 +7,7 @@ require (
 	github.com/microsoft/moc v0.8.0-alpha.28
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.6.2
+	go.opencensus.io v0.22.3
 	google.golang.org/grpc v1.27.1
 	k8s.io/klog v1.0.0
 )
-
