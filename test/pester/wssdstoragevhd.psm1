@@ -69,31 +69,36 @@ function DeleteSampleVirtualHardDiskDataDisk($containerName) {
 }
 
 function AttachVirtualHardDiskDataDisk($name, $vmName, $containerName) {
-	Execute-WssdCommand -Arguments  "storage vhd show --name $name --container $containerName" > out.yaml
-	$yaml = Get-Content -Path out.Yaml
-	$yaml = $yaml.Replace('virtualmachinename: ""', "virtualmachinename: $vmName")
-	$yamlFile = "testVirtualHardDiskDataDiskUpdate.yaml"
-	Set-Content -Path $yamlFile -Value $yaml 
-	VirtualHardDiskCreate -yamlFile $yamlFile -container $containerName
+	Execute-WssdCommand -Arguments  "storage vhd attach --name $name --vm-name $vmName --container $containerName" 
+	IsVirtualHardDiskAttached -name $name  -container $containerName -vmName   $vmName
 }
 
 function ResizeVirtualHardDiskDataDisk($name, $sizeBytes, $containerName) {
-	Execute-WssdCommand -Arguments  "storage vhd show --name $name --container $containerName" > out.yaml
-	$yaml = Get-Content -Path out.Yaml
-	$yaml = $yaml.Replace('disksizebytes: 10737418240', "disksizebytes: $sizeBytes")
-	$yamlFile = "testVirtualHardDiskDataDiskUpdate.yaml"
-	Set-Content -Path $yamlFile -Value $yaml 
-	VirtualHardDiskCreate -yamlFile $yamlFile -container $containerName
+	Execute-WssdCommand -Arguments  "storage vhd resize --size-bytes $sizeBytes --name $name  --container $containerName" 
 }
 
 function DetachVirtualHardDiskDataDisk($name, $vmName, $containerName) {
-	Execute-WssdCommand -Arguments  "storage vhd show --name $name --container $containerName" > out.yaml
-	$yaml = Get-Content -Path out.Yaml
-	$yaml = $yaml.Replace("virtualmachinename: $vmName", 'virtualmachinename: ""')
-	$yamlFile = "testVirtualHardDiskDataDiskUpdate.yaml"
-	Set-Content -Path $yamlFile -Value $yaml 
-	VirtualHardDiskCreate -yamlFile $yamlFile -container $containerName
+	Execute-WssdCommand -Arguments  "storage vhd detach --name $name --container $containerName" 
+	IsVirtualHardDiskDetached -name $name  -container $containerName
 }
+
+function IsVirtualHardDiskAttached($name, $vmName,  $container) {
+	$out = VirtualHardDiskShow -name $name -container $container
+	if (($out -Match "virtualmachinename: $vmName").Count -gt 0) {
+		return
+	}
+	throw "VirtualHardDisk $name is not attached to the VirtualMachine $vmName"
+}
+
+function IsVirtualHardDiskDetached($name,  $container) {
+	$out = VirtualHardDiskShow -name $name  -container $container
+	if ( ($out -Match "virtualmachinename: """"").Count -gt 0) {
+		return
+	}
+	throw "VirtualHardDisk $name is not detached from the VirtualMachine -  $out"
+}
+
+
 
 Export-ModuleMember VirtualHardDiskCreate
 Export-ModuleMember VirtualHardDiskDelete
@@ -109,3 +114,5 @@ Export-ModuleMember DetachVirtualHardDiskDataDisk
 Export-ModuleMember ResizeVirtualHardDiskDataDisk
 Export-ModuleMember CreateVMMSVhd
 Export-ModuleMember CleanupVMMSVhd
+Export-ModuleMember IsVirtualHardDiskAttached
+Export-ModuleMember IsVirtualHardDiskDetached

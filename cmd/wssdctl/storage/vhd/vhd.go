@@ -5,9 +5,12 @@ package vhd
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage/vhd/attach"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage/vhd/create"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage/vhd/delete"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage/vhd/detach"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage/vhd/list"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage/vhd/resize"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage/vhd/show"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/storage/vhd/update"
 )
@@ -27,9 +30,12 @@ func NewCommand() *cobra.Command {
 
 	cmd.MarkPersistentFlagRequired("container")
 
+	cmd.AddCommand(attach.NewCommand())
 	cmd.AddCommand(create.NewCommand())
+	cmd.AddCommand(detach.NewCommand())
 	cmd.AddCommand(delete.NewCommand())
 	cmd.AddCommand(list.NewCommand())
+	cmd.AddCommand(resize.NewCommand())
 	cmd.AddCommand(show.NewCommand())
 	cmd.AddCommand(update.NewCommand())
 
