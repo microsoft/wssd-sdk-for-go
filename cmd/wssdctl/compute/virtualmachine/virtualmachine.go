@@ -7,6 +7,7 @@ import (
 
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachine/create"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachine/delete"
+	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachine/disk"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachine/list"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachine/list_ip_addresses"
 	"github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl/compute/virtualmachine/open_port"
@@ -27,6 +28,7 @@ func NewCommand() *cobra.Command {
 
 	cmd.AddCommand(create.NewCommand())
 	cmd.AddCommand(delete.NewCommand())
+	cmd.AddCommand(disk.NewCommand())
 	cmd.AddCommand(list.NewCommand())
 	cmd.AddCommand(list_ip_addresses.NewCommand())
 	cmd.AddCommand(open_port.NewCommand())
