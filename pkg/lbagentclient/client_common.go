@@ -113,8 +113,7 @@ func GetLoadBalancerAgentClient(serverAddress *string, authorizer auth.Authorize
 
 // GetHealthClient returns the health client to communicate with the lbagent
 func GetHealthClient(serverAddress *string, authorizer auth.Authorizer) (admin_pb.HealthAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get HealthClient. Failed to dial: %v", err)
 	}
