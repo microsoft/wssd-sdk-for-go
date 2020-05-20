@@ -2,6 +2,7 @@
 param(
     [Parameter()]
     [Switch] $disableTls,
+    [Switch] $setupOnly,
     [string] $marinerVhdPath,
     [string] $imageStore = "c:/wssdimagestore"
 )
@@ -20,6 +21,11 @@ if ($disableTls.IsPresent) {
 }
 
 $Global:sampleContainerPath = $imageStore
+
+if ($setupOnly.IsPresent) {
+    # Just setup the required modules and return
+    return
+}
 
 Describe 'Wssd Agent Pre-Requisite' {
 
@@ -350,6 +356,9 @@ virtualmachineproperties:
         AttachVirtualHardDiskDataDisk -name $Global:sampleVirtualHardDiskDataDisk -container $global:sampleContainer -vmName   $script:testVirtualMachine
     }
 
+    It 'Should be able to resize the virtual hard disk data disk while attached' {
+        ResizeVirtualHardDiskDataDisk -name $Global:sampleVirtualHardDiskDataDisk -sizeBytes 21474836480 -container $global:sampleContainer  # | Should Not Throw
+    }
     It 'Should be able to detach a data disk to a virtual machine' {
         DetachVirtualHardDiskDataDisk -name $Global:sampleVirtualHardDiskDataDisk -container $global:sampleContainer -vmName   $script:testVirtualMachine
     }
