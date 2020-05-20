@@ -10,13 +10,12 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  GOBIN:  '$(GOPATH)/bin' # Go binaries path
-  GOROOT: '/usr/local/go1.13' # Go installation path
-  GOPATH: '$(system.defaultWorkingDirectory)/gopath' # Go workspace path
   GO111MODULE: 'on'
-  modulePath: '$(GOPATH)/src/github.com/$(build.repository.name)' # Path to the module's code
 
 steps:
+- task: GoTool@0
+  inputs:
+    version: '1.14'
 - task: InstallSSHKey@0
   inputs:
     knownHostsEntry: '$(KNOWN_HOST)' 
@@ -24,24 +23,16 @@ steps:
     sshKeySecureFile: 'azure-pipelines-ssh-key'
 - script: |
     git config --global url.ssh://git@github.com/.insteadOf https://github.com/
-    mkdir -p '$(GOBIN)'
-    mkdir -p '$(GOPATH)/pkg'
-    mkdir -p '$(modulePath)'
-    mkdir -pp '$(modulePath)/bin'
-    shopt -s extglob
-    shopt -s dotglob
-    mv !(gopath) '$(modulePath)'
-    echo '##vso[task.prependpath]$(GOBIN)'
-    echo '##vso[task.prependpath]$(GOROOT)/bin'
+    git config --global url."git@ssh.dev.azure.com:v3".insteadOf https://dev.azure.com
   displayName: 'Set up the Go workspace'
 
 - script: |
     make all
-  workingDirectory: '$(modulePath)'
+  workingDirectory: '$(System.DefaultWorkingDirectory)'
   displayName: 'Build'
 
-- publish: $(modulePath)/bin
+- publish: $(System.DefaultWorkingDirectory)/bin
   artifact: binaries
 
-- publish: $(modulePath)/test/pester
+- publish: $(System.DefaultWorkingDirectory)/test/pester
   artifact: test
