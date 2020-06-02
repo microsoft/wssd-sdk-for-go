@@ -188,8 +188,7 @@ func GetVirtualMachineClient(serverAddress *string, authorizer auth.Authorizer) 
 
 // GetLogClient returns the log client to communicate with the wssd agent
 func GetLogClient(serverAddress *string, authorizer auth.Authorizer) (admin_pb.LogAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get LogClient. Failed to dial: %v", err)
 	}
@@ -199,8 +198,7 @@ func GetLogClient(serverAddress *string, authorizer auth.Authorizer) (admin_pb.L
 
 // GetHealthClient returns the health client to communicate with the node agent
 func GetHealthClient(serverAddress *string, authorizer auth.Authorizer) (admin_pb.HealthAgentClient, error) {
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(getServerEndpoint(serverAddress), opts...)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get HealthClient. Failed to dial: %v", err)
 	}
