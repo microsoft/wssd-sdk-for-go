@@ -104,10 +104,13 @@ github.com/microsoft/moc v0.8.0-alpha.25 h1:zuV9SLDGs1qaoe0RKd20v4YxssXmf1YxHjgF
 github.com/microsoft/moc v0.8.0-alpha.25/go.mod h1:QDHIQjlHtf6oWkKgwtjEWhT9JYAR8dqKRoWkcfoap04=
 github.com/microsoft/moc v0.8.0-alpha.28 h1:GtWPnnnoNiiAeI2yNDt/EGCERsjoUi5E+wKlSjnq0Es=
 github.com/microsoft/moc v0.8.0-alpha.28/go.mod h1:QDHIQjlHtf6oWkKgwtjEWhT9JYAR8dqKRoWkcfoap04=
+github.com/microsoft/moc v0.8.4-alpha.1 h1:U9K2Z7ztGuIOMDqSWi7TjH2rt8CQW9AcVx+u0r00OuI=
+github.com/microsoft/moc v0.8.4-alpha.1/go.mod h1:vYlp0TVreg6Nafj1othfs7qQxgQEM3UfsDX0XvJE4Iw=
 github.com/microsoft/moc v0.9.0-alpha.4 h1:ljoCaRpnZRGyWOrDs8acstozhijohkzsiVPFqzttXTc=
 github.com/microsoft/moc v0.9.0-alpha.4/go.mod h1:QDHIQjlHtf6oWkKgwtjEWhT9JYAR8dqKRoWkcfoap04=
 github.com/microsoft/wmi v0.1.2/go.mod h1:oOGdx0ldEw0MQPbY7f7SAikscrHoZynFFgx/9+V+SbY=
 github.com/microsoft/wmi v0.1.4/go.mod h1:oOGdx0ldEw0MQPbY7f7SAikscrHoZynFFgx/9+V+SbY=
+github.com/microsoft/wmi v0.1.10/go.mod h1:oOGdx0ldEw0MQPbY7f7SAikscrHoZynFFgx/9+V+SbY=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2 h1:fmNYVwqnSfB9mZU6OS2O6GsXM+wcskZDuKQzvN1EDeE=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
