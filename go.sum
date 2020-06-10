@@ -111,6 +111,7 @@ github.com/microsoft/moc v0.9.0-alpha.15/go.mod h1:kWT2MOvLCH1VOrVKGD8JGJcW3Y44m
 github.com/microsoft/wmi v0.1.2/go.mod h1:oOGdx0ldEw0MQPbY7f7SAikscrHoZynFFgx/9+V+SbY=
 github.com/microsoft/wmi v0.1.4/go.mod h1:oOGdx0ldEw0MQPbY7f7SAikscrHoZynFFgx/9+V+SbY=
 github.com/microsoft/wmi v0.1.6/go.mod h1:oOGdx0ldEw0MQPbY7f7SAikscrHoZynFFgx/9+V+SbY=
+github.com/microsoft/wmi v0.1.10/go.mod h1:oOGdx0ldEw0MQPbY7f7SAikscrHoZynFFgx/9+V+SbY=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2 h1:fmNYVwqnSfB9mZU6OS2O6GsXM+wcskZDuKQzvN1EDeE=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=

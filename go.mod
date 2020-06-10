@@ -13,4 +13,4 @@ require (
 	k8s.io/klog v1.0.0
 )
 
-
+replace github.com/microsoft/moc => /home/erfrimod/repo/gopath/src/github.com/microsoft/moc

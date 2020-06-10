@@ -125,7 +125,14 @@ type NetworkProfile struct {
 	NetworkInterfaces *[]NetworkInterfaceReference `json:"networkInterfaces,omitempty"`
 }
 
+// SecurityProfile
+type SecurityProfile struct {
+	EnableTPM *bool `json:"enableTPM,omitempty"`
+}
+
 type VirtualMachineProperties struct {
+	// SecurityProfile - Specifies the security settings for the virtual machine.
+	SecurityProfile *SecurityProfile `json:"securityProfile,omitempty"`
 	// HardwareProfile - Specifies the hardware settings for the virtual machine.
 	HardwareProfile *HardwareProfile `json:"hardwareProfile,omitempty"`
 	// StorageProfile - Specifies the storage settings for the virtual machine disks.
