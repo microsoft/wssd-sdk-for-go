@@ -199,6 +199,7 @@ func (c *client) getVirtualMachineScaleSetVMProfile(vm *wssdcompute.VirtualMachi
 		Name: &vm.Vmprefix,
 		VirtualMachineScaleSetVMProfileProperties: &compute.VirtualMachineScaleSetVMProfileProperties{
 			HardwareProfile: c.getVirtualMachineScaleSetHardwareProfile(vm),
+			SecurityProfile: c.getVirtualMachineScaleSetSecurityProfile(vm),
 			StorageProfile:  c.getVirtualMachineScaleSetStorageProfile(vm.Storage),
 			OsProfile:       c.getVirtualMachineScaleSetOSProfile(vm.Os),
 			NetworkProfile:  net,
@@ -213,6 +214,16 @@ func (c *client) getVirtualMachineScaleSetHardwareProfile(vm *wssdcompute.Virtua
 	}
 	return &compute.HardwareProfile{
 		VMSize: sizeType,
+	}
+}
+
+func (c *client) getVirtualMachineScaleSetSecurityProfile(vm *wssdcompute.VirtualMachineProfile) *compute.SecurityProfile {
+	enableTPM := false
+	if vm.Security != nil {
+		enableTPM = vm.Security.EnableTPM
+	}
+	return &compute.SecurityProfile{
+		EnableTPM: &enableTPM,
 	}
 }
 
@@ -322,6 +333,7 @@ func (c *client) getWssdVirtualMachineScaleSetVMProfile(vmp *compute.VirtualMach
 	return &wssdcompute.VirtualMachineProfile{
 		Vmprefix: *vmp.Name,
 		Hardware: c.getWssdVirtualMachineScaleSetHardwareConfiguration(vmp),
+		Security: c.getWssdVirtualMachineScaleSetSecurityConfiguration(vmp),
 		Storage:  c.getWssdVirtualMachineScaleSetStorageConfiguration(vmp.StorageProfile),
 		Os:       c.getWssdVirtualMachineScaleSetOSConfiguration(vmp.OsProfile),
 		Network:  net,
@@ -336,6 +348,16 @@ func (c *client) getWssdVirtualMachineScaleSetHardwareConfiguration(vmp *compute
 	}
 	return &wssdcompute.HardwareConfiguration{
 		VMSize: sizeType,
+	}
+}
+
+func (c *client) getWssdVirtualMachineScaleSetSecurityConfiguration(vmp *compute.VirtualMachineScaleSetVMProfile) *wssdcompute.SecurityConfiguration {
+	enableTPM := false
+	if vmp.SecurityProfile != nil {
+		enableTPM = *vmp.SecurityProfile.EnableTPM
+	}
+	return &wssdcompute.SecurityConfiguration{
+		EnableTPM: enableTPM,
 	}
 }
 
