@@ -1,3 +1,0 @@
-name: ubuntu
-virtualharddiskproperties:
-  source: "g:/azureimage/images/ubuntu.vhdx"
