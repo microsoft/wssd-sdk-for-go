@@ -14,26 +14,20 @@ export GOPRIVATE = github.com/microsoft
 # Active module mode, as we use go modules to manage dependencies
 export GO111MODULE=on
 
-OUTEXE=bin/wssdctl.exe
-OUT=bin/wssdctl
 LBCLIENTOUT=bin/lbclient.exe
 
 PKG := 
 
-all: format ctl ctlexe
+all: format  lbclient
 
-nofmt: ctl ctlexe
+nofmt: 
 
 clean:
-	rm -rf ${OUT} ${OUTEXE}	${LBCLIENTOUT} 
-ctlexe:
-	GOARCH=amd64 GOOS=windows $(GOBUILD) -ldflags $(LDFLAGS) -o ${OUTEXE} github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl
-ctl:
-	GOARCH=amd64 $(GOBUILD) -ldflags $(LDFLAGS) -o ${OUT} github.com/microsoft/wssd-sdk-for-go/cmd/wssdctl
+	rm -rf 	${LBCLIENTOUT} 
 lbclient:
 	GOARCH=amd64 GOOS=windows $(GOBUILD) -ldflags $(LDFLAGS) -o ${LBCLIENTOUT} github.com/microsoft/wssd-sdk-for-go/cmd/lbclient
 format:
-	gofmt -s -w cmd/ pkg/ services/ test/ tools/
+	gofmt -s -w cmd/ pkg/ services/ tools/
 
 .PHONY: vendor
 vendor:

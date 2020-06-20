@@ -33,6 +33,3 @@ steps:
 
 - publish: $(System.DefaultWorkingDirectory)/bin
   artifact: binaries
-
-- publish: $(System.DefaultWorkingDirectory)/test/pester
-  artifact: test
