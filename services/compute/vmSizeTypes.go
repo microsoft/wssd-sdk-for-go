@@ -59,6 +59,7 @@ Standard_DS13_v2   8   56
 Standard_K8S_v1    4    2 (custom for IoT)
 Standard_K8S2_v1   2    2 (custom for IoT)
 Standard_K8S3_v1   4    6 (custom for WAC)
+Standard_K8S4_v1   4    4 (WSSD Default size)
 */
 
 const (
@@ -70,6 +71,8 @@ const (
 	VirtualMachineSizeTypesStandardK8S2V1 VirtualMachineSizeTypes = "Standard_K8S2_v1"
 	// VirtualMachineSizeTypesStandardK8S3V1 ...
 	VirtualMachineSizeTypesStandardK8S3V1 VirtualMachineSizeTypes = "Standard_K8S3_v1"
+	// VirtualMachineSizeTypesStandardK8S4V1 ...
+	VirtualMachineSizeTypesStandardK8S4V1 VirtualMachineSizeTypes = "Standard_K8S4_v1"
 	// VirtualMachineSizeTypesBasicA0 ...
 	VirtualMachineSizeTypesBasicA0 VirtualMachineSizeTypes = "Basic_A0"
 	// VirtualMachineSizeTypesBasicA1 ...
