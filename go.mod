@@ -12,3 +12,5 @@ require (
 	google.golang.org/grpc v1.27.1
 	k8s.io/klog v1.0.0
 )
+
+replace github.com/microsoft/moc => /home/thsuditu/go_proj/src/github.com/microsoft/moc
