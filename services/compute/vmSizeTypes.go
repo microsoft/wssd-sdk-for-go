@@ -406,7 +406,7 @@ const (
 	// VirtualMachineSizeTypesStandardNV6 ...
 	VirtualMachineSizeTypesStandardNV6 VirtualMachineSizeTypes = "Standard_NV6"
 	// VirtualMachineSizeTypesStandardNK6 ...
-	VirtualMachineSizeTypesStandardNK6 VirtualMachineSizeTypes  = "Standard_NK6"
+	VirtualMachineSizeTypesStandardNK6 VirtualMachineSizeTypes = "Standard_NK6"
 	// VirtualMachineSizeTypesStandardNK6 ...
-	VirtualMachineSizeTypesStandardNK6 VirtualMachineSizeTypes  = "Standard_NK12"
+	VirtualMachineSizeTypesStandardNK12 VirtualMachineSizeTypes = "Standard_NK12"
 )
