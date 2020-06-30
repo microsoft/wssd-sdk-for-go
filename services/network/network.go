@@ -223,6 +223,8 @@ type VirtualNetworkProperties struct {
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// Subnets that could hold ipv4 and ipv6 subnets
 	Subnets *[]Subnet `json:"subnets,omitempty"`
+	// Vlan
+	Vlan *int32 `json:"vlan,omitempty"`
 	// Statuses - Status
 	Statuses map[string]*string `json:"statuses"`
 }

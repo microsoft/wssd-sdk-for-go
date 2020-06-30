@@ -143,6 +143,12 @@ func getWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 
 	wssdvnet.Ipams = getWssdNetworkIpams(c.VirtualNetworkProperties.Subnets)
 
+	if c.Vlan == nil {
+		wssdvnet.Vlan = 0
+	} else {
+		wssdvnet.Vlan = uint32(*c.Vlan)
+	}
+
 	if c.DNSSettings == nil {
 		return wssdvnet
 	}
@@ -254,6 +260,7 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 			ProvisioningState: status.GetProvisioningState(c.Status.GetProvisioningStatus()),
 			Statuses:          status.GetStatuses(c.Status),
 			MACPool:           getMacPool(c.MacPool),
+			Vlan:              getVlan(c.Vlan),
 		},
 	}
 
@@ -326,4 +333,9 @@ func getMacPool(wssdMacPool *wssdnetwork.MacPool) *network.MACPool {
 	macPool.Ranges = &macRanges
 
 	return &macPool
+}
+
+func getVlan(wssdvlan uint32) *int32 {
+	vlan := int32(wssdvlan)
+	return &vlan
 }
