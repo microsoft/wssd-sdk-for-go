@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
+	admin_pb "github.com/microsoft/moc/rpc/common/admin"
 	lbagent_pb "github.com/microsoft/moc/rpc/lbagent"
-	admin_pb "github.com/microsoft/moc/rpc/lbagent/admin"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"

@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	admin_pb "github.com/microsoft/moc/rpc/nodeagent/admin"
+	admin_pb "github.com/microsoft/moc/rpc/common/admin"
 	compute_pb "github.com/microsoft/moc/rpc/nodeagent/compute"
 	network_pb "github.com/microsoft/moc/rpc/nodeagent/network"
 	security_pb "github.com/microsoft/moc/rpc/nodeagent/security"

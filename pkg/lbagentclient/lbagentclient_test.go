@@ -12,8 +12,8 @@ import (
 
 	"github.com/microsoft/moc/pkg/auth"
 	pbcom "github.com/microsoft/moc/rpc/common"
+	admin_pb "github.com/microsoft/moc/rpc/common/admin"
 	pblbagent "github.com/microsoft/moc/rpc/lbagent"
-	admin_pb "github.com/microsoft/moc/rpc/lbagent/admin"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 )

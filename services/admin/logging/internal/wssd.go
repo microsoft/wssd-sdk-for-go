@@ -7,7 +7,7 @@ import (
 	"context"
 	"github.com/microsoft/moc/pkg/auth"
 	loggingHelpers "github.com/microsoft/moc/pkg/logging"
-	wssdadmin "github.com/microsoft/moc/rpc/nodeagent/admin"
+	wssdadmin "github.com/microsoft/moc/rpc/common/admin"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	"io"
 )
