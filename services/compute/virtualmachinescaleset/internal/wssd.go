@@ -177,7 +177,18 @@ func (c *client) getVirtualMachineScaleSet(vmss *wssdcompute.VirtualMachineScale
 			Statuses:              status.GetStatuses(vmss.Status),
 		},
 		DisableHighAvailability: &vmss.DisableHighAvailability,
+		IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vmss),
+		HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vmss),
 	}, nil
+}
+
+func (c *client) getVirtualMachineIsPlaceholder(vmss *wssdcompute.VirtualMachineScaleSet) *bool {
+	isPlaceholder := false
+	entity := vmss.GetEntity()
+	if entity != nil {
+		isPlaceholder = entity.IsPlaceholder
+	}
+	return &isPlaceholder
 }
 
 func (c *client) getVirtualMachineScaleSetProvisioningState(status *wssdcommonproto.ProvisionStatus) *string {
@@ -186,6 +197,15 @@ func (c *client) getVirtualMachineScaleSetProvisioningState(status *wssdcommonpr
 		provisionState = status.CurrentState
 	}
 	stateString := provisionState.String()
+	return &stateString
+}
+
+func (c *client) getVirtualMachineScaleSetHighAvailabilityState(vmss *wssdcompute.VirtualMachineScaleSet) *string {
+	haState := wssdcommonproto.HighAvailabilityState_UNKNOWN_HA_STATE
+	if vmss != nil {
+		haState = vmss.HighAvailabilityState
+	}
+	stateString := haState.String()
 	return &stateString
 }
 
@@ -313,6 +333,11 @@ func (c *client) getWssdVirtualMachineScaleSet(vmss *compute.VirtualMachineScale
 		disableHighAvailability = *vmss.DisableHighAvailability
 	}
 
+	var isPlaceholder bool = false
+	if vmss.IsPlaceholder != nil {
+		isPlaceholder = *vmss.IsPlaceholder
+	}
+
 	return &wssdcompute.VirtualMachineScaleSet{
 		Name: *(vmss.Name),
 		Sku: &wssdcompute.Sku{
@@ -321,6 +346,9 @@ func (c *client) getWssdVirtualMachineScaleSet(vmss *compute.VirtualMachineScale
 		},
 		Virtualmachineprofile:   vm,
 		DisableHighAvailability: disableHighAvailability,
+		Entity: &wssdcommonproto.Entity{
+			IsPlaceholder: isPlaceholder,
+		},
 	}, nil
 }
 

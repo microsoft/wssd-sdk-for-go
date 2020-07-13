@@ -6,6 +6,7 @@ package internal
 import (
 	"context"
 	"fmt"
+
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
@@ -109,6 +110,7 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) *wssdcompute.
 	wssdvm.Storage = c.getWssdVirtualMachineStorageConfiguration(vm.StorageProfile)
 	wssdvm.Os = c.getWssdVirtualMachineOSConfiguration(vm.OsProfile)
 	wssdvm.Network = c.getWssdVirtualMachineNetworkConfiguration(vm.NetworkProfile)
+	wssdvm.Entity = c.getWssdVirtualMachineEntity(vm)
 
 	if vm.DisableHighAvailability != nil {
 		wssdvm.DisableHighAvailability = *vm.DisableHighAvailability
@@ -116,6 +118,17 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) *wssdcompute.
 
 	return wssdvm
 
+}
+
+func (c *client) getWssdVirtualMachineEntity(vm *compute.VirtualMachine) *wssdcommonproto.Entity {
+	isPlaceholder := false
+	if vm.IsPlaceholder != nil {
+		isPlaceholder = *vm.IsPlaceholder
+	}
+
+	return &wssdcommonproto.Entity{
+		IsPlaceholder: isPlaceholder,
+	}
 }
 
 func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualMachine) *wssdcompute.HardwareConfiguration {
@@ -245,6 +258,8 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			DisableHighAvailability: &vm.DisableHighAvailability,
 			ProvisioningState:       status.GetProvisioningState(vm.Status.GetProvisioningStatus()),
 			Statuses:                c.getVirtualMachineStatuses(vm),
+			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
+			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
 		},
 	}
 }
@@ -268,6 +283,24 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 	return &compute.HardwareProfile{
 		VMSize: sizeType,
 	}
+}
+
+func (c *client) getVirtualMachineIsPlaceholder(vm *wssdcompute.VirtualMachine) *bool {
+	isPlaceholder := false
+	entity := vm.GetEntity()
+	if entity != nil {
+		isPlaceholder = entity.IsPlaceholder
+	}
+	return &isPlaceholder
+}
+
+func (c *client) getVirtualMachineScaleSetHighAvailabilityState(vm *wssdcompute.VirtualMachine) *string {
+	haState := wssdcommonproto.HighAvailabilityState_UNKNOWN_HA_STATE
+	if vm != nil {
+		haState = vm.HighAvailabilityState
+	}
+	stateString := haState.String()
+	return &stateString
 }
 
 func (c *client) getVirtualMachineSecurityProfile(vm *wssdcompute.VirtualMachine) *compute.SecurityProfile {
