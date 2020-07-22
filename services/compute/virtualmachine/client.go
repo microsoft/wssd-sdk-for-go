@@ -5,8 +5,11 @@ package virtualmachine
 
 import (
 	"context"
+	"log"
+
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
+	"github.com/microsoft/moc/pkg/marshal"
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine/internal"
@@ -135,5 +138,93 @@ func (c *VirtualMachineClient) DiskDetach(ctx context.Context, group string, vmN
 	if err != nil {
 		return err
 	}
+	return
+}
+
+func (c *VirtualMachineClient) NetworkInterfaceAdd(ctx context.Context, group string, vmName, nicName string) (err error) {
+	vms, err := c.Get(ctx, group, vmName)
+	if err != nil {
+		return err
+	}
+	if vms == nil || len(*vms) == 0 {
+		return errors.Wrapf(errors.NotFound, "Unable to find Virtual Machine [%s]", vmName)
+	}
+
+	vm := (*vms)[0]
+	for _, nic := range *vm.NetworkProfile.NetworkInterfaces {
+		if *nic.VirtualNetworkInterfaceReference == nicName {
+			return errors.Wrapf(errors.AlreadyExists, "NetworkInterface [%s] is already attached to the VM [%s]", nicName, vmName)
+		}
+	}
+
+	*vm.NetworkProfile.NetworkInterfaces = append(*vm.NetworkProfile.NetworkInterfaces, compute.NetworkInterfaceReference{VirtualNetworkInterfaceReference: &nicName})
+
+	_, err = c.CreateOrUpdate(ctx, group, vmName, &vm)
+	if err != nil {
+		return err
+	}
+	return
+
+}
+
+func (c *VirtualMachineClient) NetworkInterfaceRemove(ctx context.Context, group string, vmName, nicName string) (err error) {
+	vms, err := c.Get(ctx, group, vmName)
+	if err != nil {
+		return err
+	}
+	if vms == nil || len(*vms) == 0 {
+		return errors.Wrapf(errors.NotFound, "Unable to find Virtual Machine [%s]", vmName)
+	}
+
+	vm := (*vms)[0]
+	for i, element := range *vm.NetworkProfile.NetworkInterfaces {
+		if *element.VirtualNetworkInterfaceReference == nicName {
+			*vm.NetworkProfile.NetworkInterfaces = append((*vm.NetworkProfile.NetworkInterfaces)[:i], (*vm.NetworkProfile.NetworkInterfaces)[i+1:]...)
+			break
+		}
+	}
+
+	_, err = c.CreateOrUpdate(ctx, group, vmName, &vm)
+	if err != nil {
+		return err
+	}
+	return
+}
+
+func (c *VirtualMachineClient) NetworkInterfaceList(ctx context.Context, group string, vmName string) (err error) {
+	vms, err := c.Get(ctx, group, vmName)
+	if err != nil {
+		return err
+	}
+	if vms == nil || len(*vms) == 0 {
+		return errors.Wrapf(errors.NotFound, "Unable to find Virtual Machine [%s]", vmName)
+	}
+
+	vm := (*vms)[0]
+	for _, element := range *vm.NetworkProfile.NetworkInterfaces {
+		log.Printf("%+v\n", marshal.ToString(element))
+	}
+
+	return
+}
+
+func (c *VirtualMachineClient) NetworkInterfaceShow(ctx context.Context, group string, vmName, nicName string) (err error) {
+	vms, err := c.Get(ctx, group, vmName)
+	if err != nil {
+		return err
+	}
+	if vms == nil || len(*vms) == 0 {
+		return errors.Wrapf(errors.NotFound, "Unable to find Virtual Machine [%s]", vmName)
+	}
+
+	vm := (*vms)[0]
+	for _, nic := range *vm.NetworkProfile.NetworkInterfaces {
+		if *nic.VirtualNetworkInterfaceReference == nicName {
+			// TODO - implement detailed show
+			log.Printf("%+v\n", marshal.ToString(nic))
+			break
+		}
+	}
+
 	return
 }
