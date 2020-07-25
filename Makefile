@@ -18,7 +18,7 @@ LBCLIENTOUT=bin/lbclient.exe
 
 PKG := 
 
-all: format  lbclient
+all: format  lbclient build
 
 nofmt: 
 
@@ -32,3 +32,5 @@ format:
 .PHONY: vendor
 vendor:
 	go mod tidy
+build:
+	GOARCH=amd64 go build -v ./...
