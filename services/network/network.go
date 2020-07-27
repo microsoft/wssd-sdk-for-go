@@ -280,8 +280,8 @@ type IPConfiguration struct {
 }
 
 type VirtualNetworkInterfaceProperties struct {
-	// VirtualMAChineID
-	VirtualMachineID *string `json:"virtualMAChineID,omitempty"`
+	// VirtualMachineID
+	VirtualMachineID *string `json:"virtualMachineID,omitempty"`
 	// VirtualNetwork reference
 	VirtualNetwork *VirtualNetwork `json:"virtualNetworkID,omitempty"`
 	// IPConfigurations
@@ -304,6 +304,13 @@ type VirtualNetworkInterfaceProperties struct {
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// Statuses - Status
 	Statuses map[string]*string `json:"statuses"`
+	// IsPlaceholder - On a multi-node system, the entity (such as a VNIC) is created on a node where
+	// IsPlacehoder is false. On all the other nodes, IsPlaceholder is set to true.
+	// When an entity moves among these nodes (such as when a VM migrates), the
+	// IsPlacehoder property is updated accordingly on all the nodes.
+	// IsPlacehoder therefore defines where the entity (VNIC) is *not* located.
+	// This property is the exact inverse of the node agent's SystemOwned property.
+	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 }
 
 // VirtualNetwork defines the structure of a VNET

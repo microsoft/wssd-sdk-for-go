@@ -126,8 +126,18 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			Virtualharddisktype: vhd.Virtualharddisktype.String(),
 			ProvisioningState:   status.GetProvisioningState(vhd.Status.GetProvisioningStatus()),
 			Statuses:            status.GetStatuses(vhd.Status),
+			IsPlaceholder:       getVirtualHardDiskIsPlaceholder(vhd),
 		},
 	}
+}
+
+func getVirtualHardDiskIsPlaceholder(vhd *wssdstorage.VirtualHardDisk) *bool {
+	isPlaceholder := false
+	entity := vhd.GetEntity()
+	if entity != nil {
+		isPlaceholder = entity.IsPlaceholder
+	}
+	return &isPlaceholder
 }
 
 func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) (*wssdstorage.VirtualHardDisk, error) {
@@ -141,6 +151,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 
 	disk.Name = *vhd.Name
 	disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
+	disk.Entity = getWssdVirtualHardDiskEntity(vhd)
 
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
 		if vhd.Source == nil {
@@ -170,6 +181,17 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	}
 
 	return &disk, nil
+}
+
+func getWssdVirtualHardDiskEntity(vhd *storage.VirtualHardDisk) *wssdcommonproto.Entity {
+	isPlaceholder := false
+	if vhd.VirtualHardDiskProperties != nil && vhd.VirtualHardDiskProperties.IsPlaceholder != nil {
+		isPlaceholder = *vhd.VirtualHardDiskProperties.IsPlaceholder
+	}
+
+	return &wssdcommonproto.Entity{
+		IsPlaceholder: isPlaceholder,
+	}
 }
 
 func getVirtualharddisktype(enum string) wssdstorage.VirtualHardDiskType {
