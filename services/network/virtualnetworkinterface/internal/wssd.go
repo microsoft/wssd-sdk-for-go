@@ -150,7 +150,25 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 	if c.MACAddress != nil {
 		vnic.Macaddress = *c.MACAddress
 	}
+
+	if c.VirtualMachineID != nil {
+		vnic.VirtualMachineName = *c.VirtualMachineID
+	}
+
+	vnic.Entity = cc.getWssdVirtualMachineEntity(c)
+
 	return vnic, nil
+}
+
+func (c *client) getWssdVirtualMachineEntity(vnic *network.VirtualNetworkInterface) *wssdcommonproto.Entity {
+	isPlaceholder := false
+	if vnic.VirtualNetworkInterfaceProperties != nil && vnic.VirtualNetworkInterfaceProperties.IsPlaceholder != nil {
+		isPlaceholder = *vnic.VirtualNetworkInterfaceProperties.IsPlaceholder
+	}
+
+	return &wssdcommonproto.Entity{
+		IsPlaceholder: isPlaceholder,
+	}
 }
 
 func ipAllocationMethodProtobufToSdk(allocation wssdcommonproto.IPAllocationMethod) network.IPAllocationMethod {
@@ -205,10 +223,12 @@ func (cc *client) getVirtualNetworkInterface(server, group string, c *wssdnetwor
 		Name: &c.Name,
 		ID:   &c.Id,
 		VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
+			VirtualMachineID:  &c.VirtualMachineName,
 			MACAddress:        &c.Macaddress,
 			IPConfigurations:  cc.getNetworkIpConfigs(c.Ipconfigs),
 			ProvisioningState: status.GetProvisioningState(c.Status.GetProvisioningStatus()),
 			Statuses:          status.GetStatuses(c.Status),
+			IsPlaceholder:     cc.getVirtualNetworkIsPlaceholder(c),
 		},
 	}
 
@@ -258,4 +278,13 @@ func (c *client) getNetworkIpConfigs(wssdipconfigs []*wssdnetwork.IpConfiguratio
 	}
 
 	return &ipconfigs
+}
+
+func (c *client) getVirtualNetworkIsPlaceholder(vnic *wssdnetwork.VirtualNetworkInterface) *bool {
+	isPlaceholder := false
+	entity := vnic.GetEntity()
+	if entity != nil {
+		isPlaceholder = entity.IsPlaceholder
+	}
+	return &isPlaceholder
 }

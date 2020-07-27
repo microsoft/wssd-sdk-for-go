@@ -116,9 +116,9 @@ type OSProfile struct {
 
 type NetworkInterfaceReference struct {
 	// VirtualNetworkReference
-	VirtualNetworkReference *string `json:"id,omitempty"`
+	VirtualNetworkReference *string `json:"virtualNetworkReference,omitempty"`
 	// VirtualNetworkInterfaceReference
-	VirtualNetworkInterfaceReference *string `json:"id,omitempty"`
+	VirtualNetworkInterfaceReference *string `json:"virtualNetworkInterfaceReference,omitempty"`
 }
 type NetworkProfile struct {
 	// NetworkInterfaces

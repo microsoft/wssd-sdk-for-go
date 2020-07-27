@@ -35,6 +35,13 @@ type VirtualHardDiskProperties struct {
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// Statuses - Status
 	Statuses map[string]*string `json:"statuses"`
+	// IsPlaceholder - On a multi-node system, the entity (such as a VHD) is created on a node where
+	// IsPlacehoder is false. On all the other nodes, IsPlaceholder is set to true.
+	// When an entity moves among these nodes (such as when a VM migrates), the
+	// IsPlacehoder property is updated accordingly on all the nodes.
+	// IsPlacehoder therefore defines where the entity (VHD) is *not* located.
+	// This property is the exact inverse of the node agent's SystemOwned property.
+	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 }
 
 // VirtualHardDisk defines the structure of a VHD
