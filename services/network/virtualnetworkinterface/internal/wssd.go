@@ -6,6 +6,7 @@ package internal
 import (
 	"context"
 	"fmt"
+
 	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
@@ -155,6 +156,14 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 		vnic.VirtualMachineName = *c.VirtualMachineID
 	}
 
+	if c.EnableAcceleratedNetworking != nil {
+		if *c.EnableAcceleratedNetworking {
+			vnic.IovWeight = uint32(100)
+		} else {
+			vnic.IovWeight = uint32(0)
+		}
+	}
+
 	vnic.Entity = cc.getWssdVirtualMachineEntity(c)
 
 	return vnic, nil
@@ -223,12 +232,13 @@ func (cc *client) getVirtualNetworkInterface(server, group string, c *wssdnetwor
 		Name: &c.Name,
 		ID:   &c.Id,
 		VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
-			VirtualMachineID:  &c.VirtualMachineName,
-			MACAddress:        &c.Macaddress,
-			IPConfigurations:  cc.getNetworkIpConfigs(c.Ipconfigs),
-			ProvisioningState: status.GetProvisioningState(c.Status.GetProvisioningStatus()),
-			Statuses:          status.GetStatuses(c.Status),
-			IsPlaceholder:     cc.getVirtualNetworkIsPlaceholder(c),
+			VirtualMachineID:            &c.VirtualMachineName,
+			MACAddress:                  &c.Macaddress,
+			IPConfigurations:            cc.getNetworkIpConfigs(c.Ipconfigs),
+			ProvisioningState:           status.GetProvisioningState(c.Status.GetProvisioningStatus()),
+			Statuses:                    status.GetStatuses(c.Status),
+			IsPlaceholder:               cc.getVirtualNetworkIsPlaceholder(c),
+			EnableAcceleratedNetworking: cc.getIovSetting(c),
 		},
 	}
 
@@ -287,4 +297,12 @@ func (c *client) getVirtualNetworkIsPlaceholder(vnic *wssdnetwork.VirtualNetwork
 		isPlaceholder = entity.IsPlaceholder
 	}
 	return &isPlaceholder
+}
+
+func (c *client) getIovSetting(vnic *wssdnetwork.VirtualNetworkInterface) *bool {
+	isAcceleratedNetworkingEnabled := false
+	if vnic.IovWeight > 0 {
+		isAcceleratedNetworkingEnabled = true
+	}
+	return &isAcceleratedNetworkingEnabled
 }
