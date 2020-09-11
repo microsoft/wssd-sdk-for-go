@@ -311,6 +311,8 @@ type VirtualNetworkInterfaceProperties struct {
 	// IsPlacehoder therefore defines where the entity (VNIC) is *not* located.
 	// This property is the exact inverse of the node agent's SystemOwned property.
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
+	// EnableAcceleratedNetworking - If the network interface is accelerated networking enabled.
+	EnableAcceleratedNetworking *bool `json:"enableAcceleratedNetworking,omitempty"`
 }
 
 // VirtualNetwork defines the structure of a VNET
