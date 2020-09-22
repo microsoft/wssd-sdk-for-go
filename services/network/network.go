@@ -74,6 +74,8 @@ type Subnet struct {
 	Name *string `json:"name,omitempty"`
 	// Type
 	Type *string `json:"type,omitempty"`
+	// Vlan
+	Vlan *int32 `json:"vlan,omitempty"`
 	// Tags - Custom resource tags
 	Tags map[string]*string `json:"tags"`
 	// Properties
@@ -223,8 +225,6 @@ type VirtualNetworkProperties struct {
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// Subnets that could hold ipv4 and ipv6 subnets
 	Subnets *[]Subnet `json:"subnets,omitempty"`
-	// Vlan
-	Vlan *int32 `json:"vlan,omitempty"`
 	// Statuses - Status
 	Statuses map[string]*string `json:"statuses"`
 }

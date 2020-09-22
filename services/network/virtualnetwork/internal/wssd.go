@@ -143,12 +143,6 @@ func getWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 
 	wssdvnet.Ipams = getWssdNetworkIpams(c.VirtualNetworkProperties.Subnets)
 
-	if c.Vlan == nil {
-		wssdvnet.Vlan = 0
-	} else {
-		wssdvnet.Vlan = uint32(*c.Vlan)
-	}
-
 	if c.DNSSettings == nil {
 		return wssdvnet
 	}
@@ -211,7 +205,11 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 			Name: *subnet.Name,
 			// TODO: implement something for IPConfigurationReferences
 		}
-
+		if subnet.Vlan == nil {
+			wssdsubnet.Vlan = 0
+		} else {
+			wssdsubnet.Vlan = uint32(*subnet.Vlan)
+		}
 		if subnet.SubnetProperties != nil {
 			if subnet.SubnetProperties.AddressPrefix != nil {
 				wssdsubnet.Cidr = *subnet.SubnetProperties.AddressPrefix
@@ -260,7 +258,6 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 			ProvisioningState: status.GetProvisioningState(c.Status.GetProvisioningStatus()),
 			Statuses:          status.GetStatuses(c.Status),
 			MACPool:           getMacPool(c.MacPool),
-			Vlan:              getVlan(c.Vlan),
 		},
 	}
 
@@ -286,6 +283,7 @@ func getNetworkSubnets(ipams []*wssdnetwork.Ipam) *[]network.Subnet {
 			subnets = append(subnets, network.Subnet{
 				Name: &subnet.Name,
 				ID:   &subnet.Id,
+				Vlan: getVlan(subnet.Vlan),
 				SubnetProperties: &network.SubnetProperties{
 					AddressPrefix: &subnet.Cidr,
 					Routes:        getNetworkRoutes(subnet.Routes),
