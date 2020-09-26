@@ -5,14 +5,15 @@ package recovery
 
 import (
 	"context"
+
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/admin/recovery/internal"
 )
 
 // Service interfacetype Service interface {
 type Service interface {
-	Backup(context.Context, string) error
-	Restore(context.Context, string) error
+	Backup(context.Context, string, string, string) error
+	Restore(context.Context, string, string, string) error
 }
 
 // Client structure
@@ -27,11 +28,11 @@ func NewRecoveryClient(cloudFQDN string, authorizer auth.Authorizer) (*RecoveryC
 }
 
 // Backupo
-func (c *RecoveryClient) Backup(ctx context.Context, path string) error {
-	return c.internal.Backup(ctx, path)
+func (c *RecoveryClient) Backup(ctx context.Context, path string, configFilePath string, storeType string) error {
+	return c.internal.Backup(ctx, path, configFilePath, storeType)
 }
 
 // Restore
-func (c *RecoveryClient) Restore(ctx context.Context, path string) error {
-	return c.internal.Restore(ctx, path)
+func (c *RecoveryClient) Restore(ctx context.Context, path string, configFilePath string, storeType string) error {
+	return c.internal.Restore(ctx, path, configFilePath, storeType)
 }
