@@ -25,19 +25,19 @@ func NewRecoveryClient(subID string, authorizer auth.Authorizer) (*client, error
 }
 
 // Backup
-func (c *client) Backup(ctx context.Context, path string) error {
-	request := getRecoveryRequest(wssdadmin.Operation_BACKUP, path)
+func (c *client) Backup(ctx context.Context, path string, configFilePath string, storeType string) error {
+	request := getRecoveryRequest(wssdadmin.Operation_BACKUP, path, configFilePath, storeType)
 	_, err := c.RecoveryAgentClient.Invoke(ctx, request)
 	return err
 }
 
 // Restore
-func (c *client) Restore(ctx context.Context, path string) error {
-	request := getRecoveryRequest(wssdadmin.Operation_RESTORE, path)
+func (c *client) Restore(ctx context.Context, path string, configFilePath string, storeType string) error {
+	request := getRecoveryRequest(wssdadmin.Operation_RESTORE, path, configFilePath, storeType)
 	_, err := c.RecoveryAgentClient.Invoke(ctx, request)
 	return err
 }
 
-func getRecoveryRequest(operation wssdadmin.Operation, path string) *wssdadmin.RecoveryRequest {
-	return &wssdadmin.RecoveryRequest{OperationType: operation, Path: path}
+func getRecoveryRequest(operation wssdadmin.Operation, path string, configFilePath string, storeType string) *wssdadmin.RecoveryRequest {
+	return &wssdadmin.RecoveryRequest{OperationType: operation, Path: path, ConfigFilePath: configFilePath, StoreType: storeType}
 }
