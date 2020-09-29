@@ -75,7 +75,7 @@ type Subnet struct {
 	// Type
 	Type *string `json:"type,omitempty"`
 	// Vlan
-	Vlan *int32 `json:"vlan,omitempty"`
+	Vlan *uint16 `json:"vlan,omitempty"`
 	// Tags - Custom resource tags
 	Tags map[string]*string `json:"tags"`
 	// Properties
