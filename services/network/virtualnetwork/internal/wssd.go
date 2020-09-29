@@ -6,6 +6,7 @@ package internal
 import (
 	"context"
 	"fmt"
+
 	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
@@ -335,7 +336,7 @@ func getMacPool(wssdMacPool *wssdnetwork.MacPool) *network.MACPool {
 	return &macPool
 }
 
-func getVlan(wssdvlan uint32) *int32 {
-	vlan := int32(wssdvlan)
+func getVlan(wssdvlan uint32) *uint16 {
+	vlan := uint16(wssdvlan)
 	return &vlan
 }
