@@ -284,12 +284,12 @@ func getNetworkSubnets(ipams []*wssdnetwork.Ipam) *[]network.Subnet {
 			subnets = append(subnets, network.Subnet{
 				Name: &subnet.Name,
 				ID:   &subnet.Id,
-				Vlan: getVlan(subnet.Vlan),
 				SubnetProperties: &network.SubnetProperties{
 					AddressPrefix: &subnet.Cidr,
 					Routes:        getNetworkRoutes(subnet.Routes),
 					// TODO: implement something for IPConfigurationReferences
 					IPAllocationMethod: ipAllocationMethodProtobufToSdk(subnet.Allocation),
+					Vlan:               getVlan(subnet.Vlan),
 				},
 			})
 		}
