@@ -64,6 +64,8 @@ type SubnetProperties struct {
 	IPConfigurationReferences *[]IPConfigurationReference `json:"ipConfigurationReferences,omitempty"`
 	// IPAllocationMethod - The IP address allocation method. Possible values include: 'Static', 'Dynamic'
 	IPAllocationMethod IPAllocationMethod `json:"ipAllocationMethod,omitempty"`
+	// Vlan
+	Vlan *uint16 `json:"vlan,omitempty"`
 }
 
 // Subnet is assoicated with a Virtual Network.
@@ -223,8 +225,6 @@ type VirtualNetworkProperties struct {
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// Subnets that could hold ipv4 and ipv6 subnets
 	Subnets *[]Subnet `json:"subnets,omitempty"`
-	// Vlan
-	Vlan *int32 `json:"vlan,omitempty"`
 	// Statuses - Status
 	Statuses map[string]*string `json:"statuses"`
 }
