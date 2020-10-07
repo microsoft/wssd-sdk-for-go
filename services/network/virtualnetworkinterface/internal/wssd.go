@@ -144,8 +144,9 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 	}
 
 	vnic := &wssdnetwork.VirtualNetworkInterface{
-		Name:      *c.Name,
-		Ipconfigs: wssdipconfigs,
+		Name:        *c.Name,
+		Ipconfigs:   wssdipconfigs,
+		DnsSettings: cc.getDns(c.DNSSettings),
 	}
 
 	if c.MACAddress != nil {
@@ -234,6 +235,7 @@ func (cc *client) getVirtualNetworkInterface(server, group string, c *wssdnetwor
 		VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
 			VirtualMachineID:            &c.VirtualMachineName,
 			MACAddress:                  &c.Macaddress,
+			DNSSettings:                 cc.getWssdDNSSettings(c.DnsSettings),
 			IPConfigurations:            cc.getNetworkIpConfigs(c.Ipconfigs),
 			ProvisioningState:           status.GetProvisioningState(c.Status.GetProvisioningStatus()),
 			Statuses:                    status.GetStatuses(c.Status),
@@ -243,6 +245,29 @@ func (cc *client) getVirtualNetworkInterface(server, group string, c *wssdnetwor
 	}
 
 	return vnetIntf, nil
+}
+
+func (cc *client) getDns(dnssetting *network.DNSSetting) *wssdcommonproto.Dns {
+	if dnssetting == nil {
+		return nil
+	}
+	var dns wssdcommonproto.Dns
+	if dnssetting.Servers != nil {
+		dns.Servers = *dnssetting.Servers
+	}
+	if dnssetting.Domain != nil {
+		dns.Domain = *dnssetting.Domain
+	}
+	if dnssetting.Domain != nil {
+		dns.Domain = *dnssetting.Domain
+	}
+	if dnssetting.Search != nil {
+		dns.Search  = *dnssetting.Search 
+	}
+	if dnssetting.Options != nil {
+		dns.Options  = *dnssetting.Options 
+	}
+	return &dns
 }
 
 func (c *client) getVirtualNetwork(server, group, networkName string) (*network.VirtualNetwork, error) {
@@ -288,6 +313,18 @@ func (c *client) getNetworkIpConfigs(wssdipconfigs []*wssdnetwork.IpConfiguratio
 	}
 
 	return &ipconfigs
+}
+
+func (cc *client) getWssdDNSSettings(dnssetting *wssdcommonproto.Dns) *network.DNSSetting {
+	if dnssetting == nil {
+		return nil
+	}
+	return &network.DNSSetting{
+		Servers: &dnssetting.Servers,
+		Domain:  &dnssetting.Domain,
+		Search:  &dnssetting.Search,
+		Options: &dnssetting.Options,
+	}
 }
 
 func (c *client) getVirtualNetworkIsPlaceholder(vnic *wssdnetwork.VirtualNetworkInterface) *bool {
