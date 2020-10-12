@@ -29,14 +29,12 @@ const (
 )
 
 var (
-	mux                   sync.Mutex
-	connectionCache       map[string]*grpc.ClientConn
-	healthconnectionCache map[string]*grpc.ClientConn
+	mux             sync.Mutex
+	connectionCache map[string]*grpc.ClientConn
 )
 
 func init() {
 	connectionCache = map[string]*grpc.ClientConn{}
-	healthconnectionCache = map[string]*grpc.ClientConn{}
 }
 
 // Returns nil if debug mode is on; err if it is not
@@ -103,25 +101,23 @@ func getClientConnection(serverAddress *string, authorizer auth.Authorizer) (*gr
 	return conn, nil
 }
 
-func getHealthClientConnection(serverAddress *string, authorizer auth.Authorizer) (*grpc.ClientConn, error) {
+// CloseClientConnectionByEndpoint allows a caller to close the current clientconn
+// for a particular endpoint
+func CloseClientConnectionByEndpoint(serverAddress *string) error {
 	mux.Lock()
 	defer mux.Unlock()
 	endpoint := getServerEndpoint(serverAddress)
 
-	conn, ok := healthconnectionCache[endpoint]
+	conn, ok := connectionCache[endpoint]
 	if ok {
-		return conn, nil
+		err := conn.Close()
+		if err != nil {
+			return err
+		}
+
+		delete(connectionCache, endpoint)
 	}
-
-	opts := getDefaultDialOption(authorizer)
-	conn, err := grpc.Dial(endpoint, opts...)
-	if err != nil {
-		log.Fatalf("Failed to dial: %v", err)
-	}
-
-	healthconnectionCache[endpoint] = conn
-
-	return conn, nil
+	return nil
 }
 
 // GetLoadBalancerAgentClient returns the client to communicate with the lbagent
@@ -136,7 +132,7 @@ func GetLoadBalancerAgentClient(serverAddress *string, authorizer auth.Authorize
 
 // GetHealthClient returns the health client to communicate with the lbagent
 func GetHealthClient(serverAddress *string, authorizer auth.Authorizer) (admin_pb.HealthAgentClient, error) {
-	conn, err := getHealthClientConnection(serverAddress, authorizer)
+	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
 		log.Fatalf("Unable to get HealthClient. Failed to dial: %v", err)
 	}
