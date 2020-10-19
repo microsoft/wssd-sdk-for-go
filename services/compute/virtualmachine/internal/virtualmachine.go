@@ -3,6 +3,7 @@
 package internal
 
 import (
+	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 
@@ -11,30 +12,62 @@ import (
 )
 
 // Conversion functions from compute to wssdcompute
-func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) *wssdcompute.VirtualMachine {
+func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute.VirtualMachine, error) {
+	if vm.Name == nil {
+		return nil, errors.Wrapf(errors.InvalidInput, "Virtual Machine name is missing")
+	}
+
 	wssdvm := &wssdcompute.VirtualMachine{
 		Name: *vm.Name,
 	}
 
 	if vm.VirtualMachineProperties == nil {
-		return wssdvm
+		return wssdvm, nil
 	}
-	wssdvm.Hardware = c.getWssdVirtualMachineHardwareConfiguration(vm)
-	wssdvm.Security = c.getWssdVirtualMachineSecurityConfiguration(vm)
-	wssdvm.Storage = c.getWssdVirtualMachineStorageConfiguration(vm.StorageProfile)
-	wssdvm.Os = c.getWssdVirtualMachineOSConfiguration(vm.OsProfile)
-	wssdvm.Network = c.getWssdVirtualMachineNetworkConfiguration(vm.NetworkProfile)
-	wssdvm.Entity = c.getWssdVirtualMachineEntity(vm)
+
+	storageConfig, err := c.getWssdVirtualMachineStorageConfiguration(vm.StorageProfile)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Failed to get Storage Configuration")
+	}
+	hardwareConfig, err := c.getWssdVirtualMachineHardwareConfiguration(vm)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Failed to get Hardware Configuration")
+	}
+	securityConfig, err := c.getWssdVirtualMachineSecurityConfiguration(vm)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Failed to get Security Configuration")
+	}
+	osconfig, err := c.getWssdVirtualMachineOSConfiguration(vm.OsProfile)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Failed to get OS Configuration")
+	}
+	networkConfig, err := c.getWssdVirtualMachineNetworkConfiguration(vm.NetworkProfile)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Failed to get Network Configuration")
+	}
+	entity, err := c.getWssdVirtualMachineEntity(vm)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Failed to get Entity")
+	}
+
+	wssdvm = &wssdcompute.VirtualMachine{
+		Name:     *vm.Name,
+		Storage:  storageConfig,
+		Hardware: hardwareConfig,
+		Security: securityConfig,
+		Os:       osconfig,
+		Network:  networkConfig,
+		Entity:   entity,
+	}
 
 	if vm.DisableHighAvailability != nil {
 		wssdvm.DisableHighAvailability = *vm.DisableHighAvailability
 	}
 
-	return wssdvm
-
+	return wssdvm, nil
 }
 
-func (c *client) getWssdVirtualMachineEntity(vm *compute.VirtualMachine) *wssdcommonproto.Entity {
+func (c *client) getWssdVirtualMachineEntity(vm *compute.VirtualMachine) (*wssdcommonproto.Entity, error) {
 	isPlaceholder := false
 	if vm.IsPlaceholder != nil {
 		isPlaceholder = *vm.IsPlaceholder
@@ -42,63 +75,95 @@ func (c *client) getWssdVirtualMachineEntity(vm *compute.VirtualMachine) *wssdco
 
 	return &wssdcommonproto.Entity{
 		IsPlaceholder: isPlaceholder,
-	}
+	}, nil
 }
 
-func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualMachine) *wssdcompute.HardwareConfiguration {
+func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualMachine) (*wssdcompute.HardwareConfiguration, error) {
 	sizeType := wssdcommonproto.VirtualMachineSizeType_Default
 	if vm.HardwareProfile != nil {
 		sizeType = compute.GetWssdVirtualMachineSizeFromVirtualMachineSize(vm.HardwareProfile.VMSize)
 	}
 	return &wssdcompute.HardwareConfiguration{
 		VMSize: sizeType,
-	}
+	}, nil
 }
 
-func (c *client) getWssdVirtualMachineSecurityConfiguration(vm *compute.VirtualMachine) *wssdcompute.SecurityConfiguration {
+func (c *client) getWssdVirtualMachineSecurityConfiguration(vm *compute.VirtualMachine) (*wssdcompute.SecurityConfiguration, error) {
 	enableTPM := false
 	if vm.SecurityProfile != nil {
 		enableTPM = *vm.SecurityProfile.EnableTPM
 	}
 	return &wssdcompute.SecurityConfiguration{
 		EnableTPM: enableTPM,
-	}
+	}, nil
 }
 
-func (c *client) getWssdVirtualMachineStorageConfiguration(s *compute.StorageProfile) *wssdcompute.StorageConfiguration {
+func (c *client) getWssdVirtualMachineStorageConfiguration(s *compute.StorageProfile) (*wssdcompute.StorageConfiguration, error) {
+	wssdstorage := &wssdcompute.StorageConfiguration{
+		Osdisk:    &wssdcompute.Disk{},
+		Datadisks: []*wssdcompute.Disk{},
+	}
+
+	if s == nil {
+		return wssdstorage, nil
+	}
+
 	vmConfigContainerName := ""
 	if s.VmConfigContainerName != nil {
 		vmConfigContainerName = *s.VmConfigContainerName
 	}
-	return &wssdcompute.StorageConfiguration{
-		Osdisk:                c.getWssdVirtualMachineStorageConfigurationOsDisk(s.OsDisk),
-		Datadisks:             c.getWssdVirtualMachineStorageConfigurationDataDisks(s.DataDisks),
-		VmConfigContainerName: vmConfigContainerName,
+	wssdstorage.VmConfigContainerName = vmConfigContainerName
+
+	if s.OsDisk != nil {
+		osdisk, err := c.getWssdVirtualMachineStorageConfigurationOsDisk(s.OsDisk)
+		if err != nil {
+			return nil, err
+		}
+		wssdstorage.Osdisk = osdisk
 	}
+
+	if s.DataDisks != nil {
+		datadisks, err := c.getWssdVirtualMachineStorageConfigurationDataDisks(s.DataDisks)
+		if err != nil {
+			return nil, err
+		}
+		wssdstorage.Datadisks = datadisks
+	}
+
+	return wssdstorage, nil
 }
 
-func (c *client) getWssdVirtualMachineStorageConfigurationOsDisk(s *compute.OSDisk) *wssdcompute.Disk {
+func (c *client) getWssdVirtualMachineStorageConfigurationOsDisk(s *compute.OSDisk) (*wssdcompute.Disk, error) {
+	if s.VhdName == nil {
+		return nil, errors.Wrapf(errors.InvalidInput, "Vhd Name is missing in OSDisk")
+	}
 	return &wssdcompute.Disk{
 		Diskname: *s.VhdName,
-	}
+	}, nil
 }
 
-func (c *client) getWssdVirtualMachineStorageConfigurationDataDisks(s *[]compute.DataDisk) []*wssdcompute.Disk {
+func (c *client) getWssdVirtualMachineStorageConfigurationDataDisks(s *[]compute.DataDisk) ([]*wssdcompute.Disk, error) {
 	datadisks := []*wssdcompute.Disk{}
 	for _, d := range *s {
-		datadisks = append(datadisks, &wssdcompute.Disk{Diskname: *d.VhdName})
+		if d.VhdName == nil {
+			return nil, errors.Wrapf(errors.InvalidInput, "Vhd Name is missing in DataDisk ")
+		}
+		datadisk := &wssdcompute.Disk{
+			Diskname: *d.VhdName,
+		}
+		datadisks = append(datadisks, datadisk)
 	}
 
-	return datadisks
+	return datadisks, nil
 
 }
 
-func (c *client) getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkProfile) *wssdcompute.NetworkConfiguration {
+func (c *client) getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkProfile) (*wssdcompute.NetworkConfiguration, error) {
 	nc := &wssdcompute.NetworkConfiguration{
 		Interfaces: []*wssdcompute.NetworkInterface{},
 	}
-	if s.NetworkInterfaces == nil {
-		return nc
+	if s == nil || s.NetworkInterfaces == nil {
+		return nc, nil
 	}
 	for _, nic := range *s.NetworkInterfaces {
 		if nic.VirtualNetworkInterfaceReference == nil {
@@ -107,27 +172,44 @@ func (c *client) getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkPro
 		nc.Interfaces = append(nc.Interfaces, &wssdcompute.NetworkInterface{NetworkInterfaceName: *nic.VirtualNetworkInterfaceReference})
 	}
 
-	return nc
+	return nc, nil
 }
 
-func (c *client) getWssdVirtualMachineOSSSHPublicKeys(ssh *compute.SSHConfiguration) []*wssdcompute.SSHPublicKey {
+func (c *client) getWssdVirtualMachineOSSSHPublicKeys(ssh *compute.SSHConfiguration) ([]*wssdcompute.SSHPublicKey, error) {
 	keys := []*wssdcompute.SSHPublicKey{}
 	if ssh == nil {
-		return keys
+		return keys, nil
 	}
 	for _, key := range *ssh.PublicKeys {
+		if key.KeyData == nil {
+			return nil, errors.Wrapf(errors.InvalidInput, "SSH KeyData is missing")
+		}
 		keys = append(keys, &wssdcompute.SSHPublicKey{Keydata: *key.KeyData})
 	}
-	return keys
+	return keys, nil
 
 }
 
-func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wssdcompute.OperatingSystemConfiguration {
+func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) (*wssdcompute.OperatingSystemConfiguration, error) {
 	publickeys := []*wssdcompute.SSHPublicKey{}
+	osconfig := wssdcompute.OperatingSystemConfiguration{ // should Publickeys be here??
+		Users:  []*wssdcompute.UserConfiguration{},
+		Ostype: wssdcommonproto.OperatingSystemType_WINDOWS,
+	}
+
+	if s == nil {
+		return &osconfig, nil
+	}
+
+	var err error
+
 	if s.LinuxConfiguration != nil {
-		publickeys = c.getWssdVirtualMachineOSSSHPublicKeys(s.LinuxConfiguration.SSH)
+		publickeys, err = c.getWssdVirtualMachineOSSSHPublicKeys(s.LinuxConfiguration.SSH)
 	} else if s.WindowsConfiguration != nil {
-		publickeys = c.getWssdVirtualMachineOSSSHPublicKeys(s.WindowsConfiguration.SSH)
+		publickeys, err = c.getWssdVirtualMachineOSSSHPublicKeys(s.WindowsConfiguration.SSH)
+	}
+	if err != nil {
+		return nil, errors.Wrapf(err, "SSH Configuration Invalid")
 	}
 
 	adminuser := &wssdcompute.UserConfiguration{}
@@ -139,13 +221,13 @@ func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wss
 		adminuser.Password = *s.AdminPassword
 	}
 
-	osconfig := wssdcompute.OperatingSystemConfiguration{
-		ComputerName:  *s.ComputerName,
-		Administrator: adminuser,
-		Users:         []*wssdcompute.UserConfiguration{},
-		Publickeys:    publickeys,
-		Ostype:        wssdcommonproto.OperatingSystemType_WINDOWS,
+	if s.ComputerName == nil {
+		return nil, errors.Wrapf(errors.InvalidInput, "ComputerName is missing")
 	}
+
+	osconfig.ComputerName = *s.ComputerName
+	osconfig.Administrator = adminuser
+	osconfig.Publickeys = publickeys
 
 	if s.LinuxConfiguration != nil {
 		osconfig.Ostype = wssdcommonproto.OperatingSystemType_LINUX
@@ -154,7 +236,7 @@ func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) *wss
 	if s.CustomData != nil {
 		osconfig.CustomData = *s.CustomData
 	}
-	return &osconfig
+	return &osconfig, nil
 }
 
 // Conversion functions from wssdcompute to compute

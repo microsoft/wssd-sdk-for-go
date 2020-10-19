@@ -30,7 +30,10 @@ func NewVirtualMachineClient(subID string, authorizer auth.Authorizer) (*client,
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (*[]compute.VirtualMachine, error) {
-	request := c.getVirtualMachineRequest(wssdcommonproto.Operation_GET, name, nil)
+	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_GET, name, nil)
+	if err != nil {
+		return nil, err
+	}
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -41,7 +44,10 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]compute.Virtua
 
 // Get
 func (c *client) get(ctx context.Context, group, name string) ([]*wssdcompute.VirtualMachine, error) {
-	request := c.getVirtualMachineRequest(wssdcommonproto.Operation_GET, name, nil)
+	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_GET, name, nil)
+	if err != nil {
+		return nil, err
+	}
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -52,7 +58,10 @@ func (c *client) get(ctx context.Context, group, name string) ([]*wssdcompute.Vi
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
-	request := c.getVirtualMachineRequest(wssdcommonproto.Operation_POST, name, sg)
+	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_POST, name, sg)
+	if err != nil {
+		return nil, err
+	}
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -75,7 +84,10 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 		return fmt.Errorf("Virtual Machine [%s] not found", name)
 	}
 
-	request := c.getVirtualMachineRequest(wssdcommonproto.Operation_DELETE, name, &(*vm)[0])
+	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_DELETE, name, &(*vm)[0])
+	if err != nil {
+		return err
+	}
 	_, err = c.VirtualMachineAgentClient.Invoke(ctx, request)
 
 	return err
@@ -108,20 +120,25 @@ func (c *client) getVirtualMachineFromResponse(response *wssdcompute.VirtualMach
 	return &vms
 }
 
-func (c *client) getVirtualMachineRequest(opType wssdcommonproto.Operation, name string, vmss *compute.VirtualMachine) *wssdcompute.VirtualMachineRequest {
+func (c *client) getVirtualMachineRequest(opType wssdcommonproto.Operation, name string, vmss *compute.VirtualMachine) (*wssdcompute.VirtualMachineRequest, error) {
 	request := &wssdcompute.VirtualMachineRequest{
 		OperationType:         opType,
 		VirtualMachineSystems: []*wssdcompute.VirtualMachine{},
 	}
 	if vmss != nil {
-		request.VirtualMachineSystems = append(request.VirtualMachineSystems, c.getWssdVirtualMachine(vmss))
+		wssdvm, err := c.getWssdVirtualMachine(vmss)
+		if err != nil {
+			return nil, err
+		}
+		request.VirtualMachineSystems = append(request.VirtualMachineSystems, wssdvm)
 	} else if len(name) > 0 {
-		request.VirtualMachineSystems = append(request.VirtualMachineSystems,
-			&wssdcompute.VirtualMachine{
-				Name: name,
-			})
+		wssdvm := &wssdcompute.VirtualMachine{
+			Name: name,
+		}
+		request.VirtualMachineSystems = append(request.VirtualMachineSystems, wssdvm)
 	}
-	return request
+
+	return request, nil
 }
 
 func (c *client) getVirtualMachineOperationRequest(ctx context.Context, opType wssdcommonproto.VirtualMachineOperation, name string) (request *wssdcompute.VirtualMachineOperationRequest, err error) {
