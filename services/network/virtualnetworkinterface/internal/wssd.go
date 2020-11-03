@@ -262,10 +262,10 @@ func (cc *client) getDns(dnssetting *network.DNSSetting) *wssdcommonproto.Dns {
 		dns.Domain = *dnssetting.Domain
 	}
 	if dnssetting.Search != nil {
-		dns.Search  = *dnssetting.Search 
+		dns.Search = *dnssetting.Search
 	}
 	if dnssetting.Options != nil {
-		dns.Options  = *dnssetting.Options 
+		dns.Options = *dnssetting.Options
 	}
 	return &dns
 }

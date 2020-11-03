@@ -5,6 +5,7 @@ package internal
 
 import (
 	"context"
+
 	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 
@@ -141,7 +142,7 @@ func getWssdSecret(sec *keyvault.Secret, opType wssdcommonproto.Operation) *wssd
 	}
 
 	if opType == wssdcommonproto.Operation_POST {
-		secret.Value = []byte(*sec.Value)
+		secret.Value = *sec.Value
 	}
 
 	return secret
