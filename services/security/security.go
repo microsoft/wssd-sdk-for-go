@@ -41,11 +41,10 @@ type Identity struct {
 	// Name
 	Name *string `json:"name,omitempty"`
 	// Type
-
 	Type *string `json:"type,omitempty"`
 	// Tags - Custom resource tags
 	Tags map[string]*string `json:"tags"`
-	// Certificates
+	// Certificate string encoded in base64
 	Certificate *string `json:"certificate,omitempty"`
 	// Properties
 	*IdentityProperties `json:"properties,omitempty"`
@@ -75,7 +74,7 @@ type Certificate struct {
 	ID *string `json:"id,omitempty"`
 	// Name
 	Name *string `json:"name,omitempty"`
-	// Cer - CER contents of x509 certificate.
+	// Cer - CER contents of x509 certificate string encoded in base64
 	Cer *string `json:"cer,omitempty"`
 	// Type - The content type of the certificate
 	Type *string `json:"contentType,omitempty"`
