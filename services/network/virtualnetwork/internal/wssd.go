@@ -11,6 +11,7 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
 	"github.com/microsoft/moc/pkg/auth"
+	prototags "github.com/microsoft/moc/pkg/tags"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdnetwork "github.com/microsoft/moc/rpc/nodeagent/network"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -135,6 +136,7 @@ func getWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 	wssdvnet := &wssdnetwork.VirtualNetwork{
 		Name: *c.Name,
 		Type: vnetType,
+		Tags: getWssdTags(c.Tags),
 	}
 	if c.VirtualNetworkProperties == nil {
 		return wssdvnet
@@ -253,6 +255,7 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 		Name: &c.Name,
 		ID:   &c.Id,
 		Type: &vnetType,
+		Tags: getNetworkTags(c.GetTags()),
 		VirtualNetworkProperties: &network.VirtualNetworkProperties{
 			// TODO: MACPool (it is currently missing from network.VirtualNetwork)
 			Subnets:           getNetworkSubnets(c.Ipams),
@@ -337,4 +340,12 @@ func getMacPool(wssdMacPool *wssdnetwork.MacPool) *network.MACPool {
 func getVlan(wssdvlan uint32) *uint16 {
 	vlan := uint16(wssdvlan)
 	return &vlan
+}
+
+func getNetworkTags(tags *wssdcommonproto.Tags) map[string]*string {
+	return prototags.ProtoToMap(tags)
+}
+
+func getWssdTags(tags map[string]*string) *wssdcommonproto.Tags {
+	return prototags.MapToProto(tags)
 }
