@@ -8,11 +8,11 @@ import (
 	"fmt"
 
 	"github.com/microsoft/moc/pkg/auth"
-	"github.com/microsoft/wssd-sdk-for-go/services/compute"
-
+	prototags "github.com/microsoft/moc/pkg/tags"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
+	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 )
 
 type client struct {
@@ -153,4 +153,12 @@ func (c *client) getVirtualMachineOperationRequest(ctx context.Context, opType w
 	}
 
 	return
+}
+
+func getComputeTags(tags *wssdcommonproto.Tags) map[string]*string {
+	return prototags.ProtoToMap(tags)
+}
+
+func getWssdTags(tags map[string]*string) *wssdcommonproto.Tags {
+	return prototags.MapToProto(tags)
 }
