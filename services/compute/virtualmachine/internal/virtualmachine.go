@@ -19,6 +19,7 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 
 	wssdvm := &wssdcompute.VirtualMachine{
 		Name: *vm.Name,
+		Tags: getWssdTags(vm.Tags),
 	}
 
 	if vm.VirtualMachineProperties == nil {
@@ -52,6 +53,7 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 
 	wssdvm = &wssdcompute.VirtualMachine{
 		Name:     *vm.Name,
+		Tags:     getWssdTags(vm.Tags),
 		Storage:  storageConfig,
 		Hardware: hardwareConfig,
 		Security: securityConfig,
@@ -245,6 +247,7 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 	return &compute.VirtualMachine{
 		Name: &vm.Name,
 		ID:   &vm.Id,
+		Tags: getComputeTags(vm.GetTags()),
 		VirtualMachineProperties: &compute.VirtualMachineProperties{
 			HardwareProfile:         c.getVirtualMachineHardwareProfile(vm),
 			SecurityProfile:         c.getVirtualMachineSecurityProfile(vm),
