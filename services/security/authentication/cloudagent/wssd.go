@@ -66,10 +66,11 @@ func (c *client) Login(ctx context.Context, group string, identity *security.Ide
 }
 
 func getAuthenticationRequest(identity *security.Identity) *wssdsecurity.AuthenticationRequest {
+	certs := map[string]string{"": string(*identity.Certificate)}
 	request := &wssdsecurity.AuthenticationRequest{
 		Identity: &wssdsecurity.Identity{
-			Name:        *identity.Name,
-			Certificate: *identity.Certificate,
+			Name:         *identity.Name,
+			Certificates: certs,
 		},
 	}
 	return request
