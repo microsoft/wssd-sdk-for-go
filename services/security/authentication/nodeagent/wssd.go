@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license
 
-package internal
+package nodeagent
 
 import (
 	"context"
+
 	"github.com/microsoft/moc/pkg/auth"
 	wssdsecurity "github.com/microsoft/moc/rpc/nodeagent/security"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
