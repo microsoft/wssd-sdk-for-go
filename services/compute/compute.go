@@ -9,10 +9,20 @@ import (
 
 // ref: github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2018-10-01/compute/models.go
 
+// VirtualMachineCustomSize Specifies cpu/memory information for custom VMSize types.
+type VirtualMachineCustomSize struct {
+	// CpuCount - Specifies number of CPUs for VM
+	CpuCount *int32 `json:"cpucount,omitempty"`
+	// MemoryMB - Specifies memory for VM in MB
+	MemoryMB *int32 `json:"memorymb,omitempty"`
+}
+
 // HardwareProfile
 type HardwareProfile struct {
 	// VMSize - Specifies the size of the virtual machine.
 	VMSize VirtualMachineSizeTypes `json:"vmSize,omitempty"`
+	// CustomSize - Specifies cpu/memory information for custom VMSize types.
+	CustomSize *VirtualMachineCustomSize `json:"customsize,omitempty"`
 }
 
 type OperatingSystemTypes string

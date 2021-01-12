@@ -80,11 +80,15 @@ func (c *client) getWssdVirtualMachineEntity(vm *compute.VirtualMachine) (*wssdc
 
 func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualMachine) (*wssdcompute.HardwareConfiguration, error) {
 	sizeType := wssdcommonproto.VirtualMachineSizeType_Default
+	var customSize *compute.VirtualMachineCustomSize
 	if vm.HardwareProfile != nil {
 		sizeType = compute.GetWssdVirtualMachineSizeFromVirtualMachineSize(vm.HardwareProfile.VMSize)
+		customSize.CpuCount = &vm.HardwareProfile.CustomSize.CpuCount
+		customSize.MemoryMB = &vm.HardwareProfile.CustomSize.MemoryMB
 	}
 	return &wssdcompute.HardwareConfiguration{
-		VMSize: sizeType,
+		VMSize:     sizeType,
+		CustomSize: customSize,
 	}, nil
 }
 
@@ -273,11 +277,15 @@ func (c *client) getVirtualMachineStatuses(vm *wssdcompute.VirtualMachine) map[s
 
 func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine) *compute.HardwareProfile {
 	sizeType := compute.VirtualMachineSizeTypesDefault
+	var customSize *wssdcommon.VirtualMachineCustomSize
 	if vm.Hardware != nil {
 		sizeType = compute.GetVirtualMachineSizeFromWssdVirtualMachineSize(vm.Hardware.VMSize)
+		customSize.CpuCount = *vm.HardwareProfile.CustomSize.CpuCount
+		customSize.MemoryMB = *vm.HardwareProfile.CustomSize.MemoryMB
 	}
 	return &compute.HardwareProfile{
-		VMSize: sizeType,
+		VMSize:     sizeType,
+		CustomSize: customSize,
 	}
 }
 
