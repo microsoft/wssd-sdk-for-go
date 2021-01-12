@@ -34,6 +34,13 @@ const (
 	Windows OperatingSystemTypes = "Windows"
 )
 
+type OperatingSystemBootstrapEngine string
+
+const (
+	CloudInit          OperatingSystemBootstrapEngine = "CloudInit"
+	WindowsAnswerFiles OperatingSystemBootstrapEngine = "WindowsAnswerFiles"
+)
+
 // ImageReference specifies information about the image to use. You can specify information about platform
 // images, marketplace images, or virtual machine images. This element is required when you want to use a
 // platform image, marketplace image, or virtual machine image, but is not used in other creation
@@ -91,6 +98,11 @@ type SSHConfiguration struct {
 	PublicKeys *[]SSHPublicKey `json:"publicKeys,omitempty"`
 }
 
+type RDPConfiguration struct {
+	// Set to 'true' to disable Remote Desktop
+	DisableRDP *bool
+}
+
 type WindowsConfiguration struct {
 	// EnableAutomaticUpdates
 	EnableAutomaticUpdates *bool `json:"enableAutomaticUpdates,omitempty"`
@@ -100,6 +112,8 @@ type WindowsConfiguration struct {
 	// AdditionalUnattendContent *[]AdditionalUnattendContent `json:"additionalUnattendContent,omitempty"`
 	// SSH
 	SSH *SSHConfiguration `json:"ssh,omitempty"`
+	// RDP
+	RDP *RDPConfiguration `json:"rdp,omitempty"`
 }
 
 type LinuxConfiguration struct {
@@ -122,6 +136,8 @@ type OSProfile struct {
 	WindowsConfiguration *WindowsConfiguration `json:"windowsConfiguration,omitempty"`
 	// LinuxConfiguration
 	LinuxConfiguration *LinuxConfiguration `json:"linuxConfiguration,omitempty"`
+	// Bootstrap engine
+	OsBootstrapEngine OperatingSystemBootstrapEngine `json:"osbootstrapengine,omitempty"`
 }
 
 type NetworkInterfaceReference struct {

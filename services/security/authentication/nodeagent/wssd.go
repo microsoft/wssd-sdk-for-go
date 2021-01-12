@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license
 
-package internal
+package nodeagent
 
 import (
 	"context"
+
 	"github.com/microsoft/moc/pkg/auth"
 	wssdsecurity "github.com/microsoft/moc/rpc/nodeagent/security"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -38,8 +39,8 @@ func (c *client) Login(ctx context.Context, group string, identity *security.Ide
 func getAuthenticationRequest(identity *security.Identity) *wssdsecurity.AuthenticationRequest {
 	request := &wssdsecurity.AuthenticationRequest{
 		Identity: &wssdsecurity.Identity{
-			Name:        *identity.Name,
-			Certificate: *identity.Certificate,
+			Name:           *identity.Name,
+			NewCertificate: *identity.Certificate,
 		},
 	}
 	return request
