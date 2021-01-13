@@ -68,7 +68,7 @@ func (c *VirtualMachineClient) Restart(ctx context.Context, group string, name s
 	err = c.internal.Start(ctx, group, name)
 	return
 }
-func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes) (err error) {
+func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize) (err error) {
 	vms, err := c.Get(ctx, group, name)
 	if err != nil {
 		return
@@ -80,12 +80,17 @@ func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name st
 	}
 
 	vm := (*vms)[0]
-	if vm.HardwareProfile.VMSize == newSize {
+
+	if vm.HardwareProfile.VMSize == newSize &&
+		(newSize != compute.VirtualMachineSizeTypesCustom ||
+			(vm.HardwareProfile.CustomSize.CpuCount == newCustomSize.CpuCount && vm.HardwareProfile.CustomSize.MemoryMB == newCustomSize.MemoryMB)) {
 		// Nothing to do
 		return
 	}
 
 	vm.HardwareProfile.VMSize = newSize
+	vm.HardwareProfile.CustomSize = newCustomSize
+
 	_, err = c.CreateOrUpdate(ctx, group, name, &vm)
 	return
 }
