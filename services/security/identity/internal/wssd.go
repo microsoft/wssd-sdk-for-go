@@ -6,6 +6,8 @@ package internal
 import (
 	"context"
 	"fmt"
+
+	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 
@@ -31,7 +33,10 @@ func NewIdentityClient(subID string, authorizer auth.Authorizer) (*client, error
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (*[]security.Identity, error) {
-	request := getIdentityRequest(wssdcommonproto.Operation_GET, name, nil)
+	request, err := getIdentityRequest(wssdcommonproto.Operation_GET, name, nil)
+	if err != nil {
+		return nil, err
+	}
 	response, err := c.IdentityAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -41,7 +46,10 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]security.Ident
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *security.Identity) (*security.Identity, error) {
-	request := getIdentityRequest(wssdcommonproto.Operation_POST, name, sg)
+	request, err := getIdentityRequest(wssdcommonproto.Operation_POST, name, sg)
+	if err != nil {
+		return nil, err
+	}
 	response, err := c.IdentityAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[Identity] Create failed with error %v", err)
@@ -67,7 +75,10 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 		return fmt.Errorf("Identity [%s] not found", name)
 	}
 
-	request := getIdentityRequest(wssdcommonproto.Operation_DELETE, name, &(*identity)[0])
+	request, err := getIdentityRequest(wssdcommonproto.Operation_DELETE, name, &(*identity)[0])
+	if err != nil {
+		return err
+	}
 	_, err = c.IdentityAgentClient.Invoke(ctx, request)
 	return err
 }
@@ -81,35 +92,70 @@ func getIdentitiesFromResponse(response *wssdsecurity.IdentityResponse) *[]secur
 	return &identities
 }
 
-func getIdentityRequest(opType wssdcommonproto.Operation, name string, identity *security.Identity) *wssdsecurity.IdentityRequest {
+func getIdentityRequest(opType wssdcommonproto.Operation, name string, identity *security.Identity) (*wssdsecurity.IdentityRequest, error) {
 	request := &wssdsecurity.IdentityRequest{
 		OperationType: opType,
 		Identitys:     []*wssdsecurity.Identity{},
 	}
+
+	var err error
 	if identity != nil {
-		request.Identitys = append(request.Identitys, getWssdIdentity(identity))
+		id, err := getWssdIdentity(identity)
+		if err != nil {
+			return nil, err
+		}
+		request.Identitys = append(request.Identitys, id)
 	} else if len(name) > 0 {
 		request.Identitys = append(request.Identitys,
 			&wssdsecurity.Identity{
 				Name: name,
 			})
 	}
-	return request
+	return request, err
 }
 
 func getIdentity(identity *wssdsecurity.Identity) *security.Identity {
+	clitype := security.ExternalClient
+	if identity.ClientType == wssdcommonproto.ClientType_CONTROLPLANE {
+		clitype = security.ControlPlane
+	} else if identity.ClientType == wssdcommonproto.ClientType_EXTERNALCLIENT {
+		clitype = security.Node
+	}
 	return &security.Identity{
-		ID:   &identity.Id,
-		Name: &identity.Name,
+		ID:          &identity.Id,
+		Name:        &identity.Name,
+		TokenExpiry: &identity.TokenExpiry,
 		IdentityProperties: &security.IdentityProperties{
 			ProvisioningState: status.GetProvisioningState(identity.GetStatus().GetProvisioningStatus()),
 			Statuses:          status.GetStatuses(identity.GetStatus()),
+			ClientType:        clitype,
 		},
 	}
 }
 
-func getWssdIdentity(identity *security.Identity) *wssdsecurity.Identity {
-	return &wssdsecurity.Identity{
+func getWssdIdentity(identity *security.Identity) (*wssdsecurity.Identity, error) {
+	if identity.Name == nil {
+		return nil, errors.Wrapf(errors.InvalidInput, "Identity name is missing")
+	}
+
+	wssdidentity := &wssdsecurity.Identity{
 		Name: *identity.Name,
 	}
+
+	if identity.TokenExpiry != nil {
+		wssdidentity.TokenExpiry = *identity.TokenExpiry
+	}
+
+	clitype := wssdcommonproto.ClientType_EXTERNALCLIENT
+	if identity.IdentityProperties != nil {
+		if identity.IdentityProperties.ClientType == security.ControlPlane {
+			clitype = wssdcommonproto.ClientType_CONTROLPLANE
+		} else if identity.IdentityProperties.ClientType == security.ExternalClient {
+			clitype = wssdcommonproto.ClientType_NODE
+		}
+	}
+
+	wssdidentity.ClientType = clitype
+
+	return wssdidentity, nil
 }
