@@ -3,6 +3,14 @@
 
 package security
 
+type ClientType string
+
+const (
+	ControlPlane   ClientType = "ControlPlane"
+	ExternalClient ClientType = "ExternalClient"
+	Node           ClientType = "Node"
+)
+
 // KeyVaultProperties defines the structure of a Security Item
 type KeyVaultProperties struct {
 	SecretMap map[string]*string `json:"secretmap"`
@@ -32,6 +40,8 @@ type IdentityProperties struct {
 	Statuses map[string]*string `json:"statuses"`
 	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
 	ProvisioningState *string `json:"provisioningState,omitempty"`
+	// Client type
+	ClientType ClientType `json:"clienttype,omitempty"`
 }
 
 // Identity defines the structure of a identity
@@ -46,6 +56,8 @@ type Identity struct {
 	Tags map[string]*string `json:"tags"`
 	// Certificate string encoded in base64
 	Certificate *string `json:"certificate,omitempty"`
+	// Token Expiry
+	TokenExpiry *int64 `json:"tokenexpiry,omitempty"`
 	// Properties
 	*IdentityProperties `json:"properties,omitempty"`
 }
