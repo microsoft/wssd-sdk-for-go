@@ -196,6 +196,174 @@ func TestGet(t *testing.T) {
 	t.Logf("Successfully got: %v\n", lbs)
 }
 
+func TestAddRemovePeer(t *testing.T) {
+	c, err := getClient()
+	require.NoError(t, err)
+
+	lbr := []*pblbagent.LoadBalancer{
+		{
+			Name:       "xxx",
+			Frontendip: "1.1.1.1",
+			Backendips: []string{"10.0.1.1", "10.0.1.2"},
+			Loadbalancingrules: []*pblbagent.LoadBalancingRule{
+				{
+					FrontendPort: 80,
+					BackendPort:  80,
+					Protocol:     pbcom.Protocol_Tcp,
+				},
+			},
+		},
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	defer cancel()
+
+	_, err = c.CreateOrUpdate(ctx, lbr)
+	defer func() {
+		err = c.Delete(ctx, lbr)
+		require.NoError(t, err)
+	}()
+	require.NoError(t, err)
+
+	peers := []string{"11.11.11.11", "22.22.22.22"}
+	_, err = c.AddPeer(ctx, peers)
+	require.NoError(t, err)
+	defer func() {
+		err = c.RemovePeer(ctx, peers)
+		require.NoError(t, err)
+	}()
+	t.Logf("Successfully added peers %v\n", peers)
+
+	config, err := c.GetConfig(ctx, pblbagent.LoadBalancerType_Keepalived)
+	require.NoError(t, err)
+	t.Logf("Config is: %s", config)
+
+	peers1 := []string{"11.11.11.11", "33.33.33.33"}
+	_, err = c.AddPeer(ctx, peers1)
+	require.NoError(t, err)
+	defer func() {
+		err = c.RemovePeer(ctx, peers1)
+		require.NoError(t, err)
+	}()
+	t.Logf("Successfully added peers %v\n", peers1)
+
+	config, err = c.GetConfig(ctx, pblbagent.LoadBalancerType_Keepalived)
+	require.NoError(t, err)
+	t.Logf("Config is: %s", config)
+
+	removePeer := []string{"11.11.11.11"}
+	err = c.RemovePeer(ctx, removePeer)
+	require.NoError(t, err)
+	t.Logf("Successfully removed peers %v\n", removePeer)
+
+	config, err = c.GetConfig(ctx, pblbagent.LoadBalancerType_Keepalived)
+	require.NoError(t, err)
+	t.Logf("Config is: %s", config)
+
+	err = c.RemovePeer(ctx, peers)
+	require.NoError(t, err)
+	t.Logf("Successfully removed peers %v\n", peers)
+
+	config, err = c.GetConfig(ctx, pblbagent.LoadBalancerType_Keepalived)
+	require.NoError(t, err)
+	t.Logf("Config is: %s", config)
+
+	err = c.RemovePeer(ctx, peers1)
+	require.NoError(t, err)
+	t.Logf("Successfully removed peers %v\n", peers1)
+
+	config, err = c.GetConfig(ctx, pblbagent.LoadBalancerType_Keepalived)
+	require.NoError(t, err)
+	t.Logf("Config is: %s", config)
+
+}
+
+func TestResync(t *testing.T) {
+	c, err := getClient()
+	require.NoError(t, err)
+
+	lbr := []*pblbagent.LoadBalancer{
+		{
+			Name:       "xxx",
+			Frontendip: "1.1.1.1",
+			Backendips: []string{"10.0.1.1", "10.0.1.2"},
+			Loadbalancingrules: []*pblbagent.LoadBalancingRule{
+				{
+					FrontendPort: 80,
+					BackendPort:  80,
+					Protocol:     pbcom.Protocol_Tcp,
+				},
+			},
+		},
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+	defer cancel()
+
+	_, err = c.CreateOrUpdate(ctx, lbr)
+	defer func() {
+		//ignore error
+		c.Delete(ctx, lbr)
+	}()
+	require.NoError(t, err)
+
+	peers := []string{"11.11.11.11", "22.22.22.22"}
+	_, err = c.AddPeer(ctx, peers)
+	require.NoError(t, err)
+	defer func() {
+		err = c.RemovePeer(ctx, peers)
+		require.NoError(t, err)
+	}()
+	t.Logf("Successfully added peers %v\n", peers)
+
+	config, err := c.GetConfig(ctx, pblbagent.LoadBalancerType_Keepalived)
+	require.NoError(t, err)
+	t.Logf("Keepalived config is: %s", config)
+	config, err = c.GetConfig(ctx, pblbagent.LoadBalancerType_Haproxy)
+	require.NoError(t, err)
+	t.Logf("Haproxy config is: %s", config)
+
+	newlbr := []*pblbagent.LoadBalancer{
+		{
+			Name:       "aaa",
+			Frontendip: "100.100.100.100",
+			Backendips: []string{"222.222.222.222", "222.222.222.223"},
+			Loadbalancingrules: []*pblbagent.LoadBalancingRule{
+				{
+					FrontendPort: 80,
+					BackendPort:  80,
+					Protocol:     pbcom.Protocol_Tcp,
+				},
+			},
+		},
+	}
+	newpeers := []string{"111.111.111.111", "111.111.111.112"}
+	_, _, err = c.Resync(ctx, newlbr, newpeers)
+	require.NoError(t, err)
+	defer func() {
+		_, _, err = c.Resync(ctx, []*pblbagent.LoadBalancer{}, []string{})
+		require.NoError(t, err)
+	}()
+	t.Logf("Successfully resync'd config")
+
+	config, err = c.GetConfig(ctx, pblbagent.LoadBalancerType_Keepalived)
+	require.NoError(t, err)
+	t.Logf("Keepalived config is: %s", config)
+	config, err = c.GetConfig(ctx, pblbagent.LoadBalancerType_Haproxy)
+	require.NoError(t, err)
+	t.Logf("Haproxy config is: %s", config)
+
+	_, _, err = c.Resync(ctx, []*pblbagent.LoadBalancer{}, []string{})
+	require.NoError(t, err)
+
+	config, err = c.GetConfig(ctx, pblbagent.LoadBalancerType_Keepalived)
+	require.NoError(t, err)
+	t.Logf("Keepalived config is: %s", config)
+	config, err = c.GetConfig(ctx, pblbagent.LoadBalancerType_Haproxy)
+	require.NoError(t, err)
+	t.Logf("Haproxy config is: %s", config)
+
+}
 func TestHealth(t *testing.T) {
 
 	healthclient, err := getHealthClient()

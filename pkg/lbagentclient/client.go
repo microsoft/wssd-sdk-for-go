@@ -16,6 +16,9 @@ type Service interface {
 	CreateOrUpdate(context.Context, []*pb.LoadBalancer) ([]*pb.LoadBalancer, error)
 	Delete(context.Context, []*pb.LoadBalancer) error
 	GetConfig(context.Context, pb.LoadBalancerType) (string, error)
+	AddPeer(context.Context, []string) ([]string, error)
+	RemovePeer(context.Context, []string) error
+	Resync(ctx context.Context, lbs []*pb.LoadBalancer, peers []string) ([]*pb.LoadBalancer, []string, error)
 }
 
 // LoadBalancerAgentClient structure
@@ -51,4 +54,16 @@ func (c *LoadBalancerAgentClient) Delete(ctx context.Context, lbs []*pb.LoadBala
 // Delete methods invokes delete of the network resource
 func (c *LoadBalancerAgentClient) GetConfig(ctx context.Context, lbtype pb.LoadBalancerType) (string, error) {
 	return c.internal.GetConfig(ctx, lbtype)
+}
+
+func (c *LoadBalancerAgentClient) AddPeer(ctx context.Context, peers []string) ([]string, error) {
+	return c.internal.AddPeer(ctx, peers)
+}
+
+func (c *LoadBalancerAgentClient) RemovePeer(ctx context.Context, peers []string) error {
+	return c.internal.RemovePeer(ctx, peers)
+}
+
+func (c *LoadBalancerAgentClient) Resync(ctx context.Context, lbs []*pb.LoadBalancer, peers []string) ([]*pb.LoadBalancer, []string, error) {
+	return c.internal.Resync(ctx, lbs, peers)
 }
