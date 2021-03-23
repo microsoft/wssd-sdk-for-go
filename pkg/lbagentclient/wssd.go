@@ -39,7 +39,6 @@ func (c *client) Get(ctx context.Context, lbs []*pb.LoadBalancer) ([]*pb.LoadBal
 
 // Ensure methods invokes create or update on the client
 func (c *client) CreateOrUpdate(ctx context.Context, lbs []*pb.LoadBalancer) ([]*pb.LoadBalancer, error) {
-
 	request := &pb.LoadBalancerRequest{
 		OperationType: pbcom.Operation_POST,
 		LoadBalancers: lbs,
@@ -75,4 +74,41 @@ func (c *client) GetConfig(ctx context.Context, lbtype pb.LoadBalancerType) (str
 		return "", err
 	}
 	return response.GetConfig(), err
+}
+
+func (c *client) AddPeer(ctx context.Context, peers []string) ([]string, error) {
+	request := &pb.LoadBalancerPeerRequest{
+		Peers: peers,
+	}
+
+	response, err := c.LoadBalancerAgentClient.AddPeer(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	return response.GetPeers(), nil
+}
+
+func (c *client) RemovePeer(ctx context.Context, peers []string) error {
+	request := &pb.LoadBalancerPeerRequest{
+		Peers: peers,
+	}
+
+	_, err := c.LoadBalancerAgentClient.RemovePeer(ctx, request)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *client) Resync(ctx context.Context, lbs []*pb.LoadBalancer, peers []string) ([]*pb.LoadBalancer, []string, error) {
+	request := &pb.LoadBalancerResyncRequest{
+		LoadBalancers: lbs,
+		Peers:         peers,
+	}
+
+	response, err := c.LoadBalancerAgentClient.Resync(ctx, request)
+	if err != nil {
+		return nil, nil, err
+	}
+	return response.GetLoadBalancers(), response.GetPeers(), nil
 }
