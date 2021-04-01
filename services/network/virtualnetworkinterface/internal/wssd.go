@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"github.com/microsoft/moc/pkg/status"
+	"github.com/microsoft/moc/pkg/tags"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 
 	wssdcommon "github.com/microsoft/moc/common"
@@ -166,6 +167,14 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 	}
 
 	vnic.Entity = cc.getWssdVirtualMachineEntity(c)
+
+	if c.Tags != nil {
+		portProfile := c.Tags["PortProfile"]
+		if portProfile != nil {
+			vnic.Tags = &wssdcommonproto.Tags{}
+			tags.AddTagValue("PortProfile", *portProfile, vnic.GetTags())
+		}
+	}
 
 	return vnic, nil
 }
