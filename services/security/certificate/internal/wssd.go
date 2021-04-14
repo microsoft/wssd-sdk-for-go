@@ -5,6 +5,7 @@ package internal
 
 import (
 	"context"
+
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
 	wssdsecurity "github.com/microsoft/moc/rpc/nodeagent/security"
@@ -112,7 +113,7 @@ func getCertificate(cert *wssdsecurity.Certificate) *security.Certificate {
 	return &security.Certificate{
 		ID:   &cert.Id,
 		Name: &cert.Name,
-		Cer:  &cert.NewCertificate,
+		Cer:  &cert.Certificate,
 		Attributes: &security.CertificateAttributes{
 			NotBefore:         &cert.NotBefore,
 			Expires:           &cert.NotAfter,

@@ -121,7 +121,7 @@ func getSecretRequest(opType wssdcommonproto.Operation, name, vaultName string, 
 }
 
 func getSecret(sec *wssdsecurity.Secret) *keyvault.Secret {
-	value := string(sec.NewValue)
+	value := string(sec.Value)
 	return &keyvault.Secret{
 		ID:    &sec.Id,
 		Name:  &sec.Name,
@@ -142,7 +142,7 @@ func getWssdSecret(sec *keyvault.Secret, opType wssdcommonproto.Operation) *wssd
 	}
 
 	if opType == wssdcommonproto.Operation_POST {
-		secret.NewValue = *sec.Value
+		secret.Value = *sec.Value
 	}
 
 	return secret
