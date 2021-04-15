@@ -7,16 +7,15 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/microsoft/moc/pkg/status"
-	"github.com/microsoft/moc/pkg/tags"
-	"github.com/microsoft/wssd-sdk-for-go/services/network"
-
 	wssdcommon "github.com/microsoft/moc/common"
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
+	"github.com/microsoft/moc/pkg/status"
+	"github.com/microsoft/moc/pkg/tags"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdnetwork "github.com/microsoft/moc/rpc/nodeagent/network"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
 	virtualnetwork "github.com/microsoft/wssd-sdk-for-go/services/network/virtualnetwork"
 )
 
@@ -168,13 +167,13 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 
 	vnic.Entity = cc.getWssdVirtualMachineEntity(c)
 
-	if c.Tags != nil {
-		portProfile := c.Tags["PortProfile"]
-		if portProfile != nil {
+	if (c.Tags != nil) && (len(c.Tags) > 0) {
+		portProfile , ok := c.Tags["PortProfile"]
+		if ok {
 			vnic.Tags = &wssdcommonproto.Tags{}
-			tags.AddTagValue("PortProfile", *portProfile, vnic.GetTags())
+			tags.AddTagValue("PortProfile", *portProfile, vnic.Tags)
 		}
-	}
+	}	
 
 	return vnic, nil
 }
