@@ -81,9 +81,7 @@ func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name st
 
 	vm := (*vms)[0]
 
-	if vm.HardwareProfile.VMSize == newSize &&
-		(newSize != compute.VirtualMachineSizeTypesCustom ||
-			(vm.HardwareProfile.CustomSize.CpuCount == newCustomSize.CpuCount && vm.HardwareProfile.CustomSize.MemoryMB == newCustomSize.MemoryMB)) {
+	if !isDifferentVmSize(vm.HardwareProfile.VMSize, newSize, vm.HardwareProfile.CustomSize, newCustomSize) {
 		// Nothing to do
 		return
 	}
@@ -232,4 +230,20 @@ func (c *VirtualMachineClient) NetworkInterfaceShow(ctx context.Context, group s
 	}
 
 	return
+}
+
+func isDifferentVmSize(oldSizeType, newSizeType compute.VirtualMachineSizeTypes, oldCustomSize, newCustomSize *compute.VirtualMachineCustomSize) bool {
+	if oldSizeType != newSizeType {
+		return true
+	}
+
+	// same vm size type, check custom size
+	switch newSizeType {
+	case compute.VirtualMachineSizeTypesCustom:
+		fallthrough
+	case compute.VirtualMachineSizeTypesCustomGpupv:
+		return oldCustomSize == newCustomSize
+	default:
+		return false
+	}
 }
