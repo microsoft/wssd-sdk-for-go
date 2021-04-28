@@ -90,6 +90,9 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 				CpuCount: *vm.HardwareProfile.CustomSize.CpuCount,
 				MemoryMB: *vm.HardwareProfile.CustomSize.MemoryMB,
 			}
+			if vm.HardwareProfile.CustomSize.GpuCount != nil {
+				customSize.GpuCount = *vm.HardwareProfile.CustomSize.GpuCount
+			}
 		}
 	}
 	return &wssdcompute.HardwareConfiguration{
