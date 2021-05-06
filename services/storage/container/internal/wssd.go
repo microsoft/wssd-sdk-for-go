@@ -4,6 +4,7 @@
 package internal
 
 import (
+	"code.cloudfoundry.org/bytefmt"
 	"context"
 	"fmt"
 
@@ -91,6 +92,8 @@ func getContainerRequest(opType wssdcommonproto.Operation, name string, ctainer 
 }
 
 func getContainer(ctainer *wssdstorage.Container) *storage.Container {
+	var totalSize string = bytefmt.ByteSize(ctainer.Info.Capacity.TotalBytes)
+	var availSize string = bytefmt.ByteSize(ctainer.Info.Capacity.AvailableBytes)
 	return &storage.Container{
 		ID:   &ctainer.Id,
 		Name: &ctainer.Name,
@@ -98,6 +101,10 @@ func getContainer(ctainer *wssdstorage.Container) *storage.Container {
 			Path:              &ctainer.Path,
 			ProvisioningState: status.GetProvisioningState(ctainer.Status.GetProvisioningStatus()),
 			Statuses:          status.GetStatuses(ctainer.Status),
+			ContainerInfo: &storage.ContainerInfo{
+				AvailableSize: availSize,
+				TotalSize:     totalSize,
+			},
 		},
 	}
 }
