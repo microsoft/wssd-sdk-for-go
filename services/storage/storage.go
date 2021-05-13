@@ -58,6 +58,11 @@ type VirtualHardDisk struct {
 	*VirtualHardDiskProperties `json:"virtualharddiskproperties,omitempty"`
 }
 
+type ContainerInfo struct {
+	AvailableSize string `json:"AvailableSize,omitempty"`
+	TotalSize     string `json:"TotalSize,omitempty"`
+}
+
 // ContainerProperties defines the structure of a ContainerProperties
 type ContainerProperties struct {
 	// Path
@@ -66,6 +71,8 @@ type ContainerProperties struct {
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// Statuses - Status
 	Statuses map[string]*string `json:"statuses"`
+	// Container storage information
+	*ContainerInfo `json:"info"`
 }
 
 // VirtualHardDisk defines the structure of a VHD
