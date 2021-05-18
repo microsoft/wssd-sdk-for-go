@@ -111,6 +111,17 @@ func (c *client) Stop(ctx context.Context, group, name string) (err error) {
 	return
 }
 
+func (c *client) RunCommand(ctx context.Context, group, name string, command *compute.VirtualMachineRunCommandProperties) (output string, err error) {
+	request, err := c.getVirtualMachineRunCommandRequest(ctx, group, name, command)
+	if err != nil {
+		return
+	}
+
+	response, err := c.VirtualMachineAgentClient.RunCommand(ctx, request)
+	output = response.GetOutput()
+	return
+}
+
 func (c *client) getVirtualMachineFromResponse(response *wssdcompute.VirtualMachineResponse) *[]compute.VirtualMachine {
 	vms := []compute.VirtualMachine{}
 	for _, vm := range response.GetVirtualMachineSystems() {
@@ -152,6 +163,36 @@ func (c *client) getVirtualMachineOperationRequest(ctx context.Context, opType w
 		VirtualMachines: vms,
 	}
 
+	return
+}
+
+func (c *client) getVirtualMachineRunCommandRequest(ctx context.Context, group, name string, command *compute.VirtualMachineRunCommandProperties) (request *wssdcompute.VirtualMachineRunCommandRequest, err error) {
+	vms, err := c.get(ctx, group, name)
+	if err != nil {
+		return
+	}
+
+	if len(vms) != 1 {
+
+	}
+
+	params := make([]*wssdcompute.RunCommandInputParameter, len(*command.Parameters))
+	for _, param := range *command.Parameters {
+		tmp := &wssdcompute.RunCommandInputParameter{
+			Name:  *param.Name,
+			Value: *param.Value,
+		}
+		params = append(params, tmp)
+	}
+
+	request = &wssdcompute.VirtualMachineRunCommandRequest{
+		VirtualMachine:            vms[0],
+		RunAsUser:                 *command.RunAsUser,
+		RunAsPassword:             *command.RunAsPassword,
+		CommandID:                 *command.CommandID,
+		Script:                    *command.Script,
+		RunCommandInputParameters: params,
+	}
 	return
 }
 

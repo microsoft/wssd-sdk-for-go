@@ -372,3 +372,25 @@ type VirtualMachineScaleSet struct {
 	// HighAvailabilityState
 	HighAvailabilityState *string `json:"HighAvailabilityState,omitempty"`
 }
+
+// RunCommandInputParameter describes the properties of a run command parameter.
+type RunCommandInputParameter struct {
+	// Name - The run command parameter name.
+	Name *string `json:"name,omitempty"`
+	// Value - The run command parameter value.
+	Value *string `json:"value,omitempty"`
+}
+
+// VirtualMachineRunCommandProperties describes the properties of a Virtual Machine run command.
+type VirtualMachineRunCommandProperties struct {
+	// Command
+	CommandID *string `json:"command,omitempty"`
+	// Parameters - The parameters used by the script.
+	Parameters *[]RunCommandInputParameter `json:"parameters,omitempty"`
+	// Script - The script to be run.
+	Script *string `json:"script,omitempty"`
+	// RunAsUser - Specifies the user account on the VM when executing the run command.
+	RunAsUser *string `json:"runAsUser,omitempty"`
+	// RunAsPassword - Specifies the user account password on the VM when executing the run command.
+	RunAsPassword *string `json:"runAsPassword,omitempty"`
+}

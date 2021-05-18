@@ -21,6 +21,7 @@ type Service interface {
 	Delete(context.Context, string, string) error
 	Start(context.Context, string, string) error
 	Stop(context.Context, string, string) error
+	RunCommand(context.Context, string, string, *compute.VirtualMachineRunCommandProperties) (string, error)
 }
 
 type VirtualMachineClient struct {
@@ -232,4 +233,8 @@ func (c *VirtualMachineClient) NetworkInterfaceShow(ctx context.Context, group s
 	}
 
 	return
+}
+
+func (c *VirtualMachineClient) RunCommand(ctx context.Context, group, vmName string, command *compute.VirtualMachineRunCommandProperties) (output string, err error) {
+	return c.internal.RunCommand(ctx, group, vmName, command)
 }
