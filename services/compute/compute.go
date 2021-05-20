@@ -389,8 +389,4 @@ type VirtualMachineRunCommandProperties struct {
 	Parameters *[]RunCommandInputParameter `json:"parameters,omitempty"`
 	// Script - The script to be run.
 	Script *string `json:"script,omitempty"`
-	// RunAsUser - Specifies the user account on the VM when executing the run command.
-	RunAsUser *string `json:"runAsUser,omitempty"`
-	// RunAsPassword - Specifies the user account password on the VM when executing the run command.
-	RunAsPassword *string `json:"runAsPassword,omitempty"`
 }

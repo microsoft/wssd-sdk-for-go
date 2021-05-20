@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/errors"
 	prototags "github.com/microsoft/moc/pkg/tags"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
@@ -173,22 +174,22 @@ func (c *client) getVirtualMachineRunCommandRequest(ctx context.Context, group, 
 	}
 
 	if len(vms) != 1 {
-
+		err = errors.Wrapf(errors.InvalidInput, "Multiple Virtual Machines found in group %s with name %s", group, name)
+		return
 	}
+	vm := vms[0]
 
-	params := make([]*wssdcompute.RunCommandInputParameter, len(*command.Parameters))
-	for _, param := range *command.Parameters {
-		tmp := &wssdcompute.RunCommandInputParameter{
+	params := make([]*wssdcommonproto.RunCommandInputParameter, len(*command.Parameters))
+	for i, param := range *command.Parameters {
+		tmp := &wssdcommonproto.RunCommandInputParameter{
 			Name:  *param.Name,
 			Value: *param.Value,
 		}
-		params = append(params, tmp)
+		params[i] = tmp
 	}
 
 	request = &wssdcompute.VirtualMachineRunCommandRequest{
-		VirtualMachine:            vms[0],
-		RunAsUser:                 *command.RunAsUser,
-		RunAsPassword:             *command.RunAsPassword,
+		VirtualMachine:            vm,
 		CommandID:                 *command.CommandID,
 		Script:                    *command.Script,
 		RunCommandInputParameters: params,
