@@ -383,8 +383,8 @@ type RunCommandInputParameter struct {
 
 // VirtualMachineRunCommandProperties describes the properties of a Virtual Machine run command.
 type VirtualMachineRunCommandProperties struct {
-	// Command
-	CommandID *string `json:"command,omitempty"`
+	// CommandID
+	CommandID *string `json:"commandid,omitempty"`
 	// Parameters - The parameters used by the script.
 	Parameters *[]RunCommandInputParameter `json:"parameters,omitempty"`
 	// Script - The script to be run.
