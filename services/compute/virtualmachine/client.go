@@ -240,6 +240,8 @@ func isDifferentVmSize(oldSizeType, newSizeType compute.VirtualMachineSizeTypes,
 	// same vm size type, check custom size
 	// Note: fields in compute.VirtualMachineCustomSize are pointers, deference to compare the values
 	switch newSizeType {
+	case compute.VirtualMachineSizeTypesCustomNK:
+		fallthrough
 	case compute.VirtualMachineSizeTypesCustomGpupv:
 		if *oldCustomSize.GpuCount != *newCustomSize.GpuCount {
 			return true
