@@ -11,3 +11,5 @@ require (
 	google.golang.org/protobuf v1.25.0 // indirect
 	k8s.io/klog v1.0.0
 )
+
+replace github.com/microsoft/moc => github.com/johnsonshih/moc v0.10.8-alpha.10.0.20210427222616-ea0b6b1797ab
