@@ -17,12 +17,24 @@ type VirtualMachineCustomSize struct {
 	MemoryMB *int32 `json:"memorymb,omitempty"`
 }
 
+// DynamicMemoryConfiguration Specifies the dynamic memory configuration for a VM.
+type DynamicMemoryConfiguration struct {
+	// MaximumMemoryMB - Specifies the maximum amount of memory the VM is allowed to use.
+	MaximumMemoryMB *uint64 `json:"maximummemorymb,omitempty"`
+	// MinimumMemoryMB - Specifies the minimum amount of memory the VM is allocated.
+	MinimumMemoryMB *uint64 `json:"minimummemorymb,omitempty"`
+	// TargetMemoryBuffer - Specifies the size of the VMs memory buffer as a percentage of the current memory usage.
+	TargetMemoryBuffer *uint32 `json:"targetmemorybuffer,omitempty"`
+}
+
 // HardwareProfile
 type HardwareProfile struct {
 	// VMSize - Specifies the size of the virtual machine.
 	VMSize VirtualMachineSizeTypes `json:"vmSize,omitempty"`
 	// CustomSize - Specifies cpu/memory information for custom VMSize types.
 	CustomSize *VirtualMachineCustomSize `json:"customsize,omitempty"`
+	// DynamicMemoryConfig - Specifies the dynamic memory configuration for a VM, dynamic memory will be enabled if this field is present.
+	DynamicMemoryConfig *DynamicMemoryConfiguration `json:"dynamicmemoryconfig,omitempty"`
 }
 
 type OperatingSystemTypes string

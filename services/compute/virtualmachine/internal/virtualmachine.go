@@ -83,6 +83,7 @@ func (c *client) getWssdVirtualMachineEntity(vm *compute.VirtualMachine) (*wssdc
 func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualMachine) (*wssdcompute.HardwareConfiguration, error) {
 	sizeType := wssdcommonproto.VirtualMachineSizeType_Default
 	var customSize *wssdcommonproto.VirtualMachineCustomSize
+	var dynMemConfig *wssdcommonproto.DynamicMemoryConfiguration
 	if vm.HardwareProfile != nil {
 		sizeType = compute.GetWssdVirtualMachineSizeFromVirtualMachineSize(vm.HardwareProfile.VMSize)
 		if vm.HardwareProfile.CustomSize != nil {
@@ -91,10 +92,18 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 				MemoryMB: *vm.HardwareProfile.CustomSize.MemoryMB,
 			}
 		}
+		if vm.HardwareProfile.DynamicMemoryConfig != nil {
+			dynMemConfig = &wssdcommonproto.DynamicMemoryConfiguration{
+				MaximumMemoryMB:    *vm.HardwareProfile.DynamicMemoryConfig.MaximumMemoryMB,
+				MinimumMemoryMB:    *vm.HardwareProfile.DynamicMemoryConfig.MinimumMemoryMB,
+				TargetMemoryBuffer: *vm.HardwareProfile.DynamicMemoryConfig.TargetMemoryBuffer,
+			}
+		}
 	}
 	return &wssdcompute.HardwareConfiguration{
-		VMSize:     sizeType,
-		CustomSize: customSize,
+		VMSize:                     sizeType,
+		CustomSize:                 customSize,
+		DynamicMemoryConfiguration: dynMemConfig,
 	}, nil
 }
 
@@ -338,6 +347,7 @@ func (c *client) getVirtualMachineStatuses(vm *wssdcompute.VirtualMachine) map[s
 func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine) *compute.HardwareProfile {
 	sizeType := compute.VirtualMachineSizeTypesDefault
 	var customSize *compute.VirtualMachineCustomSize
+	var dynamicMemoryConfig *compute.DynamicMemoryConfiguration
 	if vm.Hardware != nil {
 		sizeType = compute.GetVirtualMachineSizeFromWssdVirtualMachineSize(vm.Hardware.VMSize)
 		if vm.Hardware.CustomSize != nil {
@@ -346,10 +356,18 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 				MemoryMB: &vm.Hardware.CustomSize.MemoryMB,
 			}
 		}
+		if vm.Hardware.DynamicMemoryConfiguration != nil {
+			dynamicMemoryConfig = &compute.DynamicMemoryConfiguration{
+				MaximumMemoryMB:    &vm.Hardware.DynamicMemoryConfiguration.MaximumMemoryMB,
+				MinimumMemoryMB:    &vm.Hardware.DynamicMemoryConfiguration.MinimumMemoryMB,
+				TargetMemoryBuffer: &vm.Hardware.DynamicMemoryConfiguration.TargetMemoryBuffer,
+			}
+		}
 	}
 	return &compute.HardwareProfile{
-		VMSize:     sizeType,
-		CustomSize: customSize,
+		VMSize:              sizeType,
+		CustomSize:          customSize,
+		DynamicMemoryConfig: dynamicMemoryConfig,
 	}
 }
 
