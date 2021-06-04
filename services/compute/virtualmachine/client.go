@@ -68,6 +68,7 @@ func (c *VirtualMachineClient) Restart(ctx context.Context, group string, name s
 	err = c.internal.Start(ctx, group, name)
 	return
 }
+
 func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize) (err error) {
 	vms, err := c.Get(ctx, group, name)
 	if err != nil {
