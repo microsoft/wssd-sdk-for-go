@@ -73,6 +73,7 @@ type ContainerProperties struct {
 	Statuses map[string]*string `json:"statuses"`
 	// Container storage information
 	*ContainerInfo `json:"info"`
+	IsPlaceholder  *bool `json:"isPlaceholder,omitempty"`
 }
 
 // VirtualHardDisk defines the structure of a VHD
