@@ -163,9 +163,16 @@ type NetworkProfile struct {
 	NetworkInterfaces *[]NetworkInterfaceReference `json:"networkInterfaces,omitempty"`
 }
 
+type UefiSettings struct {
+	// SecureBootEnabled - Specifies whether secure boot should be enabled on the virtual machine.
+	SecureBootEnabled *bool `json:"secureBootEnabled,omitempty"`
+}
+
 // SecurityProfile
 type SecurityProfile struct {
 	EnableTPM *bool `json:"enableTPM,omitempty"`
+	// Security related configuration used while creating the virtual machine.
+	UefiSettings *UefiSettings `json:"uefiSettings,omitempty"`
 }
 
 type VirtualMachineProperties struct {
