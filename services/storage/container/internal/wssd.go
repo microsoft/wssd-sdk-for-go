@@ -124,11 +124,15 @@ func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 		disk.Path = *ctainer.Path
 	}
 	if ctainer.IsPlaceholder != nil {
-		disk.Entity.IsPlaceholder = *ctainer.IsPlaceholder
+		if disk.Entity != nil {
+			disk.Entity.IsPlaceholder = *ctainer.IsPlaceholder
+		}
 	}
 	if ctainer.ContainerInfo != nil {
-		disk.Info.Capacity.AvailableBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.AvailableSize)
-		disk.Info.Capacity.TotalBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.TotalSize)
+		if disk.Info != nil && disk.Info.Capacity != nil {
+			disk.Info.Capacity.AvailableBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.AvailableSize)
+			disk.Info.Capacity.TotalBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.TotalSize)
+		}
 	}
 	return &disk
 }
