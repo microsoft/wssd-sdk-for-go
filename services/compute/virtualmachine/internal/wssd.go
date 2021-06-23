@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/errors"
 	prototags "github.com/microsoft/moc/pkg/tags"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
@@ -111,6 +112,20 @@ func (c *client) Stop(ctx context.Context, group, name string) (err error) {
 	return
 }
 
+func (c *client) RunCommand(ctx context.Context, group, name string, request *compute.VirtualMachineRunCommandRequest) (response *compute.VirtualMachineRunCommandResponse, err error) {
+	mocRequest, err := c.getVirtualMachineRunCommandRequest(ctx, group, name, request)
+	if err != nil {
+		return
+	}
+
+	mocResponse, err := c.VirtualMachineAgentClient.RunCommand(ctx, mocRequest)
+	if err != nil {
+		return
+	}
+	response, err = c.getVirtualMachineRunCommandResponse(mocResponse)
+	return
+}
+
 func (c *client) getVirtualMachineFromResponse(response *wssdcompute.VirtualMachineResponse) *[]compute.VirtualMachine {
 	vms := []compute.VirtualMachine{}
 	for _, vm := range response.GetVirtualMachineSystems() {
@@ -153,6 +168,80 @@ func (c *client) getVirtualMachineOperationRequest(ctx context.Context, opType w
 	}
 
 	return
+}
+
+func (c *client) getVirtualMachineRunCommandRequest(ctx context.Context, group, name string, request *compute.VirtualMachineRunCommandRequest) (mocRequest *wssdcompute.VirtualMachineRunCommandRequest, err error) {
+	vms, err := c.get(ctx, group, name)
+	if err != nil {
+		return
+	}
+
+	if len(vms) != 1 {
+		err = errors.Wrapf(errors.InvalidInput, "Multiple Virtual Machines found in group %s with name %s", group, name)
+		return
+	}
+	vm := vms[0]
+
+	var params []*wssdcommonproto.VirtualMachineRunCommandInputParameter
+	if request.Parameters != nil {
+		params = make([]*wssdcommonproto.VirtualMachineRunCommandInputParameter, len(*request.Parameters))
+		for i, param := range *request.Parameters {
+			tmp := &wssdcommonproto.VirtualMachineRunCommandInputParameter{
+				Name:  *param.Name,
+				Value: *param.Value,
+			}
+			params[i] = tmp
+		}
+	}
+
+	var scriptSource wssdcommonproto.VirtualMachineRunCommandScriptSource
+	if request.Source.Script != nil {
+		scriptSource.Script = *request.Source.Script
+	}
+	if request.Source.ScriptURI != nil {
+		scriptSource.ScriptURI = *request.Source.ScriptURI
+	}
+	if request.Source.CommandID != nil {
+		scriptSource.CommandID = *request.Source.CommandID
+	}
+
+	mocRequest = &wssdcompute.VirtualMachineRunCommandRequest{
+		VirtualMachine:            vm,
+		RunCommandInputParameters: params,
+		Source:                    &scriptSource,
+	}
+
+	if request.RunAsUser != nil {
+		mocRequest.RunAsUser = *request.RunAsUser
+	}
+	if request.RunAsPassword != nil {
+		mocRequest.RunAsPassword = *request.RunAsPassword
+	}
+	return
+}
+
+func (c *client) getVirtualMachineRunCommandResponse(mocResponse *wssdcompute.VirtualMachineRunCommandResponse) (*compute.VirtualMachineRunCommandResponse, error) {
+	var executionState compute.ExecutionState
+	switch mocResponse.GetInstanceView().ExecutionState {
+	case 0:
+		executionState = compute.ExecutionStateFailed
+	case 1:
+		executionState = compute.ExecutionStateSucceeded
+	case 2:
+		executionState = compute.ExecutionStateUnknown
+	}
+
+	instanceView := &compute.VirtualMachineRunCommandInstanceView{
+		ExecutionState: executionState,
+		ExitCode:       &mocResponse.GetInstanceView().ExitCode,
+		Output:         &mocResponse.GetInstanceView().Output,
+		Error:          &mocResponse.GetInstanceView().Error,
+	}
+
+	response := &compute.VirtualMachineRunCommandResponse{
+		InstanceView: instanceView,
+	}
+	return response, nil
 }
 
 func getComputeTags(tags *wssdcommonproto.Tags) map[string]*string {
