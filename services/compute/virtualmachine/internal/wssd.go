@@ -223,12 +223,12 @@ func (c *client) getVirtualMachineRunCommandRequest(ctx context.Context, group, 
 func (c *client) getVirtualMachineRunCommandResponse(mocResponse *wssdcompute.VirtualMachineRunCommandResponse) (*compute.VirtualMachineRunCommandResponse, error) {
 	var executionState compute.ExecutionState
 	switch mocResponse.GetInstanceView().ExecutionState {
-	case 0:
-		executionState = compute.ExecutionStateFailed
-	case 1:
-		executionState = compute.ExecutionStateSucceeded
-	case 2:
+	case wssdcommonproto.VirtualMachineRunCommandExecutionState_ExecutionState_UNKNOWN:
 		executionState = compute.ExecutionStateUnknown
+	case wssdcommonproto.VirtualMachineRunCommandExecutionState_ExecutionState_SUCCEEDED:
+		executionState = compute.ExecutionStateSucceeded
+	case wssdcommonproto.VirtualMachineRunCommandExecutionState_ExecutionState_FAILED:
+		executionState = compute.ExecutionStateFailed
 	}
 
 	instanceView := &compute.VirtualMachineRunCommandInstanceView{
