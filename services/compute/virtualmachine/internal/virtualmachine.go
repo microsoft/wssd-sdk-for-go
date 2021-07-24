@@ -229,6 +229,10 @@ func (c *client) getWssdVirtualMachineWindowsConfiguration(windowsConfiguration 
 		RDPConfiguration: &wssdcompute.RDPConfiguration{},
 	}
 
+	if windowsConfiguration == nil {
+		return wc
+	}
+
 	if windowsConfiguration.WinRM != nil && windowsConfiguration.WinRM.Listeners != nil && len(*windowsConfiguration.WinRM.Listeners) >= 1 {
 		listeners := make([]*wssdcommonproto.WinRMListener, len(*windowsConfiguration.WinRM.Listeners))
 		for i, listener := range *windowsConfiguration.WinRM.Listeners {
@@ -243,10 +247,6 @@ func (c *client) getWssdVirtualMachineWindowsConfiguration(windowsConfiguration 
 		wc.WinRMConfiguration = &wssdcommonproto.WinRMConfiguration{
 			Listeners: listeners,
 		}
-	}
-
-	if windowsConfiguration == nil {
-		return wc
 	}
 
 	if windowsConfiguration.RDP != nil && windowsConfiguration.RDP.DisableRDP != nil {
