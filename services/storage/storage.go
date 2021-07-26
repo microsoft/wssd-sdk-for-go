@@ -44,6 +44,43 @@ type VirtualHardDiskProperties struct {
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 }
 
+//Http Image properties
+type HttpImageProperties struct {
+	HttpURL string `json:"httpURL,omitempty"`
+}
+
+// SFSImage properties
+type SFSImageProperties struct {
+	CatalogName string   `json:"catalogName,omitempty"`
+	Audience    string   `json:"audience,omitempty"`
+	Version     string   `json:"version,omitempty"`
+	Ring        int32    `json:"ring,omitempty"`
+	Files       []string `json:"files,omitempty"`
+}
+
+//Local image properties
+type LocalImageProperties struct {
+	Path string `json:"path,omitempty"`
+}
+
+type CloneImageProperties struct {
+	CloneSource string `json:"cloneSource,omitempty"`
+}
+
+//Image properties
+type ImageProperties struct {
+	// Image type  - sfs or local or http or clone
+	ImageType string `json:"type,omitempty"`
+	// Image source  - path of the image
+	ImageSource string `json:"source,omitempty"`
+	// Image options - various options to provide for image download
+	Options               map[string]*string `json:"options,omitempty"`
+	*SFSImageProperties   `json:"sfsimageproperties,omitempty"`
+	*LocalImageProperties `json:"localimageproperties,omitempty"`
+	*CloneImageProperties `json:"cloneimageproperties,omitempty"`
+	*HttpImageProperties  `json:"httpimageproperties,omitempty"`
+}
+
 // VirtualHardDisk defines the structure of a VHD
 type VirtualHardDisk struct {
 	// ID
@@ -56,6 +93,7 @@ type VirtualHardDisk struct {
 	Tags map[string]*string `json:"tags"`
 	// Properties
 	*VirtualHardDiskProperties `json:"virtualharddiskproperties,omitempty"`
+	*ImageProperties           `json:"imageinfo,omitempty"`
 }
 
 type ContainerInfo struct {

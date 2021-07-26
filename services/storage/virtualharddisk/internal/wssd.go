@@ -139,6 +139,13 @@ func getVirtualHardDiskIsPlaceholder(vhd *wssdstorage.VirtualHardDisk) *bool {
 	}
 	return &isPlaceholder
 }
+func setSFSImageProperties(vhdImage *storage.VirtualHardDisk, wssdVhd *wssdstorage.VirtualHardDisk) {
+	wssdVhd.SfsImg.CatalogName = vhdImage.CatalogName
+	wssdVhd.SfsImg.Audience = vhdImage.Audience
+	wssdVhd.SfsImg.Version = vhdImage.Version
+	wssdVhd.SfsImg.Ring = vhdImage.Ring
+	wssdVhd.SfsImg.Files = vhdImage.Files
+}
 
 func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) (*wssdstorage.VirtualHardDisk, error) {
 	disk := wssdstorage.VirtualHardDisk{
@@ -178,6 +185,9 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 		if vhd.VirtualMachineName != nil {
 			disk.VirtualmachineName = *vhd.VirtualMachineName
 		}
+	}
+	if vhd.SFSImageProperties != nil {
+		setSFSImageProperties(vhd, &disk)
 	}
 
 	return &disk, nil
