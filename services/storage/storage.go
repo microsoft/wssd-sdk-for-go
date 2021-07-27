@@ -3,6 +3,10 @@
 
 package storage
 
+import (
+	"github.com/microsoft/moc/rpc/common"
+)
+
 // VirtualHardDiskProperties defines the structure of a Virtual HardDisk
 type VirtualHardDiskProperties struct {
 	// Path - READONLY
@@ -43,7 +47,7 @@ type VirtualHardDiskProperties struct {
 	// This property is the exact inverse of the node agent's SystemOwned property.
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 	// Image type  - sfs or local or http or clone
-	SourceType string `json:"sourcetype,omitempty"`
+	SourceType common.ImageSource `json:"sourcetype,omitempty"`
 }
 
 //Http Image properties
