@@ -115,6 +115,28 @@ type RDPConfiguration struct {
 	DisableRDP *bool
 }
 
+// ProtocolTypes enumerates the values for protocol types.
+type ProtocolTypes string
+
+const (
+	// HTTP ...
+	HTTP ProtocolTypes = "Http"
+	// HTTPS ...
+	HTTPS ProtocolTypes = "Https"
+)
+
+// WinRMConfiguration describes Windows Remote Management configuration of the VM
+type WinRMConfiguration struct {
+	// Listeners - The list of Windows Remote Management listeners
+	Listeners *[]WinRMListener `json:"listeners,omitempty"`
+}
+
+// WinRMListener describes Protocol and thumbprint of Windows Remote Management listener
+type WinRMListener struct {
+	// Protocol - Specifies the protocol of WinRM listener. Possible values include: 'HTTP', 'HTTPS'
+	Protocol ProtocolTypes `json:"protocol,omitempty"`
+}
+
 type WindowsConfiguration struct {
 	// EnableAutomaticUpdates
 	EnableAutomaticUpdates *bool `json:"enableAutomaticUpdates,omitempty"`
@@ -126,6 +148,8 @@ type WindowsConfiguration struct {
 	SSH *SSHConfiguration `json:"ssh,omitempty"`
 	// RDP
 	RDP *RDPConfiguration `json:"rdp,omitempty"`
+	// WinRM - Specifies the Windows Remote Management listeners. This enables remote Windows PowerShell.
+	WinRM *WinRMConfiguration `json:"winRM,omitempty"`
 }
 
 type LinuxConfiguration struct {
