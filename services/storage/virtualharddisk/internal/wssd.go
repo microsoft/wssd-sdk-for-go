@@ -93,7 +93,9 @@ func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, container
 	wssdvhd := &wssdstorage.VirtualHardDisk{
 		Name:          name,
 		ContainerName: containerName,
-		SourceType:    vhd.SourceType,
+	}
+	if vhd != nil {
+		wssdvhd.SourceType = vhd.SourceType
 	}
 	var err error
 	if vhd != nil {
