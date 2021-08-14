@@ -168,12 +168,12 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 	vnic.Entity = cc.getWssdVirtualMachineEntity(c)
 
 	if (c.Tags != nil) && (len(c.Tags) > 0) {
-		portProfile , ok := c.Tags["PortProfile"]
+		portProfile, ok := c.Tags["PortProfile"]
 		if ok {
 			vnic.Tags = &wssdcommonproto.Tags{}
 			tags.AddTagValue("PortProfile", *portProfile, vnic.Tags)
 		}
-	}	
+	}
 
 	return vnic, nil
 }
