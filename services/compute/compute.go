@@ -15,6 +15,8 @@ type VirtualMachineCustomSize struct {
 	CpuCount *int32 `json:"cpucount,omitempty"`
 	// MemoryMB - Specifies memory for VM in MB
 	MemoryMB *int32 `json:"memorymb,omitempty"`
+	// GpuCount - Specifies number of GPUs for VM
+	GpuCount *int32 `json:"gpucount,omitempty"`
 }
 
 // DynamicMemoryConfiguration Specifies the dynamic memory configuration for a VM.
