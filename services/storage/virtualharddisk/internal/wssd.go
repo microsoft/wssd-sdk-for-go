@@ -94,14 +94,14 @@ func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, container
 		Name:          name,
 		ContainerName: containerName,
 	}
-	if vhd != nil {
-		wssdvhd.SourceType = vhd.SourceType
-	}
 	var err error
 	if vhd != nil {
 		wssdvhd, err = getWssdVirtualHardDisk(containerName, vhd)
 		if err != nil {
 			return nil, err
+		}
+		if vhd.VirtualHardDiskProperties != nil {
+			wssdvhd.SourceType = vhd.SourceType
 		}
 	}
 	request.VirtualHardDiskSystems = append(request.VirtualHardDiskSystems, wssdvhd)
@@ -146,7 +146,6 @@ func getVirtualHardDiskIsPlaceholder(vhd *wssdstorage.VirtualHardDisk) *bool {
 func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) (*wssdstorage.VirtualHardDisk, error) {
 	disk := wssdstorage.VirtualHardDisk{
 		ContainerName: containerName,
-		SourceType:    vhd.SourceType,
 	}
 
 	if vhd.Name == nil {
@@ -183,6 +182,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 			disk.VirtualmachineName = *vhd.VirtualMachineName
 		}
 	}
+	disk.SourceType = vhd.SourceType
 
 	return &disk, nil
 }
