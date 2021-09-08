@@ -206,6 +206,16 @@ func GetRecoveryClient(serverAddress *string, authorizer auth.Authorizer) (admin
 	return admin_pb.NewRecoveryAgentClient(conn), nil
 }
 
+// GetDebugClient returns the log client to communicate with the wssd agent
+func GetDebugClient(serverAddress *string, authorizer auth.Authorizer) (admin_pb.DebugAgentClient, error) {
+	conn, err := getClientConnection(serverAddress, authorizer)
+	if err != nil {
+		log.Fatalf("Unable to get DebugClient. Failed to dial: %v", err)
+	}
+
+	return admin_pb.NewDebugAgentClient(conn), nil
+}
+
 // GetHealthClient returns the health client to communicate with the node agent
 func GetHealthClient(serverAddress *string, authorizer auth.Authorizer) (admin_pb.HealthAgentClient, error) {
 	conn, err := getClientConnection(serverAddress, authorizer)

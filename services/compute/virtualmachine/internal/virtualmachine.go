@@ -91,6 +91,9 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 				CpuCount: *vm.HardwareProfile.CustomSize.CpuCount,
 				MemoryMB: *vm.HardwareProfile.CustomSize.MemoryMB,
 			}
+			if vm.HardwareProfile.CustomSize.GpuCount != nil {
+				customSize.GpuCount = *vm.HardwareProfile.CustomSize.GpuCount
+			}
 		}
 		if vm.HardwareProfile.DynamicMemoryConfig != nil {
 			dynMemConfig = &wssdcommonproto.DynamicMemoryConfiguration{}
@@ -389,6 +392,7 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 			customSize = &compute.VirtualMachineCustomSize{
 				CpuCount: &vm.Hardware.CustomSize.CpuCount,
 				MemoryMB: &vm.Hardware.CustomSize.MemoryMB,
+				GpuCount: &vm.Hardware.CustomSize.GpuCount,
 			}
 		}
 		if vm.Hardware.DynamicMemoryConfiguration != nil {
