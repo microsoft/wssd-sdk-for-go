@@ -30,7 +30,7 @@ func (c *client) Update(ctx context.Context, bmh *pb.BareMetalHost) (*pb.BareMet
 		BareMetalHost: bmh,
 	}
 
-	response, err := c.BareMetalHostAgentClient.Update(ctx, request)
+	response, err := c.BareMetalHostAgentClient.CreateOrUpdate(ctx, request)
 	if err != nil {
 		return nil, err
 	}
