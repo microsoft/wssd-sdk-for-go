@@ -115,6 +115,8 @@ type SSHConfiguration struct {
 type RDPConfiguration struct {
 	// Set to 'true' to disable Remote Desktop
 	DisableRDP *bool
+	// Specifies custom port for Remote Desktop
+	Port *uint16
 }
 
 // ProtocolTypes enumerates the values for protocol types.
