@@ -21,6 +21,7 @@ type Service interface {
 	Delete(context.Context, string, string) error
 	Start(context.Context, string, string) error
 	Stop(context.Context, string, string) error
+	RunCommand(context.Context, string, string, *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error)
 }
 
 type VirtualMachineClient struct {
@@ -68,6 +69,7 @@ func (c *VirtualMachineClient) Restart(ctx context.Context, group string, name s
 	err = c.internal.Start(ctx, group, name)
 	return
 }
+
 func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize) (err error) {
 	vms, err := c.Get(ctx, group, name)
 	if err != nil {
@@ -232,4 +234,8 @@ func (c *VirtualMachineClient) NetworkInterfaceShow(ctx context.Context, group s
 	}
 
 	return
+}
+
+func (c *VirtualMachineClient) RunCommand(ctx context.Context, group, vmName string, request *compute.VirtualMachineRunCommandRequest) (response *compute.VirtualMachineRunCommandResponse, err error) {
+	return c.internal.RunCommand(ctx, group, vmName, request)
 }
