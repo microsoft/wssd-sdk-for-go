@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
-	github.com/microsoft/moc v0.10.12-alpha.3
+	github.com/microsoft/moc v0.10.13-0.20210923193514-4106569447ea
 	github.com/mitchellh/mapstructure v1.4.0 // indirect
 	github.com/onsi/ginkgo v1.16.4 // indirect
 	github.com/onsi/gomega v1.13.0 // indirect
