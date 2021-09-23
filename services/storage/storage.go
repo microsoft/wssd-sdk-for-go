@@ -3,6 +3,10 @@
 
 package storage
 
+import (
+	"github.com/microsoft/moc/rpc/common"
+)
+
 // VirtualHardDiskProperties defines the structure of a Virtual HardDisk
 type VirtualHardDiskProperties struct {
 	// Path - READONLY
@@ -42,6 +46,32 @@ type VirtualHardDiskProperties struct {
 	// IsPlacehoder therefore defines where the entity (VHD) is *not* located.
 	// This property is the exact inverse of the node agent's SystemOwned property.
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
+	// Image type  - sfs or local or http or clone
+	SourceType common.ImageSource `json:"sourcetype,omitempty"`
+}
+
+//Http Image properties
+type HttpImageProperties struct {
+	HttpURL string `json:"httpURL,omitempty"`
+}
+
+// SFSImage properties
+type SFSImageProperties struct {
+	CatalogName    string `json:"catalogName,omitempty"`
+	Audience       string `json:"audience,omitempty"`
+	Version        string `json:"version,omitempty"`
+	ReleaseName    string `json:"releasename,omitempty"`
+	Parts          int32  `json:"parts,omitempty"`
+	DestinationDir string `json:"destinationDir,omitempty"`
+}
+
+//Local image properties
+type LocalImageProperties struct {
+	Path string `json:"path,omitempty"`
+}
+
+type CloneImageProperties struct {
+	CloneSource string `json:"cloneSource,omitempty"`
 }
 
 // VirtualHardDisk defines the structure of a VHD
@@ -58,6 +88,11 @@ type VirtualHardDisk struct {
 	*VirtualHardDiskProperties `json:"virtualharddiskproperties,omitempty"`
 }
 
+type ContainerInfo struct {
+	AvailableSize string `json:"AvailableSize,omitempty"`
+	TotalSize     string `json:"TotalSize,omitempty"`
+}
+
 // ContainerProperties defines the structure of a ContainerProperties
 type ContainerProperties struct {
 	// Path
@@ -66,6 +101,9 @@ type ContainerProperties struct {
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// Statuses - Status
 	Statuses map[string]*string `json:"statuses"`
+	// Container storage information
+	*ContainerInfo `json:"info"`
+	IsPlaceholder  *bool `json:"isPlaceholder,omitempty"`
 }
 
 // VirtualHardDisk defines the structure of a VHD

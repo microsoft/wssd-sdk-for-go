@@ -4,6 +4,7 @@
 package internal
 
 import (
+	"code.cloudfoundry.org/bytefmt"
 	"context"
 	"fmt"
 
@@ -91,6 +92,11 @@ func getContainerRequest(opType wssdcommonproto.Operation, name string, ctainer 
 }
 
 func getContainer(ctainer *wssdstorage.Container) *storage.Container {
+	var totalSize, availSize string
+	if ctainer.Info != nil {
+		totalSize = bytefmt.ByteSize(ctainer.Info.Capacity.TotalBytes)
+		availSize = bytefmt.ByteSize(ctainer.Info.Capacity.AvailableBytes)
+	}
 	return &storage.Container{
 		ID:   &ctainer.Id,
 		Name: &ctainer.Name,
@@ -98,6 +104,11 @@ func getContainer(ctainer *wssdstorage.Container) *storage.Container {
 			Path:              &ctainer.Path,
 			ProvisioningState: status.GetProvisioningState(ctainer.Status.GetProvisioningStatus()),
 			Statuses:          status.GetStatuses(ctainer.Status),
+			ContainerInfo: &storage.ContainerInfo{
+				AvailableSize: availSize,
+				TotalSize:     totalSize,
+			},
+			IsPlaceholder: getContainerPlaceHolder(ctainer),
 		},
 	}
 }
@@ -112,6 +123,25 @@ func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 	if ctainer.Path != nil {
 		disk.Path = *ctainer.Path
 	}
-
+	if ctainer.IsPlaceholder != nil {
+		if disk.Entity != nil {
+			disk.Entity.IsPlaceholder = *ctainer.IsPlaceholder
+		}
+	}
+	if ctainer.ContainerInfo != nil {
+		if disk.Info != nil && disk.Info.Capacity != nil {
+			disk.Info.Capacity.AvailableBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.AvailableSize)
+			disk.Info.Capacity.TotalBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.TotalSize)
+		}
+	}
 	return &disk
+}
+
+func getContainerPlaceHolder(ctainer *wssdstorage.Container) *bool {
+	isPlaceholder := false
+	entity := ctainer.GetEntity()
+	if entity != nil {
+		isPlaceholder = entity.IsPlaceholder
+	}
+	return &isPlaceholder
 }
