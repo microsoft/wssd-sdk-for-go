@@ -1,5 +1,5 @@
 trigger:
-- main
+- master
 
 jobs:
 - template: .pipelines/build.yaml
