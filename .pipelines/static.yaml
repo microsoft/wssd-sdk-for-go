@@ -57,8 +57,11 @@ jobs:
     continueOnError: true
 
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-semmle.Semmle@1
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     displayName: 'Run CodeQL (Semmle)'
     inputs:
+      toolVersion: 'Latest'
       language: 'go'
       buildCommandsString: 'make all'
     continueOnError: true
