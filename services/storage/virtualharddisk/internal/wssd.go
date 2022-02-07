@@ -12,6 +12,7 @@ import (
 
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
+	prototags "github.com/microsoft/moc/pkg/tags"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdstorage "github.com/microsoft/moc/rpc/nodeagent/storage"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -89,10 +90,10 @@ func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, container
 		OperationType:          opType,
 		VirtualHardDiskSystems: []*wssdstorage.VirtualHardDisk{},
 	}
-
 	wssdvhd := &wssdstorage.VirtualHardDisk{
 		Name:          name,
 		ContainerName: containerName,
+		Tags:          getWssdTags(vhd.Tags),
 	}
 	var err error
 	if vhd != nil {
@@ -113,6 +114,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 	return &storage.VirtualHardDisk{
 		ID:   &vhd.Id,
 		Name: &vhd.Name,
+		Tags: getComputeTags(vhd.GetTags()),
 		VirtualHardDiskProperties: &storage.VirtualHardDiskProperties{
 			Source:              &vhd.Source,
 			Path:                &vhd.Path,
@@ -144,8 +146,10 @@ func getVirtualHardDiskIsPlaceholder(vhd *wssdstorage.VirtualHardDisk) *bool {
 }
 
 func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) (*wssdstorage.VirtualHardDisk, error) {
+
 	disk := wssdstorage.VirtualHardDisk{
 		ContainerName: containerName,
+		Tags:          getWssdTags(vhd.Tags),
 	}
 
 	if vhd.Name == nil {
@@ -205,4 +209,12 @@ func getVirtualharddisktype(enum string) wssdstorage.VirtualHardDiskType {
 		typevalue = wssdstorage.VirtualHardDiskType(typevTmp)
 	}
 	return typevalue
+}
+
+func getComputeTags(tags *wssdcommonproto.Tags) map[string]*string {
+	return prototags.ProtoToMap(tags)
+}
+
+func getWssdTags(tags map[string]*string) *wssdcommonproto.Tags {
+	return prototags.MapToProto(tags)
 }
