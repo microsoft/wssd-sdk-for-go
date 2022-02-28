@@ -129,6 +129,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			VirtualMachineName:  &vhd.VirtualmachineName,
 			Scsipath:            &vhd.Scsipath,
 			Virtualharddisktype: vhd.Virtualharddisktype.String(),
+			Hypervgenerationtype: vhd.Hypervgenerationtype.String(),
 			ProvisioningState:   status.GetProvisioningState(vhd.Status.GetProvisioningStatus()),
 			Statuses:            status.GetStatuses(vhd.Status),
 			IsPlaceholder:       getVirtualHardDiskIsPlaceholder(vhd),
@@ -158,6 +159,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 
 	disk.Name = *vhd.Name
 	disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
+	disk.Hypervgenerationtype = getHypervgenerationtype(vhd.Hypervgenerationtype)
 	disk.Entity = getWssdVirtualHardDiskEntity(vhd)
 
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
@@ -184,7 +186,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 		}
 		if vhd.VirtualMachineName != nil {
 			disk.VirtualmachineName = *vhd.VirtualMachineName
-		}
+		}               
 	}
 	disk.SourceType = vhd.SourceType
 
@@ -210,6 +212,15 @@ func getVirtualharddisktype(enum string) wssdstorage.VirtualHardDiskType {
 	}
 	return typevalue
 }
+func getHypervgenerationtype(enum string) wssdstorage.HyperVGenerationType {
+	typevalue := wssdstorage.HyperVGenerationType(1)
+	typevTmp, ok := wssdstorage.HyperVGenerationType_value[enum]
+	if ok {
+		typevalue = wssdstorage.HyperVGenerationType(typevTmp)
+	}
+	return typevalue
+}
+
 
 func getComputeTags(tags *wssdcommonproto.Tags) map[string]*string {
 	return prototags.ProtoToMap(tags)
