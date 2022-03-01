@@ -213,7 +213,7 @@ func getVirtualharddisktype(enum string) wssdstorage.VirtualHardDiskType {
 	return typevalue
 }
 func getHypervgenerationtype(enum string) wssdstorage.HyperVGenerationType {
-	typevalue := wssdstorage.HyperVGenerationType(1)
+	typevalue := wssdstorage.HyperVGenerationType(0)
 	typevTmp, ok := wssdstorage.HyperVGenerationType_value[enum]
 	if ok {
 		typevalue = wssdstorage.HyperVGenerationType(typevTmp)
