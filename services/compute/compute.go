@@ -141,6 +141,14 @@ type WinRMListener struct {
 	Protocol ProtocolTypes `json:"protocol,omitempty"`
 }
 
+// CloudInitDataSource indicates the datasource a linux vm will be provisioned with. Possible values include: "Azure", "NoCloud"
+type CloudInitDataSource string
+
+const (
+	CloudInitDataSourceAzure   CloudInitDataSource = "Azure"
+	CloudInitDataSourceNoCloud CloudInitDataSource = "NoCloud"
+)
+
 type WindowsConfiguration struct {
 	// EnableAutomaticUpdates
 	EnableAutomaticUpdates *bool `json:"enableAutomaticUpdates,omitempty"`
@@ -161,6 +169,8 @@ type LinuxConfiguration struct {
 	SSH *SSHConfiguration `json:"ssh,omitempty"`
 	// DisablePasswordAuthentication
 	DisablePasswordAuthentication *bool `json:"disablePasswordAuthentication,omitempty"`
+	// CloudInitDataSource
+	CloudInitDataSource *CloudInitDataSource `json:"cloudInitDataSource,omitempty"`
 }
 
 type OSProfile struct {

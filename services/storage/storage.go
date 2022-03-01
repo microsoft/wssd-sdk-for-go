@@ -48,6 +48,10 @@ type VirtualHardDiskProperties struct {
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 	// Image type  - sfs or local or http or clone
 	SourceType common.ImageSource `json:"sourcetype,omitempty"`
+	// HyperVGeneration - READONLY
+	HyperVGeneration common.HyperVGeneration `json:"hyperVGeneration,omitempty"`
+	// CloudInitDataSource - READONLY
+	CloudInitDataSource common.CloudInitDataSource `json:"cloudInitDataSource,omitempty"`
 }
 
 //Http Image properties

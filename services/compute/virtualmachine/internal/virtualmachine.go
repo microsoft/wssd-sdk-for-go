@@ -278,6 +278,10 @@ func (c *client) getWssdVirtualMachineLinuxConfiguration(linuxConfiguration *com
 		lc.DisablePasswordAuthentication = *linuxConfiguration.DisablePasswordAuthentication
 	}
 
+	if linuxConfiguration.CloudInitDataSource != nil {
+		lc.CloudInitDataSource = *linuxConfiguration.CloudInitDataSource
+	}
+
 	return lc
 
 }
@@ -529,6 +533,7 @@ func (c *client) getVirtualMachineLinuxConfiguration(linuxConfiguration *wssdcom
 
 	if linuxConfiguration != nil {
 		lc.DisablePasswordAuthentication = &linuxConfiguration.DisablePasswordAuthentication
+		lc.CloudInitDataSource = &linuxConfiguration.CloudInitDataSource
 	}
 
 	return lc
