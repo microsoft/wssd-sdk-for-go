@@ -6,12 +6,6 @@ package storage
 import (
 	"github.com/microsoft/moc/rpc/common"
 )
-type HyperVGenerationTypes string 
-
-const (
-	HyperVGenerationV1 HyperVGenerationTypes = "HyperVGenerationV1"
-	HyperVGenerationV2 HyperVGenerationTypes = "HyperVGenerationV2"
-)
 
 // VirtualHardDiskProperties defines the structure of a Virtual HardDisk
 type VirtualHardDiskProperties struct {
@@ -55,7 +49,7 @@ type VirtualHardDiskProperties struct {
 	// Image type  - sfs or local or http or clone
 	SourceType common.ImageSource `json:"sourcetype,omitempty"`
 	// HyperVGeneration - Gets the HyperVGenerationType of the VirtualMachine created from the image. Possible values include: 'HyperVGenerationTypesV1', 'HyperVGenerationTypesV2'
-	HyperVGeneration HyperVGenerationTypes `json:"hyperVGeneration,omitempty"`	
+	HyperVGeneration common.HyperVGeneration `json:"hyperVGeneration,omitempty"`	
 }
 
 //Http Image properties
