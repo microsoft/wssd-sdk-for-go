@@ -161,6 +161,12 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
 	disk.Entity = getWssdVirtualHardDiskEntity(vhd)
 
+	if vhd.CloudInitDataSource != nil {
+		disk.CloudInitDataSource = vhd.CloudInitDataSource
+	} else {
+		disk.CloudInitDataSource = wssdcommonproto.CloudInitDataSource_NoCloud
+	}
+
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
 		if vhd.Source == nil {
 			return nil, errors.Wrapf(errors.InvalidInput, "Missing Source")
@@ -188,7 +194,6 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 		}
 	}
 	disk.SourceType = vhd.SourceType
-	disk.CloudInitDataSource = vhd.CloudInitDataSource
 
 	return &disk, nil
 }

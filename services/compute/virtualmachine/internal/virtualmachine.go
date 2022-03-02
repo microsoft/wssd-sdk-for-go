@@ -280,6 +280,8 @@ func (c *client) getWssdVirtualMachineLinuxConfiguration(linuxConfiguration *com
 
 	if linuxConfiguration.CloudInitDataSource != nil {
 		lc.CloudInitDataSource = *linuxConfiguration.CloudInitDataSource
+	} else {
+		lc.CloudInitDataSource = common.CloudInitDataSource_NoCloud
 	}
 
 	return lc
