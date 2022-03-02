@@ -132,7 +132,6 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			ProvisioningState:   status.GetProvisioningState(vhd.Status.GetProvisioningStatus()),
 			Statuses:            status.GetStatuses(vhd.Status),
 			IsPlaceholder:       getVirtualHardDiskIsPlaceholder(vhd),
-			HyperVGeneration:    &vhd.HyperVGeneration,
 			CloudInitDataSource: &vhd.CloudInitDataSource,
 		},
 	}
@@ -189,7 +188,6 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 		}
 	}
 	disk.SourceType = vhd.SourceType
-	disk.HyperVGeneration = vhd.HyperVGeneration
 	disk.CloudInitDataSource = vhd.CloudInitDataSource
 
 	return &disk, nil
