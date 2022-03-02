@@ -129,7 +129,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			VirtualMachineName:   &vhd.VirtualmachineName,
 			Scsipath:             &vhd.Scsipath,
 			Virtualharddisktype:  vhd.Virtualharddisktype.String(),
-			Hypervgeneration:     vhd.Hypervgeneration,
+			HyperVGeneration:     &vhd.HyperVGeneration,
 			ProvisioningState:    status.GetProvisioningState(vhd.Status.GetProvisioningStatus()),
 			Statuses:             status.GetStatuses(vhd.Status),
 			IsPlaceholder:        getVirtualHardDiskIsPlaceholder(vhd),
@@ -167,7 +167,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	else{
 		disk.HyperVGeneration = common.HyperVGeneration_HyperVGenerationV2
 	}
-	
+
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
 		if vhd.Source == nil {
 			return nil, errors.Wrapf(errors.InvalidInput, "Missing Source")
