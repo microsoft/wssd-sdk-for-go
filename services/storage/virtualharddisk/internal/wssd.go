@@ -167,6 +167,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	else{
 		disk.HyperVGeneration = common.HyperVGeneration_HyperVGenerationV2
 	}
+	
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
 		if vhd.Source == nil {
 			return nil, errors.Wrapf(errors.InvalidInput, "Missing Source")
@@ -217,8 +218,6 @@ func getVirtualharddisktype(enum string) wssdstorage.VirtualHardDiskType {
 	}
 	return typevalue
 }
-
-
 
 func getComputeTags(tags *wssdcommonproto.Tags) map[string]*string {
 	return prototags.ProtoToMap(tags)
