@@ -165,7 +165,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 		disk.HyperVGeneration = vhd.HyperVGeneration
 	}
 	else{
-		disk.HyperVGeneration = common.HyperVGeneration_HyperVGenerationV2
+		disk.HyperVGeneration = wssdcommonproto.HyperVGeneration_HyperVGenerationV2
 	}
 
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
