@@ -17,4 +17,4 @@ require (
 
 replace github.com/miekg/dns => github.com/miekg/dns v1.1.25
 
-replace github.com/microsoft/moc => D:/moc
+
