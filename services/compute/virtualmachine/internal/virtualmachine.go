@@ -7,6 +7,7 @@ import (
 	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 
+	"github.com/microsoft/moc/rpc/common"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
 )
@@ -278,8 +279,8 @@ func (c *client) getWssdVirtualMachineLinuxConfiguration(linuxConfiguration *com
 		lc.DisablePasswordAuthentication = *linuxConfiguration.DisablePasswordAuthentication
 	}
 
-	if linuxConfiguration.CloudInitDataSource != nil {
-		lc.CloudInitDataSource = *linuxConfiguration.CloudInitDataSource
+	if &linuxConfiguration.CloudInitDataSource != nil {
+		lc.CloudInitDataSource = linuxConfiguration.CloudInitDataSource
 	} else {
 		lc.CloudInitDataSource = common.CloudInitDataSource_NoCloud
 	}
@@ -535,7 +536,7 @@ func (c *client) getVirtualMachineLinuxConfiguration(linuxConfiguration *wssdcom
 
 	if linuxConfiguration != nil {
 		lc.DisablePasswordAuthentication = &linuxConfiguration.DisablePasswordAuthentication
-		lc.CloudInitDataSource = &linuxConfiguration.CloudInitDataSource
+		lc.CloudInitDataSource = linuxConfiguration.CloudInitDataSource
 	}
 
 	return lc
