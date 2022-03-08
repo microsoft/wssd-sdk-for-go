@@ -117,6 +117,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 		Tags: getComputeTags(vhd.GetTags()),
 		VirtualHardDiskProperties: &storage.VirtualHardDiskProperties{
 			Source:              &vhd.Source,
+			SourceType:          vhd.SourceType,
 			Path:                &vhd.Path,
 			DiskSizeBytes:       &vhd.Size,
 			Dynamic:             &vhd.Dynamic,
