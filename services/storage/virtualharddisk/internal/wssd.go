@@ -163,8 +163,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 
 	if (vhd.HyperVGeneration != nil){
 		disk.HyperVGeneration = vhd.HyperVGeneration
-	}
-	else{
+	} else{
 		disk.HyperVGeneration = wssdcommonproto.HyperVGeneration_HyperVGenerationV2
 	}
 
