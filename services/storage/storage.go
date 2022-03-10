@@ -47,9 +47,9 @@ type VirtualHardDiskProperties struct {
 	// This property is the exact inverse of the node agent's SystemOwned property.
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 	// Image type  - sfs or local or http or clone
-	SourceType common.ImageSource `json:"sourcetype,omitempty"`
+	SourceType *common.ImageSource `json:"sourcetype,omitempty"`
 	// CloudInitDataSource - READONLY
-	CloudInitDataSource common.CloudInitDataSource `json:"cloudInitDataSource,omitempty"`
+	CloudInitDataSource *common.CloudInitDataSource `json:"cloudInitDataSource,omitempty"`
 }
 
 //Http Image properties

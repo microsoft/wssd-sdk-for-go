@@ -93,16 +93,12 @@ func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, container
 	wssdvhd := &wssdstorage.VirtualHardDisk{
 		Name:          name,
 		ContainerName: containerName,
-		Tags:          getWssdTags(vhd.Tags),
 	}
 	var err error
 	if vhd != nil {
 		wssdvhd, err = getWssdVirtualHardDisk(containerName, vhd)
 		if err != nil {
 			return nil, err
-		}
-		if vhd.VirtualHardDiskProperties != nil {
-			wssdvhd.SourceType = vhd.SourceType
 		}
 	}
 	request.VirtualHardDiskSystems = append(request.VirtualHardDiskSystems, wssdvhd)
@@ -117,7 +113,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 		Tags: getComputeTags(vhd.GetTags()),
 		VirtualHardDiskProperties: &storage.VirtualHardDiskProperties{
 			Source:              &vhd.Source,
-			SourceType:          vhd.SourceType,
+			SourceType:          &vhd.SourceType,
 			Path:                &vhd.Path,
 			DiskSizeBytes:       &vhd.Size,
 			Dynamic:             &vhd.Dynamic,
@@ -133,7 +129,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			ProvisioningState:   status.GetProvisioningState(vhd.Status.GetProvisioningStatus()),
 			Statuses:            status.GetStatuses(vhd.Status),
 			IsPlaceholder:       getVirtualHardDiskIsPlaceholder(vhd),
-			CloudInitDataSource: vhd.CloudInitDataSource,
+			CloudInitDataSource: &vhd.CloudInitDataSource,
 		},
 	}
 }
@@ -162,10 +158,10 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
 	disk.Entity = getWssdVirtualHardDiskEntity(vhd)
 
-	if &vhd.CloudInitDataSource != nil {
-		disk.CloudInitDataSource = vhd.CloudInitDataSource
+	if vhd.SourceType != nil {
+		disk.SourceType = *vhd.SourceType
 	} else {
-		disk.CloudInitDataSource = wssdcommonproto.CloudInitDataSource_NoCloud
+		disk.SourceType = wssdcommonproto.ImageSource_LOCAL_SOURCE
 	}
 
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
@@ -173,6 +169,12 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 			return nil, errors.Wrapf(errors.InvalidInput, "Missing Source")
 		}
 		disk.Source = *vhd.Source
+
+		if vhd.CloudInitDataSource != nil {
+			disk.CloudInitDataSource = *vhd.CloudInitDataSource
+		} else {
+			disk.CloudInitDataSource = wssdcommonproto.CloudInitDataSource_NoCloud
+		}
 	} else {
 		if vhd.DiskSizeBytes == nil {
 			return nil, errors.Wrapf(errors.InvalidInput, "Missing DiskSize")
@@ -194,7 +196,6 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 			disk.VirtualmachineName = *vhd.VirtualMachineName
 		}
 	}
-	disk.SourceType = vhd.SourceType
 
 	return &disk, nil
 }
