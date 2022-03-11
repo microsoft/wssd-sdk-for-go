@@ -191,7 +191,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 		}
 		if vhd.VirtualMachineName != nil {
 			disk.VirtualmachineName = *vhd.VirtualMachineName
-		}               
+		}
 	}
 	disk.SourceType = vhd.SourceType
 
