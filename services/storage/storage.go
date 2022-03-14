@@ -55,6 +55,7 @@ type VirtualHardDiskProperties struct {
 //Http Image properties
 type HttpImageProperties struct {
 	HttpURL string `json:"httpURL,omitempty"`
+	Version string `json:"version,omitempty"`
 }
 
 // SFSImage properties
