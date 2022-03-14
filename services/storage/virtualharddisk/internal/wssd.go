@@ -96,6 +96,7 @@ func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, container
 	}
 	var err error
 	if vhd != nil {
+		wssdvhd.Tags = getWssdTags(vhd.Tags)
 		wssdvhd, err = getWssdVirtualHardDisk(containerName, vhd)
 		if err != nil {
 			return nil, err
