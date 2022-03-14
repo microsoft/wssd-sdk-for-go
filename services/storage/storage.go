@@ -55,7 +55,6 @@ type VirtualHardDiskProperties struct {
 //Http Image properties
 type HttpImageProperties struct {
 	HttpURL string `json:"httpURL,omitempty"`
-	Version string `json:"version,omitempty"`
 }
 
 // SFSImage properties
@@ -72,6 +71,12 @@ type LocalImageProperties struct {
 
 type CloneImageProperties struct {
 	CloneSource string `json:"cloneSource,omitempty"`
+}
+
+//Azure GalleryImage properties
+type AzureGalleryImageProperties struct {
+	SasURI  string `json:"sasURI,omitempty"`
+	Version string `json:"version,omitempty"`
 }
 
 // VirtualHardDisk defines the structure of a VHD
