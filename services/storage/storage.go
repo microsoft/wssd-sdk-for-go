@@ -49,7 +49,7 @@ type VirtualHardDiskProperties struct {
 	// Image type  - sfs or local or http or clone
 	SourceType common.ImageSource `json:"sourcetype,omitempty"`
 	// HyperVGeneration - Gets the HyperVGenerationType of the VirtualMachine created from the image. Possible values include: 'HyperVGenerationTypesV1', 'HyperVGenerationTypesV2'
-	HyperVGeneration common.HyperVGeneration `json:"hyperVGeneration,omitempty"`	
+	HyperVGeneration common.HyperVGeneration `json:"hyperVGeneration,omitempty"`
 }
 
 //Http Image properties

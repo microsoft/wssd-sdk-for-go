@@ -116,23 +116,23 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 		Name: &vhd.Name,
 		Tags: getComputeTags(vhd.GetTags()),
 		VirtualHardDiskProperties: &storage.VirtualHardDiskProperties{
-			Source:               &vhd.Source,
-			Path:                 &vhd.Path,
-			DiskSizeBytes:        &vhd.Size,
-			Dynamic:              &vhd.Dynamic,
-			Blocksizebytes:       &vhd.Blocksizebytes,
-			Logicalsectorbytes:   &vhd.Logicalsectorbytes,
-			Physicalsectorbytes:  &vhd.Physicalsectorbytes,
-			Controllernumber:     &vhd.Controllernumber,
-			Controllerlocation:   &vhd.Controllerlocation,
-			Disknumber:           &vhd.Disknumber,
-			VirtualMachineName:   &vhd.VirtualmachineName,
-			Scsipath:             &vhd.Scsipath,
-			Virtualharddisktype:  vhd.Virtualharddisktype.String(),
-			HyperVGeneration:     vhd.HyperVGeneration,
-			ProvisioningState:    status.GetProvisioningState(vhd.Status.GetProvisioningStatus()),
-			Statuses:             status.GetStatuses(vhd.Status),
-			IsPlaceholder:        getVirtualHardDiskIsPlaceholder(vhd),
+			Source:              &vhd.Source,
+			Path:                &vhd.Path,
+			DiskSizeBytes:       &vhd.Size,
+			Dynamic:             &vhd.Dynamic,
+			Blocksizebytes:      &vhd.Blocksizebytes,
+			Logicalsectorbytes:  &vhd.Logicalsectorbytes,
+			Physicalsectorbytes: &vhd.Physicalsectorbytes,
+			Controllernumber:    &vhd.Controllernumber,
+			Controllerlocation:  &vhd.Controllerlocation,
+			Disknumber:          &vhd.Disknumber,
+			VirtualMachineName:  &vhd.VirtualmachineName,
+			Scsipath:            &vhd.Scsipath,
+			Virtualharddisktype: vhd.Virtualharddisktype.String(),
+			HyperVGeneration:    vhd.HyperVGeneration,
+			ProvisioningState:   status.GetProvisioningState(vhd.Status.GetProvisioningStatus()),
+			Statuses:            status.GetStatuses(vhd.Status),
+			IsPlaceholder:       getVirtualHardDiskIsPlaceholder(vhd),
 		},
 	}
 }
@@ -161,9 +161,9 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
 	disk.Entity = getWssdVirtualHardDiskEntity(vhd)
 
-	if (&vhd.HyperVGeneration != nil){
+	if &vhd.HyperVGeneration != nil {
 		disk.HyperVGeneration = vhd.HyperVGeneration
-	} else{
+	} else {
 		disk.HyperVGeneration = wssdcommonproto.HyperVGeneration_HyperVGenerationV2
 	}
 
