@@ -48,6 +48,8 @@ type VirtualHardDiskProperties struct {
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 	// Image type  - sfs or local or http or clone
 	SourceType common.ImageSource `json:"sourcetype,omitempty"`
+	// CloudInitDataSource - READONLY
+	CloudInitDataSource common.CloudInitDataSource `json:"cloudInitDataSource,omitempty"`
 	// HyperVGeneration - Gets the HyperVGenerationType of the VirtualMachine created from the image. Possible values include: 'HyperVGenerationTypesV1', 'HyperVGenerationTypesV2'
 	HyperVGeneration common.HyperVGeneration `json:"hyperVGeneration,omitempty"`
 }
@@ -71,6 +73,12 @@ type LocalImageProperties struct {
 
 type CloneImageProperties struct {
 	CloneSource string `json:"cloneSource,omitempty"`
+}
+
+//Azure GalleryImage properties
+type AzureGalleryImageProperties struct {
+	SasURI  string `json:"sasURI,omitempty"`
+	Version string `json:"version,omitempty"`
 }
 
 // VirtualHardDisk defines the structure of a VHD
