@@ -163,7 +163,7 @@ type LinuxConfiguration struct {
 	// DisablePasswordAuthentication
 	DisablePasswordAuthentication *bool `json:"disablePasswordAuthentication,omitempty"`
 	// CloudInitDataSource indicates the datasource a linux vm will be provisioned with. Possible values include: "Azure", "NoCloud", with default being "NoCloud"
-	CloudInitDataSource *common.CloudInitDataSource `json:"cloudInitDataSource,omitempty"`
+	CloudInitDataSource common.CloudInitDataSource `json:"cloudInitDataSource,omitempty"`
 }
 
 type OSProfile struct {
