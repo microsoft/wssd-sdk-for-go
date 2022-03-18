@@ -163,7 +163,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 		disk.SourceType = vhd.SourceType
 	} else {
 		disk.SourceType = wssdcommonproto.ImageSource_LOCAL_SOURCE
-  }
+	}
 	if &vhd.HyperVGeneration != nil {
 		disk.HyperVGeneration = vhd.HyperVGeneration
 	} else {
