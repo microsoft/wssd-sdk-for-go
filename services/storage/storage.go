@@ -50,6 +50,8 @@ type VirtualHardDiskProperties struct {
 	SourceType common.ImageSource `json:"sourcetype,omitempty"`
 	// CloudInitDataSource - READONLY
 	CloudInitDataSource common.CloudInitDataSource `json:"cloudInitDataSource,omitempty"`
+	// HyperVGeneration - Gets the HyperVGenerationType of the VirtualMachine created from the image. Possible values include: 'HyperVGenerationTypesV1', 'HyperVGenerationTypesV2'
+	HyperVGeneration common.HyperVGeneration `json:"hyperVGeneration,omitempty"`
 }
 
 //Http Image properties
