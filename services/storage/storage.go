@@ -52,7 +52,7 @@ type VirtualHardDiskProperties struct {
 	CloudInitDataSource common.CloudInitDataSource `json:"cloudInitDataSource,omitempty"`
 	// HyperVGeneration - Gets the HyperVGenerationType of the VirtualMachine created from the image. Possible values include: 'HyperVGenerationTypesV1', 'HyperVGenerationTypesV2'
 	HyperVGeneration common.HyperVGeneration `json:"hyperVGeneration,omitempty"`
-	//DiskFileFormat - File format of the disk 
+	//DiskFileFormat - File format of the disk
 	DiskFileFormat common.DiskFileFormat `json:"diskFileFormat,omitempty"`
 }
 
