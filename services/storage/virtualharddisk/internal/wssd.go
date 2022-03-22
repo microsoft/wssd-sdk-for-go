@@ -173,7 +173,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	if &vhd.DiskFileFormat != nil {
 		disk.DiskFileFormat = vhd.DiskFileFormat
 	} else {
-		disk.DiskFileFormat = wssdcommonproto.DiskFileFormat_DisFileFormatVHDX
+		disk.DiskFileFormat = wssdcommonproto.DiskFileFormat_DiskFileFormatVHDX
 	}
 
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
