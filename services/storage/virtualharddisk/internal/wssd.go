@@ -131,6 +131,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			Statuses:            status.GetStatuses(vhd.Status),
 			IsPlaceholder:       getVirtualHardDiskIsPlaceholder(vhd),
 			CloudInitDataSource: vhd.CloudInitDataSource,
+			DiskFileFormat:      vhd.DiskFileFormat,
 		},
 	}
 }
@@ -168,6 +169,11 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 		disk.HyperVGeneration = vhd.HyperVGeneration
 	} else {
 		disk.HyperVGeneration = wssdcommonproto.HyperVGeneration_HyperVGenerationV2
+	}
+	if &vhd.DiskFileFormat != nil {
+		disk.DiskFileFormat = vhd.DiskFileFormat
+	} else {
+		disk.DiskFileFormat = wssdcommonproto.DiskFileFormat_DiskFileFormatVHDX
 	}
 
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
