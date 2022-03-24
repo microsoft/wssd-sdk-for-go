@@ -131,10 +131,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			Statuses:            status.GetStatuses(vhd.Status),
 			IsPlaceholder:       getVirtualHardDiskIsPlaceholder(vhd),
 			CloudInitDataSource: vhd.CloudInitDataSource,
-<<<<<<< HEAD
-=======
 			DiskFileFormat:      vhd.DiskFileFormat,
->>>>>>> cff1653c93e0f850df9210f046afaa989b648e20
 		},
 	}
 }
