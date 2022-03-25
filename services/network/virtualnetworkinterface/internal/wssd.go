@@ -11,7 +11,7 @@ import (
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/moc/pkg/status"
-	"github.com/microsoft/moc/pkg/tags"
+	prototags "github.com/microsoft/moc/pkg/tags"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdnetwork "github.com/microsoft/moc/rpc/nodeagent/network"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -147,6 +147,7 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 		Name:        *c.Name,
 		Ipconfigs:   wssdipconfigs,
 		DnsSettings: cc.getDns(c.DNSSettings),
+		Tags:        prototags.MapToProto(c.Tags),
 	}
 
 	if c.MACAddress != nil {
@@ -166,15 +167,6 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 	}
 
 	vnic.Entity = cc.getWssdVirtualMachineEntity(c)
-
-	if (c.Tags != nil) && (len(c.Tags) > 0) {
-		portProfile, ok := c.Tags["PortProfile"]
-		if ok {
-			vnic.Tags = &wssdcommonproto.Tags{}
-			tags.AddTagValue("PortProfile", *portProfile, vnic.Tags)
-		}
-	}
-
 	return vnic, nil
 }
 
@@ -250,6 +242,7 @@ func (cc *client) getVirtualNetworkInterface(server, group string, c *wssdnetwor
 			IsPlaceholder:               cc.getVirtualNetworkIsPlaceholder(c),
 			EnableAcceleratedNetworking: cc.getIovSetting(c),
 		},
+		Tags: prototags.ProtoToMap(c.Tags),
 	}
 
 	return vnetIntf, nil
