@@ -9,6 +9,7 @@ import (
 
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
+	"github.com/microsoft/moc/rpc/common"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
 	wssdnetwork "github.com/microsoft/moc/rpc/nodeagent/network"
@@ -343,6 +344,7 @@ func (c *client) getVirtualMachineWindowsConfiguration(windowsConfiguration *wss
 func (c *client) getVirtualMachineLinuxConfiguration(linuxConfiguration *wssdcompute.LinuxConfiguration) *compute.LinuxConfiguration {
 	lc := &compute.LinuxConfiguration{
 		DisablePasswordAuthentication: &linuxConfiguration.DisablePasswordAuthentication,
+		CloudInitDataSource:           linuxConfiguration.CloudInitDataSource,
 	}
 
 	return lc
@@ -584,6 +586,11 @@ func (c *client) getWssdVirtualMachineLinuxConfiguration(linuxConfiguration *com
 
 	if linuxConfiguration.DisablePasswordAuthentication != nil {
 		lc.DisablePasswordAuthentication = *linuxConfiguration.DisablePasswordAuthentication
+	}
+	if &linuxConfiguration.CloudInitDataSource != nil {
+		lc.CloudInitDataSource = linuxConfiguration.CloudInitDataSource
+	} else {
+		lc.CloudInitDataSource = common.CloudInitDataSource_NoCloud
 	}
 
 	return lc
