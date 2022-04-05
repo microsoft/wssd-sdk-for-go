@@ -12,6 +12,7 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 
 	"github.com/microsoft/moc/pkg/auth"
+	prototags "github.com/microsoft/moc/pkg/tags"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdstorage "github.com/microsoft/moc/rpc/nodeagent/storage"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -110,12 +111,15 @@ func getContainer(ctainer *wssdstorage.Container) *storage.Container {
 			},
 			IsPlaceholder: getContainerPlaceHolder(ctainer),
 		},
+		Tags: prototags.ProtoToMap(ctainer.Tags),
 	}
 }
 
 func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 
-	var disk wssdstorage.Container
+	disk := &wssdstorage.Container{
+		Tags: prototags.MapToProto(ctainer.Tags),
+	}
 
 	if ctainer.Name != nil {
 		disk.Name = *ctainer.Name
@@ -134,7 +138,7 @@ func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 			disk.Info.Capacity.TotalBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.TotalSize)
 		}
 	}
-	return &disk
+	return disk
 }
 
 func getContainerPlaceHolder(ctainer *wssdstorage.Container) *bool {
