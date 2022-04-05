@@ -17,6 +17,7 @@ import (
 	wssdstorage "github.com/microsoft/moc/rpc/nodeagent/storage"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	log "k8s.io/klog"
+	log2 "log"
 )
 
 type client struct {
@@ -146,7 +147,7 @@ func getVirtualHardDiskIsPlaceholder(vhd *wssdstorage.VirtualHardDisk) *bool {
 }
 
 func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) (*wssdstorage.VirtualHardDisk, error) {
-
+	log2.Printf("in getWssdVirtualHardDisk in wssd-sdk-for-go")
 	disk := wssdstorage.VirtualHardDisk{
 		ContainerName: containerName,
 		Tags:          getWssdTags(vhd.Tags),
@@ -165,14 +166,18 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	} else {
 		disk.SourceType = wssdcommonproto.ImageSource_LOCAL_SOURCE
 	}
-	if &vhd.HyperVGeneration != nil {
-		disk.HyperVGeneration = vhd.HyperVGeneration
+	if &vhd.VirtualHardDiskProperties.HyperVGeneration != nil {
+		log2.Printf("generation in wssd-sdk-for -go is %d", vhd.VirtualHardDiskProperties.HyperVGeneration)
+		disk.HyperVGeneration = vhd.VirtualHardDiskProperties.HyperVGeneration
 	} else {
+		log2.Printf("setting generation to generation 2")
 		disk.HyperVGeneration = wssdcommonproto.HyperVGeneration_HyperVGenerationV2
 	}
 	if &vhd.DiskFileFormat != nil {
+		log2.Printf("diskFIleFOrmat in wssd-sdk-for -go is %d", vhd.DiskFileFormat)
 		disk.DiskFileFormat = vhd.DiskFileFormat
 	} else {
+		log2.Printf("settingformat to vhdx")
 		disk.DiskFileFormat = wssdcommonproto.DiskFileFormat_DiskFileFormatVHDX
 	}
 
