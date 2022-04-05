@@ -17,7 +17,6 @@ import (
 	wssdstorage "github.com/microsoft/moc/rpc/nodeagent/storage"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	log "k8s.io/klog"
-	log2 "log"
 )
 
 type client struct {
@@ -147,7 +146,6 @@ func getVirtualHardDiskIsPlaceholder(vhd *wssdstorage.VirtualHardDisk) *bool {
 }
 
 func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) (*wssdstorage.VirtualHardDisk, error) {
-	log2.Printf("in getWssdVirtualHardDisk in wssd-sdk-for-go")
 	disk := wssdstorage.VirtualHardDisk{
 		ContainerName: containerName,
 		Tags:          getWssdTags(vhd.Tags),
@@ -158,59 +156,45 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	}
 
 	disk.Name = *vhd.Name
-	disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
 	disk.Entity = getWssdVirtualHardDiskEntity(vhd)
 
-	if &vhd.SourceType != nil {
-		disk.SourceType = vhd.SourceType
-	} else {
-		disk.SourceType = wssdcommonproto.ImageSource_LOCAL_SOURCE
-	}
-	if &vhd.VirtualHardDiskProperties.HyperVGeneration != nil {
-		log2.Printf("generation in wssd-sdk-for -go is %d", vhd.VirtualHardDiskProperties.HyperVGeneration)
-		disk.HyperVGeneration = vhd.VirtualHardDiskProperties.HyperVGeneration
-	} else {
-		log2.Printf("setting generation to generation 2")
-		disk.HyperVGeneration = wssdcommonproto.HyperVGeneration_HyperVGenerationV2
-	}
-	if &vhd.DiskFileFormat != nil {
-		log2.Printf("diskFIleFOrmat in wssd-sdk-for -go is %d", vhd.DiskFileFormat)
+	if vhd.VirtualHardDiskProperties != nil {
+		disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
+		disk.HyperVGeneration = vhd.HyperVGeneration
 		disk.DiskFileFormat = vhd.DiskFileFormat
-	} else {
-		log2.Printf("settingformat to vhdx")
-		disk.DiskFileFormat = wssdcommonproto.DiskFileFormat_DiskFileFormatVHDX
-	}
+		disk.SourceType = vhd.SourceType
 
-	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
-		if vhd.Source == nil {
-			return nil, errors.Wrapf(errors.InvalidInput, "Missing Source")
-		}
-		disk.Source = *vhd.Source
+		if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
+			if vhd.Source == nil {
+				return nil, errors.Wrapf(errors.InvalidInput, "Missing Source")
+			}
+			disk.Source = *vhd.Source
 
-		if &vhd.CloudInitDataSource != nil {
-			disk.CloudInitDataSource = vhd.CloudInitDataSource
+			if &vhd.CloudInitDataSource != nil {
+				disk.CloudInitDataSource = vhd.CloudInitDataSource
+			} else {
+				disk.CloudInitDataSource = wssdcommonproto.CloudInitDataSource_NoCloud
+			}
 		} else {
-			disk.CloudInitDataSource = wssdcommonproto.CloudInitDataSource_NoCloud
-		}
-	} else {
-		if vhd.DiskSizeBytes == nil {
-			return nil, errors.Wrapf(errors.InvalidInput, "Missing DiskSize")
-		}
-		disk.Size = *vhd.DiskSizeBytes
-		if vhd.Dynamic != nil {
-			disk.Dynamic = *vhd.Dynamic
-		}
-		if vhd.Blocksizebytes != nil {
-			disk.Blocksizebytes = *vhd.Blocksizebytes
-		}
-		if vhd.Logicalsectorbytes != nil {
-			disk.Logicalsectorbytes = *vhd.Logicalsectorbytes
-		}
-		if vhd.Physicalsectorbytes != nil {
-			disk.Physicalsectorbytes = *vhd.Physicalsectorbytes
-		}
-		if vhd.VirtualMachineName != nil {
-			disk.VirtualmachineName = *vhd.VirtualMachineName
+			if vhd.DiskSizeBytes == nil {
+				return nil, errors.Wrapf(errors.InvalidInput, "Missing DiskSize")
+			}
+			disk.Size = *vhd.DiskSizeBytes
+			if vhd.Dynamic != nil {
+				disk.Dynamic = *vhd.Dynamic
+			}
+			if vhd.Blocksizebytes != nil {
+				disk.Blocksizebytes = *vhd.Blocksizebytes
+			}
+			if vhd.Logicalsectorbytes != nil {
+				disk.Logicalsectorbytes = *vhd.Logicalsectorbytes
+			}
+			if vhd.Physicalsectorbytes != nil {
+				disk.Physicalsectorbytes = *vhd.Physicalsectorbytes
+			}
+			if vhd.VirtualMachineName != nil {
+				disk.VirtualmachineName = *vhd.VirtualMachineName
+			}
 		}
 	}
 
