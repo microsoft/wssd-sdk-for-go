@@ -4,6 +4,7 @@
 package compute
 
 import (
+	"github.com/microsoft/moc/rpc/common"
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 )
 
@@ -161,6 +162,8 @@ type LinuxConfiguration struct {
 	SSH *SSHConfiguration `json:"ssh,omitempty"`
 	// DisablePasswordAuthentication
 	DisablePasswordAuthentication *bool `json:"disablePasswordAuthentication,omitempty"`
+	// CloudInitDataSource indicates the datasource a linux vm will be provisioned with. Possible values include: "Azure", "NoCloud", with default being "NoCloud"
+	CloudInitDataSource common.CloudInitDataSource `json:"cloudInitDataSource,omitempty"`
 }
 
 type OSProfile struct {
