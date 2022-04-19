@@ -48,8 +48,9 @@ func Test_getVirtualMachine(t *testing.T) {
 						Health: &common.Health{
 							CurrentState: common.HealthState_OK,
 						},
-						LastError: &common.Error{},
-						Version:   &common.Version{},
+						LastError:      &common.Error{},
+						Version:        &common.Version{},
+						DownloadStatus: &common.DownloadStatus{},
 					},
 					Os: &wssdcompute.OperatingSystemConfiguration{
 						LinuxConfiguration: nil,
@@ -101,6 +102,7 @@ func Test_getVirtualMachine(t *testing.T) {
 							NetworkInterfaces: &[]compute.NetworkInterfaceReference{},
 						},
 						Statuses: map[string]*string{
+							"DownloadStatus": proto.String(""),
 							"Error":          proto.String(""),
 							"HealthState":    proto.String("currentState:OK "),
 							"ProvisionState": proto.String("currentState:CREATED "),
