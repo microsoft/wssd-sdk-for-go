@@ -21,7 +21,6 @@ func Test_getWssdVirtualMachineNetworkConfiguration(t *testing.T) {}
 func Test_getWssdVirtualMachineOSSSHPublicKeys(t *testing.T) {}
 func Test_getWssdVirtualMachineOSConfiguration(t *testing.T) {}
 
-func Test_getVirtualMachine(t *testing.T)                        {}
 func Test_getVirtualMachineStorageProfile(t *testing.T)          {}
 func Test_getVirtualMachineStorageProfileOsDisk(t *testing.T)    {}
 func Test_getVirtualMachineStorageProfileDataDisks(t *testing.T) {}

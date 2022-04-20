@@ -532,14 +532,14 @@ func (c *client) getVirtualMachineWindowsConfiguration(windowsConfiguration *wss
 }
 
 func (c *client) getVirtualMachineLinuxConfiguration(linuxConfiguration *wssdcompute.LinuxConfiguration) *compute.LinuxConfiguration {
-	lc := &compute.LinuxConfiguration{}
-
-	if linuxConfiguration != nil {
-		lc.DisablePasswordAuthentication = &linuxConfiguration.DisablePasswordAuthentication
-		lc.CloudInitDataSource = linuxConfiguration.CloudInitDataSource
+	if linuxConfiguration == nil {
+		return nil
 	}
 
-	return lc
+	return &compute.LinuxConfiguration{
+		DisablePasswordAuthentication: &linuxConfiguration.DisablePasswordAuthentication,
+		CloudInitDataSource:           linuxConfiguration.CloudInitDataSource,
+	}
 }
 
 func (c *client) getVirtualMachineOSProfile(o *wssdcompute.OperatingSystemConfiguration) *compute.OSProfile {

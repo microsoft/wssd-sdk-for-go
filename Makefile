@@ -3,6 +3,8 @@
 GOCMD=go
 GOBUILD=$(GOCMD) build -v #-mod=vendor
 GOHOSTOS=$(strip $(shell $(GOCMD) env get GOHOSTOS))
+GOTEST=GOOS=$(GOHOSTOS) $(GOCMD) test -v -coverprofile=coverage.out -covermode count -timeout 60m0s
+TESTDIRECTORIES= ./services/compute/virtualmachine/internal
 
 TAG ?= $(shell git describe --tags)
 COMMIT ?= $(shell git describe --always)
@@ -16,9 +18,7 @@ export GO111MODULE=on
 
 LBCLIENTOUT=bin/lbclient.exe
 
-PKG := 
-
-all: format  lbclient build
+all: format  lbclient build unittest
 
 nofmt: 
 
@@ -34,3 +34,6 @@ vendor:
 	go mod tidy
 build:
 	GOARCH=amd64 go build -v ./...
+
+unittest:
+	$(GOTEST) $(TESTDIRECTORIES)
