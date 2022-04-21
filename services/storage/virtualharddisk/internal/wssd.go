@@ -181,12 +181,8 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 			return nil, errors.Wrapf(errors.InvalidInput, "Missing Source")
 		}
 		disk.Source = *vhd.Source
+		disk.CloudInitDataSource = vhd.CloudInitDataSource
 
-		if &vhd.CloudInitDataSource != nil {
-			disk.CloudInitDataSource = vhd.CloudInitDataSource
-		} else {
-			disk.CloudInitDataSource = wssdcommonproto.CloudInitDataSource_NoCloud
-		}
 	} else {
 		if vhd.DiskSizeBytes == nil {
 			return nil, errors.Wrapf(errors.InvalidInput, "Missing DiskSize")
