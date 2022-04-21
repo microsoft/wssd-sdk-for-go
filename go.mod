@@ -4,8 +4,12 @@ go 1.15
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
+<<<<<<< HEAD
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/microsoft/moc v0.10.19-alpha.10
+=======
+	github.com/microsoft/moc v0.10.19-alpha.9
+>>>>>>> master
 	github.com/onsi/ginkgo v1.16.4 // indirect
 	github.com/onsi/gomega v1.13.0 // indirect
 	github.com/spf13/viper v1.7.1
@@ -13,6 +17,7 @@ require (
 	go.opencensus.io v0.22.3
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/grpc v1.27.1
+	google.golang.org/protobuf v1.28.0
 	k8s.io/klog v1.0.0
 )
 

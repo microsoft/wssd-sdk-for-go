@@ -337,3 +337,6 @@ ASALocalRun/
 *.exe
 # Ignore vendor dir
 vendor/
+
+# Ignore test output
+coverage.out
