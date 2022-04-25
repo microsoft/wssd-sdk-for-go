@@ -157,42 +157,45 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 
 	disk.Name = *vhd.Name
 	disk.Entity = getWssdVirtualHardDiskEntity(vhd)
+	
+	if vhd.VirtualHardDiskProperties == nil {
+		return &disk, nil
+	}
 
-	if vhd.VirtualHardDiskProperties != nil {
-		disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
-		disk.HyperVGeneration = vhd.HyperVGeneration
-		disk.DiskFileFormat = vhd.DiskFileFormat
-		disk.SourceType = vhd.SourceType
+	disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
+	disk.HyperVGeneration = vhd.HyperVGeneration
+	disk.DiskFileFormat = vhd.DiskFileFormat
+	disk.SourceType = vhd.SourceType
 
-		if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
-			if vhd.Source == nil {
-				return nil, errors.Wrapf(errors.InvalidInput, "Missing Source")
-			}
-			disk.Source = *vhd.Source
-			disk.CloudInitDataSource = vhd.CloudInitDataSource
+	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
+		if vhd.Source == nil {
+			return nil, errors.Wrapf(errors.InvalidInput, "Missing Source")
+		}
+		disk.Source = *vhd.Source
+		disk.CloudInitDataSource = vhd.CloudInitDataSource
 
-		} else {
-			if vhd.DiskSizeBytes == nil {
-				return nil, errors.Wrapf(errors.InvalidInput, "Missing DiskSize")
-			}
-			disk.Size = *vhd.DiskSizeBytes
-			if vhd.Dynamic != nil {
-				disk.Dynamic = *vhd.Dynamic
-			}
-			if vhd.Blocksizebytes != nil {
-				disk.Blocksizebytes = *vhd.Blocksizebytes
-			}
-			if vhd.Logicalsectorbytes != nil {
-				disk.Logicalsectorbytes = *vhd.Logicalsectorbytes
-			}
-			if vhd.Physicalsectorbytes != nil {
-				disk.Physicalsectorbytes = *vhd.Physicalsectorbytes
-			}
-			if vhd.VirtualMachineName != nil {
-				disk.VirtualmachineName = *vhd.VirtualMachineName
-			}
+	} else {
+		if vhd.DiskSizeBytes == nil {
+			return nil, errors.Wrapf(errors.InvalidInput, "Missing DiskSize")
+		}
+		disk.Size = *vhd.DiskSizeBytes
+		if vhd.Dynamic != nil {
+			disk.Dynamic = *vhd.Dynamic
+		}
+		if vhd.Blocksizebytes != nil {
+			disk.Blocksizebytes = *vhd.Blocksizebytes
+		}
+		if vhd.Logicalsectorbytes != nil {
+			disk.Logicalsectorbytes = *vhd.Logicalsectorbytes
+		}
+		if vhd.Physicalsectorbytes != nil {
+			disk.Physicalsectorbytes = *vhd.Physicalsectorbytes
+		}
+		if vhd.VirtualMachineName != nil {
+			disk.VirtualmachineName = *vhd.VirtualMachineName
 		}
 	}
+	
 
 	return &disk, nil
 }
