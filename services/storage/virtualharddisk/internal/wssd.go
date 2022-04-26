@@ -146,7 +146,6 @@ func getVirtualHardDiskIsPlaceholder(vhd *wssdstorage.VirtualHardDisk) *bool {
 }
 
 func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) (*wssdstorage.VirtualHardDisk, error) {
-
 	disk := wssdstorage.VirtualHardDisk{
 		ContainerName: containerName,
 		Tags:          getWssdTags(vhd.Tags),
@@ -157,24 +156,16 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	}
 
 	disk.Name = *vhd.Name
-	disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
 	disk.Entity = getWssdVirtualHardDiskEntity(vhd)
+	
+	if vhd.VirtualHardDiskProperties == nil {
+		return &disk, nil
+	}
 
-	if &vhd.SourceType != nil {
-		disk.SourceType = vhd.SourceType
-	} else {
-		disk.SourceType = wssdcommonproto.ImageSource_LOCAL_SOURCE
-	}
-	if &vhd.HyperVGeneration != nil {
-		disk.HyperVGeneration = vhd.HyperVGeneration
-	} else {
-		disk.HyperVGeneration = wssdcommonproto.HyperVGeneration_HyperVGenerationV2
-	}
-	if &vhd.DiskFileFormat != nil {
-		disk.DiskFileFormat = vhd.DiskFileFormat
-	} else {
-		disk.DiskFileFormat = wssdcommonproto.DiskFileFormat_DiskFileFormatVHDX
-	}
+	disk.Virtualharddisktype = getVirtualharddisktype(vhd.Virtualharddisktype)
+	disk.HyperVGeneration = vhd.HyperVGeneration
+	disk.DiskFileFormat = vhd.DiskFileFormat
+	disk.SourceType = vhd.SourceType
 
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
 		if vhd.Source == nil {
@@ -204,6 +195,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 			disk.VirtualmachineName = *vhd.VirtualMachineName
 		}
 	}
+	
 
 	return &disk, nil
 }
