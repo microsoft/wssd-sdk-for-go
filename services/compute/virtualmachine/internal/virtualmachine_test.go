@@ -70,10 +70,8 @@ func Test_getVirtualMachine(t *testing.T) {
 					Name: &vmName,
 					VirtualMachineProperties: &compute.VirtualMachineProperties{
 						SecurityProfile: &compute.SecurityProfile{
-							EnableTPM: proto.Bool(false),
-							UefiSettings: &compute.UefiSettings{
-								SecureBootEnabled: proto.Bool(true),
-							},
+							EnableTPM:    proto.Bool(false),
+							UefiSettings: nil,
 						},
 						HardwareProfile: &compute.HardwareProfile{
 							VMSize: compute.VirtualMachineSizeTypesDefault,
