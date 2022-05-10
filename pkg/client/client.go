@@ -58,6 +58,10 @@ func isDebugMode() error {
 	return fmt.Errorf("Debug Mode not set")
 }
 
+func ClearConnectionCache() {
+	connectionCache = map[string]*grpc.ClientConn{}
+}
+
 func getDefaultServerEndpoint(serverAddress *string) string {
 	return fmt.Sprintf("%s:%d", *serverAddress, KnownServerPort)
 }
