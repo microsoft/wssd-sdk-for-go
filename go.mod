@@ -12,4 +12,4 @@ require (
 	k8s.io/klog v1.0.0
 )
 
-replace github.com/microsoft/moc => github.com/johnsonshih/moc v0.10.8-alpha.10.0.20210427222616-ea0b6b1797ab
+replace github.com/microsoft/moc => github.com/johnsonshih/moc v0.10.8-alpha.10.0.20220517203637-35b2b3d051b6
