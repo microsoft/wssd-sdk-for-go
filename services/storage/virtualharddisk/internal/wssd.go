@@ -157,7 +157,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 
 	disk.Name = *vhd.Name
 	disk.Entity = getWssdVirtualHardDiskEntity(vhd)
-	
+
 	if vhd.VirtualHardDiskProperties == nil {
 		return &disk, nil
 	}
@@ -173,6 +173,9 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 		}
 		disk.Source = *vhd.Source
 		disk.CloudInitDataSource = vhd.CloudInitDataSource
+		disk.Status = &wssdcommonproto.Status{
+			DownloadStatus: status.GetFromStatuses(vhd.Statuses).DownloadStatus,
+		}
 
 	} else {
 		if vhd.DiskSizeBytes == nil {
@@ -195,7 +198,6 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 			disk.VirtualmachineName = *vhd.VirtualMachineName
 		}
 	}
-	
 
 	return &disk, nil
 }
