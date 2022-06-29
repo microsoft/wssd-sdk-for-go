@@ -81,3 +81,33 @@ type Container struct {
 	// Properties
 	*ContainerProperties `json:"properties,omitempty"`
 }
+
+// SharedFolderProperties defines the structure of a SharedFolderProperties
+type SharedFolderProperties struct {
+	// ContainerName
+	ContainerName *string `json:"containername,omitempty"`
+	// HostFolder name
+	FolderName *string `json:"foldername,omitempty"`
+	// Permissions
+	ReadOnly *bool `json:"readonly,omitempty"`
+	// Path - READONLY (Container location + FolderName)
+	Path *string `json:"path,omitempty"`
+	// VirtualMachineName
+	VirtualMachineName *string `json:"virtualmachinename,omitempty"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
+	// Statuses - Status
+	Statuses map[string]*string `json:"statuses"`
+}
+
+// SharedFolder defines the structure of a shared folder
+type SharedFolder struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*SharedFolderProperties `json:"sharedfolderproperties,omitempty"`
+}
