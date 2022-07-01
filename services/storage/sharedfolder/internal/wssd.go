@@ -121,15 +121,6 @@ func getSharedFolder(sharedfolder *wssdstorage.SharedFolder) *storage.SharedFold
 	}
 }
 
-func getSharedFolderIsPlaceholder(sharedfolder *wssdstorage.SharedFolder) *bool {
-	isPlaceholder := false
-	entity := sharedfolder.GetEntity()
-	if entity != nil {
-		isPlaceholder = entity.IsPlaceholder
-	}
-	return &isPlaceholder
-}
-
 func getWssdSharedFolder(sharedfolder *storage.SharedFolder) (*wssdstorage.SharedFolder, error) {
 	wssdSharedFolder := wssdstorage.SharedFolder{
 		Name: *sharedfolder.Name,
@@ -140,8 +131,6 @@ func getWssdSharedFolder(sharedfolder *storage.SharedFolder) (*wssdstorage.Share
 	}
 
 	wssdSharedFolder.Name = *sharedfolder.Name
-	wssdSharedFolder.Entity = getWssdSharedFolderEntity(sharedfolder)
-
 	if sharedfolder.ContainerName != nil {
 		wssdSharedFolder.ContainerName = *sharedfolder.ContainerName
 	}
@@ -156,15 +145,4 @@ func getWssdSharedFolder(sharedfolder *storage.SharedFolder) (*wssdstorage.Share
 	}
 
 	return &wssdSharedFolder, nil
-}
-
-func getWssdSharedFolderEntity(sharedfolder *storage.SharedFolder) *wssdcommonproto.Entity {
-	/*	isPlaceholder := false
-		if sharedfolder.SharedFolderProperties != nil && sharedfolder.SharedFolderProperties.IsPlaceholder != nil {
-			isPlaceholder = *sharedfolder.SharedFolderProperties.IsPlaceholder
-		}
-	*/
-	return &wssdcommonproto.Entity{
-		//IsPlaceholder: isPlaceholder,
-	}
 }
