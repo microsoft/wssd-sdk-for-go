@@ -226,7 +226,7 @@ func GetVirtualMachineScaleSetClient(serverAddress *string, authorizer auth.Auth
 	return compute_pb.NewVirtualMachineScaleSetAgentClient(conn), nil
 }
 
-// GetVirtualHardDiskClient returns the virtual network client to communicate with the wssdagent
+// GetVirtualHardDiskClient returns the virtual harddisk client to communicate with the wssdagent
 func GetVirtualHardDiskClient(serverAddress *string, authorizer auth.Authorizer) (storage_pb.VirtualHardDiskAgentClient, error) {
 	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
@@ -236,7 +236,7 @@ func GetVirtualHardDiskClient(serverAddress *string, authorizer auth.Authorizer)
 	return storage_pb.NewVirtualHardDiskAgentClient(conn), nil
 }
 
-// GetVirtualHardDiskClient returns the virtual network client to communicate with the wssdagent
+// GetContainerClient returns the container client to communicate with the wssdagent
 func GetContainerClient(serverAddress *string, authorizer auth.Authorizer) (storage_pb.ContainerAgentClient, error) {
 	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
@@ -244,6 +244,16 @@ func GetContainerClient(serverAddress *string, authorizer auth.Authorizer) (stor
 	}
 
 	return storage_pb.NewContainerAgentClient(conn), nil
+}
+
+// GetSharedFolderClient returns the sharedfolder client to communicate with the wssdagent
+func GetSharedFolderClient(serverAddress *string, authorizer auth.Authorizer) (storage_pb.SharedFolderAgentClient, error) {
+	conn, err := getClientConnection(serverAddress, authorizer)
+	if err != nil {
+		log.Fatalf("Unable to get SharedFolderClient. Failed to dial: %v", err)
+	}
+
+	return storage_pb.NewSharedFolderAgentClient(conn), nil
 }
 
 // GetKeyVaultClient returns the keyvault client to communicate with the wssdagent
