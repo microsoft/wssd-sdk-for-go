@@ -232,6 +232,94 @@ func (c *VirtualMachineClient) NetworkInterfaceShow(ctx context.Context, group s
 	return
 }
 
+func (c *VirtualMachineClient) SharedFolderAdd(ctx context.Context, group string, vmName, sharedFolderName, guestMountPath string) (err error) {
+	vms, err := c.Get(ctx, group, vmName)
+	if err != nil {
+		return err
+	}
+	if vms == nil || len(*vms) == 0 {
+		return errors.Wrapf(errors.NotFound, "Unable to find Virtual Machine [%s]", vmName)
+	}
+
+	vm := (*vms)[0]
+	for _, sharedfolder := range *vm.StorageProfile.SharedFolders {
+		if *sharedfolder.SharedFolderReference == sharedFolderName {
+			return errors.Wrapf(errors.AlreadyExists, "SharedFolder [%s] is already attached to the VM [%s]", sharedFolderName, vmName)
+		}
+	}
+
+	*vm.StorageProfile.SharedFolders = append(*vm.StorageProfile.SharedFolders, compute.SharedFolder{SharedFolderReference: &sharedFolderName, GuestMountPath: &guestMountPath})
+
+	_, err = c.CreateOrUpdate(ctx, group, vmName, &vm)
+	if err != nil {
+		return err
+	}
+
+	return
+}
+
+func (c *VirtualMachineClient) SharedFolderRemove(ctx context.Context, group string, vmName, sharedFolderName string) (err error) {
+	vms, err := c.Get(ctx, group, vmName)
+	if err != nil {
+		return err
+	}
+	if vms == nil || len(*vms) == 0 {
+		return errors.Wrapf(errors.NotFound, "Unable to find Virtual Machine [%s]", vmName)
+	}
+
+	vm := (*vms)[0]
+	for i, element := range *vm.StorageProfile.SharedFolders {
+		if *element.SharedFolderReference == sharedFolderName {
+			*vm.StorageProfile.SharedFolders = append((*vm.StorageProfile.SharedFolders)[:i], (*vm.StorageProfile.SharedFolders)[i+1:]...)
+			break
+		}
+	}
+
+	_, err = c.CreateOrUpdate(ctx, group, vmName, &vm)
+	if err != nil {
+		return err
+	}
+
+	return
+}
+
+func (c *VirtualMachineClient) SharedFolderList(ctx context.Context, group string, vmName string) (err error) {
+	vms, err := c.Get(ctx, group, vmName)
+	if err != nil {
+		return err
+	}
+	if vms == nil || len(*vms) == 0 {
+		return errors.Wrapf(errors.NotFound, "Unable to find Virtual Machine [%s]", vmName)
+	}
+
+	vm := (*vms)[0]
+	for _, element := range *vm.StorageProfile.SharedFolders {
+		log.Printf("%+v\n", marshal.ToString(element))
+	}
+
+	return
+}
+
+func (c *VirtualMachineClient) SharedFolderShow(ctx context.Context, group string, vmName, sharedFolderName string) (err error) {
+	vms, err := c.Get(ctx, group, vmName)
+	if err != nil {
+		return err
+	}
+	if vms == nil || len(*vms) == 0 {
+		return errors.Wrapf(errors.NotFound, "Unable to find Virtual Machine [%s]", vmName)
+	}
+
+	vm := (*vms)[0]
+	for _, sharedfolder := range *vm.StorageProfile.SharedFolders {
+		if *sharedfolder.SharedFolderReference == sharedFolderName {
+			log.Printf("%+v\n", marshal.ToString(sharedfolder))
+			break
+		}
+	}
+
+	return
+}
+
 func isDifferentVmSize(oldSizeType, newSizeType compute.VirtualMachineSizeTypes, oldCustomSize, newCustomSize *compute.VirtualMachineCustomSize) bool {
 	if oldSizeType != newSizeType {
 		return true
