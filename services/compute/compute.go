@@ -77,6 +77,13 @@ type DataDisk struct {
 	ImageReference *ImageReference `json:"imageReference,omitempty"`
 }
 
+type SharedFolder struct {
+	// SharedFolderReference
+	SharedFolderReference *string `json:"sharedfolderreference,omitempty"`
+	// GuestMountPath
+	GuestMountPath *string `json:"guestmountpath,omitempty"`
+}
+
 type StorageProfile struct {
 	// ImageReference - Specifies information about the image to use. You can specify information about platform images, marketplace images, or virtual machine images. This element is required when you want to use a platform image, marketplace image, or virtual machine image, but is not used in other creation operations.
 	ImageReference *ImageReference `json:"imageReference,omitempty"`
@@ -86,6 +93,8 @@ type StorageProfile struct {
 	DataDisks *[]DataDisk `json:"dataDisks,omitempty"`
 	// VmConfigContainerName
 	VmConfigContainerName *string `json:"vmConfigContainerName,omitempty"`
+	// SharedFolders
+	SharedFolders *[]SharedFolder `json:"sharedfolders,omitempty"`
 }
 
 type SSHPublicKey struct {
