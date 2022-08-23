@@ -115,6 +115,8 @@ func getSharedFolder(sharedfolder *wssdstorage.SharedFolder) *storage.SharedFold
 			ReadOnly:           &sharedfolder.ReadOnly,
 			Path:               &sharedfolder.Path,
 			VirtualMachineName: &sharedfolder.VirtualmachineName,
+			GuestMountPath:     &sharedfolder.GuestMountPath,
+			MountTag:           &sharedfolder.MountTag,
 			ProvisioningState:  status.GetProvisioningState(sharedfolder.Status.GetProvisioningStatus()),
 			Statuses:           status.GetStatuses(sharedfolder.Status),
 		},
@@ -142,6 +144,12 @@ func getWssdSharedFolder(sharedfolder *storage.SharedFolder) (*wssdstorage.Share
 	}
 	if sharedfolder.VirtualMachineName != nil {
 		wssdSharedFolder.VirtualmachineName = *sharedfolder.VirtualMachineName
+	}
+	if sharedfolder.GuestMountPath != nil {
+		wssdSharedFolder.GuestMountPath = *sharedfolder.GuestMountPath
+	}
+	if sharedfolder.MountTag != nil {
+		wssdSharedFolder.MountTag = *sharedfolder.MountTag
 	}
 
 	return &wssdSharedFolder, nil

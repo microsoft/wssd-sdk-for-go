@@ -92,8 +92,12 @@ type SharedFolderProperties struct {
 	ReadOnly *bool `json:"readonly,omitempty"`
 	// Path - READONLY (Container location + FolderName)
 	Path *string `json:"path,omitempty"`
-	// VirtualMachineName
+	// VirtualMachineName - READ-ONLY
 	VirtualMachineName *string `json:"virtualmachinename,omitempty"`
+	// GuestMountPath - READ-ONLY
+	GuestMountPath *string `json:"guestMountPath,omitempty"`
+	// MountTag - READ-ONLY
+	MountTag *string `json:"mountTag,omitempty"`
 	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// Statuses - Status

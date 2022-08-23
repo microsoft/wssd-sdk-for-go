@@ -65,8 +65,8 @@ github.com/grpc-ecosystem/grpc-gateway v1.9.0/go.mod h1:vNeuVxBJEsws4ogUvrchl83t
 github.com/hashicorp/hcl v1.0.0 h1:0Anlzjpi4vEasTeNFn2mLJgTSwt0+6sfsiTG8qcWGx4=
 github.com/hashicorp/hcl v1.0.0/go.mod h1:E5yfLk+7swimpb2L/Alb/PJmXilQ/rhwaUYs4T20WEQ=
 github.com/jmespath/go-jmespath v0.3.0/go.mod h1:9QtRXoHjLGCJ5IBSaohpXITPlowMeeYCZ7fLUTSywik=
-github.com/johnsonshih/moc v0.10.8-alpha.10.0.20220712024336-1d24d7afaccc h1:/UPsvtKSP7darGni79XyPSCrb5ckEnGyC3LHB/x8VyA=
-github.com/johnsonshih/moc v0.10.8-alpha.10.0.20220712024336-1d24d7afaccc/go.mod h1:igWeh8+ZfAQVhwtP39WTBwHOmGeBVIzzFtNOpLj8A5g=
+github.com/johnsonshih/moc v0.10.8-alpha.10.0.20220823050051-9f4412dae09c h1:WjjL6vS7SLfglviYXBfnKt4jJdK84E0rL83WaaZLWvs=
+github.com/johnsonshih/moc v0.10.8-alpha.10.0.20220823050051-9f4412dae09c/go.mod h1:igWeh8+ZfAQVhwtP39WTBwHOmGeBVIzzFtNOpLj8A5g=
 github.com/jonboulle/clockwork v0.1.0/go.mod h1:Ii8DK3G1RaLaWxj9trq07+26W01tbo22gdxWY5EU2bo=
 github.com/jtolds/gls v4.20.0+incompatible h1:xdiiI2gbIgH/gLH7ADydsJ1uDOEzR8yvV7C0MuV77Wo=
 github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
