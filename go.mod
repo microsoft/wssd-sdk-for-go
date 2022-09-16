@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
-	github.com/microsoft/moc v0.10.19-alpha.10
+	github.com/microsoft/moc v0.10.24-alpha.1
 	github.com/onsi/ginkgo v1.16.4 // indirect
 	github.com/onsi/gomega v1.13.0 // indirect
 	github.com/spf13/viper v1.7.1
@@ -19,5 +19,4 @@ require (
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
-	github.com/microsoft/moc => /home/dikalusk/goroot/src/github.com/microsoft/testmoc
 )
