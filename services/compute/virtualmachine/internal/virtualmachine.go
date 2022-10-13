@@ -120,10 +120,10 @@ func (c *client) getWssdVirtualMachineSecurityConfiguration(vm *compute.VirtualM
 	var uefiSettings *wssdcompute.UefiSettings
 	uefiSettings = nil
 	if vm.SecurityProfile != nil {
-		if (vm.SecurityProfile.EnableTPM != nil ){
+		if vm.SecurityProfile.EnableTPM != nil {
 			enableTPM = *vm.SecurityProfile.EnableTPM
 		}
-		if vm.SecurityProfile.UefiSettings != nil  && vm.SecurityProfile.UefiSettings.SecureBootEnabled != nil{
+		if vm.SecurityProfile.UefiSettings != nil && vm.SecurityProfile.UefiSettings.SecureBootEnabled != nil {
 			uefiSettings = &wssdcompute.UefiSettings{
 				SecureBootEnabled: *vm.SecurityProfile.UefiSettings.SecureBootEnabled,
 			}
@@ -139,8 +139,9 @@ func (c *client) getWssdVirtualMachineSecurityConfiguration(vm *compute.VirtualM
 
 func (c *client) getWssdVirtualMachineStorageConfiguration(s *compute.StorageProfile) (*wssdcompute.StorageConfiguration, error) {
 	wssdstorage := &wssdcompute.StorageConfiguration{
-		Osdisk:    &wssdcompute.Disk{},
-		Datadisks: []*wssdcompute.Disk{},
+		Osdisk:        &wssdcompute.Disk{},
+		Datadisks:     []*wssdcompute.Disk{},
+		SharedFolders: []*wssdcompute.SharedFolder{},
 	}
 
 	if s == nil {
@@ -169,6 +170,14 @@ func (c *client) getWssdVirtualMachineStorageConfiguration(s *compute.StoragePro
 		wssdstorage.Datadisks = datadisks
 	}
 
+	if s.SharedFolders != nil {
+		sharedfolders, err := c.getWssdVirtualMachineStorageConfigurationSharedFolders(s.SharedFolders)
+		if err != nil {
+			return nil, err
+		}
+		wssdstorage.SharedFolders = sharedfolders
+	}
+
 	return wssdstorage, nil
 }
 
@@ -194,7 +203,22 @@ func (c *client) getWssdVirtualMachineStorageConfigurationDataDisks(s *[]compute
 	}
 
 	return datadisks, nil
+}
 
+func (c *client) getWssdVirtualMachineStorageConfigurationSharedFolders(s *[]compute.SharedFolder) ([]*wssdcompute.SharedFolder, error) {
+	sharedfolders := []*wssdcompute.SharedFolder{}
+	for _, d := range *s {
+		if d.SharedFolderReference == nil {
+			return nil, errors.Wrapf(errors.InvalidInput, "SharedFolderReference is missing in SharedFolder ")
+		}
+		sharedfolder := &wssdcompute.SharedFolder{
+			Sharedfolderreference: *d.SharedFolderReference,
+			Guestmountpath:        *d.GuestMountPath,
+		}
+		sharedfolders = append(sharedfolders, sharedfolder)
+	}
+
+	return sharedfolders, nil
 }
 
 func (c *client) getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkProfile) (*wssdcompute.NetworkConfiguration, error) {
@@ -456,6 +480,7 @@ func (c *client) getVirtualMachineStorageProfile(s *wssdcompute.StorageConfigura
 		OsDisk:                c.getVirtualMachineStorageProfileOsDisk(s.Osdisk),
 		DataDisks:             c.getVirtualMachineStorageProfileDataDisks(s.Datadisks),
 		VmConfigContainerName: &s.VmConfigContainerName,
+		SharedFolders:         c.getVirtualMachineStorageProfileSharedFolders(s.SharedFolders),
 	}
 }
 
@@ -473,7 +498,16 @@ func (c *client) getVirtualMachineStorageProfileDataDisks(dd []*wssdcompute.Disk
 	}
 
 	return &cdd
+}
 
+func (c *client) getVirtualMachineStorageProfileSharedFolders(wssdsharedfolders []*wssdcompute.SharedFolder) *[]compute.SharedFolder {
+	sharedfolders := []compute.SharedFolder{}
+
+	for _, i := range wssdsharedfolders {
+		sharedfolders = append(sharedfolders, compute.SharedFolder{SharedFolderReference: &(i.Sharedfolderreference), GuestMountPath: &(i.Guestmountpath)})
+	}
+
+	return &sharedfolders
 }
 
 func (c *client) getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfiguration) *compute.NetworkProfile {
