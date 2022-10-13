@@ -434,4 +434,6 @@ const (
 	VirtualMachineSizeTypesCustomGpupv VirtualMachineSizeTypes = "Custom_Gpupv"
 	// VirtualMachineSizeTypesCustomNK ...
 	VirtualMachineSizeTypesCustomNK VirtualMachineSizeTypes = "Custom_NK"
+	// VirtualMachineSizeTypesCustomA2 ...
+	VirtualMachineSizeTypesCustomA2 VirtualMachineSizeTypes = "Custom_A2"
 )
