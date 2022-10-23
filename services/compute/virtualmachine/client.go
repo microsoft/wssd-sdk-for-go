@@ -22,6 +22,7 @@ type Service interface {
 	Start(context.Context, string, string) error
 	Stop(context.Context, string, string) error
 	RunCommand(context.Context, string, string, *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error)
+	Validate(context.Context, string, string) error
 }
 
 type VirtualMachineClient struct {
@@ -68,6 +69,11 @@ func (c *VirtualMachineClient) Restart(ctx context.Context, group string, name s
 	}
 	err = c.internal.Start(ctx, group, name)
 	return
+}
+
+// Validate methods invokes the validate Get method
+func (c *VirtualMachineClient) Validate(ctx context.Context, group, name string) error {
+	return c.internal.Validate(ctx, group, name)
 }
 
 func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize) (err error) {

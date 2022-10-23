@@ -219,6 +219,8 @@ type VirtualMachineProperties struct {
 	NetworkProfile *NetworkProfile `json:"networkProfile,omitempty"`
 	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
 	ProvisioningState *string `json:"provisioningState,omitempty"`
+	// ValidationState - READ-ONLY; The validation status, which only appears in the response.
+	ValidationStatus []*common.ValidationState `json:"validationStatus"`
 	// DisableHighAvailability
 	DisableHighAvailability *bool `json:"disableHighAvailability,omitempty"`
 	// State - State would container PowerState/ProvisioningState-SubState
