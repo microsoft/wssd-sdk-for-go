@@ -210,6 +210,16 @@ func GetRecoveryClient(serverAddress *string, authorizer auth.Authorizer) (admin
 	return admin_pb.NewRecoveryAgentClient(conn), nil
 }
 
+// GetValidationClient returns the log client to communicate with the wssd agent
+func GetValidationClient(serverAddress *string, authorizer auth.Authorizer) (admin_pb.ValidationAgentClient, error) {
+	conn, err := getClientConnection(serverAddress, authorizer)
+	if err != nil {
+		log.Fatalf("Unable to get ValidationAgentClient. Failed to dial: %v", err)
+	}
+
+	return admin_pb.NewValidationAgentClient(conn), nil
+}
+
 // GetDebugClient returns the log client to communicate with the wssd agent
 func GetDebugClient(serverAddress *string, authorizer auth.Authorizer) (admin_pb.DebugAgentClient, error) {
 	conn, err := getClientConnection(serverAddress, authorizer)
