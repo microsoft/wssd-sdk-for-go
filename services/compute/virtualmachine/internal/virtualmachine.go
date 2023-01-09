@@ -120,10 +120,10 @@ func (c *client) getWssdVirtualMachineSecurityConfiguration(vm *compute.VirtualM
 	var uefiSettings *wssdcompute.UefiSettings
 	uefiSettings = nil
 	if vm.SecurityProfile != nil {
-		if (vm.SecurityProfile.EnableTPM != nil ){
+		if vm.SecurityProfile.EnableTPM != nil {
 			enableTPM = *vm.SecurityProfile.EnableTPM
 		}
-		if vm.SecurityProfile.UefiSettings != nil  && vm.SecurityProfile.UefiSettings.SecureBootEnabled != nil{
+		if vm.SecurityProfile.UefiSettings != nil && vm.SecurityProfile.UefiSettings.SecureBootEnabled != nil {
 			uefiSettings = &wssdcompute.UefiSettings{
 				SecureBootEnabled: *vm.SecurityProfile.UefiSettings.SecureBootEnabled,
 			}
@@ -368,6 +368,7 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			NetworkProfile:          c.getVirtualMachineNetworkProfile(vm.Network),
 			DisableHighAvailability: &vm.DisableHighAvailability,
 			ProvisioningState:       status.GetProvisioningState(vm.Status.GetProvisioningStatus()),
+			ValidationStatus:        status.GetValidationStatus(vm.GetStatus()),
 			Statuses:                c.getVirtualMachineStatuses(vm),
 			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
 			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
