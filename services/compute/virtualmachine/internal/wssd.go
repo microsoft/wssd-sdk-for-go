@@ -126,6 +126,20 @@ func (c *client) RunCommand(ctx context.Context, group, name string, request *co
 	return
 }
 
+// Validate
+func (c *client) Validate(ctx context.Context, group, name string) error {
+	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_VALIDATE, name, nil)
+	if err != nil {
+		return err
+	}
+	_, err = c.VirtualMachineAgentClient.Invoke(ctx, request)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
 func (c *client) getVirtualMachineFromResponse(response *wssdcompute.VirtualMachineResponse) *[]compute.VirtualMachine {
 	vms := []compute.VirtualMachine{}
 	for _, vm := range response.GetVirtualMachineSystems() {

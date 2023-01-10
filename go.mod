@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
-	github.com/microsoft/moc v0.10.26-alpha.1.0.20221214190933-d82ffa0d901c
+	github.com/microsoft/moc v0.10.27-alpha.0.0.20230110000341-c1c79ef3cb10
 	github.com/onsi/ginkgo v1.16.4 // indirect
 	github.com/onsi/gomega v1.13.0 // indirect
 	github.com/spf13/viper v1.7.1

@@ -368,6 +368,7 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			NetworkProfile:          c.getVirtualMachineNetworkProfile(vm.Network),
 			DisableHighAvailability: &vm.DisableHighAvailability,
 			ProvisioningState:       status.GetProvisioningState(vm.Status.GetProvisioningStatus()),
+			ValidationStatus:        status.GetValidationStatus(vm.GetStatus()),
 			Statuses:                c.getVirtualMachineStatuses(vm),
 			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
 			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
