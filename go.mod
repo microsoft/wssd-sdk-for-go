@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
-	github.com/microsoft/moc v0.10.27-alpha.0
+	github.com/microsoft/moc v0.10.27-alpha.1
 	github.com/onsi/ginkgo v1.16.4 // indirect
 	github.com/onsi/gomega v1.13.0 // indirect
 	github.com/spf13/viper v1.7.1
@@ -19,4 +19,6 @@ require (
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
+	golang.org/x/net => golang.org/x/net v0.0.0-20220822230855-b0a4917ee28c
+	golang.org/x/sys => golang.org/x/sys v0.0.0-20220823224334-20c2bfdbfe24
 )
