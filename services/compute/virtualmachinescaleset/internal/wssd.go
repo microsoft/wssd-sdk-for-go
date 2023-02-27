@@ -218,11 +218,12 @@ func (c *client) getVirtualMachineScaleSetVMProfile(vm *wssdcompute.VirtualMachi
 	return &compute.VirtualMachineScaleSetVMProfile{
 		Name: &vm.Vmprefix,
 		VirtualMachineScaleSetVMProfileProperties: &compute.VirtualMachineScaleSetVMProfileProperties{
-			HardwareProfile: c.getVirtualMachineScaleSetHardwareProfile(vm),
-			SecurityProfile: c.getVirtualMachineScaleSetSecurityProfile(vm),
-			StorageProfile:  c.getVirtualMachineScaleSetStorageProfile(vm.Storage),
-			OsProfile:       c.getVirtualMachineScaleSetOSProfile(vm.Os),
-			NetworkProfile:  net,
+			HardwareProfile:   c.getVirtualMachineScaleSetHardwareProfile(vm),
+			SecurityProfile:   c.getVirtualMachineScaleSetSecurityProfile(vm),
+			StorageProfile:    c.getVirtualMachineScaleSetStorageProfile(vm.Storage),
+			OsProfile:         c.getVirtualMachineScaleSetOSProfile(vm.Os),
+			NetworkProfile:    net,
+			GuestAgentProfile: c.getVirtualMachineScaleSetGuestAgentProfile(vm.GuestAgent),
 		},
 	}, nil
 }
@@ -321,6 +322,18 @@ func (c *client) getVirtualMachineScaleSetNetworkConfigurationIPConfiguration(ws
 	}
 }
 
+func (c *client) getVirtualMachineScaleSetGuestAgentProfile(g *wssdcompute.GuestAgentConfiguration) *compute.GuestAgentProfile {
+	if g == nil {
+		return nil
+	}
+
+	gap := &compute.GuestAgentProfile{
+		Enabled: &g.Enabled,
+	}
+
+	return gap
+}
+
 func (c *client) getVirtualMachineWindowsConfiguration(windowsConfiguration *wssdcompute.WindowsConfiguration) *compute.WindowsConfiguration {
 	wc := &compute.WindowsConfiguration{
 		RDP: &compute.RDPConfiguration{},
@@ -410,12 +423,13 @@ func (c *client) getWssdVirtualMachineScaleSetVMProfile(vmp *compute.VirtualMach
 	}
 
 	return &wssdcompute.VirtualMachineProfile{
-		Vmprefix: *vmp.Name,
-		Hardware: c.getWssdVirtualMachineScaleSetHardwareConfiguration(vmp),
-		Security: c.getWssdVirtualMachineScaleSetSecurityConfiguration(vmp),
-		Storage:  c.getWssdVirtualMachineScaleSetStorageConfiguration(vmp.StorageProfile),
-		Os:       c.getWssdVirtualMachineScaleSetOSConfiguration(vmp.OsProfile),
-		Network:  net,
+		Vmprefix:   *vmp.Name,
+		Hardware:   c.getWssdVirtualMachineScaleSetHardwareConfiguration(vmp),
+		Security:   c.getWssdVirtualMachineScaleSetSecurityConfiguration(vmp),
+		Storage:    c.getWssdVirtualMachineScaleSetStorageConfiguration(vmp.StorageProfile),
+		Os:         c.getWssdVirtualMachineScaleSetOSConfiguration(vmp.OsProfile),
+		Network:    net,
+		GuestAgent: c.getWssdVirtualMachineScaleSetGuestAgentConfiguration(vmp.GuestAgentProfile),
 	}, nil
 
 }
@@ -647,4 +661,15 @@ func (c *client) getWssdVirtualMachineScaleSetOSConfiguration(s *compute.OSProfi
 		osconfig.CustomData = *s.CustomData
 	}
 	return &osconfig
+}
+
+func (c *client) getWssdVirtualMachineScaleSetGuestAgentConfiguration(s *compute.GuestAgentProfile) *wssdcompute.GuestAgentConfiguration {
+	gac := &wssdcompute.GuestAgentConfiguration{}
+
+	if s == nil || s.Enabled == nil {
+		return gac
+	}
+	gac.Enabled = *s.Enabled
+
+	return gac
 }

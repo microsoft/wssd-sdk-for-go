@@ -382,6 +382,7 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			StorageProfile:          c.getVirtualMachineStorageProfile(vm.Storage),
 			OsProfile:               c.getVirtualMachineOSProfile(vm.Os),
 			NetworkProfile:          c.getVirtualMachineNetworkProfile(vm.Network),
+			GuestAgentProfile:       c.getVirtualMachineGuestProfile(vm.GuestAgent),
 			DisableHighAvailability: &vm.DisableHighAvailability,
 			ProvisioningState:       status.GetProvisioningState(vm.Status.GetProvisioningStatus()),
 			ValidationStatus:        status.GetValidationStatus(vm.GetStatus()),
@@ -505,6 +506,18 @@ func (c *client) getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfigura
 		*np.NetworkInterfaces = append(*np.NetworkInterfaces, compute.NetworkInterfaceReference{VirtualNetworkInterfaceReference: &((*nic).NetworkInterfaceName)})
 	}
 	return np
+}
+
+func (c *client) getVirtualMachineGuestProfile(g *wssdcompute.GuestAgentConfiguration) *compute.GuestAgentProfile {
+	if g == nil {
+		return nil
+	}
+
+	gap := &compute.GuestAgentProfile{
+		Enabled: &g.Enabled,
+	}
+
+	return gap
 }
 
 func (c *client) getVirtualMachineWindowsConfiguration(windowsConfiguration *wssdcompute.WindowsConfiguration) *compute.WindowsConfiguration {
