@@ -46,20 +46,25 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 	if err != nil {
 		return nil, errors.Wrapf(err, "Failed to get Network Configuration")
 	}
+	guestAgentConfig, err := c.getWssdVirtualMachineGuestAgentConfiguration(vm.GuestAgentProfile)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Failed to get GuestAgent Configuration")
+	}
 	entity, err := c.getWssdVirtualMachineEntity(vm)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Failed to get Entity")
 	}
 
 	wssdvm = &wssdcompute.VirtualMachine{
-		Name:     *vm.Name,
-		Tags:     getWssdTags(vm.Tags),
-		Storage:  storageConfig,
-		Hardware: hardwareConfig,
-		Security: securityConfig,
-		Os:       osconfig,
-		Network:  networkConfig,
-		Entity:   entity,
+		Name:       *vm.Name,
+		Tags:       getWssdTags(vm.Tags),
+		Storage:    storageConfig,
+		Hardware:   hardwareConfig,
+		Security:   securityConfig,
+		Os:         osconfig,
+		Network:    networkConfig,
+		GuestAgent: guestAgentConfig,
+		Entity:     entity,
 	}
 
 	if vm.DisableHighAvailability != nil {
@@ -212,6 +217,17 @@ func (c *client) getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkPro
 	}
 
 	return nc, nil
+}
+
+func (c *client) getWssdVirtualMachineGuestAgentConfiguration(s *compute.GuestAgentProfile) (*wssdcompute.GuestAgentConfiguration, error) {
+	gac := &wssdcompute.GuestAgentConfiguration{}
+
+	if s == nil || s.Enabled == nil {
+		return gac, nil
+	}
+	gac.Enabled = *s.Enabled
+
+	return gac, nil
 }
 
 func (c *client) getWssdVirtualMachineOSSSHPublicKeys(ssh *compute.SSHConfiguration) ([]*wssdcompute.SSHPublicKey, error) {

@@ -40,6 +40,8 @@ code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48/go.mod h1:wN/zk
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
+github.com/algamaes/moc v0.0.0-20230223224657-fd8327b50fa6 h1:tYxWW2l8WMDswlf/NO9QLU0X8Evrhjg6TXlpld5LRLQ=
+github.com/algamaes/moc v0.0.0-20230223224657-fd8327b50fa6/go.mod h1:dOkeGSUQPI+L6YB8DlwCQOgpfUzqHvkk9uzd8sdvgTs=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
@@ -151,8 +153,6 @@ github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
 github.com/magiconair/properties v1.8.7 h1:IeQXZAiQcpL9mgcAe1Nu6cX9LLw6ExEHKjN0VQdvPDY=
 github.com/magiconair/properties v1.8.7/go.mod h1:Dhd985XPs7jluiymwWYZ0G4Z61jb3vdS329zhj2hYo0=
-github.com/microsoft/moc v0.10.27-alpha.0 h1:/BMgy++D3o1lxArYsAjr8PdCpre7erlOOFYt1RDif3k=
-github.com/microsoft/moc v0.10.27-alpha.0/go.mod h1:dOkeGSUQPI+L6YB8DlwCQOgpfUzqHvkk9uzd8sdvgTs=
 github.com/microsoft/wmi v0.5.0-alpha.11 h1:4RMeVJQgaC4Ai/JoPwvfUrpXK5F77bgav4Imp7Zgmss=
 github.com/microsoft/wmi v0.5.0-alpha.11/go.mod h1:CB4quQE5BBSQWcvI1g95npg6dmCjrAhMgc/jy8D9Jr4=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=

@@ -194,6 +194,11 @@ type NetworkProfile struct {
 	NetworkInterfaces *[]NetworkInterfaceReference `json:"networkInterfaces,omitempty"`
 }
 
+type GuestAgentProfile struct {
+	// Enabled - Specifies whether guest agent should be enabled on the virtual machine.
+	Enabled *bool `json:"enabled,omitempty"`
+}
+
 type UefiSettings struct {
 	// SecureBootEnabled - Specifies whether secure boot should be enabled on the virtual machine.
 	SecureBootEnabled *bool `json:"secureBootEnabled,omitempty"`
@@ -217,6 +222,8 @@ type VirtualMachineProperties struct {
 	OsProfile *OSProfile `json:"osProfile,omitempty"`
 	// NetworkProfile
 	NetworkProfile *NetworkProfile `json:"networkProfile,omitempty"`
+	// GuestAgentProfile - Specifies the guest agent settings for the virtual machine.
+	GuestAgentProfile *GuestAgentProfile `json:"guestAgentProfile,omitempty"`
 	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// ValidationState - READ-ONLY; The validation status, which only appears in the response.
@@ -328,6 +335,8 @@ type VirtualMachineScaleSetVMProfileProperties struct {
 	OsProfile *OSProfile `json:"osProfile,omitempty"`
 	// NetworkProfile
 	NetworkProfile *VirtualMachineScaleSetNetworkProfile `json:"networkProfile,omitempty"`
+	// GuestAgentProfile - Specifies the guest agent settings for the virtual machine.
+	GuestAgentProfile *GuestAgentProfile `json:"guestAgentProfile,omitempty"`
 	// DiagnosticsProfile - Specifies the boot diagnostic settings state
 	DiagnosticsProfile *DiagnosticsProfile `json:"diagnosticsProfile,omitempty"`
 	// Priority - Specifies the priority for the virtual machines in the scale set. <br><br>Minimum api-version: 2017-10-30-preview. Possible values include: 'Regular', 'Low'
