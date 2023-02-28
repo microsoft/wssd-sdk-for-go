@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-//NOTE: getClientConnection chould be refactored into moc repo.
+// NOTE: getClientConnection chould be refactored into moc repo.
 package lbagentclient
 
 import (
@@ -21,7 +21,7 @@ import (
 	"github.com/microsoft/moc/pkg/auth"
 )
 
-//Note: This is the only thing that differs between the various client stuff.
+// Note: This is the only thing that differs between the various client stuff.
 const (
 	debugModeTLS     = "WSSD_DEBUG_MODE"
 	ServerPort   int = 46000

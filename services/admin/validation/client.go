@@ -26,7 +26,7 @@ func NewValidationClient(cloudFQDN string, authorizer auth.Authorizer) (*Validat
 	return &ValidationClient{c}, err
 }
 
-//validate
+// validate
 func (c *ValidationClient) Validate(ctx context.Context) error {
 	return c.internal.Validate(ctx)
 }

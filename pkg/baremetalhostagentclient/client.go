@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT license.
 
-//NOTE: getClientConnection chould be refactored into moc repo.
+// NOTE: getClientConnection chould be refactored into moc repo.
 package baremetalhostagentclient
 
 import (
