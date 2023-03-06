@@ -42,6 +42,6 @@ require (
 
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
-	github.com/microsoft/moc => github.com/algamaes/moc v0.0.0-20230223224657-fd8327b50fa6
+	github.com/microsoft/moc => github.com/algamaes/moc v0.0.0-20230306224841-7dee6121dfb5
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
 )
