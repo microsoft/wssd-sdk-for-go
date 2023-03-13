@@ -45,7 +45,6 @@ func (c *client) ForwardLogFile(ctx context.Context, forwardFunc func([]byte, er
 	}
 	return loggingHelpers.Forward(ctx, forwardFunc, recFunc)
 
-	return nil
 }
 
 // Get
@@ -70,6 +69,20 @@ func (c *client) GetLogFile(ctx context.Context, filename string) error {
 	return loggingHelpers.ReceiveFile(ctx, filename, recFunc)
 }
 
+func (c *client) SetVerbosityLevel(ctx context.Context, verbositylevel string) error {
+
+	request := setVerbosityLevelRequest(verbositylevel)
+
+	_, err := c.LogAgentClient.Set(ctx, request)
+	return err
+}
+
 func getLoggingRequest() *wssdadmin.LogRequest {
 	return &wssdadmin.LogRequest{}
+}
+
+func setVerbosityLevelRequest(verbositylevel string) *wssdadmin.SetRequest {
+	return &wssdadmin.SetRequest{
+		Verbositylevel: verbositylevel,
+	}
 }
