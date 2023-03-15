@@ -21,7 +21,7 @@ type client struct {
 	wssdsecurity.SecretAgentClient
 }
 
-// NewSecretClient - creates a client session with the backend wssd hostagent
+// NewSecretClient - creates a client session with the backend mochostagent
 func NewSecretClient(subID string, authorizer auth.Authorizer) (*client, error) {
 	c, err := wssdclient.GetSecretClient(&subID, authorizer)
 	if err != nil {

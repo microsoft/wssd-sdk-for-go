@@ -14,7 +14,6 @@ import (
 	wssdsdkauthport "github.com/microsoft/wssd-sdk-for-go/mochostagent/pkg/client"
 	"github.com/microsoft/wssd-sdk-for-go/mochostagent/services/security"
 	"google.golang.org/grpc"
-	//log "k8s.io/klog"
 )
 
 type client struct {
@@ -22,7 +21,6 @@ type client struct {
 }
 
 func getDefaultAuthServerEndpoint(serverAddress *string) string {
-	// return fmt.Sprintf("%s:%d", *serverAddress, wssdsdkauthport.AuthPort)
 	return fmt.Sprintf("%s:%d", *serverAddress, wssdsdkauthport.KnownAuthServerPort)
 }
 
@@ -47,7 +45,7 @@ func getAuthenticationClient(serverAddress *string, authorizer auth.Authorizer) 
 	return wssdsecurity.NewAuthenticationAgentClient(conn), nil
 }
 
-// NewAuthenticationClient creates a client session with the backend wssd hostagent
+// NewAuthenticationClient creates a client session with the backend mochostagent
 func NewAuthenticationClient(subID string, authorizer auth.Authorizer) (*client, error) {
 	c, err := getAuthenticationClient(&subID, authorizer)
 	if err != nil {

@@ -17,7 +17,7 @@ type client struct {
 	wssdadmin.LogAgentClient
 }
 
-// NewLoggingClient - creates a client session with the backend wssd hostagent
+// NewLoggingClient - creates a client session with the backend mochostagent
 func NewLoggingClient(subID string, authorizer auth.Authorizer) (*client, error) {
 	c, err := wssdclient.GetLogClient(&subID, authorizer)
 	if err != nil {

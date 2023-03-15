@@ -10,14 +10,13 @@ import (
 	wssdsecurity "github.com/microsoft/moc/rpc/hostagent/security"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/mochostagent/pkg/client"
 	"github.com/microsoft/wssd-sdk-for-go/mochostagent/services/security"
-	//log "k8s.io/klog"
 )
 
 type client struct {
 	wssdsecurity.AuthenticationAgentClient
 }
 
-// NewAuthenticationClient creates a client session with the backend wssd hostagent
+// NewAuthenticationClient creates a client session with the backend mochostagent
 func NewAuthenticationClient(subID string, authorizer auth.Authorizer) (*client, error) {
 	c, err := wssdclient.GetAuthenticationClient(&subID, authorizer)
 	if err != nil {

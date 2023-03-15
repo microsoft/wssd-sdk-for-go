@@ -24,13 +24,6 @@ import (
 
 const (
 	debugModeTLS = "WSSD_DEBUG_MODE"
-
-	// Workaround to allow wssdctl to build for Linux
-	// Before we were pulling this value from github.com/moc/pkg/apis/config,
-	// and that pkg uses the trace pkg ... which needs to be refactored to build for linux.
-	//
-	// In the future we may want to decouple wssdagent usage in the sdk ... so its possible that even when that is fixed,
-	// this value still lives here.
 	KnownServerPort     = 48000
 	KnownAuthServerPort = 48001
 )
@@ -83,8 +76,8 @@ func getAuthServerEndpoint(serverAddress *string) string {
 func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 	var opts []grpc.DialOption
 
-	// Debug Mode allows us to talk to wssdagent without a proper handshake
-	// This means we can debug and test wssdagent without generating certs
+	// Debug Mode allows us to talk to mochostagent without a proper handshake
+	// This means we can debug and test mochostagent without generating certs
 	// and having proper tokens
 	// Check if debug mode is on
 	if ok := isDebugMode(); ok == nil {

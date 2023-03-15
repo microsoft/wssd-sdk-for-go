@@ -23,7 +23,7 @@ type client struct {
 	wssdsecurity.IdentityAgentClient
 }
 
-// NewIdentityClientN- creates a client session with the backend wssd hostagent
+// NewIdentityClientN- creates a client session with the backend mochostagent
 func NewIdentityClient(subID string, authorizer auth.Authorizer) (*client, error) {
 	c, err := wssdclient.GetIdentityClient(&subID, authorizer)
 	if err != nil {
@@ -125,10 +125,8 @@ func getIdentity(identity *wssdsecurity.Identity) *security.Identity {
 	return &security.Identity{
 		ID:   &identity.Id,
 		Name: &identity.Name,
-		// Type:                 &identity.Type,
 		Token:       &identity.Token,
 		TokenExpiry: &identity.TokenExpiry,
-		// TokenExpiryInSeconds: &identity.TokenExpiryInSeconds,
 		Revoked:     identity.Revoked,
 		AuthType:    auth.AuthTypeToLoginType(identity.AuthType),
 		Certificate: &identity.Certificate,
@@ -141,8 +139,6 @@ func getIdentity(identity *wssdsecurity.Identity) *security.Identity {
 			HostPort:          &identity.HostPort,
 			HostAuthPort:      &identity.HostAuthPort,
 		},
-		// AutoRotate:    identity.AutoRotate,
-		// LoginFilePath: &identity.LoginFilePath,
 	}
 }
 

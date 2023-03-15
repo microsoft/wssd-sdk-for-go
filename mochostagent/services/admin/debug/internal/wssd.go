@@ -15,7 +15,7 @@ type client struct {
 	wssdadmin.DebugAgentClient
 }
 
-// NewDebugClient - creates a client session with the backend wssd hostagent
+// NewDebugClient - creates a client session with the backend mochostagent
 func NewDebugClient(subID string, authorizer auth.Authorizer) (*client, error) {
 	c, err := wssdclient.GetDebugClient(&subID, authorizer)
 	if err != nil {

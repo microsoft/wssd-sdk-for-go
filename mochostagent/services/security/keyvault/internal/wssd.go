@@ -21,7 +21,7 @@ type client struct {
 	wssdsecurity.KeyVaultAgentClient
 }
 
-// NewKeyVaultClientN- creates a client session with the backend wssd hostagent
+// NewKeyVaultClientN- creates a client session with the backend mochostagent
 func NewKeyVaultClient(subID string, authorizer auth.Authorizer) (*client, error) {
 	c, err := wssdclient.GetKeyVaultClient(&subID, authorizer)
 	if err != nil {
