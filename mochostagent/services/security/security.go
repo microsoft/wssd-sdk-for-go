@@ -1,0 +1,117 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license
+
+package security
+
+import "github.com/microsoft/moc/pkg/auth"
+
+type ClientType string
+
+const (
+	ControlPlane   ClientType = "ControlPlane"
+	ExternalClient ClientType = "ExternalClient"
+	Host           ClientType = "Host"
+)
+
+// KeyVaultProperties defines the structure of a Security Item
+type KeyVaultProperties struct {
+	SecretMap map[string]*string `json:"secretmap"`
+	// State - State would container ProvisioningState-SubState
+	Statuses map[string]*string `json:"statuses"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
+}
+
+// KeyVault defines the structure of a keyvault
+type KeyVault struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*KeyVaultProperties `json:"properties,omitempty"`
+}
+
+// IdentityProperties defines the structure of a Security Item
+type IdentityProperties struct {
+	// State - State would container ProvisioningState-SubState
+	Statuses map[string]*string `json:"statuses"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
+	// HostAgent FQDN
+	HostFqdn *string `json:"hostfqdn,omitempty"`
+	// HostAgent port
+	HostPort *int32 `json:"hostport,omitempty"`
+	// HostAgent authentication port
+	HostAuthPort *int32 `json:"hostauthport,omitempty"`
+	// Client type
+	ClientType ClientType `json:"clienttype,omitempty"`
+}
+
+// Identity defines the structure of a identity
+type Identity struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type *string `json:"type,omitempty"`
+	// Token
+	Token *string `json:"token,omitempty"`
+	// Token Expiry in Days
+	TokenExpiry *int64 `json:"tokenexpiry,omitempty"`
+	// Token Expiry in Seconds
+	TokenExpiryInSeconds *int64 `json:"tokenexpiryinseconds,omitempty"`
+	// Revoked
+	Revoked bool `json:"revoked,omitempty"`
+	// AuthType
+	AuthType auth.LoginType `json:"AuthType,omitempty"`
+	// Certificate string encoded in base64
+	Certificate *string `json:"certificate,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// Properties
+	*IdentityProperties `json:"properties,omitempty"`
+	// Enable auto rotation
+	AutoRotate bool `json:"autorotate,omitempty"`
+	//Login file path
+	LoginFilePath *string `json:"loginfilepath,omitempty"`
+}
+
+// CertificateAttributes the certificate management attributes
+type CertificateAttributes struct {
+	// Enabled - Determines whether the object is enabled
+	Enabled *bool `json:"enabled,omitempty"`
+	// NotBefore - Not before date in seconds since 1970-01-01T00:00:00Z
+	NotBefore *int64 `json:"nbf,omitempty"`
+	// Expires - Expiry date in seconds since 1970-01-01T00:00:00Z
+	Expires *int64 `json:"exp,omitempty"`
+	// Created - READ-ONLY; Creation time in seconds since 1970-01-01T00:00:00Z
+	Created *int64 `json:"created,omitempty"`
+	// Updated - READ-ONLY; Last updated time in seconds since 1970-01-01T00:00:00Z
+	Updated *int64 `json:"updated,omitempty"`
+	// State - State would container ProvisioningState-SubState
+	Statuses map[string]*string `json:"statuses"`
+	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
+}
+
+// Certificate a certificate consists of a certificate (X509) plus its attributes.
+type Certificate struct {
+	// ID - READ-ONLY; The certificate id
+	ID *string `json:"id,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Cer - CER contents of x509 certificate string encoded in base64
+	Cer *string `json:"cer,omitempty"`
+	// Type - The content type of the certificate
+	Type *string `json:"contentType,omitempty"`
+	// Attributes - The certificate attributes.
+	Attributes *CertificateAttributes `json:"attributes,omitempty"`
+	// Tags - Application-specific metadata in the form of key-value pairs
+	Tags map[string]*string `json:"tags"`
+}
