@@ -9,7 +9,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	go.opencensus.io v0.24.0
 	google.golang.org/grpc v1.52.0
-	google.golang.org/protobuf v1.29.0
+	google.golang.org/protobuf v1.30.0
 	k8s.io/klog v1.0.0
 )
 
@@ -41,6 +41,7 @@ require (
 
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
-	github.com/microsoft/moc => github.com/microsoft/moc v0.11.0-alpha.1.0.20230313181153-37c35147d741
+	//github.com/microsoft/moc => github.com/microsoft/moc v0.11.0-alpha.1.0.20230313181153-37c35147d741
+	github.com/microsoft/moc => ../moc
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
 )
