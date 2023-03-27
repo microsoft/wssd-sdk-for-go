@@ -7,7 +7,7 @@ import (
 	"context"
 
 	"github.com/microsoft/moc/pkg/auth"
-	wssdsecurity "github.com/microsoft/moc/rpc/hostagent/security"
+	wssdsecurity "github.com/microsoft/moc/rpc/mochostagent/security"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/mochostagent/pkg/client"
 	"github.com/microsoft/wssd-sdk-for-go/mochostagent/services/security"
 )

@@ -14,7 +14,7 @@ import (
 
 	"github.com/microsoft/moc/pkg/auth"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
-	wssdsecurity "github.com/microsoft/moc/rpc/hostagent/security"
+	wssdsecurity "github.com/microsoft/moc/rpc/mochostagent/security"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/mochostagent/pkg/client"
 	log "k8s.io/klog"
 )
@@ -123,8 +123,8 @@ func getIdentity(identity *wssdsecurity.Identity) *security.Identity {
 		clitype = security.Host
 	}
 	return &security.Identity{
-		ID:   &identity.Id,
-		Name: &identity.Name,
+		ID:          &identity.Id,
+		Name:        &identity.Name,
 		Token:       &identity.Token,
 		TokenExpiry: &identity.TokenExpiry,
 		Revoked:     identity.Revoked,

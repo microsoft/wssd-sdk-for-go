@@ -6,7 +6,7 @@ package virtualmachine
 import (
 	"context"
 
-	"github.com/microsoft/moc/rpc/hostagent/compute"
+	"github.com/microsoft/moc/rpc/mochostagent/compute"
 	sdkCompute "github.com/microsoft/wssd-sdk-for-go/mochostagent/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/mochostagent/services/compute/virtualmachine/internal"
 

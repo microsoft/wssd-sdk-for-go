@@ -8,7 +8,7 @@ import (
 
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
-	wssdsecurity "github.com/microsoft/moc/rpc/hostagent/security"
+	wssdsecurity "github.com/microsoft/moc/rpc/mochostagent/security"
 
 	"github.com/microsoft/moc/pkg/status"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/mochostagent/pkg/client"

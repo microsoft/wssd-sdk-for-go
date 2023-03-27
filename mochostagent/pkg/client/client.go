@@ -11,8 +11,8 @@ import (
 	"time"
 
 	admin_pb "github.com/microsoft/moc/rpc/common/admin"
-	compute_pb "github.com/microsoft/moc/rpc/hostagent/compute"
-	security_pb "github.com/microsoft/moc/rpc/hostagent/security"
+	compute_pb "github.com/microsoft/moc/rpc/mochostagent/compute"
+	security_pb "github.com/microsoft/moc/rpc/mochostagent/security"
 	"github.com/spf13/viper"
 	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	debugModeTLS = "WSSD_DEBUG_MODE"
+	debugModeTLS        = "WSSD_DEBUG_MODE"
 	KnownServerPort     = 48000
 	KnownAuthServerPort = 48001
 )

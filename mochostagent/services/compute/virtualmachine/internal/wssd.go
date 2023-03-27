@@ -6,7 +6,7 @@ package internal
 import (
 	"context"
 
-	hostcompute "github.com/microsoft/moc/rpc/hostagent/compute"
+	hostcompute "github.com/microsoft/moc/rpc/mochostagent/compute"
 	mochostagentclient "github.com/microsoft/wssd-sdk-for-go/mochostagent/pkg/client"
 
 	"github.com/microsoft/moc/pkg/auth"
