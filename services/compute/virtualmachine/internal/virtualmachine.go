@@ -530,19 +530,16 @@ func (c *client) getVirtualMachineGuestInstanceView(g *wssdcommonproto.VirtualMa
 		AgentVersion: g.GetVmAgentVersion(),
 	}
 
-	if g.Statuses != nil {
-		gap.Statuses = []*compute.InstanceViewStatus{}
-		for _, status := range g.Statuses {
-			gapStatus := compute.InstanceViewStatus{
-				Code:          status.GetCode(),
-				Level:         status.GetLevel(),
-				DisplayStatus: status.GetDisplayStatus(),
-				Message:       status.GetMessage(),
-				Time:          status.GetTime(),
-			}
-
-			gap.Statuses = append(gap.Statuses, &gapStatus)
+	for _, status := range g.Statuses {
+		gapStatus := compute.InstanceViewStatus{
+			Code:          status.GetCode(),
+			Level:         status.GetLevel(),
+			DisplayStatus: status.GetDisplayStatus(),
+			Message:       status.GetMessage(),
+			Time:          status.GetTime(),
 		}
+
+		gap.Statuses = append(gap.Statuses, &gapStatus)
 	}
 
 	return gap
