@@ -383,6 +383,7 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			OsProfile:               c.getVirtualMachineOSProfile(vm.Os),
 			NetworkProfile:          c.getVirtualMachineNetworkProfile(vm.Network),
 			GuestAgentProfile:       c.getVirtualMachineGuestProfile(vm.GuestAgent),
+			GuestAgentInstanceView:  c.getVirtualMachineGuestInstanceView(vm.GuestAgentInstanceView),
 			DisableHighAvailability: &vm.DisableHighAvailability,
 			ProvisioningState:       status.GetProvisioningState(vm.Status.GetProvisioningStatus()),
 			ValidationStatus:        status.GetValidationStatus(vm.GetStatus()),
@@ -515,6 +516,33 @@ func (c *client) getVirtualMachineGuestProfile(g *wssdcompute.GuestAgentConfigur
 
 	gap := &compute.GuestAgentProfile{
 		Enabled: &g.Enabled,
+	}
+
+	return gap
+}
+
+func (c *client) getVirtualMachineGuestInstanceView(g *wssdcommonproto.VirtualMachineAgentInstanceView) *compute.GuestAgentInstanceView {
+	if g == nil {
+		return nil
+	}
+
+	gap := &compute.GuestAgentInstanceView{
+		AgentVersion: g.GetVmAgentVersion(),
+	}
+
+	if g.Statuses != nil {
+		gap.Statuses = []*compute.InstanceViewStatus{}
+		for _, status := range g.Statuses {
+			gapStatus := compute.InstanceViewStatus{
+				Code:          status.GetCode(),
+				Level:         status.GetLevel(),
+				DisplayStatus: status.GetDisplayStatus(),
+				Message:       status.GetMessage(),
+				Time:          status.GetTime(),
+			}
+
+			gap.Statuses = append(gap.Statuses, &gapStatus)
+		}
 	}
 
 	return gap
