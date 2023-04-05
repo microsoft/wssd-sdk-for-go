@@ -27,7 +27,7 @@ clean:
 lbclient:
 	GOARCH=amd64 GOOS=windows $(GOBUILD) -ldflags $(LDFLAGS) -o ${LBCLIENTOUT} github.com/microsoft/wssd-sdk-for-go/cmd/lbclient
 format:
-	gofmt -s -w cmd/ pkg/ services/ tools/ mochostagent/
+	gofmt -s -w cmd/ pkg/ services/ tools/
 
 .PHONY: vendor
 vendor:
