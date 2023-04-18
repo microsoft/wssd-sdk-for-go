@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/microsoft/moc/pkg/auth"
+	wssdcloudcommon "github.com/microsoft/moc/rpc/common"
 	wssdadmin "github.com/microsoft/moc/rpc/common/admin"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 )
@@ -26,7 +27,7 @@ func NewDebugClient(subID string, authorizer auth.Authorizer) (*client, error) {
 
 // Stacktrace
 func (c *client) Stacktrace(ctx context.Context) (string, error) {
-	request := getDebugRequest(wssdadmin.DebugOperation_STACKTRACE)
+	request := getDebugRequest(wssdcloudcommon.ProviderAccessOperation_Debug_StackTrace)
 	response, err := c.DebugAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return "", err
@@ -34,6 +35,6 @@ func (c *client) Stacktrace(ctx context.Context) (string, error) {
 	return response.Result, nil
 }
 
-func getDebugRequest(operation wssdadmin.DebugOperation) *wssdadmin.DebugRequest {
+func getDebugRequest(operation wssdcloudcommon.ProviderAccessOperation) *wssdadmin.DebugRequest {
 	return &wssdadmin.DebugRequest{OperationType: operation}
 }
