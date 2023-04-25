@@ -5,6 +5,7 @@ package logging
 
 import (
 	"context"
+
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/admin/logging/internal"
 )
@@ -13,6 +14,8 @@ import (
 type Service interface {
 	GetLogFile(context.Context, string) error
 	ForwardLogFile(context.Context, func([]byte, error) error) error
+	SetVerbosityLevel(context.Context, int32) error
+	GetVerbosityLevel(context.Context) (string, error)
 }
 
 // Client structure
@@ -34,4 +37,12 @@ func (c *LoggingClient) ForwardLogFile(ctx context.Context, forwardFunc func([]b
 // gets a file from the corresponding node agent and writes it to filename
 func (c *LoggingClient) GetLogFile(ctx context.Context, filename string) error {
 	return c.internal.GetLogFile(ctx, filename)
+}
+
+func (c *LoggingClient) SetVerbosityLevel(ctx context.Context, verbositylevel int32) error {
+	return c.internal.SetVerbosityLevel(ctx, verbositylevel)
+}
+
+func (c *LoggingClient) GetVerbosityLevel(ctx context.Context) (string, error) {
+	return c.internal.GetVerbosityLevel(ctx)
 }
