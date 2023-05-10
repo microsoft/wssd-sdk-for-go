@@ -4,11 +4,11 @@ go 1.20
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
-	github.com/microsoft/moc v0.10.27-alpha.0
+	github.com/microsoft/moc v0.11.0-alpha.4
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.1
 	go.opencensus.io v0.24.0
-	google.golang.org/grpc v1.52.0
+	google.golang.org/grpc v1.54.0
 	google.golang.org/protobuf v1.30.0
 	k8s.io/klog v1.0.0
 )
@@ -19,6 +19,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/jmespath/go-jmespath v0.3.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/onsi/ginkgo v1.16.4 // indirect
@@ -31,16 +32,18 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
-	golang.org/x/net v0.6.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
-	google.golang.org/genproto v0.0.0-20221227171554-f9683d7f8bef // indirect
+	golang.org/x/net v0.8.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
+	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
-	github.com/microsoft/moc => github.com/algamaes/moc v0.0.0-20230403214251-7577ea587de1
+	github.com/microsoft/moc => github.com/algamaes/moc v0.0.6-dhavalpopat.0.20230510073420-8883c94b18e7
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
+	golang.org/x/net => golang.org/x/net v0.0.0-20220822230855-b0a4917ee28c
+	golang.org/x/sys => golang.org/x/sys v0.0.0-20220823224334-20c2bfdbfe24
 )
