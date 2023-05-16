@@ -54,6 +54,8 @@ const (
 	Static IPAllocationMethod = "Static"
 )
 
+type VlanType string
+
 // SubnetProperties
 type SubnetProperties struct {
 	// Cidr for this subnet - IPv4, IPv6
@@ -65,7 +67,12 @@ type SubnetProperties struct {
 	// IPAllocationMethod - The IP address allocation method. Possible values include: 'Static', 'Dynamic'
 	IPAllocationMethod IPAllocationMethod `json:"ipAllocationMethod,omitempty"`
 	// Vlan
-	Vlan *uint16 `json:"vlan,omitempty"`
+	Vlan *Vlan `json:"vlan,omitempty"`
+}
+
+type Vlan struct {
+	Id   *[]string `json:"id,omitempty"`
+	Type VlanType  `json:"type,omitempty"`
 }
 
 // Subnet is assoicated with a Virtual Network.
