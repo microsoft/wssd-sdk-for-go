@@ -30,12 +30,31 @@ func virtualNetworkTypeToString(vnetType wssdnetwork.VirtualNetworkType) string 
 
 }
 
+func vlanTypeToString(vlanType wssdnetwork.VlanType) string {
+	typename, ok := wssdnetwork.VlanType_name[int32(vlanType)]
+	if !ok {
+		return "Unknown"
+	}
+	return typename
+}
+
 func virtualNetworkTypeFromString(vnNetworkString string) (wssdnetwork.VirtualNetworkType, error) {
 	typevalue := wssdnetwork.VirtualNetworkType_ICS
 	if len(vnNetworkString) > 0 {
 		typevTmp, ok := wssdnetwork.VirtualNetworkType_value[vnNetworkString]
 		if ok {
 			typevalue = wssdnetwork.VirtualNetworkType(typevTmp)
+		}
+	}
+	return typevalue, nil
+}
+
+func vlanTypeFromString(vlanTypestring string) (wssdnetwork.VlanType, error) {
+	typevalue := wssdnetwork.VlanType_Access
+	if len(vlanTypestring) > 0 {
+		wssdvlantype, ok := wssdnetwork.VlanType_value[vlanTypestring]
+		if ok {
+			typevalue = wssdnetwork.VlanType(wssdvlantype)
 		}
 	}
 	return typevalue, nil
@@ -209,9 +228,13 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 			// TODO: implement something for IPConfigurationReferences
 		}
 		if subnet.Vlan == nil {
-			wssdsubnet.Vlan = 0
+			wssdsubnet.Vlan = nil
 		} else {
-			wssdsubnet.Vlan = uint32(*subnet.Vlan)
+			wssdvlantype, _ := vlanTypeFromString(string(subnet.Vlan.Type))
+			wssdsubnet.Vlan = &wssdnetwork.Vlan{
+				Id:   *subnet.Vlan.Id,
+				Type: wssdvlantype,
+			}
 		}
 		if subnet.SubnetProperties != nil {
 			if subnet.SubnetProperties.AddressPrefix != nil {
@@ -292,7 +315,7 @@ func getNetworkSubnets(ipams []*wssdnetwork.Ipam) *[]network.Subnet {
 					Routes:        getNetworkRoutes(subnet.Routes),
 					// TODO: implement something for IPConfigurationReferences
 					IPAllocationMethod: ipAllocationMethodProtobufToSdk(subnet.Allocation),
-					Vlan:               getVlan(subnet.Vlan),
+					Vlan:               getVlan(*subnet.Vlan),
 				},
 			})
 		}
@@ -337,8 +360,12 @@ func getMacPool(wssdMacPool *wssdnetwork.MacPool) *network.MACPool {
 	return &macPool
 }
 
-func getVlan(wssdvlan uint32) *uint16 {
-	vlan := uint16(wssdvlan)
+func getVlan(wssdvlan wssdnetwork.Vlan) *network.Vlan {
+	vlanType := vlanTypeToString(wssdvlan.Type)
+	vlan := network.Vlan{
+		Id:   &wssdvlan.Id,
+		Type: network.VlanType(vlanType),
+	}
 	return &vlan
 }
 

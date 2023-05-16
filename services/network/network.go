@@ -56,6 +56,13 @@ const (
 
 type VlanType string
 
+const (
+	// Access ...
+	Access IPAllocationMethod = "Access"
+	// Trunk ...
+	Trunk IPAllocationMethod = "Trunk"
+)
+
 // SubnetProperties
 type SubnetProperties struct {
 	// Cidr for this subnet - IPv4, IPv6
@@ -71,7 +78,7 @@ type SubnetProperties struct {
 }
 
 type Vlan struct {
-	Id   *[]string `json:"id,omitempty"`
+	Id   *[]uint32 `json:"id,omitempty"`
 	Type VlanType  `json:"type,omitempty"`
 }
 
