@@ -54,15 +54,6 @@ const (
 	Static IPAllocationMethod = "Static"
 )
 
-type VlanType string
-
-const (
-	// Access ...
-	Access IPAllocationMethod = "Access"
-	// Trunk ...
-	Trunk IPAllocationMethod = "Trunk"
-)
-
 // SubnetProperties
 type SubnetProperties struct {
 	// Cidr for this subnet - IPv4, IPv6
@@ -74,12 +65,13 @@ type SubnetProperties struct {
 	// IPAllocationMethod - The IP address allocation method. Possible values include: 'Static', 'Dynamic'
 	IPAllocationMethod IPAllocationMethod `json:"ipAllocationMethod,omitempty"`
 	// Vlan
-	Vlan *Vlan `json:"vlan,omitempty"`
+	Vlan      *uint16   `json:"vlan,omitempty"`
+	TrunkVlan TrunkVlan `json:"trunkvlan,omitempty"`
 }
 
-type Vlan struct {
-	Id   *[]uint32 `json:"id,omitempty"`
-	Type VlanType  `json:"type,omitempty"`
+type TrunkVlan struct {
+	AllowedVlanIdList *[]uint16 `json:"allowedvlanidlist,omitempty"`
+	NativeVlanId      uint16    `json:"nativevlanid,omitempty"`
 }
 
 // Subnet is assoicated with a Virtual Network.
