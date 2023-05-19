@@ -218,17 +218,9 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 			wssdsubnet.Trunkvlan = nil
 		} else {
 			trunkVlan := *subnet.TrunkVlan
-			allowedVlanIdList := []uint32{}
-			nativeVlanId := uint32(0)
-			if trunkVlan.AllowedVlanIdList != nil {
-				allowedVlanIdList = *trunkVlan.AllowedVlanIdList
-			}
-			if subnet.TrunkVlan.NativeVlanId != nil {
-				nativeVlanId = *trunkVlan.NativeVlanId
-			}
 			wssdsubnet.Trunkvlan = &wssdnetwork.TrunkVlan{
-				Allowedvlanidlist: allowedVlanIdList,
-				Nativevlanid:      nativeVlanId,
+				Allowedvlanidlist: *trunkVlan.AllowedVlanIdList,
+				Nativevlanid:      *trunkVlan.NativeVlanId,
 			}
 		}
 
