@@ -213,6 +213,12 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 		} else {
 			wssdsubnet.Vlan = uint32(*subnet.Vlan)
 		}
+		if subnet.TrunkVlan == nil {
+			wssdsubnet.Trunkvlan = nil
+		} else {
+			wssdsubnet.Trunkvlan.Allowedvlanidlist = *subnet.TrunkVlan.AllowedVlanIdList
+			wssdsubnet.Trunkvlan.Nativevlanid = *subnet.TrunkVlan.NativeVlanId
+		}
 		if subnet.SubnetProperties != nil {
 			if subnet.SubnetProperties.AddressPrefix != nil {
 				wssdsubnet.Cidr = *subnet.SubnetProperties.AddressPrefix
@@ -293,6 +299,7 @@ func getNetworkSubnets(ipams []*wssdnetwork.Ipam) *[]network.Subnet {
 					// TODO: implement something for IPConfigurationReferences
 					IPAllocationMethod: ipAllocationMethodProtobufToSdk(subnet.Allocation),
 					Vlan:               getVlan(subnet.Vlan),
+					TrunkVlan:          getTrunkVlan(subnet.Trunkvlan),
 				},
 			})
 		}
@@ -339,6 +346,17 @@ func getMacPool(wssdMacPool *wssdnetwork.MacPool) *network.MACPool {
 
 func getVlan(wssdvlan uint32) *uint16 {
 	vlan := uint16(wssdvlan)
+	return &vlan
+}
+
+func getTrunkVlan(wssdtrunkvlan *wssdnetwork.TrunkVlan) *network.TrunkVlan {
+	if wssdtrunkvlan == nil {
+		return nil
+	}
+	vlan := network.TrunkVlan{
+		AllowedVlanIdList: &wssdtrunkvlan.Allowedvlanidlist,
+		NativeVlanId:      &wssdtrunkvlan.Nativevlanid,
+	}
 	return &vlan
 }
 
