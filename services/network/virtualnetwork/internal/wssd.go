@@ -213,12 +213,25 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 		} else {
 			wssdsubnet.Vlan = uint32(*subnet.Vlan)
 		}
+
 		if subnet.TrunkVlan == nil {
 			wssdsubnet.Trunkvlan = nil
 		} else {
-			wssdsubnet.Trunkvlan.Allowedvlanidlist = *subnet.TrunkVlan.AllowedVlanIdList
-			wssdsubnet.Trunkvlan.Nativevlanid = *subnet.TrunkVlan.NativeVlanId
+			trunkVlan := *subnet.TrunkVlan
+			allowedVlanIdList := []uint32{}
+			nativeVlanId := uint32(0)
+			if trunkVlan.AllowedVlanIdList != nil {
+				allowedVlanIdList = *trunkVlan.AllowedVlanIdList
+			}
+			if subnet.TrunkVlan.NativeVlanId != nil {
+				nativeVlanId = *trunkVlan.NativeVlanId
+			}
+			wssdsubnet.Trunkvlan = &wssdnetwork.TrunkVlan{
+				Allowedvlanidlist: allowedVlanIdList,
+				Nativevlanid:      nativeVlanId,
+			}
 		}
+
 		if subnet.SubnetProperties != nil {
 			if subnet.SubnetProperties.AddressPrefix != nil {
 				wssdsubnet.Cidr = *subnet.SubnetProperties.AddressPrefix
