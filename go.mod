@@ -42,7 +42,7 @@ require (
 
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
-	github.com/microsoft/moc => github.com/algamaes/moc v0.0.6-dhavalpopat.0.20230510073420-8883c94b18e7
+	github.com/microsoft/moc => github.com/algamaes/moc v0.0.6-dhavalpopat.0.20230523015656-33714455b97e
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
 	golang.org/x/net => golang.org/x/net v0.0.0-20220822230855-b0a4917ee28c
 	golang.org/x/sys => golang.org/x/sys v0.0.0-20220823224334-20c2bfdbfe24
