@@ -168,12 +168,20 @@ func getWssdNetworkIpams(subnets *[]network.LogicalSubnet) []*wssdnetwork.Logica
 		wssdsubnet.Allocation = ipAllocationMethodSdkToProtobuf(subnet.LogicalSubnetProperties.IPAllocationMethod)
 
 		if subnet.DNSSettings != nil {
-			wssdsubnet.Dns = &wssdcommonproto.Dns{
-				Domain:  *subnet.DNSSettings.Domain,
-				Search:  *subnet.DNSSettings.Search,
-				Servers: *subnet.DNSSettings.Servers,
-				Options: *subnet.DNSSettings.Options,
+			dns := &wssdcommonproto.Dns{}
+			if subnet.DNSSettings.Domain != nil {
+				dns.Domain = *subnet.DNSSettings.Domain
 			}
+			if subnet.DNSSettings.Search != nil {
+				dns.Search = *subnet.DNSSettings.Search
+			}
+			if subnet.DNSSettings.Servers != nil {
+				dns.Servers = *subnet.DNSSettings.Servers
+			}
+			if subnet.DNSSettings.Options != nil {
+				dns.Options = *subnet.DNSSettings.Options
+			}
+			wssdsubnet.Dns = dns
 		}
 
 		ipam.Subnets = append(ipam.Subnets, wssdsubnet)
