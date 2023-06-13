@@ -70,8 +70,8 @@ type SubnetProperties struct {
 }
 
 type TrunkVlan struct {
-	AllowedVlanIdList *[]uint32 `json:"allowedvlanidlist,omitempty"`
-	NativeVlanId      *uint32   `json:"nativevlanid,omitempty"`
+	AllowedVlanIdList *string `json:"allowedvlanidlist,omitempty"`
+	NativeVlanId      *uint32 `json:"nativevlanid,omitempty"`
 }
 
 // Subnet is assoicated with a Virtual Network.
