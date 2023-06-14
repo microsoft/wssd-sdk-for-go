@@ -119,7 +119,7 @@ func (c *client) getWssdVirtualMachineSecurityConfiguration(vm *compute.VirtualM
 	enableTPM := false
 	var uefiSettings *wssdcompute.UefiSettings
 	uefiSettings = nil
-	securityType := wssdcompute.SecurityType_NOTCONFIGURED
+	securityType := wssdcommonproto.SecurityType_NOTCONFIGURED
 	if vm.SecurityProfile != nil {
 		if vm.SecurityProfile.EnableTPM != nil {
 			enableTPM = *vm.SecurityProfile.EnableTPM
@@ -132,9 +132,9 @@ func (c *client) getWssdVirtualMachineSecurityConfiguration(vm *compute.VirtualM
 		}
 		switch vm.SecurityProfile.SecurityType {
 		case compute.TrustedLaunch:
-			securityType = wssdcompute.SecurityType_TRUSTEDLAUNCH
+			securityType = wssdcommonproto.SecurityType_TRUSTEDLAUNCH
 		case compute.ConfidentialVM:
-			securityType = wssdcompute.SecurityType_CONFIDENTIALVM
+			securityType = wssdcommonproto.SecurityType_CONFIDENTIALVM
 		}
 	}
 
@@ -455,9 +455,9 @@ func (c *client) getVirtualMachineSecurityProfile(vm *wssdcompute.VirtualMachine
 			}
 		}
 		switch vm.Security.SecurityType {
-		case wssdcompute.SecurityType_TRUSTEDLAUNCH:
+		case wssdcommonproto.SecurityType_TRUSTEDLAUNCH:
 			securityType = compute.TrustedLaunch
-		case wssdcompute.SecurityType_CONFIDENTIALVM:
+		case wssdcommonproto.SecurityType_CONFIDENTIALVM:
 			securityType = compute.ConfidentialVM
 		}
 	}
