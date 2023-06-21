@@ -199,11 +199,21 @@ type UefiSettings struct {
 	SecureBootEnabled *bool `json:"secureBootEnabled,omitempty"`
 }
 
+type SecurityTypes string
+
+// possible values of security type string
+const (
+	TrustedLaunch  SecurityTypes = "TrustedLaunch"
+	ConfidentialVM SecurityTypes = "ConfidentialVM"
+)
+
 // SecurityProfile
 type SecurityProfile struct {
 	EnableTPM *bool `json:"enableTPM,omitempty"`
 	// Security related configuration used while creating the virtual machine.
 	UefiSettings *UefiSettings `json:"uefiSettings,omitempty"`
+	// SecurityType - Specifies the SecurityType of the virtual machine. It has to be set to any specified value to enable UefiSettings. <br><br> Default: UefiSettings will not be enabled unless this property is set. Possible values include: 'TrustedLaunch', 'ConfidentialVM'
+	SecurityType SecurityTypes `json:"securityType,omitempty"`
 }
 
 type VirtualMachineProperties struct {
