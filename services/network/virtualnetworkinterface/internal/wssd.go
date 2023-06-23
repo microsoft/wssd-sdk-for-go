@@ -61,12 +61,12 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnetInt
 	if err != nil {
 		return nil, err
 	}
-	vnets, err := c.getVirtualNetworkInterfacesFromResponse(group, response)
+	vnics, err := c.getVirtualNetworkInterfacesFromResponse(group, response)
 	if err != nil {
 		return nil, err
 	}
 
-	return &(*vnets)[0], nil
+	return &(*vnics)[0], nil
 }
 
 // Delete methods invokes create or update on the client
@@ -181,6 +181,26 @@ func (c *client) getWssdVirtualMachineEntity(vnic *network.VirtualNetworkInterfa
 	}
 }
 
+func networkTypeProtobufToSdk(networkType wssdnetwork.NetworkType) network.NetworkType {
+	switch networkType {
+	case wssdnetwork.NetworkType_LOGICAL_NETWORK:
+		return network.Logical
+	case wssdnetwork.NetworkType_VIRTUAL_NETWORK:
+		return network.Virtual
+	}
+	return network.Virtual
+}
+
+func networkTypeSdkToProtobuf(networkType network.NetworkType) wssdnetwork.NetworkType {
+	switch networkType {
+	case network.Logical:
+		return wssdnetwork.NetworkType_LOGICAL_NETWORK
+	case network.Virtual:
+		return wssdnetwork.NetworkType_VIRTUAL_NETWORK
+	}
+	return wssdnetwork.NetworkType_VIRTUAL_NETWORK
+}
+
 func ipAllocationMethodProtobufToSdk(allocation wssdcommonproto.IPAllocationMethod) network.IPAllocationMethod {
 	switch allocation {
 	case wssdcommonproto.IPAllocationMethod_Static:
@@ -211,7 +231,8 @@ func (c *client) getWssdNetworkInterfaceIPConfig(ipconfig *network.IPConfigurati
 	}
 
 	wssdipconfig := &wssdnetwork.IpConfiguration{
-		Subnetid: *ipconfig.SubnetID,
+		Subnetid:    *ipconfig.SubnetID,
+		NetworkType: networkTypeSdkToProtobuf(ipconfig.NetworkType),
 	}
 	if ipconfig.IPAddress != nil {
 		wssdipconfig.Ipaddress = *ipconfig.IPAddress
@@ -309,6 +330,7 @@ func (c *client) getNetworkIpConfigs(wssdipconfigs []*wssdnetwork.IpConfiguratio
 				SubnetID:           &wssdipconfig.Subnetid,
 				Gateway:            &wssdipconfig.Gateway,
 				IPAllocationMethod: ipAllocationMethodProtobufToSdk(wssdipconfig.Allocation),
+				NetworkType:        networkTypeProtobufToSdk(wssdipconfig.NetworkType),
 			},
 		})
 	}

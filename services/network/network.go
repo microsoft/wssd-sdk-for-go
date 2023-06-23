@@ -243,6 +243,15 @@ type VirtualNetwork struct {
 	*VirtualNetworkProperties `json:"properties,omitempty"`
 }
 
+type NetworkType string
+
+const (
+	// Virtual ...
+	Virtual NetworkType = "VirtualNetwork"
+	// Logical ...
+	Logical NetworkType = "LogicalNetwork"
+)
+
 // IPConfigurationProperties
 type IPConfigurationProperties struct {
 	// IPAddress
@@ -251,6 +260,8 @@ type IPConfigurationProperties struct {
 	PrefixLength *string `json:"prefixlength,omitempty"`
 	// SubnetID
 	SubnetID *string `json:"subnetId,omitempty"`
+	// NetworkType the subnet refers to. Either Virtual Network or Logical Network
+	NetworkType NetworkType `json:"networkType,omitempty"`
 	// Gateway
 	Gateway *string `json:"gateway,omitempty"`
 	// Primary indicates that this is the primary IPaddress of the Nic
