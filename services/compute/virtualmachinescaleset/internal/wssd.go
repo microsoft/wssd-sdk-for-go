@@ -322,7 +322,7 @@ func (c *client) getVirtualMachineScaleSetNetworkConfigurationIPConfiguration(ws
 	}
 }
 
-func (c *client) getVirtualMachineScaleSetGuestAgentProfile(g *wssdcompute.GuestAgentConfiguration) *compute.GuestAgentProfile {
+func (c *client) getVirtualMachineScaleSetGuestAgentProfile(g *wssdcommonproto.GuestAgentConfiguration) *compute.GuestAgentProfile {
 	if g == nil {
 		return nil
 	}
@@ -663,8 +663,8 @@ func (c *client) getWssdVirtualMachineScaleSetOSConfiguration(s *compute.OSProfi
 	return &osconfig
 }
 
-func (c *client) getWssdVirtualMachineScaleSetGuestAgentConfiguration(s *compute.GuestAgentProfile) *wssdcompute.GuestAgentConfiguration {
-	gac := &wssdcompute.GuestAgentConfiguration{}
+func (c *client) getWssdVirtualMachineScaleSetGuestAgentConfiguration(s *compute.GuestAgentProfile) *wssdcommonproto.GuestAgentConfiguration {
+	gac := &wssdcommonproto.GuestAgentConfiguration{}
 
 	if s == nil || s.Enabled == nil {
 		return gac

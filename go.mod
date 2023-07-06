@@ -4,12 +4,12 @@ go 1.20
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
-	github.com/microsoft/moc v0.11.0-alpha.4
+	github.com/microsoft/moc v0.11.0-alpha.9
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.1
 	go.opencensus.io v0.24.0
 	google.golang.org/grpc v1.54.0
-	google.golang.org/protobuf v1.30.0
+	google.golang.org/protobuf v1.31.0
 	k8s.io/klog v1.0.0
 )
 
@@ -34,7 +34,7 @@ require (
 	github.com/subosito/gotenv v1.4.2 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/text v0.10.0 // indirect
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -42,7 +42,7 @@ require (
 
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
-	github.com/microsoft/moc => github.com/algamaes/moc v0.0.6-dhavalpopat.0.20230510073420-8883c94b18e7
+	github.com/microsoft/moc => github.com/algamaes/moc v0.0.0-20230704002045-9fb3aa148d06
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
 	golang.org/x/net => golang.org/x/net v0.0.0-20220822230855-b0a4917ee28c
 	golang.org/x/sys => golang.org/x/sys v0.0.0-20220823224334-20c2bfdbfe24
