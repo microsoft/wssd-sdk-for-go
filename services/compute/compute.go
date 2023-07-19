@@ -203,7 +203,7 @@ type InstanceViewStatus struct {
 	// Code - READ-ONLY; The status code, which only appears in the response.
 	Code string `json:"code,omitempty"`
 	// Level - READ-ONLY; The level code, which only appears in the response.
-	Level string `json:"level,omitempty"`
+	Level common.InstanceViewStatus_StatusLevelType `json:"level,omitempty"`
 	// DisplayStatus - READ-ONLY; The short localizable label for the status, which only appears in the response.
 	DisplayStatus string `json:"displayStatus,omitempty"`
 	// Message - READ-ONLY; The detailed status message, including for alerts and error messages, which only appears in the response.
@@ -357,8 +357,6 @@ type VirtualMachineScaleSetVMProfileProperties struct {
 	OsProfile *OSProfile `json:"osProfile,omitempty"`
 	// NetworkProfile
 	NetworkProfile *VirtualMachineScaleSetNetworkProfile `json:"networkProfile,omitempty"`
-	// GuestAgentProfile - Specifies the guest agent settings for the virtual machine.
-	GuestAgentProfile *GuestAgentProfile `json:"guestAgentProfile,omitempty"`
 	// DiagnosticsProfile - Specifies the boot diagnostic settings state
 	DiagnosticsProfile *DiagnosticsProfile `json:"diagnosticsProfile,omitempty"`
 	// Priority - Specifies the priority for the virtual machines in the scale set. <br><br>Minimum api-version: 2017-10-30-preview. Possible values include: 'Regular', 'Low'

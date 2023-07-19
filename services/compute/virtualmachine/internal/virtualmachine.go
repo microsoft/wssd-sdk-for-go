@@ -219,8 +219,8 @@ func (c *client) getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkPro
 	return nc, nil
 }
 
-func (c *client) getWssdVirtualMachineGuestAgentConfiguration(s *compute.GuestAgentProfile) (*wssdcompute.GuestAgentConfiguration, error) {
-	gac := &wssdcompute.GuestAgentConfiguration{}
+func (c *client) getWssdVirtualMachineGuestAgentConfiguration(s *compute.GuestAgentProfile) (*wssdcommonproto.GuestAgentConfiguration, error) {
+	gac := &wssdcommonproto.GuestAgentConfiguration{}
 
 	if s == nil || s.Enabled == nil {
 		return gac, nil
@@ -509,7 +509,7 @@ func (c *client) getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfigura
 	return np
 }
 
-func (c *client) getVirtualMachineGuestProfile(g *wssdcompute.GuestAgentConfiguration) *compute.GuestAgentProfile {
+func (c *client) getVirtualMachineGuestProfile(g *wssdcommonproto.GuestAgentConfiguration) *compute.GuestAgentProfile {
 	if g == nil {
 		return nil
 	}
