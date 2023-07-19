@@ -124,6 +124,7 @@ func (c *client) getWssdVirtualMachineSecurityConfiguration(vm *compute.VirtualM
 	enableTPM := false
 	var uefiSettings *wssdcompute.UefiSettings
 	uefiSettings = nil
+	securityType := wssdcommonproto.SecurityType_NOTCONFIGURED
 	if vm.SecurityProfile != nil {
 		if vm.SecurityProfile.EnableTPM != nil {
 			enableTPM = *vm.SecurityProfile.EnableTPM
@@ -134,11 +135,18 @@ func (c *client) getWssdVirtualMachineSecurityConfiguration(vm *compute.VirtualM
 			}
 
 		}
+		switch vm.SecurityProfile.SecurityType {
+		case compute.TrustedLaunch:
+			securityType = wssdcommonproto.SecurityType_TRUSTEDLAUNCH
+		case compute.ConfidentialVM:
+			securityType = wssdcommonproto.SecurityType_CONFIDENTIALVM
+		}
 	}
 
 	return &wssdcompute.SecurityConfiguration{
 		EnableTPM:    enableTPM,
 		UefiSettings: uefiSettings,
+		SecurityType: securityType,
 	}, nil
 }
 
@@ -455,6 +463,8 @@ func (c *client) getVirtualMachineSecurityProfile(vm *wssdcompute.VirtualMachine
 	enableTPM := false
 	var uefiSettings *compute.UefiSettings
 	uefiSettings = nil
+	var securityType compute.SecurityTypes = ""
+
 	if vm.Security != nil {
 		enableTPM = vm.Security.EnableTPM
 		if vm.Security.UefiSettings != nil {
@@ -462,12 +472,20 @@ func (c *client) getVirtualMachineSecurityProfile(vm *wssdcompute.VirtualMachine
 				SecureBootEnabled: &vm.Security.UefiSettings.SecureBootEnabled,
 			}
 		}
+		switch vm.Security.SecurityType {
+		case wssdcommonproto.SecurityType_TRUSTEDLAUNCH:
+			securityType = compute.TrustedLaunch
+		case wssdcommonproto.SecurityType_CONFIDENTIALVM:
+			securityType = compute.ConfidentialVM
+		}
 	}
 
 	return &compute.SecurityProfile{
 		EnableTPM:    &enableTPM,
 		UefiSettings: uefiSettings,
+		SecurityType: securityType,
 	}
+
 }
 
 func (c *client) getVirtualMachineStorageProfile(s *wssdcompute.StorageConfiguration) *compute.StorageProfile {
@@ -530,7 +548,7 @@ func (c *client) getVirtualMachineGuestInstanceView(g *wssdcommonproto.VirtualMa
 		AgentVersion: g.GetVmAgentVersion(),
 	}
 
-	for _, status := range g.Statuses {
+	for _, status := range g.GetStatuses() {
 		gapStatus := compute.InstanceViewStatus{
 			Code:          status.GetCode(),
 			Level:         status.GetLevel(),
