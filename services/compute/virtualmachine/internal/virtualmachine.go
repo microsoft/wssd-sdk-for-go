@@ -51,6 +51,8 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		return nil, errors.Wrapf(err, "Failed to get Entity")
 	}
 
+	httpProxyConfig := c.getWssdVirtualMachineHttpProxyConfiguration(vm.HttpProxyConfiguration)
+
 	wssdvm = &wssdcompute.VirtualMachine{
 		Name:     *vm.Name,
 		Tags:     getWssdTags(vm.Tags),
@@ -60,6 +62,7 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		Os:       osconfig,
 		Network:  networkConfig,
 		Entity:   entity,
+		HttpProxyConfiguration: httpProxyConfig,
 	}
 
 	if vm.DisableHighAvailability != nil {
@@ -361,6 +364,28 @@ func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) (*ws
 	return &osconfig, nil
 }
 
+func (c *client) getWssdVirtualMachineHttpProxyConfiguration(httpproxyconfiguration *compute.HttpProxyConfiguration) *wssdcompute.HttpProxyConfiguration {
+    httpProxyConfiguration := &wssdcloudcompute.HttpProxyConfiguration{}
+	
+	if httpProxyConfiguration.httpProxy != nil {
+		httpProxyConfiguration.httpProxy = *httpProxyConfiguration.httpProxy
+	}
+
+	if httpProxyConfiguration.httpsProxy != nil {
+		httpProxyConfiguration.httpsProxy = *httpProxyConfiguration.httpsProxy
+	}
+
+	if httpProxyConfiguration.noProxy != nil {
+		httpProxyConfiguration.noProxy = *httpProxyConfiguration.noProxy
+	}
+	
+	if httpProxyConfiguration.trustedCa != nil {
+		httpProxyConfiguration.trustedCa = *httpProxyConfiguration.trustedCa
+	}
+
+	return &httpProxyConfiguration
+}
+
 // Conversion functions from wssdcompute to compute
 
 func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.VirtualMachine {
@@ -380,6 +405,7 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			Statuses:                c.getVirtualMachineStatuses(vm),
 			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
 			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
+			HttpProxyConfiguration:  c.getVirtualMachineHttpProxyConfiguration(vm),
 		},
 	}
 }
@@ -577,5 +603,15 @@ func (c *client) getVirtualMachineOSProfile(o *wssdcompute.OperatingSystemConfig
 		OsBootstrapEngine:    osBootstrapEngine,
 		WindowsConfiguration: c.getVirtualMachineWindowsConfiguration(o.WindowsConfiguration),
 		LinuxConfiguration:   c.getVirtualMachineLinuxConfiguration(o.LinuxConfiguration),
+	}
+}
+
+func (c *client) getVirtualMachineHttpProxyConfiguration(httpProxyConfiguration *wssdcompute.HttpProxyConfiguration) *compute.HttpProxyConfiguration {
+
+	return &compute.HttpProxyConfiguration{
+		httpProxy: &httpProxyConfiguration.httpProxy,
+		httpsProxy: &httpProxyConfiguration.httpsProxy,
+		noProxy: &httpProxyConfiguration.noProxy,
+		trustedCa: &httpProxyConfiguration.trustedCa,
 	}
 }
