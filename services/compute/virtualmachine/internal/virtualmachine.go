@@ -549,15 +549,7 @@ func (c *client) getVirtualMachineGuestInstanceView(g *wssdcommonproto.VirtualMa
 	}
 
 	for _, status := range g.GetStatuses() {
-		gapStatus := compute.InstanceViewStatus{
-			Code:          status.GetCode(),
-			Level:         status.GetLevel(),
-			DisplayStatus: status.GetDisplayStatus(),
-			Message:       status.GetMessage(),
-			Time:          status.GetTime(),
-		}
-
-		gap.Statuses = append(gap.Statuses, &gapStatus)
+		gap.Statuses = append(gap.Statuses, c.getInstanceViewStatus(status))
 	}
 
 	return gap
@@ -631,5 +623,25 @@ func (c *client) getVirtualMachineOSProfile(o *wssdcompute.OperatingSystemConfig
 		OsBootstrapEngine:    osBootstrapEngine,
 		WindowsConfiguration: c.getVirtualMachineWindowsConfiguration(o.WindowsConfiguration),
 		LinuxConfiguration:   c.getVirtualMachineLinuxConfiguration(o.LinuxConfiguration),
+	}
+}
+
+func (c *client) getInstanceViewStatus(status *wssdcommonproto.InstanceViewStatus) *compute.InstanceViewStatus {
+	level := compute.StatusLevelUnknown
+	switch status.GetLevel() {
+	case wssdcommonproto.InstanceViewStatus_Info:
+		level = compute.StatusLevelInfo
+	case wssdcommonproto.InstanceViewStatus_Warning:
+		level = compute.StatusLevelWarning
+	case wssdcommonproto.InstanceViewStatus_Error:
+		level = compute.StatusLevelError
+	}
+
+	return &compute.InstanceViewStatus{
+		Code:          status.GetCode(),
+		Level:         level,
+		DisplayStatus: status.GetDisplayStatus(),
+		Message:       status.GetMessage(),
+		Time:          status.GetTime(),
 	}
 }
