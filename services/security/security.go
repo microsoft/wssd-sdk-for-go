@@ -117,7 +117,7 @@ type CertificateRequest struct {
 	// OldCertificate Certificate contents of x509 certificate string to be renewed encoded in base64
 	OldCertificate *string `json:"oldcert,omitempty"`
 	// ServerAuth - If the certificate to have ServerAuth for mTLS
-	ServerAuth *bool `json:"isCA,omitempty"`
+	ServerAuth *bool `json:"serverauth,omitempty"`
 	// Attributes - The certificate attributes.
 	Attributes *CertificateRequestAttributes `json:"attributes,omitempty"`
 	// Tags - Application-specific metadata in the form of key-value pairs
