@@ -5,9 +5,14 @@ package internal
 
 import (
 	"context"
+	"fmt"
+	"net"
 
+	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/certs"
 	"github.com/microsoft/moc/pkg/errors"
+	"github.com/microsoft/moc/pkg/marshal"
 	wssdsecurity "github.com/microsoft/moc/rpc/nodeagent/security"
 
 	"github.com/microsoft/moc/pkg/status"
@@ -80,6 +85,53 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 	return err
 }
 
+// Sign
+func (c *client) Sign(ctx context.Context, group, name string, csr *security.CertificateRequest) (*security.Certificate, string, error) {
+	csr.OldCertificate = nil
+	request, key, err := getCSRRequest(name, csr)
+	if err != nil {
+		return nil, "", err
+	}
+	response, err := c.CertificateAgentClient.Sign(ctx, request)
+	if err != nil {
+		err = errors.Wrapf(err, "[Certificate] Create failed with error %v", err)
+		return nil, "", err
+	}
+
+	cert := getCertificatesFromResponse(response)
+
+	if len(*cert) == 0 {
+		return nil, "", fmt.Errorf("[Certificate][Create] Unexpected error: Creating a security returned no result")
+	}
+
+	return &((*cert)[0]), string(key), err
+}
+
+// CreateOrUpdate
+func (c *client) Renew(ctx context.Context, group, name string, csr *security.CertificateRequest) (*security.Certificate, string, error) {
+	if csr.OldCertificate == nil || len(*csr.OldCertificate) == 0 {
+		return nil, "", errors.Wrapf(errors.NotFound, "[Certificate] Renew missing oldCert field")
+	}
+
+	request, key, err := getCSRRequest(name, csr)
+	if err != nil {
+		return nil, "", err
+	}
+	response, err := c.CertificateAgentClient.Renew(ctx, request)
+	if err != nil {
+		err = errors.Wrapf(err, "[Certificate] Create failed with error %v", err)
+		return nil, "", err
+	}
+
+	cert := getCertificatesFromResponse(response)
+
+	if len(*cert) == 0 {
+		return nil, "", fmt.Errorf("[Certificate][Create] Unexpected error: Creating a security returned no result")
+	}
+
+	return &((*cert)[0]), string(key), err
+}
+
 func getCertificatesFromResponse(response *wssdsecurity.CertificateResponse) *[]security.Certificate {
 	certs := []security.Certificate{}
 	for _, certificates := range response.GetCertificates() {
@@ -130,4 +182,73 @@ func getWssdCertificate(cert *security.Certificate) (*wssdsecurity.Certificate, 
 	return &wssdsecurity.Certificate{
 		Name: *cert.Name,
 	}, nil
+}
+
+func getCSRRequest(name string, csr *security.CertificateRequest) (*wssdsecurity.CSRRequest, string, error) {
+	request := &wssdsecurity.CSRRequest{
+		CSRs: []*wssdsecurity.CertificateSigningRequest{},
+	}
+	wssdcsr := &wssdsecurity.CertificateSigningRequest{
+		Name: name,
+	}
+
+	var err error
+	var key string
+	if csr != nil {
+		wssdcsr, key, err = getWssdCSR(csr)
+		if err != nil {
+			return nil, "", err
+		}
+	}
+	request.CSRs = append(request.CSRs, wssdcsr)
+	return request, key, nil
+}
+
+func getWssdCSR(csr *security.CertificateRequest) (*wssdsecurity.CertificateSigningRequest, string, error) {
+	if csr.Name == nil {
+		return nil, "", errors.Wrapf(errors.InvalidInput, "CSR name is missing")
+	}
+	conf := certs.Config{
+		CommonName: *csr.Name,
+	}
+	if csr.Attributes != nil {
+		conf.AltNames.DNSNames = *csr.Attributes.DNSNames
+		for _, ipStr := range *csr.Attributes.IPs {
+			ip, _, err := net.ParseCIDR(ipStr)
+			if err != nil {
+				return nil, "", errors.Wrapf(errors.InvalidInput, "Invalid Ipaddress %s", ipStr)
+			}
+			conf.AltNames.IPs = append(conf.AltNames.IPs, ip)
+		}
+	}
+
+	var key []byte
+	var csrRequest []byte
+	var err error
+	if csr.PrivateKey != nil {
+		pemKey, err := marshal.FromBase64(*csr.PrivateKey)
+		if err != nil {
+			return nil, "", err
+		}
+		csrRequest, key, err = certs.GenerateCertificateRequest(&conf, pemKey)
+	} else {
+		csrRequest, key, err = certs.GenerateCertificateRequest(&conf, nil)
+	}
+	if err != nil {
+		return nil, "", errors.Wrapf(errors.Failed, "Failed creating certificate Request")
+	}
+	request := &wssdsecurity.CertificateSigningRequest{
+		Name: *csr.Name,
+		Csr:  string(csrRequest),
+	}
+	if csr.OldCertificate != nil {
+		request.OldCertificate = *csr.OldCertificate
+	}
+	if csr.CaName != nil {
+		request.CaName = *csr.CaName
+	}
+	if csr.ServerAuth != nil {
+		request.ServerAuth = &wrappers.BoolValue{Value: *csr.ServerAuth}
+	}
+	return request, string(key), nil
 }
