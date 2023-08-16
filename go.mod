@@ -4,7 +4,8 @@ go 1.20
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
-	github.com/microsoft/moc v0.11.0-alpha.14
+	github.com/golang/protobuf v1.5.3
+	github.com/microsoft/moc v0.11.0-alpha.16
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.1
 	go.opencensus.io v0.24.0
@@ -17,7 +18,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jmespath/go-jmespath v0.3.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect

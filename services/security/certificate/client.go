@@ -5,6 +5,7 @@ package certificate
 
 import (
 	"context"
+
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/security"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/certificate/internal"
@@ -15,6 +16,8 @@ type Service interface {
 	Get(context.Context, string, string) (*[]security.Certificate, error)
 	CreateOrUpdate(context.Context, string, string, *security.Certificate) (*security.Certificate, error)
 	Delete(context.Context, string, string) error
+	Sign(context.Context, string, string, *security.CertificateRequest) (*security.Certificate, string, error)
+	Renew(context.Context, string, string, *security.CertificateRequest) (*security.Certificate, string, error)
 }
 
 // Client structure
@@ -46,4 +49,14 @@ func (c *CertificateClient) CreateOrUpdate(ctx context.Context, group, name stri
 // Delete methods invokes delete of the Certificate resource
 func (c *CertificateClient) Delete(ctx context.Context, group, name string) error {
 	return c.internal.Delete(ctx, group, name)
+}
+
+// Delete method invokes signing a new certificate from a CSR
+func (c *CertificateClient) Sign(ctx context.Context, group, name string, csr *security.CertificateRequest) (*security.Certificate, string, error) {
+	return c.internal.Sign(ctx, group, name, csr)
+}
+
+// Delete method invokes renewing a certificate from a CSR
+func (c *CertificateClient) Renew(ctx context.Context, group, name string, csr *security.CertificateRequest) (*security.Certificate, string, error) {
+	return c.internal.Renew(ctx, group, name, csr)
 }
