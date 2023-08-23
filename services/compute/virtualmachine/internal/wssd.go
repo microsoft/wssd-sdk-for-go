@@ -112,6 +112,15 @@ func (c *client) Stop(ctx context.Context, group, name string) (err error) {
 	return
 }
 
+func (c *client) RepairGuestAgent(ctx context.Context, group, name string) (err error) {
+	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_REPAIR_GUEST_AGENT, name)
+	if err != nil {
+		return
+	}
+	_, err = c.VirtualMachineAgentClient.Operate(ctx, request)
+	return
+}
+
 func (c *client) RunCommand(ctx context.Context, group, name string, request *compute.VirtualMachineRunCommandRequest) (response *compute.VirtualMachineRunCommandResponse, err error) {
 	mocRequest, err := c.getVirtualMachineRunCommandRequest(ctx, group, name, request)
 	if err != nil {
@@ -123,20 +132,6 @@ func (c *client) RunCommand(ctx context.Context, group, name string, request *co
 		return
 	}
 	response, err = c.getVirtualMachineRunCommandResponse(mocResponse)
-	return
-}
-
-func (c *client) RepairGuestAgent(ctx context.Context, group, name string, request *compute.VirtualMachineRepairGuestAgentRequest) (response *compute.VirtualMachineRepairGuestAgentResponse, err error) {
-	mocRequest, err := c.getRepairGuestAgentRequest(ctx, group, name, request)
-	if err != nil {
-		return
-	}
-
-	mocResponse, err := c.VirtualMachineAgentClient.RepairGuestAgent(ctx, mocRequest)
-	if err != nil {
-		return
-	}
-	response, err = c.getRepairGuestAgentResponse(mocResponse)
 	return
 }
 
@@ -270,30 +265,6 @@ func (c *client) getVirtualMachineRunCommandResponse(mocResponse *wssdcompute.Vi
 		InstanceView: instanceView,
 	}
 	return response, nil
-}
-
-func (c *client) getRepairGuestAgentRequest(ctx context.Context, group, name string, request *compute.VirtualMachineRepairGuestAgentRequest) (*wssdcompute.VirtualMachineRepairGuestAgentRequest, error) {
-	vms, err := c.get(ctx, group, name)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(vms) != 1 {
-		err = errors.Wrapf(errors.InvalidInput, "Multiple Virtual Machines found in group %s with name %s", group, name)
-		return nil, err
-	}
-	vm := vms[0]
-
-	return &wssdcompute.VirtualMachineRepairGuestAgentRequest{
-		VirtualMachine: vm,
-	}, nil
-}
-
-func (c *client) getRepairGuestAgentResponse(vm *wssdcompute.VirtualMachineRepairGuestAgentResponse) (*compute.VirtualMachineRepairGuestAgentResponse, error) {
-	return &compute.VirtualMachineRepairGuestAgentResponse{
-		Result: &vm.GetResult().Value,
-		Error:  &vm.Error,
-	}, nil
 }
 
 func getComputeTags(tags *wssdcommonproto.Tags) map[string]*string {

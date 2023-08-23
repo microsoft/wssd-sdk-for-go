@@ -21,8 +21,8 @@ type Service interface {
 	Delete(context.Context, string, string) error
 	Start(context.Context, string, string) error
 	Stop(context.Context, string, string) error
+	RepairGuestAgent(context.Context, string, string) error
 	RunCommand(context.Context, string, string, *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error)
-	RepairGuestAgent(context.Context, string, string, *compute.VirtualMachineRepairGuestAgentRequest) (*compute.VirtualMachineRepairGuestAgentResponse, error)
 	Validate(context.Context, string, string) error
 }
 
@@ -69,6 +69,11 @@ func (c *VirtualMachineClient) Restart(ctx context.Context, group string, name s
 		return
 	}
 	err = c.internal.Start(ctx, group, name)
+	return
+}
+
+func (c *VirtualMachineClient) RepairGuestAgent(ctx context.Context, group string, name string) (err error) {
+	err = c.internal.RepairGuestAgent(ctx, group, name)
 	return
 }
 
@@ -243,10 +248,6 @@ func (c *VirtualMachineClient) NetworkInterfaceShow(ctx context.Context, group s
 
 func (c *VirtualMachineClient) RunCommand(ctx context.Context, group, vmName string, request *compute.VirtualMachineRunCommandRequest) (response *compute.VirtualMachineRunCommandResponse, err error) {
 	return c.internal.RunCommand(ctx, group, vmName, request)
-}
-
-func (c *VirtualMachineClient) RepairGuestAgent(ctx context.Context, group, vmName string, request *compute.VirtualMachineRepairGuestAgentRequest) (response *compute.VirtualMachineRepairGuestAgentResponse, err error) {
-	return c.internal.RepairGuestAgent(ctx, group, vmName, request)
 }
 
 func isDifferentVmSize(oldSizeType, newSizeType compute.VirtualMachineSizeTypes, oldCustomSize, newCustomSize *compute.VirtualMachineCustomSize) bool {
