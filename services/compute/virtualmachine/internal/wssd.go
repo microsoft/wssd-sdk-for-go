@@ -112,6 +112,15 @@ func (c *client) Stop(ctx context.Context, group, name string) (err error) {
 	return
 }
 
+func (c *client) RepairGuestAgent(ctx context.Context, group, name string) (err error) {
+	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_REPAIR_GUEST_AGENT, name)
+	if err != nil {
+		return
+	}
+	_, err = c.VirtualMachineAgentClient.Operate(ctx, request)
+	return
+}
+
 func (c *client) RunCommand(ctx context.Context, group, name string, request *compute.VirtualMachineRunCommandRequest) (response *compute.VirtualMachineRunCommandResponse, err error) {
 	mocRequest, err := c.getVirtualMachineRunCommandRequest(ctx, group, name, request)
 	if err != nil {

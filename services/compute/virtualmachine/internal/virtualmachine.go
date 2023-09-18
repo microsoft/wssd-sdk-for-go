@@ -46,6 +46,10 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 	if err != nil {
 		return nil, errors.Wrapf(err, "Failed to get Network Configuration")
 	}
+	guestAgentConfig, err := c.getWssdVirtualMachineGuestAgentConfiguration(vm.GuestAgentProfile)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Failed to get GuestAgent Configuration")
+	}
 	entity, err := c.getWssdVirtualMachineEntity(vm)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Failed to get Entity")
@@ -61,6 +65,7 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		Security:               securityConfig,
 		Os:                     osconfig,
 		Network:                networkConfig,
+		GuestAgent:             guestAgentConfig,
 		Entity:                 entity,
 		HttpProxyConfiguration: httpProxyConfig,
 	}
@@ -223,6 +228,17 @@ func (c *client) getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkPro
 	}
 
 	return nc, nil
+}
+
+func (c *client) getWssdVirtualMachineGuestAgentConfiguration(s *compute.GuestAgentProfile) (*wssdcommonproto.GuestAgentConfiguration, error) {
+	gac := &wssdcommonproto.GuestAgentConfiguration{}
+
+	if s == nil || s.Enabled == nil {
+		return gac, nil
+	}
+	gac.Enabled = *s.Enabled
+
+	return gac, nil
 }
 
 func (c *client) getWssdVirtualMachineOSSSHPublicKeys(ssh *compute.SSHConfiguration) ([]*wssdcompute.SSHPublicKey, error) {
@@ -399,6 +415,8 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			StorageProfile:          c.getVirtualMachineStorageProfile(vm.Storage),
 			OsProfile:               c.getVirtualMachineOSProfile(vm.Os),
 			NetworkProfile:          c.getVirtualMachineNetworkProfile(vm.Network),
+			GuestAgentProfile:       c.getVirtualMachineGuestProfile(vm.GuestAgent),
+			GuestAgentInstanceView:  c.getVirtualMachineGuestInstanceView(vm.GuestAgentInstanceView),
 			DisableHighAvailability: &vm.DisableHighAvailability,
 			ProvisioningState:       status.GetProvisioningState(vm.Status.GetProvisioningStatus()),
 			ValidationStatus:        status.GetValidationStatus(vm.GetStatus()),
@@ -535,6 +553,34 @@ func (c *client) getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfigura
 	return np
 }
 
+func (c *client) getVirtualMachineGuestProfile(g *wssdcommonproto.GuestAgentConfiguration) *compute.GuestAgentProfile {
+	if g == nil {
+		return nil
+	}
+
+	gap := &compute.GuestAgentProfile{
+		Enabled: &g.Enabled,
+	}
+
+	return gap
+}
+
+func (c *client) getVirtualMachineGuestInstanceView(g *wssdcommonproto.VirtualMachineAgentInstanceView) *compute.GuestAgentInstanceView {
+	if g == nil {
+		return nil
+	}
+
+	gap := &compute.GuestAgentInstanceView{
+		AgentVersion: g.GetVmAgentVersion(),
+	}
+
+	for _, status := range g.GetStatuses() {
+		gap.Statuses = append(gap.Statuses, c.getInstanceViewStatus(status))
+	}
+
+	return gap
+}
+
 func (c *client) getVirtualMachineWindowsConfiguration(windowsConfiguration *wssdcompute.WindowsConfiguration) *compute.WindowsConfiguration {
 	wc := &compute.WindowsConfiguration{
 		RDP: &compute.RDPConfiguration{},
@@ -603,6 +649,26 @@ func (c *client) getVirtualMachineOSProfile(o *wssdcompute.OperatingSystemConfig
 		OsBootstrapEngine:    osBootstrapEngine,
 		WindowsConfiguration: c.getVirtualMachineWindowsConfiguration(o.WindowsConfiguration),
 		LinuxConfiguration:   c.getVirtualMachineLinuxConfiguration(o.LinuxConfiguration),
+	}
+}
+
+func (c *client) getInstanceViewStatus(status *wssdcommonproto.InstanceViewStatus) *compute.InstanceViewStatus {
+	level := compute.StatusLevelUnknown
+	switch status.GetLevel() {
+	case wssdcommonproto.InstanceViewStatus_Info:
+		level = compute.StatusLevelInfo
+	case wssdcommonproto.InstanceViewStatus_Warning:
+		level = compute.StatusLevelWarning
+	case wssdcommonproto.InstanceViewStatus_Error:
+		level = compute.StatusLevelError
+	}
+
+	return &compute.InstanceViewStatus{
+		Code:          status.GetCode(),
+		Level:         level,
+		DisplayStatus: status.GetDisplayStatus(),
+		Message:       status.GetMessage(),
+		Time:          status.GetTime(),
 	}
 }
 
