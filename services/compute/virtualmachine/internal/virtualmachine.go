@@ -381,6 +381,10 @@ func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) (*ws
 }
 
 func (c *client) getWssdVirtualMachineHttpProxyConfiguration(httpProxyConfig *compute.HttpProxyConfiguration) *wssdcompute.HttpProxyConfiguration {
+	if httpProxyConfig == nil {
+		return nil
+	}
+
 	httpProxyConfiguration := &wssdcompute.HttpProxyConfiguration{}
 
 	if httpProxyConfig.HttpProxy != nil {
@@ -673,6 +677,10 @@ func (c *client) getInstanceViewStatus(status *wssdcommonproto.InstanceViewStatu
 }
 
 func (c *client) getVirtualMachineHttpProxyConfiguration(httpProxyConfiguration *wssdcompute.HttpProxyConfiguration) *compute.HttpProxyConfiguration {
+
+	if httpProxyConfiguration == nil {
+		return nil
+	}
 
 	return &compute.HttpProxyConfiguration{
 		HttpProxy:  &httpProxyConfiguration.HttpProxy,
