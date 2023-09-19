@@ -55,16 +55,19 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		return nil, errors.Wrapf(err, "Failed to get Entity")
 	}
 
+	httpProxyConfig := c.getWssdVirtualMachineHttpProxyConfiguration(vm.HttpProxyConfiguration)
+
 	wssdvm = &wssdcompute.VirtualMachine{
-		Name:       *vm.Name,
-		Tags:       getWssdTags(vm.Tags),
-		Storage:    storageConfig,
-		Hardware:   hardwareConfig,
-		Security:   securityConfig,
-		Os:         osconfig,
-		Network:    networkConfig,
-		GuestAgent: guestAgentConfig,
-		Entity:     entity,
+		Name:                   *vm.Name,
+		Tags:                   getWssdTags(vm.Tags),
+		Storage:                storageConfig,
+		Hardware:               hardwareConfig,
+		Security:               securityConfig,
+		Os:                     osconfig,
+		Network:                networkConfig,
+		GuestAgent:             guestAgentConfig,
+		Entity:                 entity,
+		HttpProxyConfiguration: httpProxyConfig,
 	}
 
 	if vm.DisableHighAvailability != nil {
@@ -377,6 +380,28 @@ func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) (*ws
 	return &osconfig, nil
 }
 
+func (c *client) getWssdVirtualMachineHttpProxyConfiguration(httpProxyConfig *compute.HttpProxyConfiguration) *wssdcompute.HttpProxyConfiguration {
+	httpProxyConfiguration := &wssdcompute.HttpProxyConfiguration{}
+
+	if httpProxyConfig.HttpProxy != nil {
+		httpProxyConfiguration.HttpProxy = *httpProxyConfig.HttpProxy
+	}
+
+	if httpProxyConfig.HttpsProxy != nil {
+		httpProxyConfiguration.HttpsProxy = *httpProxyConfig.HttpsProxy
+	}
+
+	if httpProxyConfig.NoProxy != nil {
+		httpProxyConfiguration.NoProxy = *httpProxyConfig.NoProxy
+	}
+
+	if httpProxyConfig.TrustedCa != nil {
+		httpProxyConfiguration.TrustedCa = *httpProxyConfig.TrustedCa
+	}
+
+	return httpProxyConfiguration
+}
+
 // Conversion functions from wssdcompute to compute
 
 func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.VirtualMachine {
@@ -398,6 +423,7 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			Statuses:                c.getVirtualMachineStatuses(vm),
 			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
 			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
+			HttpProxyConfiguration:  c.getVirtualMachineHttpProxyConfiguration(vm.HttpProxyConfiguration),
 		},
 	}
 }
@@ -643,5 +669,15 @@ func (c *client) getInstanceViewStatus(status *wssdcommonproto.InstanceViewStatu
 		DisplayStatus: status.GetDisplayStatus(),
 		Message:       status.GetMessage(),
 		Time:          status.GetTime(),
+	}
+}
+
+func (c *client) getVirtualMachineHttpProxyConfiguration(httpProxyConfiguration *wssdcompute.HttpProxyConfiguration) *compute.HttpProxyConfiguration {
+
+	return &compute.HttpProxyConfiguration{
+		HttpProxy:  &httpProxyConfiguration.HttpProxy,
+		HttpsProxy: &httpProxyConfiguration.HttpsProxy,
+		NoProxy:    &httpProxyConfiguration.NoProxy,
+		TrustedCa:  &httpProxyConfiguration.TrustedCa,
 	}
 }
