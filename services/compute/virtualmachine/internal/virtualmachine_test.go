@@ -15,10 +15,10 @@ func Test_getVirtualMachine(t *testing.T) {
 		vmName            = "VM-Name"
 		port       uint16 = 1234
 		disableRDP        = true
-		httpProxy         = "http://proxy.example.com:3128"
-		httpsProxy        = "http://proxy.example.com:3128"
-		noProxy           = []string{"localhost", "127.0.0.1", ".svc", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.0.0.0/8"}
-		trustedCa         = "ahfisfijfdurgujgi"
+		httpProxy         = "http://akse2e:akse2e@skyproxy.ceccloud1.selfhost.corp.microsoft.com:3128"
+		httpsProxy        = "http://akse2e:akse2e@skyproxy.ceccloud1.selfhost.corp.microsoft.com:3128"
+		noProxy           = []string{"localhost", "127.0.0.1", ".svc", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.0.0.0/8", ".corp.microsoft.com", ".masd.stbtest.microsoft.com"}
+		trustedCa         = "-----BEGIN CERTIFICATE-----\\nMIIDETCCAfkCFAjEhG/xypxPKN1URzLmLISCPuTVMA0GCSqGSIb3DQEBCwUAMEUx\\n-----END CERTIFICATE-----"
 	)
 
 	type args struct {
@@ -64,12 +64,12 @@ func Test_getVirtualMachine(t *testing.T) {
 								Port:       uint32(port),
 							},
 						},
-					},
-					HttpProxyConfiguration: &wssdcompute.HttpProxyConfiguration{
-						HttpProxy:  httpProxy,
-						HttpsProxy: httpsProxy,
-						NoProxy:    noProxy,
-						TrustedCa:  trustedCa,
+						ProxyConfiguration: &wssdcompute.ProxyConfiguration{
+							HttpProxy:  httpProxy,
+							HttpsProxy: httpsProxy,
+							NoProxy:    noProxy,
+							TrustedCa:  trustedCa,
+						},
 					},
 				},
 			},
@@ -105,6 +105,12 @@ func Test_getVirtualMachine(t *testing.T) {
 								},
 							},
 							OsBootstrapEngine: compute.CloudInit,
+							ProxyConfiguration: &compute.ProxyConfiguration{
+								HttpProxy:  &httpProxy,
+								HttpsProxy: &httpsProxy,
+								NoProxy:    &noProxy,
+								TrustedCa:  &trustedCa,
+							},
 						},
 						NetworkProfile: &compute.NetworkProfile{
 							NetworkInterfaces: &[]compute.NetworkInterfaceReference{},
@@ -121,12 +127,6 @@ func Test_getVirtualMachine(t *testing.T) {
 						DisableHighAvailability: proto.Bool(false),
 						IsPlaceholder:           proto.Bool(false),
 						HighAvailabilityState:   proto.String(common.HighAvailabilityState_STABLE.String()),
-						HttpProxyConfiguration: &compute.HttpProxyConfiguration{
-							HttpProxy:  &httpProxy,
-							HttpsProxy: &httpsProxy,
-							NoProxy:    &noProxy,
-							TrustedCa:  &trustedCa,
-						},
 					},
 				},
 			},

@@ -190,6 +190,8 @@ type OSProfile struct {
 	LinuxConfiguration *LinuxConfiguration `json:"linuxConfiguration,omitempty"`
 	// Bootstrap engine
 	OsBootstrapEngine OperatingSystemBootstrapEngine `json:"osbootstrapengine,omitempty"`
+	// ProxyConfiguration
+	ProxyConfiguration *ProxyConfiguration `json:"proxyConfiguration,omitempty"`
 }
 
 type NetworkInterfaceReference struct {
@@ -283,8 +285,6 @@ type VirtualMachineProperties struct {
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 	// HighAvailabilityState
 	HighAvailabilityState *string `json:"HighAvailabilityState,omitempty"`
-	// HttpProxyConfiguration
-	HttpProxyConfiguration *HttpProxyConfiguration `json:"httpProxyConfiguration,omitempty"`
 }
 
 type VirtualMachine struct {
@@ -532,7 +532,7 @@ type VirtualMachineRunCommandResponse struct {
 	InstanceView *VirtualMachineRunCommandInstanceView `json:"instanceView,omitempty"`
 }
 
-type HttpProxyConfiguration struct {
+type ProxyConfiguration struct {
 	// The HTTP proxy server endpoint
 	HttpProxy *string `json:"httpproxy,omitempty"`
 	// The HTTPS proxy server endpoint

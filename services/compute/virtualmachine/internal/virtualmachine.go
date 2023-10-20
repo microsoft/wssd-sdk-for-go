@@ -7,6 +7,7 @@ import (
 	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 
+	"github.com/microsoft/moc/pkg/validations"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
 )
@@ -55,19 +56,16 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		return nil, errors.Wrapf(err, "Failed to get Entity")
 	}
 
-	httpProxyConfig := c.getWssdVirtualMachineHttpProxyConfiguration(vm.HttpProxyConfiguration)
-
 	wssdvm = &wssdcompute.VirtualMachine{
-		Name:                   *vm.Name,
-		Tags:                   getWssdTags(vm.Tags),
-		Storage:                storageConfig,
-		Hardware:               hardwareConfig,
-		Security:               securityConfig,
-		Os:                     osconfig,
-		Network:                networkConfig,
-		GuestAgent:             guestAgentConfig,
-		Entity:                 entity,
-		HttpProxyConfiguration: httpProxyConfig,
+		Name:       *vm.Name,
+		Tags:       getWssdTags(vm.Tags),
+		Storage:    storageConfig,
+		Hardware:   hardwareConfig,
+		Security:   securityConfig,
+		Os:         osconfig,
+		Network:    networkConfig,
+		GuestAgent: guestAgentConfig,
+		Entity:     entity,
 	}
 
 	if vm.DisableHighAvailability != nil {
@@ -377,33 +375,47 @@ func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) (*ws
 	if s.CustomData != nil {
 		osconfig.CustomData = *s.CustomData
 	}
+
+	osconfig.ProxyConfiguration, err = c.getWssdVirtualMachineProxyConfiguration(s.ProxyConfiguration)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Proxy Configuration Validation Failed")
+	}
+
 	return &osconfig, nil
 }
 
-func (c *client) getWssdVirtualMachineHttpProxyConfiguration(httpProxyConfig *compute.HttpProxyConfiguration) *wssdcompute.HttpProxyConfiguration {
-	if httpProxyConfig == nil {
-		return nil
+func (c *client) getWssdVirtualMachineProxyConfiguration(proxyConfig *compute.ProxyConfiguration) (*wssdcompute.ProxyConfiguration, error) {
+	if proxyConfig == nil {
+		return nil, nil
 	}
 
-	httpProxyConfiguration := &wssdcompute.HttpProxyConfiguration{}
+	proxyConfiguration := &wssdcompute.ProxyConfiguration{}
 
-	if httpProxyConfig.HttpProxy != nil {
-		httpProxyConfiguration.HttpProxy = *httpProxyConfig.HttpProxy
+	if proxyConfig.HttpProxy != nil {
+		err := validations.ValidateProxyURL(*proxyConfig.HttpProxy)
+		if err != nil {
+			return nil, errors.Wrapf(err, "Invalid Http Proxy URL")
+		}
+		proxyConfiguration.HttpProxy = *proxyConfig.HttpProxy
 	}
 
-	if httpProxyConfig.HttpsProxy != nil {
-		httpProxyConfiguration.HttpsProxy = *httpProxyConfig.HttpsProxy
+	if proxyConfig.HttpsProxy != nil {
+		err := validations.ValidateProxyURL(*proxyConfig.HttpsProxy)
+		if err != nil {
+			return nil, errors.Wrapf(err, "Invalid Https Proxy URL")
+		}
+		proxyConfiguration.HttpsProxy = *proxyConfig.HttpsProxy
 	}
 
-	if httpProxyConfig.NoProxy != nil {
-		httpProxyConfiguration.NoProxy = *httpProxyConfig.NoProxy
+	if proxyConfig.NoProxy != nil {
+		proxyConfiguration.NoProxy = *proxyConfig.NoProxy
 	}
 
-	if httpProxyConfig.TrustedCa != nil {
-		httpProxyConfiguration.TrustedCa = *httpProxyConfig.TrustedCa
+	if proxyConfig.TrustedCa != nil {
+		proxyConfiguration.TrustedCa = *proxyConfig.TrustedCa
 	}
 
-	return httpProxyConfiguration
+	return proxyConfiguration, nil
 }
 
 // Conversion functions from wssdcompute to compute
@@ -427,7 +439,6 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			Statuses:                c.getVirtualMachineStatuses(vm),
 			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
 			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
-			HttpProxyConfiguration:  c.getVirtualMachineHttpProxyConfiguration(vm.HttpProxyConfiguration),
 		},
 	}
 }
@@ -653,6 +664,7 @@ func (c *client) getVirtualMachineOSProfile(o *wssdcompute.OperatingSystemConfig
 		OsBootstrapEngine:    osBootstrapEngine,
 		WindowsConfiguration: c.getVirtualMachineWindowsConfiguration(o.WindowsConfiguration),
 		LinuxConfiguration:   c.getVirtualMachineLinuxConfiguration(o.LinuxConfiguration),
+		ProxyConfiguration:   c.getVirtualMachineProxyConfiguration(o.ProxyConfiguration),
 	}
 }
 
@@ -676,16 +688,16 @@ func (c *client) getInstanceViewStatus(status *wssdcommonproto.InstanceViewStatu
 	}
 }
 
-func (c *client) getVirtualMachineHttpProxyConfiguration(httpProxyConfiguration *wssdcompute.HttpProxyConfiguration) *compute.HttpProxyConfiguration {
+func (c *client) getVirtualMachineProxyConfiguration(proxyConfiguration *wssdcompute.ProxyConfiguration) *compute.ProxyConfiguration {
 
-	if httpProxyConfiguration == nil {
+	if proxyConfiguration == nil {
 		return nil
 	}
 
-	return &compute.HttpProxyConfiguration{
-		HttpProxy:  &httpProxyConfiguration.HttpProxy,
-		HttpsProxy: &httpProxyConfiguration.HttpsProxy,
-		NoProxy:    &httpProxyConfiguration.NoProxy,
-		TrustedCa:  &httpProxyConfiguration.TrustedCa,
+	return &compute.ProxyConfiguration{
+		HttpProxy:  &proxyConfiguration.HttpProxy,
+		HttpsProxy: &proxyConfiguration.HttpsProxy,
+		NoProxy:    &proxyConfiguration.NoProxy,
+		TrustedCa:  &proxyConfiguration.TrustedCa,
 	}
 }
