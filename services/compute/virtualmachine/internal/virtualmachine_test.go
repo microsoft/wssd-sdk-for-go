@@ -18,7 +18,7 @@ func Test_getVirtualMachine(t *testing.T) {
 		httpProxy         = "http://akse2e:akse2e@skyproxy.ceccloud1.selfhost.corp.microsoft.com:3128"
 		httpsProxy        = "http://akse2e:akse2e@skyproxy.ceccloud1.selfhost.corp.microsoft.com:3128"
 		noProxy           = []string{"localhost", "127.0.0.1", ".svc", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.0.0.0/8", ".corp.microsoft.com", ".masd.stbtest.microsoft.com"}
-		trustedCa         = "-----BEGIN CERTIFICATE-----\\nMIIDETCCAfkCFAjEhG/xypxPKN1URzLmLISCPuTVMA0GCSqGSIb3DQEBCwUAMEUx\\n-----END CERTIFICATE-----"
+		trustedCa         = "-----BEGIN CERTIFICATE-----MIIDETCCAfkCFAjEhG/xypxPKN1URzLmLISCPuTVMA0GCSqGSIb3DQEBCwUAMEUx-----END CERTIFICATE-----"
 	)
 
 	type args struct {
