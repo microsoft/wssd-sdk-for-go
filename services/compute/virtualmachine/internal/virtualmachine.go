@@ -7,7 +7,6 @@ import (
 	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 
-	"github.com/microsoft/moc/pkg/validations"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
 )
@@ -376,34 +375,23 @@ func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) (*ws
 		osconfig.CustomData = *s.CustomData
 	}
 
-	osconfig.ProxyConfiguration, err = c.getWssdVirtualMachineProxyConfiguration(s.ProxyConfiguration)
-	if err != nil {
-		return nil, errors.Wrapf(err, "Proxy Configuration Validation Failed")
-	}
+	osconfig.ProxyConfiguration = c.getWssdVirtualMachineProxyConfiguration(s.ProxyConfiguration)
 
 	return &osconfig, nil
 }
 
-func (c *client) getWssdVirtualMachineProxyConfiguration(proxyConfig *compute.ProxyConfiguration) (*wssdcompute.ProxyConfiguration, error) {
+func (c *client) getWssdVirtualMachineProxyConfiguration(proxyConfig *compute.ProxyConfiguration) *wssdcompute.ProxyConfiguration {
 	if proxyConfig == nil {
-		return nil, nil
+		return nil
 	}
 
 	proxyConfiguration := &wssdcompute.ProxyConfiguration{}
 
 	if proxyConfig.HttpProxy != nil {
-		err := validations.ValidateProxyURL(*proxyConfig.HttpProxy)
-		if err != nil {
-			return nil, errors.Wrapf(err, "Invalid Http Proxy URL")
-		}
 		proxyConfiguration.HttpProxy = *proxyConfig.HttpProxy
 	}
 
 	if proxyConfig.HttpsProxy != nil {
-		err := validations.ValidateProxyURL(*proxyConfig.HttpsProxy)
-		if err != nil {
-			return nil, errors.Wrapf(err, "Invalid Https Proxy URL")
-		}
 		proxyConfiguration.HttpsProxy = *proxyConfig.HttpsProxy
 	}
 
@@ -412,14 +400,10 @@ func (c *client) getWssdVirtualMachineProxyConfiguration(proxyConfig *compute.Pr
 	}
 
 	if proxyConfig.TrustedCa != nil {
-		err := validations.ValidateCertFormatIsBase64(*proxyConfig.TrustedCa)
-		if err != nil {
-			return nil, errors.Wrapf(err, "Certificate is not base64 encoded")
-		}
 		proxyConfiguration.TrustedCa = *proxyConfig.TrustedCa
 	}
 
-	return proxyConfiguration, nil
+	return proxyConfiguration
 }
 
 // Conversion functions from wssdcompute to compute
