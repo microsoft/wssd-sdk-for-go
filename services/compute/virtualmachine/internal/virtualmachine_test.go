@@ -1,9 +1,13 @@
 package internal
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/microsoft/moc/pkg/certs"
 	"github.com/microsoft/moc/rpc/common"
+	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/stretchr/testify/assert"
@@ -11,14 +15,22 @@ import (
 )
 
 func Test_getVirtualMachine(t *testing.T) {
+	proxy := NewProxy()
+	defer proxy.Target.Close()
+	caCert, _, err := certs.GenerateClientCertificate("ValidCertificate")
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	certBytes := certs.EncodeCertPEM(caCert)
+	caCertString := string(certBytes)
 	var (
 		vmName            = "VM-Name"
 		port       uint16 = 1234
 		disableRDP        = true
-		httpProxy         = "http://akse2e:akse2e@skyproxy.ceccloud1.selfhost.corp.microsoft.com:3128"
-		httpsProxy        = "http://akse2e:akse2e@skyproxy.ceccloud1.selfhost.corp.microsoft.com:3128"
+		httpProxy         = proxy.Target.URL
+		httpsProxy        = proxy.Target.URL
 		noProxy           = []string{"localhost", "127.0.0.1", ".svc", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.0.0.0/8", ".corp.microsoft.com", ".masd.stbtest.microsoft.com"}
-		trustedCa         = "-----BEGIN CERTIFICATE-----MIIDETCCAfkCFAjEhG/xypxPKN1URzLmLISCPuTVMA0GCSqGSIb3DQEBCwUAMEUx-----END CERTIFICATE-----"
+		trustedCa         = caCertString
 	)
 
 	type args struct {
@@ -64,7 +76,7 @@ func Test_getVirtualMachine(t *testing.T) {
 								Port:       uint32(port),
 							},
 						},
-						ProxyConfiguration: &wssdcompute.ProxyConfiguration{
+						ProxyConfiguration: &wssdcommonproto.ProxyConfiguration{
 							HttpProxy:  httpProxy,
 							HttpsProxy: httpsProxy,
 							NoProxy:    noProxy,
@@ -140,4 +152,15 @@ func Test_getVirtualMachine(t *testing.T) {
 			assert.Equal(t, tt.want.vm, vm)
 		})
 	}
+}
+
+// Proxy is a simple proxy server for unit tests.
+type Proxy struct {
+	Target *httptest.Server
+}
+
+// NewProxy creates a new proxy server for unit tests.
+func NewProxy() *Proxy {
+	target := httptest.NewServer(http.DefaultServeMux)
+	return &Proxy{Target: target}
 }
