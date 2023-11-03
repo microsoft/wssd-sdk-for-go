@@ -374,7 +374,36 @@ func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) (*ws
 	if s.CustomData != nil {
 		osconfig.CustomData = *s.CustomData
 	}
+
+	osconfig.ProxyConfiguration = c.getWssdVirtualMachineProxyConfiguration(s.ProxyConfiguration)
+
 	return &osconfig, nil
+}
+
+func (c *client) getWssdVirtualMachineProxyConfiguration(proxyConfig *compute.ProxyConfiguration) *wssdcommonproto.ProxyConfiguration {
+	if proxyConfig == nil {
+		return nil
+	}
+
+	proxyConfiguration := &wssdcommonproto.ProxyConfiguration{}
+
+	if proxyConfig.HttpProxy != nil {
+		proxyConfiguration.HttpProxy = *proxyConfig.HttpProxy
+	}
+
+	if proxyConfig.HttpsProxy != nil {
+		proxyConfiguration.HttpsProxy = *proxyConfig.HttpsProxy
+	}
+
+	if proxyConfig.NoProxy != nil {
+		proxyConfiguration.NoProxy = *proxyConfig.NoProxy
+	}
+
+	if proxyConfig.TrustedCa != nil {
+		proxyConfiguration.TrustedCa = *proxyConfig.TrustedCa
+	}
+
+	return proxyConfiguration
 }
 
 // Conversion functions from wssdcompute to compute
@@ -623,6 +652,7 @@ func (c *client) getVirtualMachineOSProfile(o *wssdcompute.OperatingSystemConfig
 		OsBootstrapEngine:    osBootstrapEngine,
 		WindowsConfiguration: c.getVirtualMachineWindowsConfiguration(o.WindowsConfiguration),
 		LinuxConfiguration:   c.getVirtualMachineLinuxConfiguration(o.LinuxConfiguration),
+		ProxyConfiguration:   c.getVirtualMachineProxyConfiguration(o.ProxyConfiguration),
 	}
 }
 
@@ -643,5 +673,19 @@ func (c *client) getInstanceViewStatus(status *wssdcommonproto.InstanceViewStatu
 		DisplayStatus: status.GetDisplayStatus(),
 		Message:       status.GetMessage(),
 		Time:          status.GetTime(),
+	}
+}
+
+func (c *client) getVirtualMachineProxyConfiguration(proxyConfiguration *wssdcommonproto.ProxyConfiguration) *compute.ProxyConfiguration {
+
+	if proxyConfiguration == nil {
+		return nil
+	}
+
+	return &compute.ProxyConfiguration{
+		HttpProxy:  &proxyConfiguration.HttpProxy,
+		HttpsProxy: &proxyConfiguration.HttpsProxy,
+		NoProxy:    &proxyConfiguration.NoProxy,
+		TrustedCa:  &proxyConfiguration.TrustedCa,
 	}
 }

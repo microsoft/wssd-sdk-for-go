@@ -190,6 +190,8 @@ type OSProfile struct {
 	LinuxConfiguration *LinuxConfiguration `json:"linuxConfiguration,omitempty"`
 	// Bootstrap engine
 	OsBootstrapEngine OperatingSystemBootstrapEngine `json:"osbootstrapengine,omitempty"`
+	// ProxyConfiguration
+	ProxyConfiguration *ProxyConfiguration `json:"proxyConfiguration,omitempty"`
 }
 
 type NetworkInterfaceReference struct {
@@ -528,4 +530,15 @@ type VirtualMachineRunCommandRequest struct {
 type VirtualMachineRunCommandResponse struct {
 	// InstanceView - The virtual machine run command instance view.
 	InstanceView *VirtualMachineRunCommandInstanceView `json:"instanceView,omitempty"`
+}
+
+type ProxyConfiguration struct {
+	// The HTTP proxy server endpoint
+	HttpProxy *string `json:"httpproxy,omitempty"`
+	// The HTTPS proxy server endpoint
+	HttpsProxy *string `json:"httpsproxy,omitempty"`
+	// The endpoints that should not go through proxy
+	NoProxy *[]string `json:"noproxy,omitempty"`
+	// Alternative CA cert to use for connecting to proxy server
+	TrustedCa *string `json:"trustedca,omitempty"`
 }
