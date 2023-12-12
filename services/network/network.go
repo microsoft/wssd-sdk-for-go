@@ -66,6 +66,8 @@ type SubnetProperties struct {
 	IPAllocationMethod IPAllocationMethod `json:"ipAllocationMethod,omitempty"`
 	// Vlan
 	Vlan *uint16 `json:"vlan,omitempty"`
+	// Network Security group for the subnet
+	NetworkSecurityGroup *string
 }
 
 // Subnet is assoicated with a Virtual Network.

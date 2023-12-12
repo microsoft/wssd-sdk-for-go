@@ -257,7 +257,6 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 		Type: &vnetType,
 		Tags: getNetworkTags(c.GetTags()),
 		VirtualNetworkProperties: &network.VirtualNetworkProperties{
-			// TODO: MACPool (it is currently missing from network.VirtualNetwork)
 			Subnets:           getNetworkSubnets(c.Ipams),
 			ProvisioningState: status.GetProvisioningState(c.Status.GetProvisioningStatus()),
 			Statuses:          status.GetStatuses(c.Status),
@@ -293,6 +292,8 @@ func getNetworkSubnets(ipams []*wssdnetwork.Ipam) *[]network.Subnet {
 					// TODO: implement something for IPConfigurationReferences
 					IPAllocationMethod: ipAllocationMethodProtobufToSdk(subnet.Allocation),
 					Vlan:               getVlan(subnet.Vlan),
+					// TODO: Implement something for NSG
+					//NetworkSecurityGroup: getNsg(subnet.NetworkSecurityGroup),
 				},
 			})
 		}
