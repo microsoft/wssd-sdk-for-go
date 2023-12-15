@@ -103,7 +103,7 @@ func (c *client) Start(ctx context.Context, group, name string) (err error) {
 	return
 }
 
-func (c *client) Stop(ctx context.Context, group, name string) (err error) {
+func (c *client) StopPrivate(ctx context.Context, group, name string) (err error) {
 	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_STOP, name)
 	if err != nil {
 		return

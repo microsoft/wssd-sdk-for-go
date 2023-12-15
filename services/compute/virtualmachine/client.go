@@ -20,7 +20,7 @@ type Service interface {
 	CreateOrUpdate(context.Context, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
 	Delete(context.Context, string, string) error
 	Start(context.Context, string, string) error
-	Stop(context.Context, string, string) error
+	StopPrivate(context.Context, string, string) error
 	RepairGuestAgent(context.Context, string, string) error
 	RunCommand(context.Context, string, string, *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error)
 	Validate(context.Context, string, string) error
@@ -59,12 +59,8 @@ func (c *VirtualMachineClient) Start(ctx context.Context, group string, name str
 	err = c.internal.Start(ctx, group, name)
 	return
 }
-func (c *VirtualMachineClient) Stop(ctx context.Context, group string, name string) (err error) {
-	err = c.internal.Stop(ctx, group, name)
-	return
-}
 func (c *VirtualMachineClient) Restart(ctx context.Context, group string, name string) (err error) {
-	err = c.internal.Stop(ctx, group, name)
+	err = c.internal.StopPrivate(ctx, group, name)
 	if err != nil {
 		return
 	}
