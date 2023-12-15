@@ -265,6 +265,8 @@ type IPConfigurationProperties struct {
 	LoadBalancerInboundNatPoolIDs *[]string `json:"loadBalancerInboundNatPools,omitempty"`
 	// IPAllocationMethod - The IP address allocation method. Possible values include: 'Static', 'Dynamic'
 	IPAllocationMethod IPAllocationMethod `json:"ipAllocationMethod,omitempty"`
+	// Network security group reference
+	NetworkSecurityGroup *string `json:"networkSecurityGroup,omitempty"`
 }
 
 // IPConfiguration
