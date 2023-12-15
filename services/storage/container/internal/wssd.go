@@ -4,9 +4,10 @@
 package internal
 
 import (
-	"code.cloudfoundry.org/bytefmt"
 	"context"
 	"fmt"
+
+	"code.cloudfoundry.org/bytefmt"
 
 	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
@@ -127,11 +128,16 @@ func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 	if ctainer.Path != nil {
 		disk.Path = *ctainer.Path
 	}
-	if ctainer.IsPlaceholder != nil {
-		if disk.Entity != nil {
-			disk.Entity.IsPlaceholder = *ctainer.IsPlaceholder
-		}
+
+	isPlaceholder := false
+	if ctainer.ContainerProperties != nil && ctainer.ContainerProperties.IsPlaceholder != nil {
+		isPlaceholder = *ctainer.ContainerProperties.IsPlaceholder
 	}
+
+	disk.Entity = &wssdcommonproto.Entity{
+		IsPlaceholder: isPlaceholder,
+	}
+
 	if ctainer.ContainerInfo != nil {
 		if disk.Info != nil && disk.Info.Capacity != nil {
 			disk.Info.Capacity.AvailableBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.AvailableSize)
