@@ -292,8 +292,6 @@ func getNetworkSubnets(ipams []*wssdnetwork.Ipam) *[]network.Subnet {
 					// TODO: implement something for IPConfigurationReferences
 					IPAllocationMethod: ipAllocationMethodProtobufToSdk(subnet.Allocation),
 					Vlan:               getVlan(subnet.Vlan),
-					// TODO: Implement something for NSG
-					//NetworkSecurityGroup: getNsg(subnet.NetworkSecurityGroup),
 				},
 			})
 		}
