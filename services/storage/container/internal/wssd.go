@@ -4,9 +4,10 @@
 package internal
 
 import (
-	"code.cloudfoundry.org/bytefmt"
 	"context"
 	"fmt"
+
+	"code.cloudfoundry.org/bytefmt"
 
 	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
@@ -117,28 +118,33 @@ func getContainer(ctainer *wssdstorage.Container) *storage.Container {
 
 func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 
-	disk := &wssdstorage.Container{
+	wssdctainer := &wssdstorage.Container{
 		Tags: prototags.MapToProto(ctainer.Tags),
 	}
 
 	if ctainer.Name != nil {
-		disk.Name = *ctainer.Name
+		wssdctainer.Name = *ctainer.Name
 	}
 	if ctainer.Path != nil {
-		disk.Path = *ctainer.Path
+		wssdctainer.Path = *ctainer.Path
 	}
-	if ctainer.IsPlaceholder != nil {
-		if disk.Entity != nil {
-			disk.Entity.IsPlaceholder = *ctainer.IsPlaceholder
-		}
+
+	isPlaceholder := false
+	if ctainer.ContainerProperties != nil && ctainer.ContainerProperties.IsPlaceholder != nil {
+		isPlaceholder = *ctainer.ContainerProperties.IsPlaceholder
 	}
+
+	wssdctainer.Entity = &wssdcommonproto.Entity{
+		IsPlaceholder: isPlaceholder,
+	}
+
 	if ctainer.ContainerInfo != nil {
-		if disk.Info != nil && disk.Info.Capacity != nil {
-			disk.Info.Capacity.AvailableBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.AvailableSize)
-			disk.Info.Capacity.TotalBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.TotalSize)
+		if wssdctainer.Info != nil && wssdctainer.Info.Capacity != nil {
+			wssdctainer.Info.Capacity.AvailableBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.AvailableSize)
+			wssdctainer.Info.Capacity.TotalBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.TotalSize)
 		}
 	}
-	return disk
+	return wssdctainer
 }
 
 func getContainerPlaceHolder(ctainer *wssdstorage.Container) *bool {
