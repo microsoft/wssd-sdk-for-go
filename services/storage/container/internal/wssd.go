@@ -118,15 +118,15 @@ func getContainer(ctainer *wssdstorage.Container) *storage.Container {
 
 func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 
-	disk := &wssdstorage.Container{
+	wssdctainer := &wssdstorage.Container{
 		Tags: prototags.MapToProto(ctainer.Tags),
 	}
 
 	if ctainer.Name != nil {
-		disk.Name = *ctainer.Name
+		wssdctainer.Name = *ctainer.Name
 	}
 	if ctainer.Path != nil {
-		disk.Path = *ctainer.Path
+		wssdctainer.Path = *ctainer.Path
 	}
 
 	isPlaceholder := false
@@ -134,17 +134,17 @@ func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 		isPlaceholder = *ctainer.ContainerProperties.IsPlaceholder
 	}
 
-	disk.Entity = &wssdcommonproto.Entity{
+	wssdctainer.Entity = &wssdcommonproto.Entity{
 		IsPlaceholder: isPlaceholder,
 	}
 
 	if ctainer.ContainerInfo != nil {
-		if disk.Info != nil && disk.Info.Capacity != nil {
-			disk.Info.Capacity.AvailableBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.AvailableSize)
-			disk.Info.Capacity.TotalBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.TotalSize)
+		if wssdctainer.Info != nil && wssdctainer.Info.Capacity != nil {
+			wssdctainer.Info.Capacity.AvailableBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.AvailableSize)
+			wssdctainer.Info.Capacity.TotalBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.TotalSize)
 		}
 	}
-	return disk
+	return wssdctainer
 }
 
 func getContainerPlaceHolder(ctainer *wssdstorage.Container) *bool {
