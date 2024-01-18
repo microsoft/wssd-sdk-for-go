@@ -180,7 +180,7 @@ func GetLoadBalancerClient(serverAddress *string, authorizer auth.Authorizer) (n
 	return network_pb.NewLoadBalancerAgentClient(conn), nil
 }
 
-// GetAvailabilitySetClient returns the virtual machine client to comminicate with the wssd agent
+// GetAvailabilitySetClient returns the availability set client to comminicate with the wssd agent
 func GetAvailabilitySetClient(serverAddress *string, authorizer auth.Authorizer) (compute_pb.AvailabilitySetAgentClient, error) {
 	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
