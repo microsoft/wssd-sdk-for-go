@@ -8,6 +8,7 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 )
 
+// TODO: this link is dead and no longer exists, need to be replaced or removed.
 // ref: github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2018-10-01/compute/models.go
 
 // VirtualMachineCustomSize Specifies cpu/memory information for custom VMSize types.
@@ -541,4 +542,54 @@ type ProxyConfiguration struct {
 	NoProxy *[]string `json:"noproxy,omitempty"`
 	// Alternative CA cert to use for connecting to proxy server
 	TrustedCa *string `json:"trustedca,omitempty"`
+}
+
+// Availability Set: adapted from: https://github.com/Azure/azure-sdk-for-go/blob/main/sdk/resourcemanager/compute/armcompute/models.go
+
+// AvailabilitySet - Specifies information about the availability set that the virtual machine should be assigned to. Virtual
+// machines specified in the same availability set are allocated to different nodes to maximize
+// availability. For more information about availability sets, see Availability sets overview [https://docs.microsoft.com/azure/virtual-machines/availability-set-overview].
+// For more information on Azure
+// planned maintenance, see Maintenance and updates for Virtual Machines in Azure [https://docs.microsoft.com/azure/virtual-machines/maintenance-and-updates].
+// Currently, a VM can only be added to an
+// availability set at creation time. An existing VM cannot be added to an availability set.
+type AvailabilitySet struct {
+	// The instance view of a resource.
+	Properties *AvailabilitySetProperties
+	// Resource tags
+	Tags map[string]*string
+	// READ-ONLY; Resource Id
+	ID *string
+	// READ-ONLY; Resource name
+	Name *string
+}
+
+// AvailabilitySetListResult - The List Availability Set operation response.
+type AvailabilitySetListResult struct {
+	// REQUIRED; The list of availability sets
+	Value []*AvailabilitySet
+}
+
+// AvailabilitySetProperties - The instance view of a resource.
+type AvailabilitySetProperties struct {
+	// Fault Domain count.
+	PlatformFaultDomainCount *int32
+	// A list of references to all virtual machines in the availability set.
+	VirtualMachines []*SubResource
+	// READ-ONLY; The resource status information.
+	Statuses []*InstanceViewStatus
+}
+
+// AvailabilitySetUpdate - Specifies information about the availability set that the virtual machine should be assigned to.
+// Only tags may be updated.
+type AvailabilitySetUpdate struct {
+	// The instance view of a resource.
+	Properties *AvailabilitySetProperties
+	// Resource tags
+	Tags map[string]*string
+}
+
+type SubResource struct {
+	// Resource Id
+	ID *string
 }
