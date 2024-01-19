@@ -552,7 +552,7 @@ type AvailabilitySetProperties struct {
 	// A list of references to all virtual machines in the availability set.
 	VirtualMachines []*SubResource `json:"virtualMachines,omitempty"`
 	// READ-ONLY; The resource status information.
-	Statuses []*InstanceViewStatus `json:"statuses"`
+	Statuses map[string]*string `json:"statuses"`
 	// IsPlaceholder - On a multi-node system, the entity (such as a avset) is created on a node where
 	// IsPlacehoder is false. On all the other nodes, IsPlaceholder is set to true.
 	// platform specific commands will only be executed on the node where IsPlaceholder is false as

@@ -139,7 +139,7 @@ func getAvailabilitySetVMs(avset *wssdcompute.AvailabilitySet) []*compute.SubRes
 	return vms
 }
 
-func getAvailabilitySetStatuses(avset *wssdcompute.AvailabilitySet) *[]compute.Status {
+func getAvailabilitySetStatuses(avset *wssdcompute.AvailabilitySet) map[string]*string {
 	return status.GetStatuses(avset.Status)
 }
 
