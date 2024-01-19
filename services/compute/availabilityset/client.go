@@ -9,7 +9,6 @@ import (
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/availabilityset/internal"
-	"github.com/microsoft/wssd-sdk-for-go/services/compute/availabilityset/mock"
 )
 
 type Service interface {
@@ -24,7 +23,7 @@ type AvailabilitySetClient struct {
 }
 
 func NewAvailabilitySetClient(cloudFQDN string, authorizer auth.Authorizer) (*AvailabilitySetClient, error) {
-	c, err := internal.NewAvailabilitySetClient(cloudFQDN, authorizer)
+	c, err := internal.NewAvailabilitySetWssdClient(cloudFQDN, authorizer)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +32,7 @@ func NewAvailabilitySetClient(cloudFQDN string, authorizer auth.Authorizer) (*Av
 }
 
 func NewAvailabilitySetMockClient(cloudFQDN string, authorizer auth.Authorizer) (*AvailabilitySetClient, error) {
-	c, err := mock.NewAvailabilitySetClient(cloudFQDN, authorizer)
+	c, err := internal.NewAvailabilitySetMockClient(cloudFQDN, authorizer)
 	if err != nil {
 		return nil, err
 	}

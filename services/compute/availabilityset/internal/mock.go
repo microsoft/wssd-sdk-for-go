@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license
-package mock
+package internal
 
 import (
 	"context"
@@ -16,19 +16,19 @@ type avsetStore struct {
 
 // this mock client operates on an in-memory store to allow for component testing
 // at the calling layers
-type client struct {
+type mockClient struct {
 	avsetStore
 }
 
-func NewAvailabilitySetClient(cloudFQDN string, authorizer auth.Authorizer) (*client, error) {
+func NewAvailabilitySetMockClient(cloudFQDN string, authorizer auth.Authorizer) (*mockClient, error) {
 	store := avsetStore{
 		avsets: make(map[string]*compute.AvailabilitySet),
 	}
 
-	return &client{store}, nil
+	return &mockClient{store}, nil
 }
 
-func (c *client) Get(ctx context.Context, name string) (*[]compute.AvailabilitySet, error) {
+func (c *mockClient) Get(ctx context.Context, name string) (*[]compute.AvailabilitySet, error) {
 	// check if the name exists as a key in the store
 	if _, ok := c.avsets[name]; ok {
 		// if it does, return the value
@@ -38,7 +38,7 @@ func (c *client) Get(ctx context.Context, name string) (*[]compute.AvailabilityS
 	return nil, errors.NotFound
 }
 
-func (c *client) CreateOrUpdate(ctx context.Context, name string, avset *compute.AvailabilitySet) (*compute.AvailabilitySet, error) {
+func (c *mockClient) CreateOrUpdate(ctx context.Context, name string, avset *compute.AvailabilitySet) (*compute.AvailabilitySet, error) {
 	if avset == nil {
 		return nil, errors.Wrapf(errors.InvalidInput, "AvailabilitySet cannot be nil")
 	}
@@ -59,7 +59,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, name string, avset *compute
 	return avset, nil
 }
 
-func (c *client) Delete(ctx context.Context, name string) error {
+func (c *mockClient) Delete(ctx context.Context, name string) error {
 	// check if the name exists as a key in the store
 	if _, ok := c.avsets[name]; ok {
 		// if it does, check if it has any VM members

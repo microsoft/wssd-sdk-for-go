@@ -7,24 +7,24 @@ import (
 	"github.com/microsoft/moc/pkg/auth"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
-	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
+	wssd "github.com/microsoft/wssd-sdk-for-go/pkg/client"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 )
 
-type client struct {
+type wssdClient struct {
 	wssdcompute.AvailabilitySetAgentClient
 }
 
-func NewAvailabilitySetClient(subID string, authorizer auth.Authorizer) (*client, error) {
-	c, err := wssdclient.GetAvailabilitySetClient(&subID, authorizer)
+func NewAvailabilitySetWssdClient(subID string, authorizer auth.Authorizer) (*wssdClient, error) {
+	c, err := wssd.GetAvailabilitySetClient(&subID, authorizer)
 	if err != nil {
 		return nil, err
 	}
 
-	return &client{c}, nil
+	return &wssdClient{c}, nil
 }
 
-func (c *client) Get(ctx context.Context, name string) (*[]compute.AvailabilitySet, error) {
+func (c *wssdClient) Get(ctx context.Context, name string) (*[]compute.AvailabilitySet, error) {
 	request, err := c.getAvailabilitySetRequest(wssdcommonproto.Operation_GET, name, nil)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (c *client) Get(ctx context.Context, name string) (*[]compute.AvailabilityS
 	return avsets, nil
 }
 
-func (c *client) getAvailabilitySetRequest(opType wssdcommonproto.Operation, name string, avset *compute.AvailabilitySet) (*wssdcompute.AvailabilitySetRequest, error) {
+func (c *wssdClient) getAvailabilitySetRequest(opType wssdcommonproto.Operation, name string, avset *compute.AvailabilitySet) (*wssdcompute.AvailabilitySetRequest, error) {
 	request := &wssdcompute.AvailabilitySetRequest{
 		OperationType:    opType,
 		AvailabilitySets: []*wssdcompute.AvailabilitySet{},
@@ -66,12 +66,12 @@ func getWssdAvailabilitySet(avset *compute.AvailabilitySet) (*wssdcompute.Availa
 	return nil, nil
 }
 
-func (c *client) getAvailabilitySetFromResponse(response *wssdcompute.AvailabilitySetResponse) *[]compute.AvailabilitySet {
+func (c *wssdClient) getAvailabilitySetFromResponse(response *wssdcompute.AvailabilitySetResponse) *[]compute.AvailabilitySet {
 	// Implement the logic to convert the response to a slice of compute.AvailabilitySet
 	return nil
 }
 
-func (c *client) CreateOrUpdate(ctx context.Context, name string, avset *compute.AvailabilitySet) (*compute.AvailabilitySet, error) {
+func (c *wssdClient) CreateOrUpdate(ctx context.Context, name string, avset *compute.AvailabilitySet) (*compute.AvailabilitySet, error) {
 	request, err := c.getAvailabilitySetRequest(wssdcommonproto.Operation_POST, name, avset)
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, name string, avset *compute
 	return &(*avsets)[0], nil
 }
 
-func (c *client) Delete(ctx context.Context, name string) error {
+func (c *wssdClient) Delete(ctx context.Context, name string) error {
 	avset, err := c.Get(ctx, name)
 	if err != nil {
 		return err
