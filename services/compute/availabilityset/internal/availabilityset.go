@@ -2,6 +2,7 @@ package internal
 
 import (
 	"github.com/microsoft/moc/pkg/errors"
+	"github.com/microsoft/moc/pkg/status"
 	prototags "github.com/microsoft/moc/pkg/tags"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
@@ -104,4 +105,53 @@ func validateVM(vm *compute.SubResource) error {
 
 	// TODO: should we validate the VM exists in the system?
 	return nil
+}
+
+// Conversion functions from wssdcompute to compute
+func getAvailabilitySet(avset *wssdcompute.AvailabilitySet) *compute.AvailabilitySet {
+	return &compute.AvailabilitySet{
+		Name: &avset.Name,
+		ID:   &avset.Id,
+		Tags: getComputeTags(avset.GetTags()),
+		AvailabilitySetProperties: &compute.AvailabilitySetProperties{
+			PlatformFaultDomainCount: getAvailabilitySetPlatformFaultDomainCount(avset),
+			VirtualMachines:          getAvailabilitySetVMs(avset),
+			Statuses:                 getAvailabilitySetStatuses(avset),
+			IsPlaceholder:            getAvailabilitySetIsPlaceholder(avset),
+		},
+	}
+}
+
+func getAvailabilitySetPlatformFaultDomainCount(avset *wssdcompute.AvailabilitySet) *int32 {
+	return &avset.PlatformFaultDomainCount
+}
+
+func getAvailabilitySetVMs(avset *wssdcompute.AvailabilitySet) []*compute.SubResource {
+	var vms []*compute.SubResource
+	for _, vm := range avset.VirtualMachines {
+		sr := compute.SubResource{
+			Name: &vm.Name,
+		}
+
+		vms = append(vms, &sr)
+	}
+
+	return vms
+}
+
+func getAvailabilitySetStatuses(avset *wssdcompute.AvailabilitySet) *[]compute.Status {
+	return status.GetStatuses(avset.Status)
+}
+
+func getComputeTags(tags *wssdcommonproto.Tags) map[string]*string {
+	return prototags.ProtoToMap(tags)
+}
+
+func getAvailabilitySetIsPlaceholder(avset *wssdcompute.AvailabilitySet) *bool {
+	isPlaceholder := false
+	entity := avset.GetEntity()
+	if entity != nil {
+		isPlaceholder = entity.IsPlaceholder
+	}
+	return &isPlaceholder
 }

@@ -50,11 +50,13 @@ func (c *wssdClient) getAvailabilitySetRequest(opType wssdcommonproto.Operation,
 		if err != nil {
 			return nil, err
 		}
+
 		request.AvailabilitySets = append(request.AvailabilitySets, wssdavset)
 	} else if len(name) > 0 {
 		avset := &wssdcompute.AvailabilitySet{
 			Name: name,
 		}
+
 		request.AvailabilitySets = append(request.AvailabilitySets, avset)
 	}
 
@@ -81,8 +83,12 @@ func (c *wssdClient) CreateOrUpdate(ctx context.Context, name string, avset *com
 }
 
 func (c *wssdClient) getAvailabilitySetFromResponse(response *wssdcompute.AvailabilitySetResponse) *[]compute.AvailabilitySet {
-	// Implement the logic to convert the response to a slice of compute.AvailabilitySet
-	return nil
+	avsets := []compute.AvailabilitySet{}
+	for _, avset := range response.GetAvailabilitySets() {
+		avsets = append(avsets, *(c.getAvailabilitySet(avset)))
+	}
+
+	return &avsets
 }
 
 func (c *wssdClient) Delete(ctx context.Context, name string) error {
