@@ -61,16 +61,6 @@ func (c *wssdClient) getAvailabilitySetRequest(opType wssdcommonproto.Operation,
 	return request, nil
 }
 
-func getWssdAvailabilitySet(avset *compute.AvailabilitySet) (*wssdcompute.AvailabilitySet, error) {
-	// Implement the logic to convert avset to wssdavset
-	return nil, nil
-}
-
-func (c *wssdClient) getAvailabilitySetFromResponse(response *wssdcompute.AvailabilitySetResponse) *[]compute.AvailabilitySet {
-	// Implement the logic to convert the response to a slice of compute.AvailabilitySet
-	return nil
-}
-
 func (c *wssdClient) CreateOrUpdate(ctx context.Context, name string, avset *compute.AvailabilitySet) (*compute.AvailabilitySet, error) {
 	request, err := c.getAvailabilitySetRequest(wssdcommonproto.Operation_POST, name, avset)
 	if err != nil {

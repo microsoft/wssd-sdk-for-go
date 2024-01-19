@@ -9,3 +9,8 @@ func getWssdAvailabilitySet(avset *compute.AvailabilitySet) (*wssdcompute.Availa
 	// Implement the logic to convert avset to wssdavset
 	return nil, nil
 }
+
+func (c *wssdClient) getAvailabilitySetFromResponse(response *wssdcompute.AvailabilitySetResponse) *[]compute.AvailabilitySet {
+	// Implement the logic to convert the response to a slice of compute.AvailabilitySet
+	return nil
+}
