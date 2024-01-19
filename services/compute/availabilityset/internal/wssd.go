@@ -85,7 +85,7 @@ func (c *wssdClient) CreateOrUpdate(ctx context.Context, name string, avset *com
 func (c *wssdClient) getAvailabilitySetFromResponse(response *wssdcompute.AvailabilitySetResponse) *[]compute.AvailabilitySet {
 	avsets := []compute.AvailabilitySet{}
 	for _, avset := range response.GetAvailabilitySets() {
-		avsets = append(avsets, *(c.getAvailabilitySet(avset)))
+		avsets = append(avsets, *(getAvailabilitySet(avset)))
 	}
 
 	return &avsets
