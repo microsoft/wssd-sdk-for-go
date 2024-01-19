@@ -80,6 +80,11 @@ func (c *wssdClient) CreateOrUpdate(ctx context.Context, name string, avset *com
 	return &(*avsets)[0], nil
 }
 
+func (c *wssdClient) getAvailabilitySetFromResponse(response *wssdcompute.AvailabilitySetResponse) *[]compute.AvailabilitySet {
+	// Implement the logic to convert the response to a slice of compute.AvailabilitySet
+	return nil
+}
+
 func (c *wssdClient) Delete(ctx context.Context, name string) error {
 	avset, err := c.Get(ctx, name)
 	if err != nil {
