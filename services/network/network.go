@@ -243,6 +243,15 @@ type VirtualNetwork struct {
 	*VirtualNetworkProperties `json:"properties,omitempty"`
 }
 
+type NetworkType string
+
+const (
+	// Virtual ...
+	Virtual NetworkType = "VirtualNetwork"
+	// Logical ...
+	Logical NetworkType = "LogicalNetwork"
+)
+
 // IPConfigurationProperties
 type IPConfigurationProperties struct {
 	// IPAddress
@@ -251,6 +260,8 @@ type IPConfigurationProperties struct {
 	PrefixLength *string `json:"prefixlength,omitempty"`
 	// SubnetID
 	SubnetID *string `json:"subnetId,omitempty"`
+	// NetworkType the subnet refers to. Either Virtual Network or Logical Network
+	NetworkType NetworkType `json:"networkType,omitempty"`
 	// Gateway
 	Gateway *string `json:"gateway,omitempty"`
 	// Primary indicates that this is the primary IPaddress of the Nic
@@ -327,4 +338,64 @@ type VirtualNetworkInterface struct {
 	Tags map[string]*string `json:"tags"`
 	// Properties
 	*VirtualNetworkInterfaceProperties `json:"properties,omitempty"`
+}
+
+// LogicalSubnet is associated with a Logical Network.
+type LogicalSubnetProperties struct {
+	// CIDR for this subnet - IPv4, IPv6
+	AddressPrefix *string `json:"addressPrefix,omitempty"`
+	// AddressPrefixes - List of address prefixes for the subnet.
+	AddressPrefixes *[]string `json:"addressPrefixes,omitempty"`
+	// Routes for the subnet
+	Routes *[]Route `json:"routes,omitempty"`
+	// IPConfiguration References
+	IPConfigurationReferences *[]IPConfigurationReference `json:"ipConfigurationReferences,omitempty"`
+	// IPAllocationMethod - The IP address allocation method. Possible values include: 'Static', 'Dynamic'
+	IPAllocationMethod IPAllocationMethod `json:"ipAllocationMethod,omitempty"`
+	// VLAN ID
+	Vlan *uint16 `json:"vlan,omitempty"`
+	// DNSSettings - The DNSSetting that contains an array of DNS servers available to VMs deployed in the Logical network.
+	DNSSettings *DNSSetting `json:"dhcpOptions,omitempty"`
+	// Public - Gets whether this is a public subnet on a virtual machine.
+	Public *bool `json:"primary,omitempty"`
+}
+
+// LogicalSubnet is a subnet in a Logical network resource.
+type LogicalSubnet struct {
+	// LogicalSubnetProperties - Properties of the subnet.
+	*LogicalSubnetProperties `json:"properties,omitempty"`
+	// Name - The name of the resource that is unique within a resource group. This name can be used to access the resource.
+	Name *string `json:"name,omitempty"`
+	// Etag - A unique read-only string that changes whenever the resource is updated.
+	Etag *string `json:"etag,omitempty"`
+	// ID - Resource ID.
+	ID *string `json:"id,omitempty"`
+}
+
+// LogicalNetworkProperties properties of the Logical Network.
+type LogicalNetworkProperties struct {
+	// AddressSpace - The AddressSpace that contains an array of IP address ranges that can be used by subnets.
+	AddressSpace *AddressSpace `json:"addressSpace,omitempty"`
+	// Subnets - A list of subnets in a Logical Network.
+	Subnets *[]LogicalSubnet `json:"subnets,omitempty"`
+	// ProvisioningState - The provisioning state of the PublicIP resource. Possible values are: 'Updating', 'Deleting', and 'Failed'.
+	ProvisioningState *string `json:"provisioningState,omitempty"`
+	// State - State
+	Statuses map[string]*string `json:"statuses"`
+}
+
+// LogicalNetwork defines the structure of an LNET
+type LogicalNetwork struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// Version
+	Version *string `json:"version,omitempty"`
+	// Location - Resource location.
+	Location *string `json:"location,omitempty"`
+	// Tags - Custom resource tags
+	Tags map[string]*string `json:"tags"`
+	// LogicalNetworkProperties - Properties of the Logical network.
+	*LogicalNetworkProperties `json:"properties,omitempty"`
 }
