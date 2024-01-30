@@ -7,14 +7,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/microsoft/moc/pkg/status"
-	"github.com/microsoft/wssd-sdk-for-go/services/network"
-
 	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/status"
 	prototags "github.com/microsoft/moc/pkg/tags"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdnetwork "github.com/microsoft/moc/rpc/nodeagent/network"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
 )
 
 type client struct {
@@ -75,7 +74,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnet *n
 	vnets := getVirtualNetworksFromResponse(response)
 
 	if len(*vnets) == 0 {
-		return nil, fmt.Errorf("[VirtualNetwork][Create] Unexpected error: Creating a network interface returned no result")
+		return nil, fmt.Errorf("[VirtualNetwork][Create] Unexpected error: Creating a virtual network returned no result")
 	}
 
 	return &((*vnets)[0]), nil
@@ -227,8 +226,8 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 	return []*wssdnetwork.Ipam{&ipam}
 }
 
-func getWssdNetworkRoutes(routes *[]network.Route) []*wssdnetwork.Route {
-	wssdroutes := []*wssdnetwork.Route{}
+func getWssdNetworkRoutes(routes *[]network.Route) []*wssdcommonproto.Route {
+	wssdroutes := []*wssdcommonproto.Route{}
 	if routes == nil {
 		return wssdroutes
 	}
@@ -237,9 +236,9 @@ func getWssdNetworkRoutes(routes *[]network.Route) []*wssdnetwork.Route {
 		if route.RouteProperties == nil {
 			continue
 		}
-		wssdroutes = append(wssdroutes, &wssdnetwork.Route{
-			Nexthop:           *route.RouteProperties.NextHop,
-			Destinationprefix: *route.RouteProperties.DestinationPrefix,
+		wssdroutes = append(wssdroutes, &wssdcommonproto.Route{
+			NextHop:           *route.RouteProperties.NextHop,
+			DestinationPrefix: *route.RouteProperties.DestinationPrefix,
 			Metric:            route.RouteProperties.Metric,
 		})
 	}
@@ -300,14 +299,14 @@ func getNetworkSubnets(ipams []*wssdnetwork.Ipam) *[]network.Subnet {
 	return &subnets
 }
 
-func getNetworkRoutes(wssdroutes []*wssdnetwork.Route) *[]network.Route {
+func getNetworkRoutes(wssdroutes []*wssdcommonproto.Route) *[]network.Route {
 	routes := []network.Route{}
 
 	for _, route := range wssdroutes {
 		routes = append(routes, network.Route{
 			RouteProperties: &network.RouteProperties{
-				NextHop:           &route.Nexthop,
-				DestinationPrefix: &route.Destinationprefix,
+				NextHop:           &route.NextHop,
+				DestinationPrefix: &route.DestinationPrefix,
 				Metric:            route.Metric,
 			},
 		})
