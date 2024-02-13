@@ -20,6 +20,26 @@ type client struct {
 	wssdnetwork.LogicalNetworkAgentClient
 }
 
+func logicalNetworkTypeToString(lnetType wssdcommonproto.NetworkType) string {
+	typename, ok := wssdcommonproto.NetworkType_name[int32(lnetType)]
+	if !ok {
+		return "Unknown"
+	}
+	return typename
+
+}
+
+func logicalNetworkTypeFromString(lnNetworkString string) (wssdcommonproto.NetworkType, error) {
+	typevalue := wssdcommonproto.NetworkType_ICS
+	if len(lnNetworkString) > 0 {
+		typevTmp, ok := wssdcommonproto.NetworkType_value[lnNetworkString]
+		if ok {
+			typevalue = wssdcommonproto.NetworkType(typevTmp)
+		}
+	}
+	return typevalue, nil
+}
+
 // NewLogicalNetworkClient - creates a client session with the backend wssd agent
 func NewLogicalNetworkClient(subID string, authorizer auth.Authorizer) (*client, error) {
 
@@ -110,8 +130,11 @@ func getLogicalNetworksFromResponse(response *wssdnetwork.LogicalNetworkResponse
 
 // Conversion functions from network to wssdnetwork
 func getWssdLogicalNetwork(c *network.LogicalNetwork) *wssdnetwork.LogicalNetwork {
+	lnetType, _ := logicalNetworkTypeFromString(*c.Type)
+
 	wssdlnet := &wssdnetwork.LogicalNetwork{
 		Name: *c.Name,
+		Type: lnetType,
 		Tags: getWssdTags(c.Tags),
 	}
 	if c.LogicalNetworkProperties == nil {
@@ -212,10 +235,12 @@ func getWssdNetworkRoutes(routes *[]network.Route) []*wssdcommonproto.Route {
 
 // Conversion function from wssdnetwork to network
 func GetLogicalNetwork(c *wssdnetwork.LogicalNetwork) *network.LogicalNetwork {
+	lnetType := logicalNetworkTypeToString(c.Type)
 
 	lnet := &network.LogicalNetwork{
 		Name: &c.Name,
 		ID:   &c.Id,
+		Type: &lnetType,
 		Tags: getNetworkTags(c.GetTags()),
 		LogicalNetworkProperties: &network.LogicalNetworkProperties{
 			Subnets:           getNetworkSubnets(c.Ipams),
