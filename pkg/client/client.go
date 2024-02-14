@@ -10,11 +10,6 @@ import (
 	"sync"
 	"time"
 
-	admin_pb "github.com/microsoft/moc/rpc/common/admin"
-	compute_pb "github.com/microsoft/moc/rpc/nodeagent/compute"
-	network_pb "github.com/microsoft/moc/rpc/nodeagent/network"
-	security_pb "github.com/microsoft/moc/rpc/nodeagent/security"
-	storage_pb "github.com/microsoft/moc/rpc/nodeagent/storage"
 	"github.com/spf13/viper"
 	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
@@ -22,6 +17,11 @@ import (
 	log "k8s.io/klog"
 
 	"github.com/microsoft/moc/pkg/auth"
+	admin_pb "github.com/microsoft/moc/rpc/common/admin"
+	compute_pb "github.com/microsoft/moc/rpc/nodeagent/compute"
+	network_pb "github.com/microsoft/moc/rpc/nodeagent/network"
+	security_pb "github.com/microsoft/moc/rpc/nodeagent/security"
+	storage_pb "github.com/microsoft/moc/rpc/nodeagent/storage"
 )
 
 const (
@@ -160,6 +160,16 @@ func GetVirtualNetworkClient(serverAddress *string, authorizer auth.Authorizer) 
 	return network_pb.NewVirtualNetworkAgentClient(conn), nil
 }
 
+// GetLogicalNetworkClient returns the logical network client to communicate with the wssdagent
+func GetLogicalNetworkClient(serverAddress *string, authorizer auth.Authorizer) (network_pb.LogicalNetworkAgentClient, error) {
+	conn, err := getClientConnection(serverAddress, authorizer)
+	if err != nil {
+		return nil, err
+	}
+
+	return network_pb.NewLogicalNetworkAgentClient(conn), nil
+}
+
 // GetVirtualNetworkInterfaceClient returns the virtual network interface client to communicate with the wssd agent
 func GetVirtualNetworkInterfaceClient(serverAddress *string, authorizer auth.Authorizer) (network_pb.VirtualNetworkInterfaceAgentClient, error) {
 	conn, err := getClientConnection(serverAddress, authorizer)
@@ -260,7 +270,7 @@ func GetVirtualMachineScaleSetClient(serverAddress *string, authorizer auth.Auth
 	return compute_pb.NewVirtualMachineScaleSetAgentClient(conn), nil
 }
 
-// GetVirtualHardDiskClient returns the virtual network client to communicate with the wssdagent
+// GetVirtualHardDiskClient returns the virtual harddisk client to communicate with the wssdagent
 func GetVirtualHardDiskClient(serverAddress *string, authorizer auth.Authorizer) (storage_pb.VirtualHardDiskAgentClient, error) {
 	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
@@ -270,7 +280,7 @@ func GetVirtualHardDiskClient(serverAddress *string, authorizer auth.Authorizer)
 	return storage_pb.NewVirtualHardDiskAgentClient(conn), nil
 }
 
-// GetVirtualHardDiskClient returns the virtual network client to communicate with the wssdagent
+// GetContainerClient returns the container client to communicate with the wssdagent
 func GetContainerClient(serverAddress *string, authorizer auth.Authorizer) (storage_pb.ContainerAgentClient, error) {
 	conn, err := getClientConnection(serverAddress, authorizer)
 	if err != nil {
