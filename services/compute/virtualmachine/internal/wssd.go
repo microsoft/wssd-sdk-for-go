@@ -94,6 +94,17 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 	return err
 }
 
+// Hydrate methods creates MOC representation of the VM resource
+func (c *client) Hydrate(ctx context.Context, group, name string) error {
+	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_HYDRATE, name, nil)
+	if err != nil {
+		return err
+	}
+	_, err = c.VirtualMachineAgentClient.Invoke(ctx, request)
+
+	return err
+}
+
 func (c *client) Start(ctx context.Context, group, name string) (err error) {
 	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_START, name)
 	if err != nil {
