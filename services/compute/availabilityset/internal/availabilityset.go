@@ -10,6 +10,7 @@ import (
 )
 
 // Conversion functions from client to rpc
+// Field validations will occur in wssdagent
 func getWssdAvailabilitySet(avset *compute.AvailabilitySet) (*wssdcompute.AvailabilitySet, error) {
 	errorPrefix := "Error converting AvailabilitySet to WssdAvailabilitySet"
 
@@ -17,8 +18,8 @@ func getWssdAvailabilitySet(avset *compute.AvailabilitySet) (*wssdcompute.Availa
 		return nil, errors.Wrapf(errors.InvalidInput, "%s, AvailabilitySet cannot be nil", errorPrefix)
 	}
 
-	if avset.Name == nil || len(*avset.Name) == 0 || len(*avset.Name) > 200 {
-		return nil, errors.Wrapf(errors.InvalidInput, "%s, Name cannot be empty or more than 200 characters", errorPrefix)
+	if avset.Name == nil {
+		return nil, errors.Wrapf(errors.InvalidInput, "%s, Name is missing", errorPrefix)
 	}
 
 	wssdavset := &wssdcompute.AvailabilitySet{
@@ -27,30 +28,16 @@ func getWssdAvailabilitySet(avset *compute.AvailabilitySet) (*wssdcompute.Availa
 	}
 
 	if avset.AvailabilitySetProperties == nil {
+		// nothing else to convert
 		return wssdavset, nil
-	}
-
-	fd, err := getWssdAvailabilitySetFaultDomain(avset)
-	if err != nil {
-		return nil, errors.Wrapf(err, "%s, failed to get fault domain", errorPrefix)
-	}
-
-	entity, err := getWssdAvailabilitySetEntity(avset)
-	if err != nil {
-		return nil, errors.Wrapf(err, "%s, failed to get entity", errorPrefix)
-	}
-
-	vms, err := getWssdAvailabilitySetVMs(avset)
-	if err != nil {
-		return nil, errors.Wrapf(err, "%s, failed to get vms", errorPrefix)
 	}
 
 	wssdavset = &wssdcompute.AvailabilitySet{
 		Name:                     *avset.Name,
 		Tags:                     getWssdTags(avset.Tags),
-		Entity:                   entity,
-		PlatformFaultDomainCount: *fd,
-		VirtualMachines:          vms,
+		Entity:                   getWssdAvailabilitySetEntity(avset),
+		PlatformFaultDomainCount: getWssdPlatformFaultDomainCount(avset),
+		VirtualMachines:          getWssdAvailabilitySetVMs(avset),
 		Status:                   status.GetFromStatuses(avset.Statuses),
 	}
 
@@ -61,18 +48,7 @@ func getWssdTags(tags map[string]*string) *wssdcommonproto.Tags {
 	return prototags.MapToProto(tags)
 }
 
-func getWssdAvailabilitySetFaultDomain(avset *compute.AvailabilitySet) (*int32, error) {
-	// PlatformFaultDomainCount upperbound should be nodecount (number of nodes managed by cloud agent) inclusive
-	// We don't apply upper bound validation here because nodeagent is not aware of this information
-	// this validation needs to take place in the cloud agent.
-	if avset.PlatformFaultDomainCount == nil || *avset.PlatformFaultDomainCount < 2 {
-		return nil, errors.Wrapf(errors.InvalidInput, "PlatformFaultDomainCount cannot be less than 2")
-	}
-
-	return avset.PlatformFaultDomainCount, nil
-}
-
-func getWssdAvailabilitySetEntity(avset *compute.AvailabilitySet) (*wssdcommonproto.Entity, error) {
+func getWssdAvailabilitySetEntity(avset *compute.AvailabilitySet) *wssdcommonproto.Entity {
 	isPlaceholder := false
 	if avset.IsPlaceholder != nil {
 		isPlaceholder = *avset.IsPlaceholder
@@ -80,32 +56,29 @@ func getWssdAvailabilitySetEntity(avset *compute.AvailabilitySet) (*wssdcommonpr
 
 	return &wssdcommonproto.Entity{
 		IsPlaceholder: isPlaceholder,
-	}, nil
+	}
 }
 
-func getWssdAvailabilitySetVMs(avset *compute.AvailabilitySet) ([]*wssdcommonproto.NodeSubResource, error) {
+func getWssdPlatformFaultDomainCount(avset *compute.AvailabilitySet) int32 {
+	var faultDomainCount int32 = 0
+	if avset.PlatformFaultDomainCount != nil {
+		faultDomainCount = *avset.PlatformFaultDomainCount
+	}
+
+	return faultDomainCount
+}
+
+func getWssdAvailabilitySetVMs(avset *compute.AvailabilitySet) []*wssdcommonproto.NodeSubResource {
 	var vms []*wssdcommonproto.NodeSubResource
 	for _, vm := range avset.VirtualMachines {
-		err := validateVM(vm)
-		if err != nil {
-			return nil, err
+		if vm != nil && vm.Name != nil {
+			vms = append(vms, &wssdcommonproto.NodeSubResource{
+				Name: *vm.Name,
+			})
 		}
-
-		vms = append(vms, &wssdcommonproto.NodeSubResource{
-			Name: *vm.Name,
-		})
 	}
 
-	return vms, nil
-}
-
-func validateVM(vm *compute.SubResource) error {
-	if vm.Name == nil || len(*vm.Name) == 0 {
-		return errors.Wrapf(errors.InvalidInput, "avset member VM name cannot be empty")
-	}
-
-	// TODO: should we validate the VM exists in the system?
-	return nil
+	return vms
 }
 
 // Conversion functions from wssdcompute to compute
@@ -121,6 +94,10 @@ func getAvailabilitySet(avset *wssdcompute.AvailabilitySet) *compute.Availabilit
 			IsPlaceholder:            getAvailabilitySetIsPlaceholder(avset),
 		},
 	}
+}
+
+func getComputeTags(tags *wssdcommonproto.Tags) map[string]*string {
+	return prototags.ProtoToMap(tags)
 }
 
 func getAvailabilitySetPlatformFaultDomainCount(avset *wssdcompute.AvailabilitySet) *int32 {
@@ -142,10 +119,6 @@ func getAvailabilitySetVMs(avset *wssdcompute.AvailabilitySet) []*compute.SubRes
 
 func getAvailabilitySetStatuses(avset *wssdcompute.AvailabilitySet) map[string]*string {
 	return status.GetStatuses(avset.Status)
-}
-
-func getComputeTags(tags *wssdcommonproto.Tags) map[string]*string {
-	return prototags.ProtoToMap(tags)
 }
 
 func getAvailabilitySetIsPlaceholder(avset *wssdcompute.AvailabilitySet) *bool {

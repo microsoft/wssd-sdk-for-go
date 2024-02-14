@@ -31,15 +31,6 @@ func NewAvailabilitySetClient(cloudFQDN string, authorizer auth.Authorizer) (*Av
 	return &AvailabilitySetClient{internal: c}, nil
 }
 
-func NewAvailabilitySetMockClient(cloudFQDN string, authorizer auth.Authorizer) (*AvailabilitySetClient, error) {
-	c, err := internal.NewAvailabilitySetMockClient(cloudFQDN, authorizer)
-	if err != nil {
-		return nil, err
-	}
-
-	return &AvailabilitySetClient{internal: c}, nil
-}
-
 // Get methods invokes the client Get method
 func (c *AvailabilitySetClient) Get(ctx context.Context, name string) (*[]compute.AvailabilitySet, error) {
 	return c.internal.Get(ctx, name)

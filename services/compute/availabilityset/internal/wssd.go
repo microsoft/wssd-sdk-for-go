@@ -2,9 +2,9 @@ package internal
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/errors"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
 	wssd "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -35,8 +35,7 @@ func (c *wssdClient) Get(ctx context.Context, name string) (*[]compute.Availabil
 		return nil, err
 	}
 
-	avsets := c.getAvailabilitySetFromResponse(response)
-	return avsets, nil
+	return c.getAvailabilitySetFromResponse(response), nil
 }
 
 func (c *wssdClient) getAvailabilitySetRequest(opType wssdcommonproto.Operation, name string, avset *compute.AvailabilitySet) (*wssdcompute.AvailabilitySetRequest, error) {
@@ -76,7 +75,7 @@ func (c *wssdClient) CreateOrUpdate(ctx context.Context, name string, avset *com
 
 	avsets := c.getAvailabilitySetFromResponse(response)
 	if len(*avsets) == 0 {
-		return nil, fmt.Errorf("Creation of Virtual Machine failed to unknown reason.")
+		return nil, errors.Wrapf(errors.Unknown, "parsing of availability set in response failed")
 	}
 
 	return &(*avsets)[0], nil
@@ -98,7 +97,8 @@ func (c *wssdClient) Delete(ctx context.Context, name string) error {
 	}
 
 	if len(*avset) == 0 {
-		return fmt.Errorf("Availability Set [%s] not found", name)
+		// any error in the Get call should have been caught above, not expecting to hit this.
+		return errors.Wrapf(errors.Unknown, "availability set response yielded no results for %s", name)
 	}
 
 	request, err := c.getAvailabilitySetRequest(wssdcommonproto.Operation_DELETE, name, &(*avset)[0])
