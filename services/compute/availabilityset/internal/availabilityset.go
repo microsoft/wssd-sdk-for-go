@@ -9,7 +9,7 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 )
 
-// Conversion functions from compute to wssdcompute
+// Conversion functions from client to rpc
 func getWssdAvailabilitySet(avset *compute.AvailabilitySet) (*wssdcompute.AvailabilitySet, error) {
 	errorPrefix := "Error converting AvailabilitySet to WssdAvailabilitySet"
 
@@ -51,6 +51,7 @@ func getWssdAvailabilitySet(avset *compute.AvailabilitySet) (*wssdcompute.Availa
 		Entity:                   entity,
 		PlatformFaultDomainCount: *fd,
 		VirtualMachines:          vms,
+		Status:                   status.GetFromStatuses(avset.Statuses),
 	}
 
 	return wssdavset, nil
