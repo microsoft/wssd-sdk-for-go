@@ -20,8 +20,8 @@ type client struct {
 	wssdnetwork.LogicalNetworkAgentClient
 }
 
-func logicalNetworkTypeToString(lnetType wssdnetwork.LogicalNetworkType) string {
-	typename, ok := wssdnetwork.LogicalNetworkType_name[int32(lnetType)]
+func logicalNetworkTypeToString(lnetType wssdcommonproto.NetworkType) string {
+	typename, ok := wssdcommonproto.NetworkType_name[int32(lnetType)]
 	if !ok {
 		return "Unknown"
 	}
@@ -29,12 +29,12 @@ func logicalNetworkTypeToString(lnetType wssdnetwork.LogicalNetworkType) string 
 
 }
 
-func logicalNetworkTypeFromString(lnNetworkString string) (wssdnetwork.LogicalNetworkType, error) {
-	typevalue := wssdnetwork.LogicalNetworkType_ICS
+func logicalNetworkTypeFromString(lnNetworkString string) (wssdcommonproto.NetworkType, error) {
+	typevalue := wssdcommonproto.NetworkType_ICS
 	if len(lnNetworkString) > 0 {
-		typevTmp, ok := wssdnetwork.LogicalNetworkType_value[lnNetworkString]
+		typevTmp, ok := wssdcommonproto.NetworkType_value[lnNetworkString]
 		if ok {
-			typevalue = wssdnetwork.LogicalNetworkType(typevTmp)
+			typevalue = wssdcommonproto.NetworkType(typevTmp)
 		}
 	}
 	return typevalue, nil
