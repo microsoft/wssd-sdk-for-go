@@ -282,6 +282,10 @@ func isDifferentVmSize(oldSizeType, newSizeType compute.VirtualMachineSizeTypes,
 		if *oldCustomSize.MemoryMB != *newCustomSize.MemoryMB {
 			return true
 		}
+		// simultaneous addtion and removal of GPU is not supported
+		if len(oldCustomSize.GpuList) != len(newCustomSize.GpuList) {
+			return true
+		}
 		return false
 	default:
 		return false
