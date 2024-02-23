@@ -13,9 +13,9 @@ import (
 
 // Service interface
 type Service interface {
-	Get(context.Context, string) (*[]network.LogicalNetwork, error)
-	CreateOrUpdate(context.Context, string, *network.LogicalNetwork) (*network.LogicalNetwork, error)
-	Delete(context.Context, string) error
+	Get(context.Context, string, string) (*[]network.LogicalNetwork, error)
+	CreateOrUpdate(context.Context, string, string, *network.LogicalNetwork) (*network.LogicalNetwork, error)
+	Delete(context.Context, string, string) error
 }
 
 // Client structure
@@ -35,16 +35,16 @@ func NewLogicalNetworkClient(cloudFQDN string, authorizer auth.Authorizer) (*Log
 }
 
 // Get methods invokes the client Get method
-func (c *LogicalNetworkClient) Get(ctx context.Context, name string) (*[]network.LogicalNetwork, error) {
-	return c.internal.Get(ctx, name)
+func (c *LogicalNetworkClient) Get(ctx context.Context, location, name string) (*[]network.LogicalNetwork, error) {
+	return c.internal.Get(ctx, location, name)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
-func (c *LogicalNetworkClient) CreateOrUpdate(ctx context.Context, name string, network *network.LogicalNetwork) (*network.LogicalNetwork, error) {
-	return c.internal.CreateOrUpdate(ctx, name, network)
+func (c *LogicalNetworkClient) CreateOrUpdate(ctx context.Context, location, name string, network *network.LogicalNetwork) (*network.LogicalNetwork, error) {
+	return c.internal.CreateOrUpdate(ctx, location, name, network)
 }
 
 // Delete methods invokes delete of the network resource
-func (c *LogicalNetworkClient) Delete(ctx context.Context, name string) error {
-	return c.internal.Delete(ctx, name)
+func (c *LogicalNetworkClient) Delete(ctx context.Context, location, name string) error {
+	return c.internal.Delete(ctx, location, name)
 }

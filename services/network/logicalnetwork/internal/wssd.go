@@ -31,7 +31,7 @@ func NewLogicalNetworkClient(subID string, authorizer auth.Authorizer) (*client,
 }
 
 // Get
-func (c *client) Get(ctx context.Context, name string) (*[]network.LogicalNetwork, error) {
+func (c *client) Get(ctx context.Context, location, name string) (*[]network.LogicalNetwork, error) {
 	request := getLogicalNetworkRequest(wssdcommonproto.Operation_GET, name, nil)
 	response, err := c.LogicalNetworkAgentClient.Invoke(ctx, request)
 	if err != nil {
@@ -41,8 +41,8 @@ func (c *client) Get(ctx context.Context, name string) (*[]network.LogicalNetwor
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, name string, lnet *network.LogicalNetwork) (*network.LogicalNetwork, error) {
-	err := c.validate(ctx, name, lnet)
+func (c *client) CreateOrUpdate(ctx context.Context, location, name string, lnet *network.LogicalNetwork) (*network.LogicalNetwork, error) {
+	err := c.validate(ctx, location, name, lnet)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +61,8 @@ func (c *client) CreateOrUpdate(ctx context.Context, name string, lnet *network.
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, name string) error {
-	lnet, err := c.Get(ctx, name)
+func (c *client) Delete(ctx context.Context, location, name string) error {
+	lnet, err := c.Get(ctx, location, name)
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func (c *client) Delete(ctx context.Context, name string) error {
 }
 
 // validate
-func (c *client) validate(ctx context.Context, name string, lnet *network.LogicalNetwork) error {
+func (c *client) validate(ctx context.Context, location, name string, lnet *network.LogicalNetwork) error {
 	// Validate
 	return nil
 }
