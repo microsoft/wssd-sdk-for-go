@@ -68,11 +68,11 @@ func getWssdPlatformFaultDomainCount(avset *compute.AvailabilitySet) int32 {
 	return faultDomainCount
 }
 
-func getWssdAvailabilitySetVMs(avset *compute.AvailabilitySet) []*wssdcommonproto.NodeSubResource {
-	var vms []*wssdcommonproto.NodeSubResource
+func getWssdAvailabilitySetVMs(avset *compute.AvailabilitySet) []*wssdcompute.VirtualMachineReference {
+	var vms []*wssdcompute.VirtualMachineReference
 	for _, vm := range avset.VirtualMachines {
 		if vm != nil && vm.Name != nil {
-			vms = append(vms, &wssdcommonproto.NodeSubResource{
+			vms = append(vms, &wssdcompute.VirtualMachineReference{
 				Name: *vm.Name,
 			})
 		}
