@@ -324,8 +324,8 @@ type VirtualNetworkInterfaceProperties struct {
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 	// EnableAcceleratedNetworking - If the network interface is accelerated networking enabled.
 	EnableAcceleratedNetworking *bool `json:"enableAcceleratedNetworking,omitempty"`
-	// SdnDisabled - Flag to indicate whether SDN is disabled or not
-	SdnDisabled *bool `json:"sdnDisabled,omitempty"`
+	// SdnEnabled - Flag to indicate whether SDN is enabled or not
+	SdnEnabled *bool `json:"sdnEnabled,omitempty"`
 }
 
 // VirtualNetwork defines the structure of a VNET
@@ -384,8 +384,6 @@ type LogicalNetworkProperties struct {
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// State - State
 	Statuses map[string]*string `json:"statuses"`
-	// SdnDisabled - Flag to indicate whether SDN is disabled or not
-	SdnDisabled *bool `json:"sdnDisabled,omitempty"`
 }
 
 // LogicalNetwork defines the structure of an LNET
