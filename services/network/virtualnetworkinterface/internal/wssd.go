@@ -92,6 +92,24 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 	return err
 }
 
+// UpdateSettings
+func (c *client) UpdateSettings(ctx context.Context, group, name string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_UPDATE, name, vnetInterface)
+	if err != nil {
+		return nil, err
+	}
+	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	vnics, err := c.getVirtualNetworkInterfacesFromResponse(group, response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &(*vnics)[0], nil
+}
+
 // ///////////// private methods  ///////////////
 func (c *client) getVirtualNetworkInterfaceRequest(opType wssdcommonproto.Operation, name string, networkInterface *network.VirtualNetworkInterface) (*wssdnetwork.VirtualNetworkInterfaceRequest, error) {
 	request := &wssdnetwork.VirtualNetworkInterfaceRequest{
