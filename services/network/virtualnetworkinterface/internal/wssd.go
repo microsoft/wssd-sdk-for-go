@@ -148,6 +148,7 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 		Ipconfigs:   wssdipconfigs,
 		DnsSettings: cc.getDns(c.DNSSettings),
 		Tags:        prototags.MapToProto(c.Tags),
+		SdnEnabled:  *c.SdnEnabled,
 	}
 
 	if c.MACAddress != nil {
@@ -262,6 +263,7 @@ func (cc *client) getVirtualNetworkInterface(server, group string, c *wssdnetwor
 			Statuses:                    status.GetStatuses(c.Status),
 			IsPlaceholder:               cc.getVirtualNetworkIsPlaceholder(c),
 			EnableAcceleratedNetworking: cc.getIovSetting(c),
+			SdnEnabled:                  &c.SdnEnabled,
 		},
 		Tags: prototags.ProtoToMap(c.Tags),
 	}
