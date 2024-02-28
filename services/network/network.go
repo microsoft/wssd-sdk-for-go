@@ -392,6 +392,8 @@ type LogicalNetwork struct {
 	Name *string `json:"name,omitempty"`
 	// Version
 	Version *string `json:"version,omitempty"`
+	// Location - Resource location.
+	Location *string `json:"location,omitempty"`
 	// Tags - Custom resource tags
 	Tags map[string]*string `json:"tags"`
 	// LogicalNetworkProperties - Properties of the Logical network.
