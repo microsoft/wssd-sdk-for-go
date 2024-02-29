@@ -20,8 +20,8 @@ type client struct {
 	wssdnetwork.VirtualNetworkAgentClient
 }
 
-func virtualNetworkTypeToString(vnetType wssdcommonproto.NetworkType) string {
-	typename, ok := wssdcommonproto.NetworkType_name[int32(vnetType)]
+func virtualNetworkTypeToString(vnetType wssdnetwork.VirtualNetworkType) string {
+	typename, ok := wssdnetwork.VirtualNetworkType_name[int32(vnetType)]
 	if !ok {
 		return "Unknown"
 	}
@@ -29,12 +29,12 @@ func virtualNetworkTypeToString(vnetType wssdcommonproto.NetworkType) string {
 
 }
 
-func virtualNetworkTypeFromString(vnNetworkString string) (wssdcommonproto.NetworkType, error) {
-	typevalue := wssdcommonproto.NetworkType_ICS
+func virtualNetworkTypeFromString(vnNetworkString string) (wssdnetwork.VirtualNetworkType, error) {
+	typevalue := wssdnetwork.VirtualNetworkType_ICS
 	if len(vnNetworkString) > 0 {
-		typevTmp, ok := wssdcommonproto.NetworkType_value[vnNetworkString]
+		typevTmp, ok := wssdnetwork.VirtualNetworkType_value[vnNetworkString]
 		if ok {
-			typevalue = wssdcommonproto.NetworkType(typevTmp)
+			typevalue = wssdnetwork.VirtualNetworkType(typevTmp)
 		}
 	}
 	return typevalue, nil
