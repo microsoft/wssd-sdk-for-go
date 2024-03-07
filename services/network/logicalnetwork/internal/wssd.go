@@ -110,6 +110,7 @@ func getLogicalNetworksFromResponse(response *wssdnetwork.LogicalNetworkResponse
 
 // Conversion functions from network to wssdnetwork
 func getWssdLogicalNetwork(c *network.LogicalNetwork) *wssdnetwork.LogicalNetwork {
+
 	wssdlnet := &wssdnetwork.LogicalNetwork{
 		Name: *c.Name,
 		Tags: getWssdTags(c.Tags),
