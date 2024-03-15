@@ -24,6 +24,7 @@ type Service interface {
 	Pause(context.Context, string, string) error
 	Save(context.Context, string, string) error
 	RepairGuestAgent(context.Context, string, string) error
+	CreateCheckpoint(context.Context, string, string) error
 	RunCommand(context.Context, string, string, *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error)
 	Validate(context.Context, string, string) error
 }
@@ -85,6 +86,10 @@ func (c *VirtualMachineClient) Save(ctx context.Context, group string, name stri
 func (c *VirtualMachineClient) RepairGuestAgent(ctx context.Context, group string, name string) (err error) {
 	err = c.internal.RepairGuestAgent(ctx, group, name)
 	return
+}
+
+func (c *VirtualMachineClient) CreateCheckpoint(ctx context.Context, vmName, checkpointName string) (err error) {
+	return c.internal.CreateCheckpoint(ctx, vmName, checkpointName)
 }
 
 // Validate methods invokes the validate Get method
