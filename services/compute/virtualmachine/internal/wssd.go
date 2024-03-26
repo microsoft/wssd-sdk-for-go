@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
 	prototags "github.com/microsoft/moc/pkg/tags"
@@ -183,6 +184,16 @@ func (c *client) Validate(ctx context.Context, group, name string) error {
 
 }
 
+// Discover VMs on this cluster node
+func (c *client) DiscoverVm(ctx context.Context, group string) (*[]compute.VirtualMachineDiscovery, error) {
+	response, err := c.VirtualMachineAgentClient.DiscoverVm(ctx, &empty.Empty{})
+	if err != nil {
+		return nil, err
+	}
+	return c.getDiscoveredVmFromResponse(response), nil
+
+}
+
 func (c *client) getVirtualMachineFromResponse(response *wssdcompute.VirtualMachineResponse) *[]compute.VirtualMachine {
 	vms := []compute.VirtualMachine{}
 	for _, vm := range response.GetVirtualMachineSystems() {
@@ -299,6 +310,20 @@ func (c *client) getVirtualMachineRunCommandResponse(mocResponse *wssdcompute.Vi
 		InstanceView: instanceView,
 	}
 	return response, nil
+}
+
+func (c *client) getDiscoveredVmFromResponse(response *wssdcompute.VirtualMachineDiscoveryResponse) *[]compute.VirtualMachineDiscovery {
+	vms := []compute.VirtualMachineDiscovery{}
+	for _, vm := range response.GetVirtualMachines() {
+		sdkVm := compute.VirtualMachineDiscovery{
+			VmId:       &vm.Id,
+			VmName:     &vm.Name,
+			PowerState: c.getVirtualMachinePowerState(vm.GetPowerState()),
+		}
+		vms = append(vms, sdkVm)
+	}
+
+	return &vms
 }
 
 func getComputeTags(tags *wssdcommonproto.Tags) map[string]*string {
