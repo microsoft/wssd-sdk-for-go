@@ -148,7 +148,7 @@ func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 }
 
 func getContainerPlaceHolder(ctainer *wssdstorage.Container) *bool {
-	isPlaceholder := false
+	isPlaceholder := true
 	entity := ctainer.GetEntity()
 	if entity != nil {
 		isPlaceholder = entity.IsPlaceholder
