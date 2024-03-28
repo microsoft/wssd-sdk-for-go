@@ -89,13 +89,13 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 	sizeType := wssdcommonproto.VirtualMachineSizeType_Default
 	var customSize *wssdcommonproto.VirtualMachineCustomSize
 	var dynMemConfig *wssdcommonproto.DynamicMemoryConfiguration
+	var gpuList []*wssdcommonproto.Gpu
 	if vm.HardwareProfile != nil {
 		sizeType = compute.GetWssdVirtualMachineSizeFromVirtualMachineSize(vm.HardwareProfile.VMSize)
 		if vm.HardwareProfile.CustomSize != nil {
 			customSize = &wssdcommonproto.VirtualMachineCustomSize{
 				CpuCount: *vm.HardwareProfile.CustomSize.CpuCount,
 				MemoryMB: *vm.HardwareProfile.CustomSize.MemoryMB,
-				GpuList:  vm.HardwareProfile.CustomSize.GpuList,
 			}
 			if vm.HardwareProfile.CustomSize.GpuCount != nil {
 				customSize.GpuCount = *vm.HardwareProfile.CustomSize.GpuCount
@@ -113,11 +113,13 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 				dynMemConfig.TargetMemoryBuffer = *vm.HardwareProfile.DynamicMemoryConfig.TargetMemoryBuffer
 			}
 		}
+		gpuList = vm.HardwareProfile.GpuList
 	}
 	return &wssdcompute.HardwareConfiguration{
 		VMSize:                     sizeType,
 		CustomSize:                 customSize,
 		DynamicMemoryConfiguration: dynMemConfig,
+		GpuList:                    gpuList,
 	}, nil
 }
 
@@ -447,6 +449,7 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 	sizeType := compute.VirtualMachineSizeTypesDefault
 	var customSize *compute.VirtualMachineCustomSize
 	var dynamicMemoryConfig *compute.DynamicMemoryConfiguration
+	var gpuList []*wssdcommonproto.Gpu
 	if vm.Hardware != nil {
 		sizeType = compute.GetVirtualMachineSizeFromWssdVirtualMachineSize(vm.Hardware.VMSize)
 		if vm.Hardware.CustomSize != nil {
@@ -454,7 +457,6 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 				CpuCount: &vm.Hardware.CustomSize.CpuCount,
 				MemoryMB: &vm.Hardware.CustomSize.MemoryMB,
 				GpuCount: &vm.Hardware.CustomSize.GpuCount,
-				GpuList:  vm.Hardware.CustomSize.GpuList,
 			}
 		}
 		if vm.Hardware.DynamicMemoryConfiguration != nil {
@@ -464,11 +466,13 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 				TargetMemoryBuffer: &vm.Hardware.DynamicMemoryConfiguration.TargetMemoryBuffer,
 			}
 		}
+		gpuList = vm.GetHardware().GetGpuList()
 	}
 	return &compute.HardwareProfile{
 		VMSize:              sizeType,
 		CustomSize:          customSize,
 		DynamicMemoryConfig: dynamicMemoryConfig,
+		GpuList:             gpuList,
 	}
 }
 

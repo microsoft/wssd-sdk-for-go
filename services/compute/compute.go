@@ -19,8 +19,6 @@ type VirtualMachineCustomSize struct {
 	MemoryMB *int32 `json:"memorymb,omitempty"`
 	// GpuCount - Specifies number of GPUs for VM
 	GpuCount *int32 `json:"gpucount,omitempty"`
-	// GpuList - Specifies list of GPUs for VM
-	GpuList []*common.Gpu `json:"gpulist,omitempty"`
 }
 
 // DynamicMemoryConfiguration Specifies the dynamic memory configuration for a VM.
@@ -41,6 +39,8 @@ type HardwareProfile struct {
 	CustomSize *VirtualMachineCustomSize `json:"customsize,omitempty"`
 	// DynamicMemoryConfig - Specifies the dynamic memory configuration for a VM, dynamic memory will be enabled if this field is present.
 	DynamicMemoryConfig *DynamicMemoryConfiguration `json:"dynamicmemoryconfig,omitempty"`
+	// GpuList - Specifies list of GPUs for VM
+	GpuList []*common.Gpu `json:"gpulist,omitempty"`
 }
 
 type OperatingSystemTypes string

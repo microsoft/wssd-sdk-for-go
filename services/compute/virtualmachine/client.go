@@ -10,6 +10,7 @@ import (
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/moc/pkg/marshal"
+	"github.com/microsoft/moc/rpc/common"
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine/internal"
@@ -92,7 +93,17 @@ func (c *VirtualMachineClient) Validate(ctx context.Context, group, name string)
 	return c.internal.Validate(ctx, group, name)
 }
 
-func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize) (err error) {
+func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name string, newHardwareProfile *compute.HardwareProfile) (err error) {
+	var newSize compute.VirtualMachineSizeTypes
+	var newCustomSize *compute.VirtualMachineCustomSize
+	var newGpuList []*common.Gpu
+
+	if newHardwareProfile != nil {
+		newSize = newHardwareProfile.VMSize
+		newCustomSize = newHardwareProfile.CustomSize
+		newGpuList = newHardwareProfile.GpuList
+	}
+
 	vms, err := c.Get(ctx, group, name)
 	if err != nil {
 		return
@@ -105,13 +116,14 @@ func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name st
 
 	vm := (*vms)[0]
 
-	if !isDifferentVmSize(vm.HardwareProfile.VMSize, newSize, vm.HardwareProfile.CustomSize, newCustomSize) {
+	if !isDifferentVmSize(vm.HardwareProfile.VMSize, newSize, vm.HardwareProfile.CustomSize, newCustomSize) && !isDifferentGpuList(vm.HardwareProfile.GpuList, newGpuList) {
 		// Nothing to do
 		return
 	}
 
 	vm.HardwareProfile.VMSize = newSize
 	vm.HardwareProfile.CustomSize = newCustomSize
+	vm.HardwareProfile.GpuList = newGpuList
 
 	_, err = c.CreateOrUpdate(ctx, group, name, &vm)
 	return
@@ -282,12 +294,13 @@ func isDifferentVmSize(oldSizeType, newSizeType compute.VirtualMachineSizeTypes,
 		if *oldCustomSize.MemoryMB != *newCustomSize.MemoryMB {
 			return true
 		}
-		// simultaneous addtion and removal of GPU is not supported
-		if len(oldCustomSize.GpuList) != len(newCustomSize.GpuList) {
-			return true
-		}
 		return false
 	default:
 		return false
 	}
+}
+
+func isDifferentGpuList(oldGpuList, newGpuList []*common.Gpu) bool {
+	// simultaneous addtion and removal of GPU is not supported
+	return len(oldGpuList) != len(newGpuList)
 }
