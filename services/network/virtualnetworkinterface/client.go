@@ -16,7 +16,7 @@ type Service interface {
 	Get(context.Context, string, string) (*[]network.VirtualNetworkInterface, error)
 	CreateOrUpdate(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
 	Delete(context.Context, string, string) error
-	UpdateSettings(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
+	Update(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
 }
 
 // VirtualNetworkInterfaceClient structure
@@ -45,9 +45,9 @@ func (c *VirtualNetworkInterfaceClient) CreateOrUpdate(ctx context.Context, grou
 	return c.internal.CreateOrUpdate(ctx, group, name, networkInterface)
 }
 
-// UpdateSettings updates supported settings on the networkinterface.
-func (c *VirtualNetworkInterfaceClient) UpdateSettings(ctx context.Context, group, name string, networkInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
-	return c.internal.UpdateSettings(ctx, group, name, networkInterface)
+// Update supported settings on the networkinterface.
+func (c *VirtualNetworkInterfaceClient) Update(ctx context.Context, group, name string, networkInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
+	return c.internal.Update(ctx, group, name, networkInterface)
 }
 
 // Delete methods invokes delete of the network interface resource

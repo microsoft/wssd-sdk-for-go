@@ -92,8 +92,8 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 	return err
 }
 
-// UpdateSettings
-func (c *client) UpdateSettings(ctx context.Context, group, name string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
+// Update
+func (c *client) Update(ctx context.Context, group, name string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
 	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_UPDATE, name, vnetInterface)
 	if err != nil {
 		return nil, err
