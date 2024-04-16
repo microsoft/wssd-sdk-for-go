@@ -13,6 +13,7 @@ import (
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
 	prototags "github.com/microsoft/moc/pkg/tags"
+	"github.com/microsoft/moc/rpc/common"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdstorage "github.com/microsoft/moc/rpc/nodeagent/storage"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -131,7 +132,8 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			Statuses:            status.GetStatuses(vhd.Status),
 			IsPlaceholder:       getVirtualHardDiskIsPlaceholder(vhd),
 			CloudInitDataSource: vhd.CloudInitDataSource,
-			DiskFileFormat:      vhd.DiskFileFormat,
+			DiskFileFormat:      common.DiskFileFormat(vhd.DiskFileFormat),
+			ContainerName:       &vhd.ContainerName,
 		},
 	}
 }
