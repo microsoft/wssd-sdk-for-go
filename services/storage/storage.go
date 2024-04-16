@@ -53,7 +53,9 @@ type VirtualHardDiskProperties struct {
 	// HyperVGeneration - Gets the HyperVGenerationType of the VirtualMachine created from the image. Possible values include: 'HyperVGenerationTypesV1', 'HyperVGenerationTypesV2'
 	HyperVGeneration common.HyperVGeneration `json:"hyperVGeneration,omitempty"`
 	//DiskFileFormat - File format of the disk
-	DiskFileFormat common.DiskFileFormat `json:"diskFileFormat,omitempty"`
+	DiskFileFormat common.DiskFileFormat `json:"diskFileFormat"`
+	//Container name where VHD is stored
+	ContainerName *string `json:"containerName,omitempty"`
 }
 
 // Http Image properties
