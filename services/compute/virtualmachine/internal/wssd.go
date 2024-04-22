@@ -149,6 +149,16 @@ func (c *client) CreateCheckpoint(ctx context.Context, name, checkpointName stri
 	return
 }
 
+func (c *client) DeleteCheckpoint(ctx context.Context, name, checkpointName string) (err error) {
+	request, err := c.getVirtualMachineCheckpointOperationRequest(ctx, wssdcommonproto.VirtualMachineCheckpointOperation_DESTROY, checkpointName, name)
+	if err != nil {
+		return
+	}
+
+	_, err = c.VirtualMachineAgentClient.CheckpointOperate(ctx, request)
+	return
+}
+
 func (c *client) RunCommand(ctx context.Context, group, name string, request *compute.VirtualMachineRunCommandRequest) (response *compute.VirtualMachineRunCommandResponse, err error) {
 	mocRequest, err := c.getVirtualMachineRunCommandRequest(ctx, group, name, request)
 	if err != nil {
