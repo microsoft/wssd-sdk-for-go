@@ -3,6 +3,7 @@
 package internal
 
 import (
+	"github.com/google/go-cmp/cmp"
 	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/moc/pkg/status"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
@@ -409,24 +410,28 @@ func (c *client) getWssdVirtualMachineProxyConfiguration(proxyConfig *compute.Pr
 // Conversion functions from wssdcompute to compute
 
 func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.VirtualMachine {
+	if vm == nil || cmp.Equal(vm, wssdcompute.VirtualMachine{}) {
+		return &compute.VirtualMachine{}
+	}
+
 	return &compute.VirtualMachine{
 		Name: &vm.Name,
 		ID:   &vm.Id,
 		Tags: getComputeTags(vm.GetTags()),
 		VirtualMachineProperties: &compute.VirtualMachineProperties{
-			HardwareProfile: c.getVirtualMachineHardwareProfile(vm),
-			//SecurityProfile:         c.getVirtualMachineSecurityProfile(vm),
-			StorageProfile: c.getVirtualMachineStorageProfile(vm.Storage),
-			//OsProfile:               c.getVirtualMachineOSProfile(vm.Os),
-			//NetworkProfile:          c.getVirtualMachineNetworkProfile(vm.Network),
-			//GuestAgentProfile:       c.getVirtualMachineGuestProfile(vm.GuestAgent),
-			//GuestAgentInstanceView:  c.getVirtualMachineGuestInstanceView(vm.GuestAgentInstanceView),
+			HardwareProfile:         c.getVirtualMachineHardwareProfile(vm),
+			SecurityProfile:         c.getVirtualMachineSecurityProfile(vm),
+			StorageProfile:          c.getVirtualMachineStorageProfile(vm.Storage),
+			OsProfile:               c.getVirtualMachineOSProfile(vm.Os),
+			NetworkProfile:          c.getVirtualMachineNetworkProfile(vm.Network),
+			GuestAgentProfile:       c.getVirtualMachineGuestProfile(vm.GuestAgent),
+			GuestAgentInstanceView:  c.getVirtualMachineGuestInstanceView(vm.GuestAgentInstanceView),
 			DisableHighAvailability: &vm.DisableHighAvailability,
 			ProvisioningState:       status.GetProvisioningState(vm.Status.GetProvisioningStatus()),
 			ValidationStatus:        status.GetValidationStatus(vm.GetStatus()),
 			Statuses:                c.getVirtualMachineStatuses(vm),
 			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
-			//HighAvailabilityState: c.getVirtualMachineScaleSetHighAvailabilityState(vm),
+			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
 		},
 	}
 }
@@ -481,7 +486,7 @@ func (c *client) getVirtualMachineIsPlaceholder(vm *wssdcompute.VirtualMachine) 
 
 func (c *client) getVirtualMachineScaleSetHighAvailabilityState(vm *wssdcompute.VirtualMachine) *string {
 	haState := wssdcommonproto.HighAvailabilityState_UNKNOWN_HA_STATE
-	if vm != nil {
+	if vm != nil || cmp.Equal(vm, wssdcompute.VirtualMachine{}) {
 		haState = vm.HighAvailabilityState
 	}
 	stateString := haState.String()
@@ -494,13 +499,14 @@ func (c *client) getVirtualMachineSecurityProfile(vm *wssdcompute.VirtualMachine
 	uefiSettings = nil
 	var securityType compute.SecurityTypes = ""
 
-	if vm.Security != nil {
+	if vm.Security != nil && !cmp.Equal(vm.Security, compute.SecurityProfile{}) {
 		enableTPM = vm.Security.EnableTPM
-		if vm.Security.UefiSettings != nil {
+		if vm.Security.UefiSettings != nil && !cmp.Equal(vm.Security.UefiSettings, compute.UefiSettings{}) {
 			uefiSettings = &compute.UefiSettings{
 				SecureBootEnabled: &vm.Security.UefiSettings.SecureBootEnabled,
 			}
 		}
+
 		switch vm.Security.SecurityType {
 		case wssdcommonproto.SecurityType_TRUSTEDLAUNCH:
 			securityType = compute.TrustedLaunch
@@ -547,6 +553,10 @@ func (c *client) getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfigura
 		NetworkInterfaces: &[]compute.NetworkInterfaceReference{},
 	}
 
+	if n == nil || cmp.Equal(n, wssdcompute.NetworkConfiguration{}) {
+		return np
+	}
+
 	for _, nic := range n.Interfaces {
 		if nic == nil {
 			continue
@@ -557,7 +567,7 @@ func (c *client) getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfigura
 }
 
 func (c *client) getVirtualMachineGuestProfile(g *wssdcommonproto.GuestAgentConfiguration) *compute.GuestAgentProfile {
-	if g == nil {
+	if g == nil || cmp.Equal(g, wssdcommonproto.GuestAgentConfiguration{}) {
 		return nil
 	}
 
@@ -569,7 +579,7 @@ func (c *client) getVirtualMachineGuestProfile(g *wssdcommonproto.GuestAgentConf
 }
 
 func (c *client) getVirtualMachineGuestInstanceView(g *wssdcommonproto.VirtualMachineAgentInstanceView) *compute.GuestAgentInstanceView {
-	if g == nil {
+	if g == nil || cmp.Equal(g, wssdcommonproto.VirtualMachineAgentInstanceView{}) {
 		return nil
 	}
 
@@ -589,7 +599,7 @@ func (c *client) getVirtualMachineWindowsConfiguration(windowsConfiguration *wss
 		RDP: &compute.RDPConfiguration{},
 	}
 
-	if windowsConfiguration == nil {
+	if windowsConfiguration == nil || cmp.Equal(windowsConfiguration, wssdcompute.WindowsConfiguration{}) {
 		return wc
 	}
 
@@ -622,7 +632,7 @@ func (c *client) getVirtualMachineWindowsConfiguration(windowsConfiguration *wss
 }
 
 func (c *client) getVirtualMachineLinuxConfiguration(linuxConfiguration *wssdcompute.LinuxConfiguration) *compute.LinuxConfiguration {
-	if linuxConfiguration == nil {
+	if linuxConfiguration == nil || cmp.Equal(linuxConfiguration, wssdcompute.LinuxConfiguration{}) {
 		return nil
 	}
 
@@ -678,7 +688,7 @@ func (c *client) getInstanceViewStatus(status *wssdcommonproto.InstanceViewStatu
 
 func (c *client) getVirtualMachineProxyConfiguration(proxyConfiguration *wssdcommonproto.ProxyConfiguration) *compute.ProxyConfiguration {
 
-	if proxyConfiguration == nil {
+	if proxyConfiguration == nil || cmp.Equal(proxyConfiguration, compute.ProxyConfiguration{}) {
 		return nil
 	}
 
