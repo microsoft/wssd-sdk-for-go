@@ -286,6 +286,8 @@ type VirtualMachineProperties struct {
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 	// HighAvailabilityState
 	HighAvailabilityState *string `json:"HighAvailabilityState,omitempty"`
+	// CheckpointType
+	CheckpointType *string `json:"CheckpointType"`
 }
 
 type VirtualMachine struct {

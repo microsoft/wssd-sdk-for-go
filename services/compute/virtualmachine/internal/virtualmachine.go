@@ -56,15 +56,16 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 	}
 
 	wssdvm = &wssdcompute.VirtualMachine{
-		Name:       *vm.Name,
-		Tags:       getWssdTags(vm.Tags),
-		Storage:    storageConfig,
-		Hardware:   hardwareConfig,
-		Security:   securityConfig,
-		Os:         osconfig,
-		Network:    networkConfig,
-		GuestAgent: guestAgentConfig,
-		Entity:     entity,
+		Name:           *vm.Name,
+		Tags:           getWssdTags(vm.Tags),
+		Storage:        storageConfig,
+		Hardware:       hardwareConfig,
+		Security:       securityConfig,
+		Os:             osconfig,
+		Network:        networkConfig,
+		GuestAgent:     guestAgentConfig,
+		Entity:         entity,
+		CheckpointType: c.getWssdCheckpointType(vm),
 	}
 
 	if vm.DisableHighAvailability != nil {
@@ -72,6 +73,24 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 	}
 
 	return wssdvm, nil
+}
+
+func (c *client) getWssdCheckpointType(vm *compute.VirtualMachine) wssdcommonproto.CheckpointType {
+	if vm.CheckpointType != nil {
+		switch *vm.CheckpointType {
+		case "Disabled":
+			return wssdcommonproto.CheckpointType_Disabled
+		case "Production":
+			return wssdcommonproto.CheckpointType_Production
+		case "ProductionOnly":
+			return wssdcommonproto.CheckpointType_ProductionOnly
+		case "Standard":
+			return wssdcommonproto.CheckpointType_Standard
+		default:
+			return wssdcommonproto.CheckpointType_Disabled
+		}
+	}
+	return wssdcommonproto.CheckpointType_Disabled
 }
 
 func (c *client) getWssdVirtualMachineEntity(vm *compute.VirtualMachine) (*wssdcommonproto.Entity, error) {
@@ -427,8 +446,14 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			Statuses:                c.getVirtualMachineStatuses(vm),
 			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
 			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
+			CheckpointType:          c.getVirtualMachineCheckpointType(vm),
 		},
 	}
+}
+
+func (c *client) getVirtualMachineCheckpointType(vm *wssdcompute.VirtualMachine) *string {
+	stateString := vm.CheckpointType.String()
+	return &stateString
 }
 
 func (c *client) getVirtualMachinePowerState(status wssdcommonproto.PowerState) *string {
