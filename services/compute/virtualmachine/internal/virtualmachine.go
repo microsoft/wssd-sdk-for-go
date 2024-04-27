@@ -66,6 +66,7 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		GuestAgent:     guestAgentConfig,
 		Entity:         entity,
 		CheckpointType: c.getWssdCheckpointType(vm),
+		Checkpoints:    c.getWssdCheckpoints(vm),
 	}
 
 	if vm.DisableHighAvailability != nil {
@@ -73,6 +74,21 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 	}
 
 	return wssdvm, nil
+}
+
+func (c *client) getWssdCheckpoints(vm *compute.VirtualMachine) []*wssdcompute.Checkpoint {
+	checkpoints := []*wssdcompute.Checkpoint{}
+
+	for _, checkpoint := range vm.Checkpoints {
+		checkpoints = append(checkpoints, &wssdcompute.Checkpoint{
+			CheckpointName:     *checkpoint.CheckpointName,
+			CheckpointId:       *checkpoint.CheckpointId,
+			ParentCheckpointId: *checkpoint.ParentCheckpointId,
+			CreationTime:       *checkpoint.CreationTime,
+		})
+	}
+
+	return checkpoints
 }
 
 func (c *client) getWssdCheckpointType(vm *compute.VirtualMachine) wssdcommonproto.CheckpointType {
@@ -447,8 +463,24 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
 			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
 			CheckpointType:          c.getVirtualMachineCheckpointType(vm),
+			Checkpoints:             *c.getVirtualMachineCheckpoints(vm),
 		},
 	}
+}
+
+func (c *client) getVirtualMachineCheckpoints(vm *wssdcompute.VirtualMachine) *[]*compute.Checkpoint {
+	checkpoints := []*compute.Checkpoint{}
+
+	for _, checkpoint := range vm.Checkpoints {
+		checkpoints = append(checkpoints, &compute.Checkpoint{
+			CheckpointName:     &checkpoint.CheckpointName,
+			CheckpointId:       &checkpoint.CheckpointId,
+			ParentCheckpointId: &checkpoint.ParentCheckpointId,
+			CreationTime:       &checkpoint.CreationTime,
+		})
+	}
+
+	return &checkpoints
 }
 
 func (c *client) getVirtualMachineCheckpointType(vm *wssdcompute.VirtualMachine) *string {

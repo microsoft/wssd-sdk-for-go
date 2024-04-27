@@ -100,6 +100,13 @@ type DataDisk struct {
 	ImageReference *ImageReference `json:"imageReference,omitempty"`
 }
 
+type Checkpoint struct {
+	CheckpointName     *string `json:"name,omitempty"`
+	CheckpointId       *string `json:"Id,omitempty"`
+	ParentCheckpointId *string `json:"Parent,omitempty"`
+	CreationTime       *string `json:"CreationTime,omitempty"`
+}
+
 type StorageProfile struct {
 	// ImageReference - Specifies information about the image to use. You can specify information about platform images, marketplace images, or virtual machine images. This element is required when you want to use a platform image, marketplace image, or virtual machine image, but is not used in other creation operations.
 	ImageReference *ImageReference `json:"imageReference,omitempty"`
@@ -288,6 +295,8 @@ type VirtualMachineProperties struct {
 	HighAvailabilityState *string `json:"HighAvailabilityState,omitempty"`
 	// CheckpointType
 	CheckpointType *string `json:"CheckpointType"`
+	// Checkpoints
+	Checkpoints []*Checkpoint `json:"Checkpoints"`
 }
 
 type VirtualMachine struct {
