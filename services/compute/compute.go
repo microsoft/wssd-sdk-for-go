@@ -39,8 +39,8 @@ type HardwareProfile struct {
 	CustomSize *VirtualMachineCustomSize `json:"customsize,omitempty"`
 	// DynamicMemoryConfig - Specifies the dynamic memory configuration for a VM, dynamic memory will be enabled if this field is present.
 	DynamicMemoryConfig *DynamicMemoryConfiguration `json:"dynamicmemoryconfig,omitempty"`
-	// GpuList - Specifies list of GPUs for VM
-	GpuList []*common.Gpu `json:"gpulist,omitempty"`
+	// VirtualMachineGPUs - Specifies list of GPUs for VM
+	VirtualMachineGPUs []*common.VirtualMachineGPU `json:"virtualmachinegpus,omitempty"`
 }
 
 type OperatingSystemTypes string

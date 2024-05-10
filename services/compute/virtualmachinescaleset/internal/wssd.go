@@ -230,7 +230,7 @@ func (c *client) getVirtualMachineScaleSetVMProfile(vm *wssdcompute.VirtualMachi
 func (c *client) getVirtualMachineScaleSetHardwareProfile(vm *wssdcompute.VirtualMachineProfile) *compute.HardwareProfile {
 	sizeType := compute.VirtualMachineSizeTypesDefault
 	var customSize *compute.VirtualMachineCustomSize
-	var gpuList []*wssdcommonproto.Gpu
+	var vmGPUs []*wssdcommonproto.VirtualMachineGPU
 	if vm.Hardware != nil {
 		sizeType = compute.GetVirtualMachineSizeFromWssdVirtualMachineSize(vm.Hardware.VMSize)
 		if vm.Hardware.CustomSize != nil {
@@ -239,12 +239,12 @@ func (c *client) getVirtualMachineScaleSetHardwareProfile(vm *wssdcompute.Virtua
 				MemoryMB: &vm.Hardware.CustomSize.MemoryMB,
 			}
 		}
-		gpuList = vm.GetHardware().GetGpuList()
+		vmGPUs = vm.GetHardware().GetVirtualMachineGPUs()
 	}
 	return &compute.HardwareProfile{
-		VMSize:     sizeType,
-		CustomSize: customSize,
-		GpuList:    gpuList,
+		VMSize:             sizeType,
+		CustomSize:         customSize,
+		VirtualMachineGPUs: vmGPUs,
 	}
 }
 
@@ -426,7 +426,7 @@ func (c *client) getWssdVirtualMachineScaleSetVMProfile(vmp *compute.VirtualMach
 func (c *client) getWssdVirtualMachineScaleSetHardwareConfiguration(vmp *compute.VirtualMachineScaleSetVMProfile) *wssdcompute.HardwareConfiguration {
 	sizeType := wssdcommonproto.VirtualMachineSizeType_Default
 	var customSize *wssdcommonproto.VirtualMachineCustomSize
-	var gpuList []*wssdcommonproto.Gpu
+	var vmGPUs []*wssdcommonproto.VirtualMachineGPU
 	if vmp.HardwareProfile != nil {
 		sizeType = compute.GetWssdVirtualMachineSizeFromVirtualMachineSize(vmp.HardwareProfile.VMSize)
 		if vmp.HardwareProfile.CustomSize != nil {
@@ -435,12 +435,12 @@ func (c *client) getWssdVirtualMachineScaleSetHardwareConfiguration(vmp *compute
 				MemoryMB: *vmp.HardwareProfile.CustomSize.MemoryMB,
 			}
 		}
-		gpuList = vmp.HardwareProfile.GpuList
+		vmGPUs = vmp.HardwareProfile.VirtualMachineGPUs
 	}
 	return &wssdcompute.HardwareConfiguration{
-		VMSize:     sizeType,
-		CustomSize: customSize,
-		GpuList:    gpuList,
+		VMSize:             sizeType,
+		CustomSize:         customSize,
+		VirtualMachineGPUs: vmGPUs,
 	}
 }
 

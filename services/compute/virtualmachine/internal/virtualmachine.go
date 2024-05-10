@@ -89,7 +89,7 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 	sizeType := wssdcommonproto.VirtualMachineSizeType_Default
 	var customSize *wssdcommonproto.VirtualMachineCustomSize
 	var dynMemConfig *wssdcommonproto.DynamicMemoryConfiguration
-	var gpuList []*wssdcommonproto.Gpu
+	var vmGPUs []*wssdcommonproto.VirtualMachineGPU
 	if vm.HardwareProfile != nil {
 		sizeType = compute.GetWssdVirtualMachineSizeFromVirtualMachineSize(vm.HardwareProfile.VMSize)
 		if vm.HardwareProfile.CustomSize != nil {
@@ -113,13 +113,13 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 				dynMemConfig.TargetMemoryBuffer = *vm.HardwareProfile.DynamicMemoryConfig.TargetMemoryBuffer
 			}
 		}
-		gpuList = vm.HardwareProfile.GpuList
+		vmGPUs = vm.HardwareProfile.VirtualMachineGPUs
 	}
 	return &wssdcompute.HardwareConfiguration{
 		VMSize:                     sizeType,
 		CustomSize:                 customSize,
 		DynamicMemoryConfiguration: dynMemConfig,
-		GpuList:                    gpuList,
+		VirtualMachineGPUs:         vmGPUs,
 	}, nil
 }
 
@@ -449,7 +449,7 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 	sizeType := compute.VirtualMachineSizeTypesDefault
 	var customSize *compute.VirtualMachineCustomSize
 	var dynamicMemoryConfig *compute.DynamicMemoryConfiguration
-	var gpuList []*wssdcommonproto.Gpu
+	var vmGPUs []*wssdcommonproto.VirtualMachineGPU
 	if vm.Hardware != nil {
 		sizeType = compute.GetVirtualMachineSizeFromWssdVirtualMachineSize(vm.Hardware.VMSize)
 		if vm.Hardware.CustomSize != nil {
@@ -466,13 +466,13 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 				TargetMemoryBuffer: &vm.Hardware.DynamicMemoryConfiguration.TargetMemoryBuffer,
 			}
 		}
-		gpuList = vm.GetHardware().GetGpuList()
+		vmGPUs = vm.GetHardware().GetVirtualMachineGPUs()
 	}
 	return &compute.HardwareProfile{
 		VMSize:              sizeType,
 		CustomSize:          customSize,
 		DynamicMemoryConfig: dynamicMemoryConfig,
-		GpuList:             gpuList,
+		VirtualMachineGPUs:  vmGPUs,
 	}
 }
 
