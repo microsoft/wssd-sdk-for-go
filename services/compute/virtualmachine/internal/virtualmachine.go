@@ -595,14 +595,13 @@ func (c *client) getVirtualMachineGuestInstanceView(g *wssdcommonproto.VirtualMa
 }
 
 func (c *client) getVirtualMachineWindowsConfiguration(windowsConfiguration *wssdcompute.WindowsConfiguration) *compute.WindowsConfiguration {
+	if windowsConfiguration == nil || cmp.Equal(windowsConfiguration, wssdcompute.WindowsConfiguration{}) {
+		return nil
+	}
+
 	wc := &compute.WindowsConfiguration{
 		RDP: &compute.RDPConfiguration{},
 	}
-
-	if windowsConfiguration == nil || cmp.Equal(windowsConfiguration, wssdcompute.WindowsConfiguration{}) {
-		return wc
-	}
-
 	if windowsConfiguration.WinRMConfiguration != nil && len(windowsConfiguration.WinRMConfiguration.Listeners) >= 1 {
 		listeners := make([]compute.WinRMListener, len(windowsConfiguration.WinRMConfiguration.Listeners))
 		for i, listener := range windowsConfiguration.WinRMConfiguration.Listeners {
