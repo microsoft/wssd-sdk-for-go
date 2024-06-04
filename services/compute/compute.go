@@ -31,6 +31,26 @@ type DynamicMemoryConfiguration struct {
 	TargetMemoryBuffer *uint32 `json:"targetmemorybuffer,omitempty"`
 }
 
+// AssignmentType enumerates the values for GPU assignment types.
+type AssignmentType int32
+
+const (
+	AssignmentType_GpuDDA     AssignmentType = 0
+	AssignmentType_GpuP       AssignmentType = 1
+	AssignmentType_GpuPV      AssignmentType = 2
+	AssignmentType_GpuDefault AssignmentType = 3
+)
+
+// VirtualMachineGPU Specifies the GPU information for a VM.
+type VirtualMachineGPU struct {
+	// Assignment - Specifies the GPU assignment type.
+	Assignment AssignmentType `json:"assignment,omitempty"`
+	// PartitionSizeMB - Specifies the size of the GPU partition in MB. For GPU-DDA, this will be 0 MB.
+	PartitionSizeMB *uint64 `json:"partitionsizemb,omitempty"`
+	// Name - Specifies the name of the GPU.
+	Name *string `json:"name,omitempty"`
+}
+
 // HardwareProfile
 type HardwareProfile struct {
 	// VMSize - Specifies the size of the virtual machine.
@@ -40,7 +60,7 @@ type HardwareProfile struct {
 	// DynamicMemoryConfig - Specifies the dynamic memory configuration for a VM, dynamic memory will be enabled if this field is present.
 	DynamicMemoryConfig *DynamicMemoryConfiguration `json:"dynamicmemoryconfig,omitempty"`
 	// VirtualMachineGPUs - Specifies list of GPUs for VM
-	VirtualMachineGPUs []*common.VirtualMachineGPU `json:"virtualmachinegpus,omitempty"`
+	VirtualMachineGPUs []*VirtualMachineGPU `json:"virtualmachinegpus,omitempty"`
 }
 
 type OperatingSystemTypes string

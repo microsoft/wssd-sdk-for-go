@@ -10,7 +10,6 @@ import (
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/moc/pkg/marshal"
-	"github.com/microsoft/moc/rpc/common"
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine/internal"
@@ -93,17 +92,11 @@ func (c *VirtualMachineClient) Validate(ctx context.Context, group, name string)
 	return c.internal.Validate(ctx, group, name)
 }
 
-func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name string, newHardwareProfile *compute.HardwareProfile) (err error) {
-	var newSize compute.VirtualMachineSizeTypes
-	var newCustomSize *compute.VirtualMachineCustomSize
-	var newVirtualMachineGPUs []*common.VirtualMachineGPU
+func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize) (err error) {
+	return c.ResizeWithGPUs(ctx, group, name, newSize, newCustomSize, nil)
+}
 
-	if newHardwareProfile != nil {
-		newSize = newHardwareProfile.VMSize
-		newCustomSize = newHardwareProfile.CustomSize
-		newVirtualMachineGPUs = newHardwareProfile.VirtualMachineGPUs
-	}
-
+func (c *VirtualMachineClient) ResizeWithGPUs(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize, newVirtualMachineGPUs []*compute.VirtualMachineGPU) (err error) {
 	vms, err := c.Get(ctx, group, name)
 	if err != nil {
 		return
@@ -300,7 +293,7 @@ func isDifferentVmSize(oldSizeType, newSizeType compute.VirtualMachineSizeTypes,
 	}
 }
 
-func isDifferentGpuList(oldGpuList, newGpuList []*common.VirtualMachineGPU) bool {
+func isDifferentGpuList(oldGpuList, newGpuList []*compute.VirtualMachineGPU) bool {
 	// simultaneous addtion and removal of GPU is not supported
 	return len(oldGpuList) != len(newGpuList)
 }
