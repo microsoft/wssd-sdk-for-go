@@ -93,10 +93,10 @@ func (c *VirtualMachineClient) Validate(ctx context.Context, group, name string)
 }
 
 func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize) (err error) {
-	return c.ResizeWithGPUs(ctx, group, name, newSize, newCustomSize, nil)
+	return c.ResizeEx(ctx, group, name, newSize, newCustomSize, nil)
 }
 
-func (c *VirtualMachineClient) ResizeWithGPUs(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize, newVirtualMachineGPUs []*compute.VirtualMachineGPU) (err error) {
+func (c *VirtualMachineClient) ResizeEx(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize, newVirtualMachineGPUs []*compute.VirtualMachineGPU) (err error) {
 	vms, err := c.Get(ctx, group, name)
 	if err != nil {
 		return
