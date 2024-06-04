@@ -114,12 +114,24 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 			}
 		}
 		if vm.HardwareProfile.VirtualMachineGPUs != nil {
-			for _, vmGPU := range vm.HardwareProfile.VirtualMachineGPUs {
-				vmGPUs = append(vmGPUs, &wssdcommonproto.VirtualMachineGPU{
-					Assignment:      wssdcommonproto.AssignmentType(vmGPU.Assignment),
-					Name:            *vmGPU.Name,
-					PartitionSizeMB: *vmGPU.PartitionSizeMB,
-				})
+			for _, gpu := range vm.HardwareProfile.VirtualMachineGPUs {
+				var assignment wssdcommonproto.AssignmentType
+				switch *gpu.Assignment {
+				case compute.GpuDDA:
+					assignment = wssdcommonproto.AssignmentType_GpuDDA
+				case compute.GpuP:
+					assignment = wssdcommonproto.AssignmentType_GpuP
+				case compute.GpuPV:
+					assignment = wssdcommonproto.AssignmentType_GpuPV
+				case compute.GpuDefault:
+					assignment = wssdcommonproto.AssignmentType_GpuDefault
+				}
+				vmGPU := &wssdcommonproto.VirtualMachineGPU{
+					Assignment:      assignment,
+					PartitionSizeMB: *gpu.PartitionSizeMB,
+					Name:            *gpu.Name,
+				}
+				vmGPUs = append(vmGPUs, vmGPU)
 			}
 		}
 	}
@@ -475,12 +487,24 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 			}
 		}
 		if vm.Hardware.VirtualMachineGPUs != nil {
-			for _, vmGPU := range vm.Hardware.VirtualMachineGPUs {
-				vmGPUs = append(vmGPUs, &compute.VirtualMachineGPU{
-					Assignment:      compute.AssignmentType(vmGPU.Assignment),
-					Name:            &vmGPU.Name,
-					PartitionSizeMB: &vmGPU.PartitionSizeMB,
-				})
+			for _, commonVMGPU := range vm.Hardware.VirtualMachineGPUs {
+				var assignment compute.Assignment
+				switch commonVMGPU.Assignment {
+				case wssdcommonproto.AssignmentType_GpuDDA:
+					assignment = compute.GpuDDA
+				case wssdcommonproto.AssignmentType_GpuP:
+					assignment = compute.GpuP
+				case wssdcommonproto.AssignmentType_GpuPV:
+					assignment = compute.GpuPV
+				case wssdcommonproto.AssignmentType_GpuDefault:
+					assignment = compute.GpuDefault
+				}
+				vmGPU := &compute.VirtualMachineGPU{
+					Assignment:      &assignment,
+					PartitionSizeMB: &commonVMGPU.PartitionSizeMB,
+					Name:            &commonVMGPU.Name,
+				}
+				vmGPUs = append(vmGPUs, vmGPU)
 			}
 		}
 	}

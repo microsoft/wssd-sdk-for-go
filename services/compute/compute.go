@@ -32,19 +32,20 @@ type DynamicMemoryConfiguration struct {
 }
 
 // AssignmentType enumerates the values for GPU assignment types.
-type AssignmentType int32
+type Assignment string
 
+// possible values of gpu assignment
 const (
-	AssignmentType_GpuDDA     AssignmentType = 0
-	AssignmentType_GpuP       AssignmentType = 1
-	AssignmentType_GpuPV      AssignmentType = 2
-	AssignmentType_GpuDefault AssignmentType = 3
+	GpuDDA     Assignment = "GpuDDA"
+	GpuP       Assignment = "GpuP"
+	GpuPV      Assignment = "GpuPV"
+	GpuDefault Assignment = "GpuDefault"
 )
 
 // VirtualMachineGPU Specifies the GPU information for a VM.
 type VirtualMachineGPU struct {
 	// Assignment - Specifies the GPU assignment type.
-	Assignment AssignmentType `json:"assignment,omitempty"`
+	Assignment *Assignment `json:"assignment,omitempty"`
 	// PartitionSizeMB - Specifies the size of the GPU partition in MB. For GPU-DDA, this will be 0 MB.
 	PartitionSizeMB *uint64 `json:"partitionsizemb,omitempty"`
 	// Name - Specifies the name of the GPU.
