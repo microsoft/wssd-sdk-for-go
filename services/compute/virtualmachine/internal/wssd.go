@@ -6,9 +6,11 @@ package internal
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
+	"github.com/microsoft/moc/pkg/status"
 	prototags "github.com/microsoft/moc/pkg/tags"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
@@ -63,11 +65,52 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *com
 	if err != nil {
 		return nil, err
 	}
+
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
-	if err != nil {
+	if err != nil && !errors.IsGRPCUnavailable(err) {
 		return nil, err
 	}
+
 	vms := c.getVirtualMachineFromResponse(response)
+	if errors.IsGRPCUnavailable(err) {
+		// TODO: could turn this into seperate function
+		for {
+			// Need to first retry request until resource is found
+			vms, err = c.Get(ctx, group, name)
+			if errors.IsGRPCUnavailable(err) || errors.IsGRPCNotFound(err) {
+				// Need to repeat original request logic since one possibility is request never reached nodeagent
+				// note: we don't time.sleep() here because we block on the POST invoke
+				_, err = c.VirtualMachineAgentClient.Invoke(ctx, request)
+				if err != nil && !errors.IsGRPCUnavailable(err) {
+					return nil, err
+				}
+
+				continue
+			}
+
+			// Once resource is found, we need to check if it's a completed operation or err-ed out
+			if len(*vms) == 0 {
+				break
+			}
+
+			vm := (*vms)[0]
+			status := status.GetFromStatuses(vm.Statuses)
+			if status.ProvisioningStatus.CurrentState == wssdcommonproto.ProvisionState_CREATED ||
+				status.ProvisioningStatus.CurrentState == wssdcommonproto.ProvisionState_UPDATED {
+				// TODO: (Model B) needs comparison logic to check if the resource is the same as the one we are trying to createOrUpdate
+				return &vm, nil
+			}
+
+			lastError := status.LastError.Message
+			if lastError != "" {
+				return nil, fmt.Errorf("virtual machine '%s' in group '%s' failed to CreateOrUpdate on nodes: %s", name, group, lastError)
+			}
+
+			// Sleep in between GETs
+			time.Sleep(500 * time.Millisecond)
+		}
+	}
+
 	if len(*vms) == 0 {
 		return nil, fmt.Errorf("Creation of Virtual Machine failed to unknown reason.")
 	}
