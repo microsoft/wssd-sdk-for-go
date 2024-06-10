@@ -20,6 +20,7 @@ import (
 
 type client struct {
 	wssdcompute.VirtualMachineAgentClient
+	pingInterval time.Duration
 }
 
 // newVirtualMachineClient - creates a client session with the backend wssd agent
@@ -28,7 +29,11 @@ func NewVirtualMachineClient(subID string, authorizer auth.Authorizer) (*client,
 	if err != nil {
 		return nil, err
 	}
-	return &client{c}, nil
+
+	return &client{
+		VirtualMachineAgentClient: c,
+		pingInterval:              500 * time.Millisecond,
+	}, nil
 }
 
 // Get
@@ -59,6 +64,44 @@ func (c *client) get(ctx context.Context, group, name string) ([]*wssdcompute.Vi
 	return response.GetVirtualMachineSystems(), nil
 }
 
+// FIXME:nhobart move to moc-pkg prob
+func IsTerminal(state wssdcommonproto.ProvisionState) bool {
+	switch state {
+	case wssdcommonproto.ProvisionState_CREATED,
+		wssdcommonproto.ProvisionState_CREATE_FAILED,
+		wssdcommonproto.ProvisionState_DELETED,
+		wssdcommonproto.ProvisionState_DELETE_FAILED,
+		wssdcommonproto.ProvisionState_UPDATED,
+		wssdcommonproto.ProvisionState_UPDATE_FAILED,
+		wssdcommonproto.ProvisionState_PROVISIONED,
+		wssdcommonproto.ProvisionState_PROVISION_FAILED,
+		wssdcommonproto.ProvisionState_DEPROVISIONED,
+		wssdcommonproto.ProvisionState_DEPROVISION_FAILED,
+		wssdcommonproto.ProvisionState_IMPORTED,
+		wssdcommonproto.ProvisionState_IMPORT_FAILED:
+		return true
+	default:
+		return false
+	}
+}
+
+// Loops on request until we receive an ACK from the nodeagent, containing
+// either the resource in processing state or an error.
+func (c *client) invokeUntilAvailable(ctx context.Context, request *wssdcompute.VirtualMachineRequest) error {
+	for {
+		// The initial response doesn't actually matter if there isn't an error as this
+		// means the provisioning state was set and the request is processing.
+		_, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
+		if err != nil && !errors.IsGRPCUnavailable(err) {
+			return err
+		}
+		if !errors.IsGRPCUnavailable(err) {
+			break
+		}
+	}
+	return nil
+}
+
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
 	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_POST, name, sg)
@@ -66,56 +109,53 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *com
 		return nil, err
 	}
 
-	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
-	if err != nil && !errors.IsGRPCUnavailable(err) {
+	// Loop on the request until we receive an ACK.
+	err = c.invokeUntilAvailable(ctx, request)
+	if err != nil {
 		return nil, err
 	}
 
-	vms := c.getVirtualMachineFromResponse(response)
-	if errors.IsGRPCUnavailable(err) {
-		// TODO: could turn this into seperate function
-		for {
-			// Need to first retry request until resource is found
-			vms, err = c.Get(ctx, group, name)
-			if errors.IsGRPCUnavailable(err) || errors.IsGRPCNotFound(err) {
-				// Need to repeat original request logic since one possibility is request never reached nodeagent
-				// note: we don't time.sleep() here because we block on the POST invoke
-				_, err = c.VirtualMachineAgentClient.Invoke(ctx, request)
-				if err != nil && !errors.IsGRPCUnavailable(err) {
-					return nil, err
-				}
-
-				continue
-			}
-
-			// Once resource is found, we need to check if it's a completed operation or err-ed out
-			if len(*vms) == 0 {
-				break
-			}
-
-			vm := (*vms)[0]
-			status := status.GetFromStatuses(vm.Statuses)
-			if status.ProvisioningStatus.CurrentState == wssdcommonproto.ProvisionState_CREATED ||
-				status.ProvisioningStatus.CurrentState == wssdcommonproto.ProvisionState_UPDATED {
-				// TODO: (Model B) needs comparison logic to check if the resource is the same as the one we are trying to createOrUpdate
-				return &vm, nil
-			}
-
-			lastError := status.LastError.Message
-			if lastError != "" {
-				return nil, fmt.Errorf("virtual machine '%s' in group '%s' failed to CreateOrUpdate on nodes: %s", name, group, lastError)
-			}
-
-			// Sleep in between GETs
-			time.Sleep(500 * time.Millisecond)
+	// Loop on GET request until we receive a response with the resource in a terminal state.
+	var vm *compute.VirtualMachine
+	var vmStatus *wssdcommonproto.Status
+	for {
+		vms, err := c.Get(ctx, group, name)
+		if err != nil && !errors.IsGRPCUnavailable(err) {
+			return nil, err
 		}
+		if errors.IsGRPCUnavailable(err) {
+			time.Sleep(c.pingInterval)
+			continue
+		}
+		if len(*vms) == 0 {
+			return nil, fmt.Errorf("Creation of Virtual Machine failed to unknown reason.")
+		}
+
+		vm = &(*vms)[0]
+		vmStatus = status.GetFromStatuses(vm.Statuses)
+		if IsTerminal(vmStatus.ProvisioningStatus.CurrentState) {
+			break
+		}
+
+		fmt.Printf("Virtual Machine '%s' in group '%s' is still processing\n", name, group) //FIXME:nhobart remove this
+		time.Sleep(c.pingInterval)
 	}
 
-	if len(*vms) == 0 {
-		return nil, fmt.Errorf("Creation of Virtual Machine failed to unknown reason.")
+	// Once resource is found in a terminal state, we need to check if it completed successfully,
+	// errored out, or is still processing. These outcomes are mutually exclusive.
+	lastError := vmStatus.LastError.Message
+	if lastError != "" {
+		return nil, fmt.Errorf("virtual machine '%s' in group '%s' failed to CreateOrUpdate on nodes: %s", name, group, lastError)
 	}
 
-	return &(*vms)[0], nil
+	if vmStatus.ProvisioningStatus.CurrentState == wssdcommonproto.ProvisionState_CREATED ||
+		vmStatus.ProvisioningStatus.CurrentState == wssdcommonproto.ProvisionState_UPDATED {
+		fmt.Printf("Virtual Machine '%s' in group '%s' has been successfully created or updated\n", name, group) //FIXME:nhobart remove this
+	} else {
+		return nil, fmt.Errorf("virtual machine '%s' in group '%s' is in an unknown state: %s", name, group, vmStatus.ProvisioningStatus.CurrentState)
+	}
+
+	return vm, nil
 }
 
 // Delete methods invokes create or update on the client
@@ -132,9 +172,31 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 	if err != nil {
 		return err
 	}
-	_, err = c.VirtualMachineAgentClient.Invoke(ctx, request)
 
-	return err
+	// Loop on the request until we receive an ACK.
+	err = c.invokeUntilAvailable(ctx, request)
+	if err != nil && !errors.IsGRPCNotFound(err) {
+		return err
+	}
+
+	for {
+		_, err := c.Get(ctx, group, name)
+		if err != nil && !errors.IsGRPCUnavailable(err) {
+			return err
+		}
+		if errors.IsGRPCUnavailable(err) {
+			time.Sleep(c.pingInterval)
+			continue
+		}
+		if errors.IsGRPCNotFound(err) {
+			break
+		}
+
+		fmt.Printf("Virtual Machine '%s' in group '%s' is still processing\n", name, group) //FIXME:nhobart remove this
+		time.Sleep(c.pingInterval)
+	}
+
+	return nil
 }
 
 func (c *client) Start(ctx context.Context, group, name string) (err error) {
