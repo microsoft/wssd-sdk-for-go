@@ -31,6 +31,21 @@ type DynamicMemoryConfiguration struct {
 	TargetMemoryBuffer *uint32 `json:"targetmemorybuffer,omitempty"`
 }
 
+type Assignment string
+
+const (
+	GpuDDA     Assignment = "GpuDDA"
+	GpuP       Assignment = "GpuP"
+	GpuPV      Assignment = "GpuPV"
+	GpuDefault Assignment = "GpuDefault"
+)
+
+type VirtualMachineGPU struct {
+	Assignment      *Assignment `json:"assignment,omitempty"`
+	PartitionSizeGB *uint64     `json:"partitionSizeMB,omitempty"`
+	Name            *string     `json:"name,omitempty"`
+}
+
 // HardwareProfile
 type HardwareProfile struct {
 	// VMSize - Specifies the size of the virtual machine.
@@ -39,6 +54,8 @@ type HardwareProfile struct {
 	CustomSize *VirtualMachineCustomSize `json:"customsize,omitempty"`
 	// DynamicMemoryConfig - Specifies the dynamic memory configuration for a VM, dynamic memory will be enabled if this field is present.
 	DynamicMemoryConfig *DynamicMemoryConfiguration `json:"dynamicmemoryconfig,omitempty"`
+	// VirtualMachineGPUs - Specifies the gpus attached to the vm
+	VirtualMachineGPUs []*VirtualMachineGPU `json:"virtualMachineGPUs,omitempty"`
 }
 
 type OperatingSystemTypes string
