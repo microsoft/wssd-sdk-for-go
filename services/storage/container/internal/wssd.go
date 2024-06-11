@@ -111,6 +111,7 @@ func getContainer(ctainer *wssdstorage.Container) *storage.Container {
 				TotalSize:     totalSize,
 			},
 			IsPlaceholder: getContainerPlaceHolder(ctainer),
+			DisableHighAvailability: &ctainer.DisableHighAvailability,
 		},
 		Tags: prototags.ProtoToMap(ctainer.Tags),
 	}
@@ -127,6 +128,10 @@ func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 	}
 	if ctainer.Path != nil {
 		wssdctainer.Path = *ctainer.Path
+	}
+
+	ctainer.DisableHighAvailability != nil {
+		wssdctainer.DisableHighAvailability = *ctainer.DisableHighAvailability
 	}
 
 	isPlaceholder := false

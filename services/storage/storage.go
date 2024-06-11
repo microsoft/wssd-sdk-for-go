@@ -54,6 +54,8 @@ type VirtualHardDiskProperties struct {
 	HyperVGeneration common.HyperVGeneration `json:"hyperVGeneration,omitempty"`
 	//DiskFileFormat - File format of the disk
 	DiskFileFormat common.DiskFileFormat `json:"diskFileFormat,omitempty"`
+	// Disable High Availability
+	DisableHighAvailability *bool `json:"disableHighAvailability,omitempty"`
 }
 
 // Http Image properties
@@ -113,6 +115,8 @@ type ContainerProperties struct {
 	// Container storage information
 	*ContainerInfo `json:"info"`
 	IsPlaceholder  *bool `json:"isPlaceholder,omitempty"`
+	// Disable High Availability
+	DisableHighAvailability *bool `json:"disableHighAvailability,omitempty"`
 }
 
 // VirtualHardDisk defines the structure of a VHD
