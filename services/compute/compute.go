@@ -8,6 +8,7 @@ import (
 	"github.com/microsoft/wssd-sdk-for-go/services/network"
 )
 
+// TODO: this link is dead and no longer exists, need to be replaced or removed.
 // ref: github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2018-10-01/compute/models.go
 
 // VirtualMachineCustomSize Specifies cpu/memory information for custom VMSize types.
@@ -541,6 +542,60 @@ type ProxyConfiguration struct {
 	NoProxy *[]string `json:"noproxy,omitempty"`
 	// Alternative CA cert to use for connecting to proxy server
 	TrustedCa *string `json:"trustedca,omitempty"`
+}
+
+// Availability Set: adapted from: https://github.com/Azure/azure-sdk-for-go/blob/main/sdk/resourcemanager/compute/armcompute/models.go
+// AvailabilitySetProperties - The instance view of a resource.
+type AvailabilitySetProperties struct {
+	// Fault Domain count.
+	PlatformFaultDomainCount *int32 `json:"platformFaultDomainCount,omitempty"`
+	// A list of references to all virtual machines in the availability set.
+	VirtualMachines []*SubResource `json:"virtualMachines,omitempty"`
+	// READ-ONLY; The resource status information.
+	Statuses map[string]*string `json:"statuses"`
+	// IsPlaceholder - On a multi-node system, the entity (such as a avset) is created on a node where
+	// IsPlacehoder is false. On all the other nodes, IsPlaceholder is set to true.
+	// platform specific commands will only be executed on the node where IsPlaceholder is false as
+	// platform specific commands only need to be executed once.
+	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
+}
+
+// AvailabilitySetUpdate - Specifies information about the availability set that the virtual machine should be assigned to.
+// Only tags may be updated.
+type AvailabilitySetUpdate struct {
+	// The instance view of a resource.
+	Properties *AvailabilitySetProperties
+	// Resource tags
+	Tags map[string]*string
+}
+
+// AvailabilitySet - Specifies information about the availability set that the virtual machine should be assigned to. Virtual
+// machines specified in the same availability set are allocated to different nodes to maximize
+// availability. For more information about availability sets, see Availability sets overview [https://docs.microsoft.com/azure/virtual-machines/availability-set-overview].
+// For more information on Azure
+// planned maintenance, see Maintenance and updates for Virtual Machines in Azure [https://docs.microsoft.com/azure/virtual-machines/maintenance-and-updates].
+// Currently, a VM can only be added to an
+// availability set at creation time. An existing VM cannot be added to an availability set.
+type AvailabilitySet struct {
+	// The instance view of a resource.
+	*AvailabilitySetProperties `json:"properties,omitempty"`
+	// Resource tags
+	Tags map[string]*string `json:"tags"`
+	// READ-ONLY; Resource Id
+	ID *string `json:"ID,omitempty"`
+	// READ-ONLY; Resource name
+	Name *string `json:"name,omitempty"`
+}
+
+// AvailabilitySetListResult - The List Availability Set operation response.
+type AvailabilitySetListResult struct {
+	// REQUIRED; The list of availability sets
+	Value []*AvailabilitySet
+}
+
+type SubResource struct {
+	// Resource Id
+	Name *string `json:"name,omitempty"`
 }
 
 type VirtualMachineDiscovery struct {
