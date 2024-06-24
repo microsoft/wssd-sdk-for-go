@@ -129,7 +129,7 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 					}
 					vmGPU := &wssdcommonproto.VirtualMachineGPU{
 						Assignment:      assignment,
-						PartitionSizeMB: *gpu.PartitionSizeGB,
+						PartitionSizeMB: *gpu.PartitionSizeMB,
 						Name:            *gpu.Name,
 					}
 					vmGPUs = append(vmGPUs, vmGPU)
@@ -505,7 +505,7 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 				}
 				vmGPU := &compute.VirtualMachineGPU{
 					Assignment:      &assignment,
-					PartitionSizeGB: &gpu.PartitionSizeMB,
+					PartitionSizeMB: &gpu.PartitionSizeMB,
 					Name:            &gpu.Name,
 				}
 				vmGPUs = append(vmGPUs, vmGPU)

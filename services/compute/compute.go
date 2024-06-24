@@ -42,7 +42,7 @@ const (
 
 type VirtualMachineGPU struct {
 	Assignment      *Assignment `json:"assignment,omitempty"`
-	PartitionSizeGB *uint64     `json:"partitionSizeMB,omitempty"`
+	PartitionSizeMB *uint64     `json:"partitionSizeMB,omitempty"`
 	Name            *string     `json:"name,omitempty"`
 }
 
