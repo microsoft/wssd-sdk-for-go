@@ -130,7 +130,7 @@ func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 		wssdctainer.Path = *ctainer.Path
 	}
 
-	ctainer.DisableHighAvailability != nil {
+	if ctainer.DisableHighAvailability != nil {
 		wssdctainer.DisableHighAvailability = *ctainer.DisableHighAvailability
 	}
 

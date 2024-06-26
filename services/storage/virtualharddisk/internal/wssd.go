@@ -34,7 +34,7 @@ func NewVirtualHardDiskClient(subID string, authorizer auth.Authorizer) (*client
 
 // Get
 func (c *client) Get(ctx context.Context, containerName, name string) (*[]storage.VirtualHardDisk, error) {
-	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_GET, name, containerName, nil)
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_GET, name, containerName, nil, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +46,8 @@ func (c *client) Get(ctx context.Context, containerName, name string) (*[]storag
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string, sg *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
-	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_POST, name, containerName, sg)
+func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string, sg *storage.VirtualHardDisk, numOfRetries int32) (*storage.VirtualHardDisk, error) {
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_POST, name, containerName, sg, numOfRetries)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string,
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, containerName, name string) error {
-	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_DELETE, name, containerName, nil)
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_DELETE, name, containerName, nil, 0)
 	if err != nil {
 		return err
 	}
@@ -85,10 +85,11 @@ func getVirtualHardDisksFromResponse(response *wssdstorage.VirtualHardDiskRespon
 	return &virtualHardDisks
 }
 
-func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, containerName string, vhd *storage.VirtualHardDisk) (*wssdstorage.VirtualHardDiskRequest, error) {
+func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, containerName string, vhd *storage.VirtualHardDisk, numOfRetries int32) (*wssdstorage.VirtualHardDiskRequest, error) {
 	request := &wssdstorage.VirtualHardDiskRequest{
 		OperationType:          opType,
 		VirtualHardDiskSystems: []*wssdstorage.VirtualHardDisk{},
+		NumOfRetries:			numOfRetries,
 	}
 	wssdvhd := &wssdstorage.VirtualHardDisk{
 		Name:          name,
@@ -170,7 +171,7 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 
 	//Is a property for both OS and Data Disks
 	if vhd.DisableHighAvailability != nil {
-		disk.DisableHighAvailability = vhd.DisableHighAvailability
+		disk.DisableHighAvailability = *vhd.DisableHighAvailability
 	}
 
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {

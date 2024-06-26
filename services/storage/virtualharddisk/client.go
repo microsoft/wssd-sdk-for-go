@@ -40,8 +40,8 @@ func (c *VirtualHardDiskClient) Get(ctx context.Context, container, name string)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
-func (c *VirtualHardDiskClient) CreateOrUpdate(ctx context.Context, container, name string, storage *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
-	return c.internal.CreateOrUpdate(ctx, container, name, storage)
+func (c *VirtualHardDiskClient) CreateOrUpdate(ctx context.Context, container, name string, storage *storage.VirtualHardDisk, numOfRetries int32) (*storage.VirtualHardDisk, error) {
+	return c.internal.CreateOrUpdate(ctx, container, name, storage, numOfRetries)
 }
 
 // Delete methods invokes delete of the storage resource
