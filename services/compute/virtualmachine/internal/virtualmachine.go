@@ -115,7 +115,7 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 		}
 		if vm.HardwareProfile.VirtualMachineGPUs != nil {
 			for _, gpu := range vm.HardwareProfile.VirtualMachineGPUs {
-				if gpu != nil {
+				if gpu != nil && gpu.Assignment != nil && gpu.PartitionSizeMB != nil && gpu.Name != nil {
 					var assignment wssdcommonproto.AssignmentType
 					switch *gpu.Assignment {
 					case compute.GpuDDA:
