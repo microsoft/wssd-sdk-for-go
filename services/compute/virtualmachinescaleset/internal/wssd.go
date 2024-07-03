@@ -457,23 +457,25 @@ func (c *client) getWssdVirtualMachineScaleSetHardwareConfiguration(vmp *compute
 		}
 		if vmp.HardwareProfile.VirtualMachineGPUs != nil {
 			for _, gpu := range vmp.HardwareProfile.VirtualMachineGPUs {
-				var assignment wssdcommonproto.AssignmentType
-				switch *gpu.Assignment {
-				case compute.GpuDDA:
-					assignment = wssdcommonproto.AssignmentType_GpuDDA
-				case compute.GpuP:
-					assignment = wssdcommonproto.AssignmentType_GpuP
-				case compute.GpuPV:
-					assignment = wssdcommonproto.AssignmentType_GpuPV
-				case compute.GpuDefault:
-					assignment = wssdcommonproto.AssignmentType_GpuDefault
+				if gpu != nil && gpu.Assignment != nil && gpu.PartitionSizeMB != nil && gpu.Name != nil {
+					var assignment wssdcommonproto.AssignmentType
+					switch *gpu.Assignment {
+					case compute.GpuDDA:
+						assignment = wssdcommonproto.AssignmentType_GpuDDA
+					case compute.GpuP:
+						assignment = wssdcommonproto.AssignmentType_GpuP
+					case compute.GpuPV:
+						assignment = wssdcommonproto.AssignmentType_GpuPV
+					case compute.GpuDefault:
+						assignment = wssdcommonproto.AssignmentType_GpuDefault
+					}
+					vmGPU := &wssdcommonproto.VirtualMachineGPU{
+						Assignment:      assignment,
+						PartitionSizeMB: *gpu.PartitionSizeMB,
+						Name:            *gpu.Name,
+					}
+					vmGPUs = append(vmGPUs, vmGPU)
 				}
-				vmGPU := &wssdcommonproto.VirtualMachineGPU{
-					Assignment:      assignment,
-					PartitionSizeMB: *gpu.PartitionSizeMB,
-					Name:            *gpu.Name,
-				}
-				vmGPUs = append(vmGPUs, vmGPU)
 			}
 		}
 	}
