@@ -230,6 +230,7 @@ func (c *client) getVirtualMachineScaleSetVMProfile(vm *wssdcompute.VirtualMachi
 func (c *client) getVirtualMachineScaleSetHardwareProfile(vm *wssdcompute.VirtualMachineProfile) *compute.HardwareProfile {
 	sizeType := compute.VirtualMachineSizeTypesDefault
 	var customSize *compute.VirtualMachineCustomSize
+	var vmGPUs []*compute.VirtualMachineGPU
 	if vm.Hardware != nil {
 		sizeType = compute.GetVirtualMachineSizeFromWssdVirtualMachineSize(vm.Hardware.VMSize)
 		if vm.Hardware.CustomSize != nil {
@@ -238,10 +239,32 @@ func (c *client) getVirtualMachineScaleSetHardwareProfile(vm *wssdcompute.Virtua
 				MemoryMB: &vm.Hardware.CustomSize.MemoryMB,
 			}
 		}
+		if vm.Hardware.VirtualMachineGPUs != nil {
+			for _, commonVMGPU := range vm.Hardware.VirtualMachineGPUs {
+				var assignment compute.Assignment
+				switch commonVMGPU.Assignment {
+				case wssdcommonproto.AssignmentType_GpuDDA:
+					assignment = compute.GpuDDA
+				case wssdcommonproto.AssignmentType_GpuP:
+					assignment = compute.GpuP
+				case wssdcommonproto.AssignmentType_GpuPV:
+					assignment = compute.GpuPV
+				case wssdcommonproto.AssignmentType_GpuDefault:
+					assignment = compute.GpuDefault
+				}
+				vmGPU := &compute.VirtualMachineGPU{
+					Assignment:      &assignment,
+					PartitionSizeMB: &commonVMGPU.PartitionSizeMB,
+					Name:            &commonVMGPU.Name,
+				}
+				vmGPUs = append(vmGPUs, vmGPU)
+			}
+		}
 	}
 	return &compute.HardwareProfile{
-		VMSize:     sizeType,
-		CustomSize: customSize,
+		VMSize:             sizeType,
+		CustomSize:         customSize,
+		VirtualMachineGPUs: vmGPUs,
 	}
 }
 
@@ -423,6 +446,7 @@ func (c *client) getWssdVirtualMachineScaleSetVMProfile(vmp *compute.VirtualMach
 func (c *client) getWssdVirtualMachineScaleSetHardwareConfiguration(vmp *compute.VirtualMachineScaleSetVMProfile) *wssdcompute.HardwareConfiguration {
 	sizeType := wssdcommonproto.VirtualMachineSizeType_Default
 	var customSize *wssdcommonproto.VirtualMachineCustomSize
+	var vmGPUs []*wssdcommonproto.VirtualMachineGPU
 	if vmp.HardwareProfile != nil {
 		sizeType = compute.GetWssdVirtualMachineSizeFromVirtualMachineSize(vmp.HardwareProfile.VMSize)
 		if vmp.HardwareProfile.CustomSize != nil {
@@ -431,10 +455,34 @@ func (c *client) getWssdVirtualMachineScaleSetHardwareConfiguration(vmp *compute
 				MemoryMB: *vmp.HardwareProfile.CustomSize.MemoryMB,
 			}
 		}
+		if vmp.HardwareProfile.VirtualMachineGPUs != nil {
+			for _, gpu := range vmp.HardwareProfile.VirtualMachineGPUs {
+				if gpu != nil && gpu.Assignment != nil && gpu.PartitionSizeMB != nil && gpu.Name != nil {
+					var assignment wssdcommonproto.AssignmentType
+					switch *gpu.Assignment {
+					case compute.GpuDDA:
+						assignment = wssdcommonproto.AssignmentType_GpuDDA
+					case compute.GpuP:
+						assignment = wssdcommonproto.AssignmentType_GpuP
+					case compute.GpuPV:
+						assignment = wssdcommonproto.AssignmentType_GpuPV
+					case compute.GpuDefault:
+						assignment = wssdcommonproto.AssignmentType_GpuDefault
+					}
+					vmGPU := &wssdcommonproto.VirtualMachineGPU{
+						Assignment:      assignment,
+						PartitionSizeMB: *gpu.PartitionSizeMB,
+						Name:            *gpu.Name,
+					}
+					vmGPUs = append(vmGPUs, vmGPU)
+				}
+			}
+		}
 	}
 	return &wssdcompute.HardwareConfiguration{
-		VMSize:     sizeType,
-		CustomSize: customSize,
+		VMSize:             sizeType,
+		CustomSize:         customSize,
+		VirtualMachineGPUs: vmGPUs,
 	}
 }
 
