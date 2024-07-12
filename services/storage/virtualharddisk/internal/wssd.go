@@ -51,6 +51,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string,
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("wssd-sdk-for-go: Called invoke func after get request")
 	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[VirtualHardDisk] Create failed with error %v", err)
@@ -175,10 +176,18 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 		disk.CloudInitDataSource = vhd.CloudInitDataSource
 
 	} else {
-		if vhd.DiskSizeBytes == nil {
-			return nil, errors.Wrapf(errors.InvalidInput, "Missing DiskSize")
+		if vhd.DiskSizeBytes == nil && vhd.Source == nil {
+			return nil, errors.Wrapf(errors.InvalidInput, "Need to define atleast one of: DiskSize, Source")
 		}
-		disk.Size = *vhd.DiskSizeBytes
+		if vhd.Source != nil {
+			fmt.Println("wssd-sdk-for-go: adding source and source type")
+			disk.Source = *vhd.Source
+			fmt.Printf("wssd-sdk-for-go: Disk source: %s\n", disk.Source)
+			fmt.Printf("wssd-sdk-for-go: Disk sourceType: %s\n", disk.SourceType)
+		}
+		if vhd.DiskSizeBytes != nil {
+			disk.Size = *vhd.DiskSizeBytes
+		}
 		if vhd.Dynamic != nil {
 			disk.Dynamic = *vhd.Dynamic
 		}
