@@ -115,7 +115,7 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 		}
 		if vm.HardwareProfile.VirtualMachineGPUs != nil {
 			for _, gpu := range vm.HardwareProfile.VirtualMachineGPUs {
-				if gpu != nil && gpu.Assignment != nil && gpu.PartitionSizeMB != nil && gpu.Name != nil {
+				if gpu != nil && gpu.Assignment != nil {
 					var assignment wssdcommonproto.AssignmentType
 					switch *gpu.Assignment {
 					case compute.GpuDDA:
@@ -128,9 +128,15 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 						assignment = wssdcommonproto.AssignmentType_GpuDefault
 					}
 					vmGPU := &wssdcommonproto.VirtualMachineGPU{
-						Assignment:      assignment,
-						PartitionSizeMB: *gpu.PartitionSizeMB,
-						Name:            *gpu.Name,
+						Assignment: assignment,
+					}
+					// partition size may be nil for dda case
+					if gpu.PartitionSizeMB != nil {
+						vmGPU.PartitionSizeMB = *gpu.PartitionSizeMB
+					}
+					// gpu name can be nil for default or gpup case
+					if gpu.Name != nil {
+						vmGPU.Name = *gpu.Name
 					}
 					vmGPUs = append(vmGPUs, vmGPU)
 				} else {
