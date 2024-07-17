@@ -115,27 +115,37 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 		}
 		if vm.HardwareProfile.VirtualMachineGPUs != nil {
 			for _, gpu := range vm.HardwareProfile.VirtualMachineGPUs {
-				if gpu != nil && gpu.Assignment != nil && gpu.PartitionSizeMB != nil && gpu.Name != nil {
-					var assignment wssdcommonproto.AssignmentType
-					switch *gpu.Assignment {
-					case compute.GpuDDA:
-						assignment = wssdcommonproto.AssignmentType_GpuDDA
-					case compute.GpuP:
-						assignment = wssdcommonproto.AssignmentType_GpuP
-					case compute.GpuPV:
-						assignment = wssdcommonproto.AssignmentType_GpuPV
-					case compute.GpuDefault:
-						assignment = wssdcommonproto.AssignmentType_GpuDefault
-					}
-					vmGPU := &wssdcommonproto.VirtualMachineGPU{
-						Assignment:      assignment,
-						PartitionSizeMB: *gpu.PartitionSizeMB,
-						Name:            *gpu.Name,
-					}
-					vmGPUs = append(vmGPUs, vmGPU)
-				} else {
+				if gpu == nil {
 					return nil, errors.Wrapf(errors.InvalidInput, "nil value in Hardware.VirtualMachineGPUs")
 				}
+				if gpu.Assignment == nil {
+					return nil, errors.Wrapf(errors.InvalidInput, "GPU assignment cannot be nil")
+				}
+				var assignment wssdcommonproto.AssignmentType
+				switch *gpu.Assignment {
+				case compute.GpuDDA:
+					assignment = wssdcommonproto.AssignmentType_GpuDDA
+				case compute.GpuP:
+					assignment = wssdcommonproto.AssignmentType_GpuP
+				case compute.GpuPV:
+					assignment = wssdcommonproto.AssignmentType_GpuPV
+				case compute.GpuDefault:
+					assignment = wssdcommonproto.AssignmentType_GpuDefault
+				}
+				if gpu.PartitionSizeMB == nil {
+					defaultInt := uint64(0)
+					gpu.PartitionSizeMB = &defaultInt
+				}
+				if gpu.Name == nil {
+					defaultString := ""
+					gpu.Name = &defaultString
+				}
+				vmGPU := &wssdcommonproto.VirtualMachineGPU{
+					Assignment:      assignment,
+					PartitionSizeMB: *gpu.PartitionSizeMB,
+					Name:            *gpu.Name,
+				}
+				vmGPUs = append(vmGPUs, vmGPU)
 			}
 		}
 	}
