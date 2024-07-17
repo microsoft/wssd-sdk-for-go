@@ -51,7 +51,7 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		return nil, errors.Wrapf(err, "Failed to get GuestAgent Configuration")
 	}
 
-	zoneconfig, err := c.getWssdVirtualMachineZoneConfiguration(vm.ZoneConfiguration)
+	availabilityZoneConfig, err := c.getWssdVirtualMachineZoneConfiguration(vm.AvailabilityZoneProfile)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Failed to get Cluster Configuration")
 	}
@@ -62,16 +62,16 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 	}
 
 	wssdvm = &wssdcompute.VirtualMachine{
-		Name:              *vm.Name,
-		Tags:              getWssdTags(vm.Tags),
-		Storage:           storageConfig,
-		Hardware:          hardwareConfig,
-		Security:          securityConfig,
-		Os:                osconfig,
-		Network:           networkConfig,
-		GuestAgent:        guestAgentConfig,
-		ZoneConfiguration: zoneconfig,
-		Entity:            entity,
+		Name:             *vm.Name,
+		Tags:             getWssdTags(vm.Tags),
+		Storage:          storageConfig,
+		Hardware:         hardwareConfig,
+		Security:         securityConfig,
+		Os:               osconfig,
+		Network:          networkConfig,
+		GuestAgent:       guestAgentConfig,
+		AvailabilityZone: availabilityZoneConfig,
+		Entity:           entity,
 	}
 
 	if vm.DisableHighAvailability != nil {
@@ -434,7 +434,7 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			Statuses:                c.getVirtualMachineStatuses(vm),
 			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
 			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
-			ZoneConfiguration:       c.getVirtualMachineZoneConfiguration(vm),
+			AvailabilityZoneProfile: c.getVirtualMachineZoneProfile(vm),
 		},
 	}
 }
@@ -698,44 +698,45 @@ func (c *client) getVirtualMachineProxyConfiguration(proxyConfiguration *wssdcom
 	}
 }
 
-func (c *client) getWssdVirtualMachineZoneConfiguration(zoneconfig *compute.ZoneConfiguration) (*wssdcompute.ZoneConfiguration, error) {
-	if zoneconfig == nil {
+func (c *client) getWssdVirtualMachineZoneConfiguration(zoneProfile *compute.AvailabilityZoneProfile) (*wssdcompute.AvailabilityZoneConfiguration, error) {
+	if zoneProfile == nil {
 		return nil, nil
 	}
 
-	wssdZones := make([]*wssdcompute.Zone, len(*zoneconfig.Zones))
+	wssdAvZones := make([]*wssdcompute.AvailabilityZone, len(*zoneProfile.AvailabilityZones))
 
-	for i, computeZone := range *zoneconfig.Zones {
+	for i, computeZone := range *zoneProfile.AvailabilityZones {
 		nodes := make([]string, len(*computeZone.Nodes))
 		copy(nodes, *computeZone.Nodes)
-		wssdZones[i] = &wssdcompute.Zone{
+		wssdAvZones[i] = &wssdcompute.AvailabilityZone{
 			Name:  *computeZone.Name,
 			Nodes: nodes,
 		}
 	}
-	wssdZoneConfiguration := &wssdcompute.ZoneConfiguration{
-		Zones: wssdZones,
+	wssdZoneConfiguration := &wssdcompute.AvailabilityZoneConfiguration{
+		AvailabilityZones:     wssdAvZones,
+		StrictAffinityToZones: *zoneProfile.StrictAffinityToZones,
 	}
 	return wssdZoneConfiguration, nil
 }
 
-func (c *client) getVirtualMachineZoneConfiguration(vm *wssdcompute.VirtualMachine) *compute.ZoneConfiguration {
-	if vm == nil || vm.ZoneConfiguration == nil || vm.ZoneConfiguration.Zones == nil {
+func (c *client) getVirtualMachineZoneProfile(vm *wssdcompute.VirtualMachine) *compute.AvailabilityZoneProfile {
+	if vm == nil || vm.AvailabilityZone == nil || vm.AvailabilityZone.AvailabilityZones == nil {
 		return nil
 	}
 
-	computeZones := make([]compute.Zone, len(vm.ZoneConfiguration.Zones))
+	computeAvZones := make([]compute.AvailabilityZone, len(vm.AvailabilityZone.AvailabilityZones))
 
-	for i, zone := range vm.ZoneConfiguration.Zones {
-		nodes := make([]string, len(zone.Nodes))
-		copy(nodes, zone.Nodes)
-		computeZones[i] = compute.Zone{
-			Name:  &zone.Name,
+	for i, avZone := range vm.AvailabilityZone.AvailabilityZones {
+		nodes := make([]string, len(avZone.Nodes))
+		copy(nodes, avZone.Nodes)
+		computeAvZones[i] = compute.AvailabilityZone{
+			Name:  &avZone.Name,
 			Nodes: &nodes,
 		}
 	}
 
-	return &compute.ZoneConfiguration{
-		Zones: &computeZones,
+	return &compute.AvailabilityZoneProfile{
+		AvailabilityZones: &computeAvZones,
 	}
 }
