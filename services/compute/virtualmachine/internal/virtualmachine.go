@@ -703,37 +703,42 @@ func (c *client) getWssdVirtualMachineZoneConfiguration(zoneProfile *compute.Ava
 		return nil, nil
 	}
 
-	wssdAvZones := make([]*wssdcompute.AvailabilityZone, len(*zoneProfile.AvailabilityZones))
-
-	for i, computeZone := range *zoneProfile.AvailabilityZones {
-		nodes := make([]string, len(*computeZone.Nodes))
-		copy(nodes, *computeZone.Nodes)
-		wssdAvZones[i] = &wssdcompute.AvailabilityZone{
+	wssdAvZones := []*wssdcompute.AvailabilityZone{}
+	for _, computeZone := range *zoneProfile.AvailabilityZones {
+		nodes := []string{}
+		nodes = append(nodes, *computeZone.Nodes...)
+		wssdAvZones = append(wssdAvZones, &wssdcompute.AvailabilityZone{
 			Name:  *computeZone.Name,
 			Nodes: nodes,
-		}
+		})
+	}
+	strictAffinityToZones := false
+	if zoneProfile.StrictAffinityToZones != nil {
+		strictAffinityToZones = *zoneProfile.StrictAffinityToZones
 	}
 	wssdZoneConfiguration := &wssdcompute.AvailabilityZoneConfiguration{
 		AvailabilityZones:     wssdAvZones,
-		StrictAffinityToZones: *zoneProfile.StrictAffinityToZones,
+		StrictAffinityToZones: strictAffinityToZones,
 	}
 	return wssdZoneConfiguration, nil
 }
 
 func (c *client) getVirtualMachineZoneProfile(vm *wssdcompute.VirtualMachine) *compute.AvailabilityZoneProfile {
-	if vm == nil || vm.AvailabilityZone == nil || vm.AvailabilityZone.AvailabilityZones == nil {
+	avZones := vm.GetAvailabilityZone().GetAvailabilityZones()
+	if avZones == nil || len(avZones) == 0 {
 		return nil
 	}
 
-	computeAvZones := make([]compute.AvailabilityZone, len(vm.AvailabilityZone.AvailabilityZones))
+	computeAvZones := []compute.AvailabilityZone{}
 
-	for i, avZone := range vm.AvailabilityZone.AvailabilityZones {
-		nodes := make([]string, len(avZone.Nodes))
-		copy(nodes, avZone.Nodes)
-		computeAvZones[i] = compute.AvailabilityZone{
-			Name:  &avZone.Name,
+	for _, avZone := range avZones {
+		nodes := []string{}
+		nodes = append(nodes, avZone.GetNodes()...)
+		zoneName := avZone.GetName()
+		computeAvZones = append(computeAvZones, compute.AvailabilityZone{
+			Name:  &zoneName,
 			Nodes: &nodes,
-		}
+		})
 	}
 
 	return &compute.AvailabilityZoneProfile{
