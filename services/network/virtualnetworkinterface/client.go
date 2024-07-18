@@ -15,6 +15,7 @@ import (
 type Service interface {
 	Get(context.Context, string, string) (*[]network.VirtualNetworkInterface, error)
 	CreateOrUpdate(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
+	Hydrate(context.Context, string, string, string, string) (*network.VirtualNetworkInterface, error)
 	Delete(context.Context, string, string) error
 	Update(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
 }
@@ -43,6 +44,11 @@ func (c *VirtualNetworkInterfaceClient) Get(ctx context.Context, group, name str
 // CreateOrUpdate methods invokes create or update on the client
 func (c *VirtualNetworkInterfaceClient) CreateOrUpdate(ctx context.Context, group, name string, networkInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
 	return c.internal.CreateOrUpdate(ctx, group, name, networkInterface)
+}
+
+// CreateOrUpdate methods invokes create or update on the client
+func (c *VirtualNetworkInterfaceClient) Hydrate(ctx context.Context, group, name string, subnetId string, macAddress string) (*network.VirtualNetworkInterface, error) {
+	return c.internal.Hydrate(ctx, group, name, subnetId, macAddress)
 }
 
 // Update supported settings on the networkinterface.
