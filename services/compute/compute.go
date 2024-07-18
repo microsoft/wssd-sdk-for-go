@@ -600,11 +600,6 @@ type SubResource struct {
 	Name *string `json:"name,omitempty"`
 }
 
-type Zone struct {
-	Name  *string   `json:"name,omitempty"`
-	Nodes *[]string `json:"nodes,omitempty"`
-}
-
 // Availability Zone describes the availability zone associated with a virtual machine
 type AvailabilityZone struct {
 	// Name of zone
