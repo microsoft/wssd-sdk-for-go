@@ -19,7 +19,7 @@ type Service interface {
 	Get(context.Context, string, string) (*[]compute.VirtualMachine, error)
 	CreateOrUpdate(context.Context, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
 	Delete(context.Context, string, string) error
-	Hydrate(context.Context, string, string) (*compute.VirtualMachine, error)
+	Hydrate(context.Context, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
 	Start(context.Context, string, string) error
 	Stop(context.Context, string, string) error
 	Pause(context.Context, string, string) error
@@ -60,8 +60,8 @@ func (c *VirtualMachineClient) Delete(ctx context.Context, group string, name st
 }
 
 // Hydrate methods creates MOC representation of the VM resource
-func (c *VirtualMachineClient) Hydrate(ctx context.Context, group string, name string) (*compute.VirtualMachine, error) {
-	return c.internal.Hydrate(ctx, group, name)
+func (c *VirtualMachineClient) Hydrate(ctx context.Context, group string, name string, compute *compute.VirtualMachine) (*compute.VirtualMachine, error) {
+	return c.internal.Hydrate(ctx, group, name, compute)
 }
 
 func (c *VirtualMachineClient) Start(ctx context.Context, group string, name string) (err error) {
