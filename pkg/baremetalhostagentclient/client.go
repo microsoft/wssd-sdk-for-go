@@ -57,6 +57,7 @@ func getServerEndpoint(serverAddress *string) string {
 
 func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 	var opts []grpc.DialOption
+	//test gpg
 
 	// Debug Mode allows us to talk to wssdagent without a proper handshake
 	// This means we can debug and test wssdagent without generating certs
