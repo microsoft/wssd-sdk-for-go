@@ -64,7 +64,7 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 	// and having proper tokens
 
 	if ok := isDebugMode(); ok == nil {
-		opts = append(opts, grpc.WithInsecure())
+		opts = append(opts, grpc.WithInsecure()) //test again
 	} else {
 		opts = append(opts, grpc.WithTransportCredentials(authorizer.WithTransportAuthorization()))
 	}
