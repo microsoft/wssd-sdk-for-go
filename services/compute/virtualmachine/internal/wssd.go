@@ -96,16 +96,20 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 }
 
 // Hydrate methods creates MOC representation of the VM resource
-func (c *client) Hydrate(ctx context.Context, group, name string) (*compute.VirtualMachine, error) {
-	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_HYDRATE, name, nil)
+func (c *client) Hydrate(ctx context.Context, group, name string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
+	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_HYDRATE, name, sg)
 	if err != nil {
 		return nil, err
 	}
+
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
+	if err != nil {
+		return nil, err
+	}
 
 	vms := c.getVirtualMachineFromResponse(response)
 	if len(*vms) == 0 {
-		return nil, fmt.Errorf("Hydration of Virtual Machine failed to unknown reason.")
+		return nil, fmt.Errorf("hydration of Virtual Machine [%s] in group [%s] failed due to an unknown reason", name, group)
 	}
 
 	return &(*vms)[0], nil
