@@ -35,7 +35,7 @@ func NewVirtualNetworkInterfaceClient(subID string, authorizer auth.Authorizer) 
 
 // Get
 func (c *client) Get(ctx context.Context, group, name string) (*[]network.VirtualNetworkInterface, error) {
-	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_GET, name, nil, "", "")
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_GET, name, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]network.Virtua
 
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
-	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_POST, name, vnetInterface, "", "")
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_POST, name, vnetInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +69,26 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnetInt
 	return &(*vnics)[0], nil
 }
 
-// Hydrate
+// Hydrate a NIC by finding it with a given MAC address
+// Additionally, we need a given subnet ID and group to save in the metadata as these cannot be inferred from reading out the NIC information from the host
 func (c *client) Hydrate(ctx context.Context, group, name string, subnetId string, macAddress string) (*network.VirtualNetworkInterface, error) {
-	// do we need to make a request to the logicalnetwork client for the subnetId?
-	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_HYDRATE, name, nil, subnetId, macAddress)
+	ipconfigs := []network.IPConfiguration{}
+	ipconfig := &network.IPConfiguration{
+		IPConfigurationProperties: &network.IPConfigurationProperties{
+			SubnetID: &subnetId,
+		},
+	}
+	ipconfigs = append(ipconfigs, *ipconfig)
+
+	networkinterface := &network.VirtualNetworkInterface{
+		VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
+			VirtualMachineID: &name,
+			MACAddress:       &macAddress,
+			IPConfigurations: &ipconfigs,
+		},
+	}
+
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_HYDRATE, name, networkinterface)
 	if err != nil {
 		return nil, err
 	}
@@ -81,8 +97,11 @@ func (c *client) Hydrate(ctx context.Context, group, name string, subnetId strin
 		return nil, err
 	}
 	vnics, err := c.getVirtualNetworkInterfacesFromResponse(group, response)
+	if err != nil {
+		return nil, err
+	}
 	if len(*vnics) == 0 {
-		return nil, fmt.Errorf("Hydration of Virtual Network Interface failed with error: %v", err)
+		return nil, fmt.Errorf("hydration of Virtual Network Interface failed to find a NIC with MAC address [%s]", macAddress)
 	}
 
 	return &(*vnics)[0], nil
@@ -98,7 +117,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 		return fmt.Errorf("Virtual Network Interface [%s] not found", name)
 	}
 
-	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_DELETE, name, &(*vnetInterface)[0], "", "")
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_DELETE, name, &(*vnetInterface)[0])
 	if err != nil {
 		return err
 	}
@@ -113,7 +132,7 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 
 // Update
 func (c *client) Update(ctx context.Context, group, name string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
-	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_UPDATE, name, vnetInterface, "", "")
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_UPDATE, name, vnetInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +149,7 @@ func (c *client) Update(ctx context.Context, group, name string, vnetInterface *
 }
 
 // ///////////// private methods  ///////////////
-func (c *client) getVirtualNetworkInterfaceRequest(opType wssdcommonproto.Operation, name string, networkInterface *network.VirtualNetworkInterface, subnetId string, macAddress string) (*wssdnetwork.VirtualNetworkInterfaceRequest, error) {
+func (c *client) getVirtualNetworkInterfaceRequest(opType wssdcommonproto.Operation, name string, networkInterface *network.VirtualNetworkInterface) (*wssdnetwork.VirtualNetworkInterfaceRequest, error) {
 	request := &wssdnetwork.VirtualNetworkInterfaceRequest{
 		OperationType:            opType,
 		VirtualNetworkInterfaces: []*wssdnetwork.VirtualNetworkInterface{},
@@ -141,18 +160,6 @@ func (c *client) getVirtualNetworkInterfaceRequest(opType wssdcommonproto.Operat
 			return nil, err
 		}
 		request.VirtualNetworkInterfaces = append(request.VirtualNetworkInterfaces, wssdnetworkinterface)
-	} else if len(name) > 0 && len(subnetId) > 0 && len(macAddress) > 0 {
-		ipconfig := &wssdnetwork.IpConfiguration{
-			Subnetid: subnetId,
-		}
-		ipconfigs := []*wssdnetwork.IpConfiguration{ipconfig}
-
-		request.VirtualNetworkInterfaces = append(request.VirtualNetworkInterfaces,
-			&wssdnetwork.VirtualNetworkInterface{
-				Name:       name,
-				Macaddress: macAddress,
-				Ipconfigs:  ipconfigs,
-			})
 	} else if len(name) > 0 {
 		request.VirtualNetworkInterfaces = append(request.VirtualNetworkInterfaces,
 			&wssdnetwork.VirtualNetworkInterface{

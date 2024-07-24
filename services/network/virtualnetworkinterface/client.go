@@ -46,7 +46,7 @@ func (c *VirtualNetworkInterfaceClient) CreateOrUpdate(ctx context.Context, grou
 	return c.internal.CreateOrUpdate(ctx, group, name, networkInterface)
 }
 
-// CreateOrUpdate methods invokes create or update on the client
+// Hydrate method invokes hydration of the networkinterface resource
 func (c *VirtualNetworkInterfaceClient) Hydrate(ctx context.Context, group, name string, subnetId string, macAddress string) (*network.VirtualNetworkInterface, error) {
 	return c.internal.Hydrate(ctx, group, name, subnetId, macAddress)
 }
