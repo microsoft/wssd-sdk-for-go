@@ -93,6 +93,10 @@ func (c *VirtualMachineClient) Validate(ctx context.Context, group, name string)
 }
 
 func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize) (err error) {
+	return c.ResizeEx(ctx, group, name, newSize, newCustomSize, nil)
+}
+
+func (c *VirtualMachineClient) ResizeEx(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize, newVirtualMachineGPUs []*compute.VirtualMachineGPU) (err error) {
 	vms, err := c.Get(ctx, group, name)
 	if err != nil {
 		return
@@ -105,13 +109,14 @@ func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name st
 
 	vm := (*vms)[0]
 
-	if !isDifferentVmSize(vm.HardwareProfile.VMSize, newSize, vm.HardwareProfile.CustomSize, newCustomSize) {
+	if !isDifferentVmSize(vm.HardwareProfile.VMSize, newSize, vm.HardwareProfile.CustomSize, newCustomSize) && !isDifferentGpuList(vm.HardwareProfile.VirtualMachineGPUs, newVirtualMachineGPUs) {
 		// Nothing to do
 		return
 	}
 
 	vm.HardwareProfile.VMSize = newSize
 	vm.HardwareProfile.CustomSize = newCustomSize
+	vm.HardwareProfile.VirtualMachineGPUs = newVirtualMachineGPUs
 
 	_, err = c.CreateOrUpdate(ctx, group, name, &vm)
 	return
@@ -286,4 +291,9 @@ func isDifferentVmSize(oldSizeType, newSizeType compute.VirtualMachineSizeTypes,
 	default:
 		return false
 	}
+}
+
+func isDifferentGpuList(oldGpuList, newGpuList []*compute.VirtualMachineGPU) bool {
+	// simultaneous addtion and removal of GPU is not supported
+	return len(oldGpuList) != len(newGpuList)
 }
