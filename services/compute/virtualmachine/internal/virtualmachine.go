@@ -703,11 +703,11 @@ func (c *client) getWssdVirtualMachineZoneConfiguration(zoneProfile *compute.Ava
 		return nil, nil
 	}
 
-	wssdAvZones := []*wssdcompute.AvailabilityZone{}
+	wssdAvZones := []*wssdcompute.AvailabilityZoneReference{}
 	for _, computeZone := range *zoneProfile.AvailabilityZones {
 		nodes := []string{}
 		nodes = append(nodes, *computeZone.Nodes...)
-		wssdAvZones = append(wssdAvZones, &wssdcompute.AvailabilityZone{
+		wssdAvZones = append(wssdAvZones, &wssdcompute.AvailabilityZoneReference{
 			Name:  *computeZone.Name,
 			Nodes: nodes,
 		})
