@@ -71,24 +71,25 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnetInt
 
 // Hydrate a NIC by finding it with a given MAC address
 // Additionally, we need a given subnet ID and group to save in the metadata as these cannot be inferred from reading out the NIC information from the host
-func (c *client) Hydrate(ctx context.Context, group, name string, subnetId string, macAddress string) (*network.VirtualNetworkInterface, error) {
-	ipconfigs := []network.IPConfiguration{}
-	ipconfig := &network.IPConfiguration{
-		IPConfigurationProperties: &network.IPConfigurationProperties{
-			SubnetID: &subnetId,
-		},
-	}
-	ipconfigs = append(ipconfigs, *ipconfig)
+// func (c *client) Hydrate(ctx context.Context, group, name string, subnetId string, macAddress string) (*network.VirtualNetworkInterface, error) {
+func (c *client) Hydrate(ctx context.Context, group, name string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
+	// ipconfigs := []network.IPConfiguration{}
+	// ipconfig := &network.IPConfiguration{
+	// 	IPConfigurationProperties: &network.IPConfigurationProperties{
+	// 		SubnetID: &subnetId,
+	// 	},
+	// }
+	// ipconfigs = append(ipconfigs, *ipconfig)
 
-	networkinterface := &network.VirtualNetworkInterface{
-		VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
-			VirtualMachineID: &name,
-			MACAddress:       &macAddress,
-			IPConfigurations: &ipconfigs,
-		},
-	}
+	// networkinterface := &network.VirtualNetworkInterface{
+	// 	VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
+	// 		VirtualMachineID: &name,
+	// 		MACAddress:       &macAddress,
+	// 		IPConfigurations: &ipconfigs,
+	// 	},
+	// }
 
-	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_HYDRATE, name, networkinterface)
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_HYDRATE, name, vnetInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +102,7 @@ func (c *client) Hydrate(ctx context.Context, group, name string, subnetId strin
 		return nil, err
 	}
 	if len(*vnics) == 0 {
-		return nil, fmt.Errorf("hydration of Virtual Network Interface failed to find a NIC with MAC address [%s]", macAddress)
+		return nil, fmt.Errorf("hydration of Virtual Network Interface failed to find a NIC with MAC address [%s]", *vnetInterface.MACAddress)
 	}
 
 	return &(*vnics)[0], nil
