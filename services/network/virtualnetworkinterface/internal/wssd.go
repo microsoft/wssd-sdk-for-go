@@ -73,21 +73,6 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnetInt
 // Additionally, we need a given subnet ID and group to save in the metadata as these cannot be inferred from reading out the NIC information from the host
 // func (c *client) Hydrate(ctx context.Context, group, name string, subnetId string, macAddress string) (*network.VirtualNetworkInterface, error) {
 func (c *client) Hydrate(ctx context.Context, group, name string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
-	// ipconfigs := []network.IPConfiguration{}
-	// ipconfig := &network.IPConfiguration{
-	// 	IPConfigurationProperties: &network.IPConfigurationProperties{
-	// 		SubnetID: &subnetId,
-	// 	},
-	// }
-	// ipconfigs = append(ipconfigs, *ipconfig)
-
-	// networkinterface := &network.VirtualNetworkInterface{
-	// 	VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
-	// 		VirtualMachineID: &name,
-	// 		MACAddress:       &macAddress,
-	// 		IPConfigurations: &ipconfigs,
-	// 	},
-	// }
 
 	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_HYDRATE, name, vnetInterface)
 	if err != nil {
