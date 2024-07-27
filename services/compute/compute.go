@@ -624,7 +624,7 @@ type SubResource struct {
 }
 
 // Availability Zone describes the availability zone associated with a virtual machine
-type AvailabilityZone struct {
+type AvailabilityZoneReference struct {
 	// Name of zone
 	Name *string `json:"name,omitempty"`
 	// Nodes associated with the zone
@@ -634,7 +634,7 @@ type AvailabilityZone struct {
 // AvailabilityZoneProfile describes the the list of availability zones and affinity type
 type AvailabilityZoneProfile struct {
 	// Availability Zones
-	AvailabilityZones *[]AvailabilityZone `json:"availabilityZones,omitempty"`
+	AvailabilityZones *[]AvailabilityZoneReference `json:"availabilityZones,omitempty"`
 	// Strict Affinity To Zones
 	StrictAffinityToZones *bool `json:"strictAffinityToZones,omitempty"`
 }

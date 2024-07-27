@@ -789,13 +789,13 @@ func (c *client) getVirtualMachineZoneProfile(vm *wssdcompute.VirtualMachine) *c
 		return nil
 	}
 
-	computeAvZones := []compute.AvailabilityZone{}
+	computeAvZones := []compute.AvailabilityZoneReference{}
 
 	for _, avZone := range avZones {
 		nodes := []string{}
 		nodes = append(nodes, avZone.GetNodes()...)
 		zoneName := avZone.GetName()
-		computeAvZones = append(computeAvZones, compute.AvailabilityZone{
+		computeAvZones = append(computeAvZones, compute.AvailabilityZoneReference{
 			Name:  &zoneName,
 			Nodes: &nodes,
 		})
