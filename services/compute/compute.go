@@ -620,12 +620,3 @@ type SubResource struct {
 	// Resource Id
 	Name *string `json:"name,omitempty"`
 }
-
-type VirtualMachineDiscovery struct {
-	// ID
-	VmId *string `json:"vmid,omitempty"`
-	// Name
-	VmName *string `json:"vmname,omitempty"`
-	// Type
-	PowerState *string `json:"powerstate,omitempty"`
-}
