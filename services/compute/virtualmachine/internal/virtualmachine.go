@@ -90,6 +90,7 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 	sizeType := wssdcommonproto.VirtualMachineSizeType_Default
 	var customSize *wssdcommonproto.VirtualMachineCustomSize
 	var dynMemConfig *wssdcommonproto.DynamicMemoryConfiguration
+	var vmGPUs []*wssdcommonproto.VirtualMachineGPU
 	if vm.HardwareProfile != nil {
 		sizeType = compute.GetWssdVirtualMachineSizeFromVirtualMachineSize(vm.HardwareProfile.VMSize)
 		if vm.HardwareProfile.CustomSize != nil {
@@ -113,11 +114,47 @@ func (c *client) getWssdVirtualMachineHardwareConfiguration(vm *compute.VirtualM
 				dynMemConfig.TargetMemoryBuffer = *vm.HardwareProfile.DynamicMemoryConfig.TargetMemoryBuffer
 			}
 		}
+		if vm.HardwareProfile.VirtualMachineGPUs != nil {
+			for _, gpu := range vm.HardwareProfile.VirtualMachineGPUs {
+				if gpu == nil {
+					return nil, errors.Wrapf(errors.InvalidInput, "nil value in Hardware.VirtualMachineGPUs")
+				}
+				if gpu.Assignment == nil {
+					return nil, errors.Wrapf(errors.InvalidInput, "GPU assignment cannot be nil")
+				}
+				var assignment wssdcommonproto.AssignmentType
+				switch *gpu.Assignment {
+				case compute.GpuDDA:
+					assignment = wssdcommonproto.AssignmentType_GpuDDA
+				case compute.GpuP:
+					assignment = wssdcommonproto.AssignmentType_GpuP
+				case compute.GpuPV:
+					assignment = wssdcommonproto.AssignmentType_GpuPV
+				case compute.GpuDefault:
+					assignment = wssdcommonproto.AssignmentType_GpuDefault
+				}
+				if gpu.PartitionSizeMB == nil {
+					defaultInt := uint64(0)
+					gpu.PartitionSizeMB = &defaultInt
+				}
+				if gpu.Name == nil {
+					defaultString := ""
+					gpu.Name = &defaultString
+				}
+				vmGPU := &wssdcommonproto.VirtualMachineGPU{
+					Assignment:      assignment,
+					PartitionSizeMB: *gpu.PartitionSizeMB,
+					Name:            *gpu.Name,
+				}
+				vmGPUs = append(vmGPUs, vmGPU)
+			}
+		}
 	}
 	return &wssdcompute.HardwareConfiguration{
 		VMSize:                     sizeType,
 		CustomSize:                 customSize,
 		DynamicMemoryConfiguration: dynMemConfig,
+		VirtualMachineGPUs:         vmGPUs,
 	}, nil
 }
 
@@ -451,6 +488,7 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 	sizeType := compute.VirtualMachineSizeTypesDefault
 	var customSize *compute.VirtualMachineCustomSize
 	var dynamicMemoryConfig *compute.DynamicMemoryConfiguration
+	var vmGPUs []*compute.VirtualMachineGPU
 	if vm.Hardware != nil {
 		sizeType = compute.GetVirtualMachineSizeFromWssdVirtualMachineSize(vm.Hardware.VMSize)
 		if vm.Hardware.CustomSize != nil {
@@ -467,11 +505,33 @@ func (c *client) getVirtualMachineHardwareProfile(vm *wssdcompute.VirtualMachine
 				TargetMemoryBuffer: &vm.Hardware.DynamicMemoryConfiguration.TargetMemoryBuffer,
 			}
 		}
+		if vm.Hardware.VirtualMachineGPUs != nil {
+			for _, commonVMGPU := range vm.Hardware.VirtualMachineGPUs {
+				var assignment compute.Assignment
+				switch commonVMGPU.Assignment {
+				case wssdcommonproto.AssignmentType_GpuDDA:
+					assignment = compute.GpuDDA
+				case wssdcommonproto.AssignmentType_GpuP:
+					assignment = compute.GpuP
+				case wssdcommonproto.AssignmentType_GpuPV:
+					assignment = compute.GpuPV
+				case wssdcommonproto.AssignmentType_GpuDefault:
+					assignment = compute.GpuDefault
+				}
+				vmGPU := &compute.VirtualMachineGPU{
+					Assignment:      &assignment,
+					PartitionSizeMB: &commonVMGPU.PartitionSizeMB,
+					Name:            &commonVMGPU.Name,
+				}
+				vmGPUs = append(vmGPUs, vmGPU)
+			}
+		}
 	}
 	return &compute.HardwareProfile{
 		VMSize:              sizeType,
 		CustomSize:          customSize,
 		DynamicMemoryConfig: dynamicMemoryConfig,
+		VirtualMachineGPUs:  vmGPUs,
 	}
 }
 
