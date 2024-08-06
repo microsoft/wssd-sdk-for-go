@@ -177,7 +177,6 @@ func (c *client) getVirtualMachineFromResponse(response *wssdcompute.VirtualMach
 }
 
 func (c *client) getVirtualMachineRequest(opType wssdcommonproto.Operation, name string, vmss *compute.VirtualMachine) (*wssdcompute.VirtualMachineRequest, error) {
-	fmt.Printf("wssd-sdk-for-go: wssd.go: Start of getVirtualMachineRequest: name of vm requested %s\n", name)
 	request := &wssdcompute.VirtualMachineRequest{
 		OperationType:         opType,
 		VirtualMachineSystems: []*wssdcompute.VirtualMachine{},
@@ -189,7 +188,6 @@ func (c *client) getVirtualMachineRequest(opType wssdcommonproto.Operation, name
 		}
 		request.VirtualMachineSystems = append(request.VirtualMachineSystems, wssdvm)
 	} else if len(name) > 0 {
-		fmt.Printf("wssd-sdk-for-go: wssd.go: getVirtualMachineRequest: creating wssdcompute Vm obj with name: %s\n", name)
 		wssdvm := &wssdcompute.VirtualMachine{
 			Name: name,
 		}
