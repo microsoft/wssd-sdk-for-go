@@ -85,8 +85,14 @@ func (c *client) Hydrate(ctx context.Context, containerName, name string) (*stor
 	if err != nil {
 		return nil, err
 	}
-	_, err = c.VirtualHardDiskAgentClient.Invoke(ctx, request)
-	return nil, err
+	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
+	vhd := getVirtualHardDisksFromResponse(response)
+	
+	if len(*vhd) == 0 {
+		return nil, fmt.Errorf("[VirtualHardDisk][Create] Unexpected error: Hydrating a disk returned no result")
+	}
+
+	return &((*vhd)[0]), err
 }
 
 func getVirtualHardDisksFromResponse(response *wssdstorage.VirtualHardDiskResponse) *[]storage.VirtualHardDisk {
