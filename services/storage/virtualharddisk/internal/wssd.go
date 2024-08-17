@@ -175,10 +175,15 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 		disk.CloudInitDataSource = vhd.CloudInitDataSource
 
 	} else {
-		if vhd.DiskSizeBytes == nil {
-			return nil, errors.Wrapf(errors.InvalidInput, "Missing DiskSize")
+		if vhd.DiskSizeBytes == nil && vhd.Source == nil {
+			return nil, errors.Wrapf(errors.InvalidInput, "Need to define atleast one of: DiskSize, Source")
 		}
-		disk.Size = *vhd.DiskSizeBytes
+		if vhd.Source != nil {
+			disk.Source = *vhd.Source
+		}
+		if vhd.DiskSizeBytes != nil {
+			disk.Size = *vhd.DiskSizeBytes
+		}
 		if vhd.Dynamic != nil {
 			disk.Dynamic = *vhd.Dynamic
 		}
