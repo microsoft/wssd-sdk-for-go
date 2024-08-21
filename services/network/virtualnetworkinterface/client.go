@@ -15,8 +15,8 @@ import (
 type Service interface {
 	Get(context.Context, string, string) (*[]network.VirtualNetworkInterface, error)
 	CreateOrUpdate(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
+	Discover(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
 	Hydrate(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
-	// Hydrate(context.Context, string, string, string, string) (*network.VirtualNetworkInterface, error)
 	Delete(context.Context, string, string) error
 	Update(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
 }
@@ -45,6 +45,11 @@ func (c *VirtualNetworkInterfaceClient) Get(ctx context.Context, group, name str
 // CreateOrUpdate methods invokes create or update on the client
 func (c *VirtualNetworkInterfaceClient) CreateOrUpdate(ctx context.Context, group, name string, networkInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
 	return c.internal.CreateOrUpdate(ctx, group, name, networkInterface)
+}
+
+// Discover method finds networkinterfaces matching input
+func (c *VirtualNetworkInterfaceClient) Discover(ctx context.Context, group, name string, networkInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
+	return c.internal.Discover(ctx, group, name, networkInterface)
 }
 
 // Hydrate method invokes hydration of the networkinterface resource
