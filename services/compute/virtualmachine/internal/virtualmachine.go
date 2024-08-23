@@ -230,10 +230,12 @@ func (c *client) getWssdVirtualMachineStorageConfigurationOsDisk(s *compute.OSDi
 	if s.ManagedDisk != nil {
 		managedDisk = &wssdcommonproto.VirtualMachineManagedDiskParameters{}
 		if s.ManagedDisk.SecurityProfile != nil {
-			securityEncryptionType := wssdcommonproto.SecurityEncryptionTypes_SecurityEncryptionNone
+			var securityEncryptionType wssdcommonproto.SecurityEncryptionTypes
 			switch s.ManagedDisk.SecurityProfile.SecurityEncryptionType {
 			case compute.NonPersistedTPM:
 				securityEncryptionType = wssdcommonproto.SecurityEncryptionTypes_NonPersistedTPM
+			default:
+				securityEncryptionType = wssdcommonproto.SecurityEncryptionTypes_SecurityEncryptionNone
 			}
 			managedDisk.SecurityProfile = &wssdcommonproto.VMDiskSecurityProfile{
 				SecurityEncryptionType: securityEncryptionType,
@@ -606,7 +608,7 @@ func (c *client) getVirtualMachineStorageProfileOsDisk(d *wssdcompute.Disk) *com
 	if d.ManagedDisk != nil {
 		managedDisk = &compute.VirtualMachineManagedDiskParameters{}
 		if d.ManagedDisk.SecurityProfile != nil {
-			var securityEncryptionType compute.SecurityEncryptionTypes = ""
+			var securityEncryptionType compute.SecurityEncryptionTypes
 			switch d.ManagedDisk.SecurityProfile.SecurityEncryptionType {
 			case wssdcommonproto.SecurityEncryptionTypes_NonPersistedTPM:
 				securityEncryptionType = compute.NonPersistedTPM
