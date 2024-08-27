@@ -226,8 +226,26 @@ func (c *client) getWssdVirtualMachineStorageConfigurationOsDisk(s *compute.OSDi
 	if s.VhdName == nil {
 		return nil, errors.Wrapf(errors.InvalidInput, "Vhd Name is missing in OSDisk")
 	}
+	var managedDisk *wssdcommonproto.VirtualMachineManagedDiskParameters
+	if s.ManagedDisk != nil {
+		managedDisk = &wssdcommonproto.VirtualMachineManagedDiskParameters{}
+		if s.ManagedDisk.SecurityProfile != nil {
+			var securityEncryptionType wssdcommonproto.SecurityEncryptionTypes
+			switch s.ManagedDisk.SecurityProfile.SecurityEncryptionType {
+			case compute.NonPersistedTPM:
+				securityEncryptionType = wssdcommonproto.SecurityEncryptionTypes_NonPersistedTPM
+			default:
+				securityEncryptionType = wssdcommonproto.SecurityEncryptionTypes_SecurityEncryptionNone
+			}
+			managedDisk.SecurityProfile = &wssdcommonproto.VMDiskSecurityProfile{
+				SecurityEncryptionType: securityEncryptionType,
+			}
+		}
+	}
+
 	return &wssdcompute.Disk{
-		Diskname: *s.VhdName,
+		Diskname:    *s.VhdName,
+		ManagedDisk: managedDisk,
 	}, nil
 }
 
@@ -586,8 +604,25 @@ func (c *client) getVirtualMachineStorageProfile(s *wssdcompute.StorageConfigura
 }
 
 func (c *client) getVirtualMachineStorageProfileOsDisk(d *wssdcompute.Disk) *compute.OSDisk {
+	var managedDisk *compute.VirtualMachineManagedDiskParameters
+	if d.ManagedDisk != nil {
+		managedDisk = &compute.VirtualMachineManagedDiskParameters{}
+		if d.ManagedDisk.SecurityProfile != nil {
+			var securityEncryptionType compute.SecurityEncryptionTypes
+			switch d.ManagedDisk.SecurityProfile.SecurityEncryptionType {
+			case wssdcommonproto.SecurityEncryptionTypes_NonPersistedTPM:
+				securityEncryptionType = compute.NonPersistedTPM
+			default:
+				securityEncryptionType = ""
+			}
+			managedDisk.SecurityProfile = &compute.VMDiskSecurityProfile{
+				SecurityEncryptionType: securityEncryptionType,
+			}
+		}
+	}
 	return &compute.OSDisk{
-		VhdName: &d.Diskname,
+		VhdName:     &d.Diskname,
+		ManagedDisk: managedDisk,
 	}
 }
 
