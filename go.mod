@@ -1,13 +1,11 @@
 module github.com/microsoft/wssd-sdk-for-go
 
-go 1.21
-
-toolchain go1.23.0
+go 1.22
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
 	github.com/golang/protobuf v1.5.4
-	github.com/microsoft/moc v0.20.5-0.20240824221741-55bb71fa677f
+	github.com/microsoft/moc v0.21.3-0.20240916223442-62f6f68cc919
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.3
 	go.opencensus.io v0.24.0
@@ -37,7 +35,7 @@ require (
 	golang.org/x/net v0.28.0 // indirect
 	golang.org/x/sys v0.23.0 // indirect
 	golang.org/x/text v0.17.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240823204242-4ba0660f739c // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240820151423-278611b39280 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
