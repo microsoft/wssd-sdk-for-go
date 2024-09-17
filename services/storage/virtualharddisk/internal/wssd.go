@@ -45,6 +45,19 @@ func (c *client) Get(ctx context.Context, containerName, name string) (*[]storag
 	return getVirtualHardDisksFromResponse(response), nil
 }
 
+// Get
+func (c *client) get(ctx context.Context, containerName, name string) ([]*wssdstorage.VirtualHardDisk, error) {
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_GET, name, containerName, nil)
+	if err != nil {
+		return nil, err
+	}
+	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	return response.GetVirtualHardDiskSystems(), nil
+}
+
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string, sg *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
 	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_POST, name, containerName, sg)
@@ -66,6 +79,28 @@ func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string,
 	return &((*vhd)[0]), err
 }
 
+// Upload
+func (c *client) Upload(ctx context.Context, containerName, name string, targeturl string) (*storage.VirtualHardDisk, error) {
+	fmt.Printf("wssd-sdk-for-go: wssd.go: Creating operation request %s to %s\n", name, targeturl)
+	request, err := c.getVirtualHardDiskOperationRequest(ctx, wssdcommonproto.VirtualHardDiskOperation_UPLOAD, name, containerName, targeturl)
+	if err != nil {
+		return nil, err
+	}
+	response, err := c.VirtualHardDiskAgentClient.Operate(ctx, request)
+	if err != nil {
+		log.Errorf("[VirtualHardDisk] Upload failed with error %v", err)
+		return nil, err
+	}
+
+	vhd := getVirtualHardDisksFromOperationResponse(response)
+
+	if len(*vhd) == 0 {
+		return nil, fmt.Errorf("[VirtualHardDisk][Upload] Unexpected error: Uploading a VirtualHardDisk returned no result")
+	}
+
+	return &((*vhd)[0]), err
+}
+
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, containerName, name string) error {
 	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_DELETE, name, containerName, nil)
@@ -74,6 +109,36 @@ func (c *client) Delete(ctx context.Context, containerName, name string) error {
 	}
 	_, err = c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	return err
+}
+
+func getVirtualHardDisksFromOperationResponse(response *wssdstorage.VirtualHardDiskOperationResponse) *[]storage.VirtualHardDisk {
+	virtualHardDisks := []storage.VirtualHardDisk{}
+	for _, vhd := range response.GetVirtualHardDisks() {
+		virtualHardDisks = append(virtualHardDisks, *(getVirtualHardDisk(vhd)))
+	}
+
+	return &virtualHardDisks
+}
+
+func (c *client) getVirtualHardDiskOperationRequest(ctx context.Context, opType wssdcommonproto.VirtualHardDiskOperation, name, containerName string, targeturl string) (*wssdstorage.VirtualHardDiskOperationRequest, error) {
+	var err error
+	vhd, err := c.get(ctx, containerName, name)
+
+	if len(vhd) != 1 {
+		err = errors.Wrapf(errors.InvalidInput, "Multiple or No Virtual Hard Disks found in container %s with name %s", containerName, name)
+		return nil, err
+	}
+
+	vhd[0].TargetUrl = targeturl
+	if err != nil {
+		return nil, err
+	}
+	request := &wssdstorage.VirtualHardDiskOperationRequest{
+		OperationType:    opType,
+		VirtualHardDisks: vhd,
+	}
+
+	return request, nil
 }
 
 func getVirtualHardDisksFromResponse(response *wssdstorage.VirtualHardDiskResponse) *[]storage.VirtualHardDisk {
@@ -132,6 +197,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			IsPlaceholder:       getVirtualHardDiskIsPlaceholder(vhd),
 			CloudInitDataSource: vhd.CloudInitDataSource,
 			DiskFileFormat:      vhd.DiskFileFormat,
+			TargetUrl:           &vhd.TargetUrl,
 		},
 	}
 }
@@ -166,6 +232,10 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	disk.HyperVGeneration = vhd.HyperVGeneration
 	disk.DiskFileFormat = vhd.DiskFileFormat
 	disk.SourceType = vhd.SourceType
+
+	if vhd.TargetUrl != nil {
+		disk.TargetUrl = *vhd.TargetUrl
+	}
 
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
 		if vhd.Source == nil {
