@@ -13,6 +13,7 @@ import (
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/moc/pkg/errors"
 	prototags "github.com/microsoft/moc/pkg/tags"
+	"github.com/microsoft/moc/rpc/common"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdstorage "github.com/microsoft/moc/rpc/nodeagent/storage"
 	wssdclient "github.com/microsoft/wssd-sdk-for-go/pkg/client"
@@ -177,6 +178,9 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	} else {
 		if vhd.DiskSizeBytes == nil && vhd.Source == nil {
 			return nil, errors.Wrapf(errors.InvalidInput, "Need to define atleast one of: DiskSize, Source")
+		}
+		if vhd.SourceType == common.ImageSource_HTTP_SOURCE && vhd.Source == nil {
+			return nil, errors.Wrapf(errors.InvalidInput, "Source cannot be empty if source type is HTTP")
 		}
 		if vhd.Source != nil {
 			disk.Source = *vhd.Source
