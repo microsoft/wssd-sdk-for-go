@@ -5,7 +5,7 @@ go 1.22
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
 	github.com/golang/protobuf v1.5.4
-	github.com/microsoft/moc v0.20.4
+	github.com/microsoft/moc v0.22.1
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.3
 	go.opencensus.io v0.24.0
