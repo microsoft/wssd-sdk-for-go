@@ -130,8 +130,8 @@ func Test_getVirtualMachine(t *testing.T) {
 						Statuses: map[string]*string{
 							"DownloadStatus": proto.String(""),
 							"Error":          proto.String(""),
-							"HealthState":    proto.String("currentState:OK previousState:NOTKNOWN"),
-							"ProvisionState": proto.String("currentState:CREATED previousState:UNKNOWN"),
+							"HealthState":    proto.String("currentState:OK "),
+							"ProvisionState": proto.String("currentState:CREATED "),
 							"Version":        proto.String(""),
 							"PowerState":     proto.String(common.PowerState_Running.String()),
 						},
