@@ -14,7 +14,7 @@ import (
 // Service interface
 type Service interface {
 	Get(context.Context, string, string) (*[]storage.VirtualHardDisk, error)
-	CreateOrUpdate(context.Context, string, string, *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error)
+	CreateOrUpdate(context.Context, string, string, *storage.VirtualHardDisk, string) (*storage.VirtualHardDisk, error)
 	Delete(context.Context, string, string) error
 	Hydrate(context.Context, string, string, *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error)
 }
@@ -41,8 +41,8 @@ func (c *VirtualHardDiskClient) Get(ctx context.Context, container, name string)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
-func (c *VirtualHardDiskClient) CreateOrUpdate(ctx context.Context, container, name string, storage *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
-	return c.internal.CreateOrUpdate(ctx, container, name, storage)
+func (c *VirtualHardDiskClient) CreateOrUpdate(ctx context.Context, container, name string, storage *storage.VirtualHardDisk, path string) (*storage.VirtualHardDisk, error) {
+	return c.internal.CreateOrUpdate(ctx, container, name, storage, path)
 }
 
 // Delete methods invokes delete of the storage resource

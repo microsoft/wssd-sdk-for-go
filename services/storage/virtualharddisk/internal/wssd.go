@@ -35,7 +35,7 @@ func NewVirtualHardDiskClient(subID string, authorizer auth.Authorizer) (*client
 
 // Get
 func (c *client) Get(ctx context.Context, containerName, name string) (*[]storage.VirtualHardDisk, error) {
-	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_GET, name, containerName, nil)
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_GET, name, containerName, nil, "")
 	if err != nil {
 		return nil, err
 	}
@@ -47,8 +47,8 @@ func (c *client) Get(ctx context.Context, containerName, name string) (*[]storag
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string, sg *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
-	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_POST, name, containerName, sg)
+func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string, sg *storage.VirtualHardDisk, path string) (*storage.VirtualHardDisk, error) {
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_POST, name, containerName, sg, path)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string,
 
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, containerName, name string) error {
-	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_DELETE, name, containerName, nil)
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_DELETE, name, containerName, nil, "")
 	if err != nil {
 		return err
 	}
@@ -81,7 +81,7 @@ func (c *client) Delete(ctx context.Context, containerName, name string) error {
 // Ultimately, we need the full path on disk to the disk file which we assemble from the path of the container plus the file name of the disk.
 // (e.g. "C:\ClusterStorage\Userdata_1\abc123" for the container path and "my_disk.vhd" for the disk name)
 func (c *client) Hydrate(ctx context.Context, containerName, name string, vhdDef *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
-	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_HYDRATE, name, containerName, vhdDef)
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_HYDRATE, name, containerName, vhdDef, "")
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func getVirtualHardDisksFromResponse(response *wssdstorage.VirtualHardDiskRespon
 	return &virtualHardDisks
 }
 
-func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, containerName string, vhd *storage.VirtualHardDisk) (*wssdstorage.VirtualHardDiskRequest, error) {
+func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, containerName string, vhd *storage.VirtualHardDisk, path string) (*wssdstorage.VirtualHardDiskRequest, error) {
 	request := &wssdstorage.VirtualHardDiskRequest{
 		OperationType:          opType,
 		VirtualHardDiskSystems: []*wssdstorage.VirtualHardDisk{},
@@ -123,6 +123,7 @@ func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, container
 			return nil, err
 		}
 	}
+	wssdvhd.Path = path
 	request.VirtualHardDiskSystems = append(request.VirtualHardDiskSystems, wssdvhd)
 	return request, nil
 }
