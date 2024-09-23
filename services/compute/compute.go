@@ -106,6 +106,23 @@ type ImageReference struct {
 	ID *string `json:"id,omitempty"`
 }
 
+type SecurityEncryptionTypes string
+
+// possible values of security encryption type string
+const (
+	NonPersistedTPM SecurityEncryptionTypes = "NonPersistedTPM"
+)
+
+type VMDiskSecurityProfile struct {
+	// Specifies the EncryptionType of the managed disk. <br> If setting to NonPersistedTPM, VM Guest State is not encrypted, OS disk is not encrypted. <br><br> NOTE: It can be set for only Confidential VMs.
+	SecurityEncryptionType SecurityEncryptionTypes `json:"securityEncryptionType,omitempty"`
+}
+
+type VirtualMachineManagedDiskParameters struct {
+	// SecurityProfile - Specifies the security profile for the managed disk.
+	SecurityProfile *VMDiskSecurityProfile `json:"securityProfile,omitempty"`
+}
+
 type OSDisk struct {
 	// Name
 	Name *string `json:"name,omitempty"`
@@ -113,6 +130,8 @@ type OSDisk struct {
 	OsType OperatingSystemTypes `json:"osType,omitempty"`
 	// VhdName reference to virtual hard disk
 	VhdName *string `json:"vhd,omitempty"`
+	// ManagedDisk - The managed disk parameters
+	ManagedDisk *VirtualMachineManagedDiskParameters `json:"managedDisk,omitempty"`
 }
 
 type DataDisk struct {
