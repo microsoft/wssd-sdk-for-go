@@ -328,8 +328,8 @@ type VirtualMachineProperties struct {
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 	// HighAvailabilityState
 	HighAvailabilityState *string `json:"HighAvailabilityState,omitempty"`
-	// Zone Profile
-	ZoneProfile *ZoneProfile `json:"zoneProfile,omitempty"`
+	// Zone Configuration
+	ZoneConfiguration *ZoneConfiguration `json:"zoneConfiguration,omitempty"`
 }
 
 type VirtualMachine struct {
@@ -650,10 +650,10 @@ type ZoneReference struct {
 	Nodes *[]string `json:"nodes,omitempty"`
 }
 
-// ZoneProfile describes the the list of zones and affinity type
-type ZoneProfile struct {
+// ZoneConfiguration describes the the list of zones and placement type
+type ZoneConfiguration struct {
 	// Zones
 	Zones *[]ZoneReference `json:"zones,omitempty"`
-	// Strict Affinity To Zones
-	StrictAffinityToZones *bool `json:"strictAffinityToZones,omitempty"`
+	// Strict Placement
+	StrictPlacement *bool `json:"strictPlacement,omitempty"`
 }
