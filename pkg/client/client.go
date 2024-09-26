@@ -200,6 +200,16 @@ func GetAvailabilitySetClient(serverAddress *string, authorizer auth.Authorizer)
 	return compute_pb.NewAvailabilitySetAgentClient(conn), nil
 }
 
+// GetPlacementGroupClient returns the placement group client to communicate with the wssd agent
+func GetPlacementGroupClient(serverAddress *string, authorizer auth.Authorizer) (compute_pb.PlacementGroupAgentClient, error) {
+	conn, err := getClientConnection(serverAddress, authorizer)
+	if err != nil {
+		log.Fatalf("Unable to get PlacementGroupClient. Failed to dial: %v", err)
+	}
+
+	return compute_pb.NewPlacementGroupAgentClient(conn), nil
+}
+
 // GetVirtualMachineClient returns the virtual machine client to comminicate with the wssd agent
 func GetVirtualMachineClient(serverAddress *string, authorizer auth.Authorizer) (compute_pb.VirtualMachineAgentClient, error) {
 	conn, err := getClientConnection(serverAddress, authorizer)
