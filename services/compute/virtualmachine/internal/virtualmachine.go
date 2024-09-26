@@ -793,16 +793,16 @@ func (c *client) getVirtualMachineProxyConfiguration(proxyConfiguration *wssdcom
 	}
 }
 
-func (c *client) getWssdVirtualMachineZoneConfiguration(zoneProfile *compute.ZoneConfiguration) (*wssdcommonproto.ZoneConfiguration, error) {
+func (c *client) getWssdVirtualMachineZoneConfiguration(zoneProfile *compute.ZoneConfiguration) (*wssdcompute.ZoneConfiguration, error) {
 	if zoneProfile == nil {
 		return nil, nil
 	}
 
-	wssdZones := []*wssdcommonproto.ZoneReference{}
+	wssdZones := []*wssdcompute.ZoneReference{}
 	for _, computeZone := range *zoneProfile.Zones {
 		nodes := []string{}
 		nodes = append(nodes, *computeZone.Nodes...)
-		wssdZones = append(wssdZones, &wssdcommonproto.ZoneReference{
+		wssdZones = append(wssdZones, &wssdcompute.ZoneReference{
 			Name:  *computeZone.Name,
 			Nodes: nodes,
 		})
@@ -811,7 +811,7 @@ func (c *client) getWssdVirtualMachineZoneConfiguration(zoneProfile *compute.Zon
 	if zoneProfile.StrictPlacement != nil {
 		strictPlacement = *zoneProfile.StrictPlacement
 	}
-	wssdZoneConfiguration := &wssdcommonproto.ZoneConfiguration{
+	wssdZoneConfiguration := &wssdcompute.ZoneConfiguration{
 		Zones:           wssdZones,
 		StrictPlacement: strictPlacement,
 	}
