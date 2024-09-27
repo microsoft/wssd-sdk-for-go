@@ -78,7 +78,7 @@ type OperatingSystemBootstrapEngine string
 const (
 	CloudInit          OperatingSystemBootstrapEngine = "CloudInit"
 	WindowsAnswerFiles OperatingSystemBootstrapEngine = "WindowsAnswerFiles"
-	Hydrated 		   OperatingSystemBootstrapEngine = "Hydrated"
+	Hydrated           OperatingSystemBootstrapEngine = "Hydrated"
 )
 
 type StatusLevelType string
