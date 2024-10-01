@@ -3,7 +3,6 @@ package internal
 import (
 	"github.com/microsoft/moc/pkg/errors"
 	"github.com/microsoft/moc/pkg/status"
-	prototags "github.com/microsoft/moc/pkg/tags"
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
@@ -24,7 +23,6 @@ func getWssdPlacementGroup(pgroup *compute.PlacementGroup) (*wssdcompute.Placeme
 
 	wssdpgroup := &wssdcompute.PlacementGroup{
 		Name: *pgroup.Name,
-		Tags: getWssdTags(pgroup.Tags),
 	}
 
 	if pgroup.PlacementGroupProperties == nil {
@@ -34,18 +32,12 @@ func getWssdPlacementGroup(pgroup *compute.PlacementGroup) (*wssdcompute.Placeme
 
 	wssdpgroup = &wssdcompute.PlacementGroup{
 		Name:                     *pgroup.Name,
-		Tags:                     getWssdTags(pgroup.Tags),
 		Entity:                   getWssdPlacementGroupEntity(pgroup),
-		PlatformFaultDomainCount: getWssdPlatformFaultDomainCount(pgroup),
 		VirtualMachines:          getWssdPlacementGroupVMs(pgroup),
 		Status:                   status.GetFromStatuses(pgroup.Statuses),
 	}
 
 	return wssdpgroup, nil
-}
-
-func getWssdTags(tags map[string]*string) *wssdcommonproto.Tags {
-	return prototags.MapToProto(tags)
 }
 
 func getWssdPlacementGroupEntity(pgroup *compute.PlacementGroup) *wssdcommonproto.Entity {
@@ -59,20 +51,11 @@ func getWssdPlacementGroupEntity(pgroup *compute.PlacementGroup) *wssdcommonprot
 	}
 }
 
-func getWssdPlatformFaultDomainCount(pgroup *compute.PlacementGroup) int32 {
-	var faultDomainCount int32 = 0
-	if pgroup.PlatformFaultDomainCount != nil {
-		faultDomainCount = *pgroup.PlatformFaultDomainCount
-	}
-
-	return faultDomainCount
-}
-
-func getWssdPlacementGroupVMs(pgroup *compute.PlacementGroup) []*wssdcompute.VirtualMachineReference {
-	var vms []*wssdcompute.VirtualMachineReference
+func getWssdPlacementGroupVMs(pgroup *compute.PlacementGroup) []*wssdcompute.VirtualMachineRef {
+	var vms []*wssdcompute.VirtualMachineRef
 	for _, vm := range pgroup.VirtualMachines {
 		if vm != nil && vm.Name != nil {
-			vms = append(vms, &wssdcompute.VirtualMachineReference{
+			vms = append(vms, &wssdcompute.VirtualMachineRef{
 				Name: *vm.Name,
 			})
 		}
@@ -86,22 +69,12 @@ func getPlacementGroup(pgroup *wssdcompute.PlacementGroup) *compute.PlacementGro
 	return &compute.PlacementGroup{
 		Name: &pgroup.Name,
 		ID:   &pgroup.Id,
-		Tags: getComputeTags(pgroup.GetTags()),
 		PlacementGroupProperties: &compute.PlacementGroupProperties{
-			PlatformFaultDomainCount: getPlacementGroupPlatformFaultDomainCount(pgroup),
 			VirtualMachines:          getPlacementGroupVMs(pgroup),
 			Statuses:                 getPlacementGroupStatuses(pgroup),
 			IsPlaceholder:            getPlacementGroupIsPlaceholder(pgroup),
 		},
 	}
-}
-
-func getComputeTags(tags *wssdcommonproto.Tags) map[string]*string {
-	return prototags.ProtoToMap(tags)
-}
-
-func getPlacementGroupPlatformFaultDomainCount(pgroup *wssdcompute.PlacementGroup) *int32 {
-	return &pgroup.PlatformFaultDomainCount
 }
 
 func getPlacementGroupVMs(pgroup *wssdcompute.PlacementGroup) []*compute.SubResource {
