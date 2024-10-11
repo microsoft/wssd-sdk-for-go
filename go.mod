@@ -5,7 +5,7 @@ go 1.22
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
 	github.com/golang/protobuf v1.5.4
-	github.com/microsoft/moc v0.22.1
+	github.com/microsoft/moc v0.23.1
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.3
 	go.opencensus.io v0.24.0
@@ -42,7 +42,6 @@ require (
 
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
-	github.com/microsoft/moc => github.com/microsoft/moc v0.23.1-0.20241008182201-8b5d4bc96951
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
 	golang.org/x/sys => golang.org/x/sys v0.0.0-20220823224334-20c2bfdbfe24
 )
