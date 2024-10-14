@@ -328,6 +328,7 @@ type VirtualMachineProperties struct {
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 	// HighAvailabilityState
 	HighAvailabilityState *string `json:"HighAvailabilityState,omitempty"`
+	// FailoverPriority - Specifies the failover priority for the virtual machine.
 	FailoverPriority      *int    `json:"failoverPriority,omitempty"`
 }
 
