@@ -328,6 +328,7 @@ type VirtualMachineProperties struct {
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 	// HighAvailabilityState
 	HighAvailabilityState *string `json:"HighAvailabilityState,omitempty"`
+	FailoverPriority      *int    `json:"failoverPriority,omitempty"`
 }
 
 type VirtualMachine struct {
