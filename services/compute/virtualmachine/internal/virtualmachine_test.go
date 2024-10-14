@@ -64,9 +64,10 @@ func Test_getVirtualMachine(t *testing.T) {
 						Health: &common.Health{
 							CurrentState: common.HealthState_OK,
 						},
-						LastError:      &common.Error{},
-						Version:        &common.Version{},
-						DownloadStatus: &common.DownloadStatus{},
+						LastError:       &common.Error{},
+						Version:         &common.Version{},
+						DownloadStatus:  &common.DownloadStatus{},
+						PlacementStatus: &common.PlacementStatus{},
 					},
 					Os: &wssdcompute.OperatingSystemConfiguration{
 						LinuxConfiguration: nil,
