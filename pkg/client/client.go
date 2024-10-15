@@ -4,7 +4,6 @@
 package client
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"strings"
@@ -17,8 +16,8 @@ import (
 	"google.golang.org/grpc/keepalive"
 	log "k8s.io/klog"
 
+	"github.com/microsoft/moc-pkg/pkg/intercept"
 	"github.com/microsoft/moc/pkg/auth"
-	"github.com/microsoft/moc/pkg/errors"
 	admin_pb "github.com/microsoft/moc/rpc/common/admin"
 	compute_pb "github.com/microsoft/moc/rpc/nodeagent/compute"
 	network_pb "github.com/microsoft/moc/rpc/nodeagent/network"
@@ -110,16 +109,9 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 
 	opts = append(opts, grpc.WithStatsHandler(&ocgrpc.ClientHandler{}))
 
-	opts = append(opts, grpc.WithUnaryInterceptor(errorParsingInterceptor()))
+	opts = append(opts, grpc.WithUnaryInterceptor(intercept.NewErrorParsingInterceptor()))
 
 	return opts
-}
-
-func errorParsingInterceptor() grpc.UnaryClientInterceptor {
-	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		err := invoker(ctx, method, req, reply, cc, opts...)
-		return errors.ParseGRPCError(err)
-	}
 }
 
 func getClientConnection(serverAddress *string, authorizer auth.Authorizer) (*grpc.ClientConn, error) {
