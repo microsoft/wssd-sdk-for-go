@@ -144,7 +144,7 @@ func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 		if wssdctainer.Info != nil && wssdctainer.Info.Capacity != nil {
 			wssdctainer.Info.Capacity.AvailableBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.AvailableSize)
 			wssdctainer.Info.Capacity.TotalBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.TotalSize)
-			//wssdctainer.Info.PreferredOwner = ctainer.ContainerInfo.PreferredOwner
+			wssdctainer.Info.PreferredOwner = ctainer.ContainerInfo.PreferredOwner
 		}
 	}
 	return wssdctainer
