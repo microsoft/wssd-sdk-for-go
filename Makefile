@@ -12,7 +12,7 @@ BUILD_DATE ?= $(shell date -u +%m/%d/%Y)
 LDFLAGS="-X main.version=$(TAG) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DATE)"
 
 # Private repo workaround
-export GOPRIVATE = github.com/microsoft
+export GOPRIVATE=github.com/microsoft
 # Active module mode, as we use go modules to manage dependencies
 export GO111MODULE=on
 
