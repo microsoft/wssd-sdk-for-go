@@ -16,8 +16,8 @@ import (
 	"google.golang.org/grpc/keepalive"
 	log "k8s.io/klog"
 
-	"github.com/microsoft/moc-pkg/pkg/intercept"
 	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/intercept"
 	admin_pb "github.com/microsoft/moc/rpc/common/admin"
 	compute_pb "github.com/microsoft/moc/rpc/nodeagent/compute"
 	network_pb "github.com/microsoft/moc/rpc/nodeagent/network"
