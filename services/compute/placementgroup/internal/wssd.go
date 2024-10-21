@@ -40,7 +40,7 @@ func (c *wssdClient) Get(ctx context.Context, name string) (*[]compute.Placement
 
 func (c *wssdClient) getPlacementGroupRequest(opType wssdcommonproto.Operation, name string, pgroup *compute.PlacementGroup) (*wssdcompute.PlacementGroupRequest, error) {
 	request := &wssdcompute.PlacementGroupRequest{
-		OperationType:    opType,
+		OperationType:   opType,
 		PlacementGroups: []*wssdcompute.PlacementGroup{},
 	}
 
