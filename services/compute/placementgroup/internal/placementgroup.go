@@ -31,10 +31,10 @@ func getWssdPlacementGroup(pgroup *compute.PlacementGroup) (*wssdcompute.Placeme
 	}
 
 	wssdpgroup = &wssdcompute.PlacementGroup{
-		Name:                     *pgroup.Name,
-		Entity:                   getWssdPlacementGroupEntity(pgroup),
-		VirtualMachines:          getWssdPlacementGroupVMs(pgroup),
-		Status:                   status.GetFromStatuses(pgroup.Statuses),
+		Name:            *pgroup.Name,
+		Entity:          getWssdPlacementGroupEntity(pgroup),
+		VirtualMachines: getWssdPlacementGroupVMs(pgroup),
+		Status:          status.GetFromStatuses(pgroup.Statuses),
 	}
 
 	return wssdpgroup, nil
@@ -51,11 +51,11 @@ func getWssdPlacementGroupEntity(pgroup *compute.PlacementGroup) *wssdcommonprot
 	}
 }
 
-func getWssdPlacementGroupVMs(pgroup *compute.PlacementGroup) []*wssdcompute.VirtualMachineRef {
-	var vms []*wssdcompute.VirtualMachineRef
+func getWssdPlacementGroupVMs(pgroup *compute.PlacementGroup) []*wssdcompute.VirtualMachineReference {
+	var vms []*wssdcompute.VirtualMachineReference
 	for _, vm := range pgroup.VirtualMachines {
 		if vm != nil && vm.Name != nil {
-			vms = append(vms, &wssdcompute.VirtualMachineRef{
+			vms = append(vms, &wssdcompute.VirtualMachineReference{
 				Name: *vm.Name,
 			})
 		}
@@ -70,9 +70,9 @@ func getPlacementGroup(pgroup *wssdcompute.PlacementGroup) *compute.PlacementGro
 		Name: &pgroup.Name,
 		ID:   &pgroup.Id,
 		PlacementGroupProperties: &compute.PlacementGroupProperties{
-			VirtualMachines:          getPlacementGroupVMs(pgroup),
-			Statuses:                 getPlacementGroupStatuses(pgroup),
-			IsPlaceholder:            getPlacementGroupIsPlaceholder(pgroup),
+			VirtualMachines: getPlacementGroupVMs(pgroup),
+			Statuses:        getPlacementGroupStatuses(pgroup),
+			IsPlaceholder:   getPlacementGroupIsPlaceholder(pgroup),
 		},
 	}
 }
