@@ -89,6 +89,21 @@ const (
 	StatusLevelError   StatusLevelType = "Error"
 )
 
+type PlacementGroupType string
+
+const (
+	Affinity           PlacementGroupType = "Affinity"
+	AntiAffinity       PlacementGroupType = "AntiAffinity"
+	StrictAntiAffinity PlacementGroupType = "StrictAntiAffinity"
+)
+
+type PlacementGroupScope string
+
+const (
+	ServerScope PlacementGroupScope = "Server"
+	ZoneScope   PlacementGroupScope = "Zone"
+)
+
 // ImageReference specifies information about the image to use. You can specify information about platform
 // images, marketplace images, or virtual machine images. This element is required when you want to use a
 // platform image, marketplace image, or virtual machine image, but is not used in other creation
@@ -648,7 +663,7 @@ type PlacementGroupProperties struct {
 	// Zones
 	Zones *[]string `json:"nodes,omitempty"`
 	// scope
-	Scope string `json:"scope,omitempty"`
+	Scope PlacementGroupScope `json:"scope,omitempty"`
 	// strict placement
 	StrictPlacement bool `json:"strictplacement,omitempty"`
 	// A list of references to all virtual machines in the placement group.
@@ -687,6 +702,8 @@ type PlacementGroup struct {
 	ID *string `json:"ID,omitempty"`
 	// READ-ONLY; Resource name
 	Name *string `json:"name,omitempty"`
+	// Type
+	Type PlacementGroupType `json:"type,omitempty"`
 }
 
 // PlacementGroupListResult - The List Placement Group operation response.
