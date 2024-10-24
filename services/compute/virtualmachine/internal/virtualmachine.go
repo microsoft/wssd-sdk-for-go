@@ -61,10 +61,7 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		return nil, errors.Wrapf(err, "Failed to get Entity")
 	}
 
-	priority, err := c.getWssdVirtualMachinePriority(*vm.Priority)
-	if err != nil {
-		return nil, errors.Wrapf(err, "Failed to get Priority")
-	}
+	priority := c.getWssdVirtualMachinePriority(vm.Priority)
 
 	wssdvm = &wssdcompute.VirtualMachine{
 		Name:              *vm.Name,
@@ -474,17 +471,21 @@ func (c *client) getWssdVirtualMachineProxyConfiguration(proxyConfig *compute.Pr
 	return proxyConfiguration
 }
 
-func (c *client) getWssdVirtualMachinePriority(priority int32) (*wssdcommonproto.Priority, error) {
+func (c *client) getWssdVirtualMachinePriority(priority *int32) *wssdcommonproto.Priority {
 	priorityValue := wssdcommonproto.Priority_DEFAULT
-	if priority == 1 {
-		priorityValue = wssdcommonproto.Priority_LOW
-	} else if priority == 2 {
-		priorityValue = wssdcommonproto.Priority_MEDIUM
-	} else if priority == 3 {
-		priorityValue = wssdcommonproto.Priority_HIGH
+	if priority == nil {
+		return &priorityValue
 	}
 
-	return &priorityValue, nil
+	switch *priority {
+	case 1:
+		priorityValue = wssdcommonproto.Priority_LOW
+	case 2:
+		priorityValue = wssdcommonproto.Priority_MEDIUM
+	case 3:
+		priorityValue = wssdcommonproto.Priority_HIGH
+	}
+	return &priorityValue
 }
 
 // Conversion functions from wssdcompute to compute
