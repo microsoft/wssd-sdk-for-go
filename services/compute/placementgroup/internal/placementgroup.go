@@ -128,9 +128,19 @@ func getPlacementGroup(pgroup *wssdcompute.PlacementGroup) *compute.PlacementGro
 		pgScope = compute.ZoneScope
 	}
 
+	pgType := compute.Affinity
+	if pgroup.Type == wssdcompute.PlacementGroupType_Affinity {
+	   pgType = compute.Affinity
+	} else if pgroup.Type == wssdcompute.PlacementGroupType_AntiAffinity {
+	   pgType = compute.AntiAffinity
+	} else if pgroup.Type == wssdcompute.PlacementGroupType_StrictAntiAffinity {
+	   pgType = compute.StrictAntiAffinity
+	}
+
 	return &compute.PlacementGroup{
 		Name: &pgroup.Name,
 		ID:   &pgroup.Id,
+		Type: pgType,
 		PlacementGroupProperties: &compute.PlacementGroupProperties{
 			VirtualMachines: getPlacementGroupVMs(pgroup),
 			Statuses:        getPlacementGroupStatuses(pgroup),
