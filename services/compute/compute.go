@@ -661,7 +661,7 @@ type SubResource struct {
 // PlacementGroupProperties - The instance view of a resource.
 type PlacementGroupProperties struct {
 	// Zones
-	Zones *[]string `json:"nodes,omitempty"`
+	Zones *ZoneConfiguration `json:"zoneconfiguration,omitempty"`
 	// scope
 	Scope PlacementGroupScope `json:"scope,omitempty"`
 	// strict placement

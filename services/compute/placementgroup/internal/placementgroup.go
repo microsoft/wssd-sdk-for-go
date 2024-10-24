@@ -59,7 +59,7 @@ func getWssdPlacementGroup(pgroup *compute.PlacementGroup) (*wssdcompute.Placeme
             StrictPlacement: pgroup.PlacementGroupProperties.StrictPlacement,
 		}
 
-		for _, zn := range *pgroup.PlacementGroupProperties.Zones {
+		for _, zn := range *pgroup.PlacementGroupProperties.Zones.Zones {
             rpcZoneRef, err := getRpcZoneReference(&zn)
 			if err != nil {
 				return nil, err
@@ -71,13 +71,13 @@ func getWssdPlacementGroup(pgroup *compute.PlacementGroup) (*wssdcompute.Placeme
 	return wssdpgroup, nil
 }
 
-func getRpcZoneReference(s *string) (*wssdcommonproto.ZoneReference, error) {
+func getRpcZoneReference(s *compute.ZoneReference) (*wssdcommonproto.ZoneReference, error) {
 	if s == nil {
 		return nil, errors.Wrapf(errors.InvalidInput, "Zone Name is missing")
 	}
 
 	return &wssdcommonproto.ZoneReference{
-        Name: *s,
+        Name: *s.Name,
 	},nil
 }
 
@@ -108,10 +108,20 @@ func getWssdPlacementGroupVMs(pgroup *compute.PlacementGroup) []*wssdcompute.Vir
 // Conversion functions from wssdcompute to compute
 func getPlacementGroup(pgroup *wssdcompute.PlacementGroup) *compute.PlacementGroup {
 
-	pgZone := []string{}
-	for _, zn := range pgroup.Zones.Zones {
-		pgZone = append(pgZone, zn.Name) 
-	} 
+	pgZoneRef := make([]compute.ZoneReference, len(pgroup.Zones.Zones))
+
+	for i, zn := range pgroup.Zones.Zones {
+		pgZnRef := compute.ZoneReference{
+			Name: &zn.Name,
+		    Nodes: &[]string{},
+		}
+		pgZoneRef[i] = pgZnRef
+	}
+	
+	pgZones := &compute.ZoneConfiguration{
+        Zones: &pgZoneRef,
+        StrictPlacement: &pgroup.Zones.StrictPlacement,
+	}
 	
 	pgScope := compute.ServerScope
     if pgroup.Scope == wssdcompute.PlacementGroupScope_Zone {
@@ -125,7 +135,7 @@ func getPlacementGroup(pgroup *wssdcompute.PlacementGroup) *compute.PlacementGro
 			VirtualMachines: getPlacementGroupVMs(pgroup),
 			Statuses:        getPlacementGroupStatuses(pgroup),
 			IsPlaceholder:   getPlacementGroupIsPlaceholder(pgroup),
-			Zones:           &pgZone,
+			Zones:           pgZones,
 			Scope: 			 pgScope,
 			StrictPlacement: pgroup.Zones.StrictPlacement,
 		},
