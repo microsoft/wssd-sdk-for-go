@@ -36,14 +36,14 @@ require (
 	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.19.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20241007155032-5fefd90f89a9 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20241015192408-796eee8c2d53 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
-	github.com/microsoft/moc => github.com/microsoft/moc v0.23.6-0.20241017224318-5343d933d137
+	github.com/microsoft/moc => github.com/microsoft/moc v0.23.6-0.20241019000938-63b74b90673c
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
 	golang.org/x/sys => golang.org/x/sys v0.0.0-20220823224334-20c2bfdbfe24
 )
