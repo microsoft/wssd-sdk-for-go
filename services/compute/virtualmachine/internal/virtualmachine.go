@@ -61,6 +61,11 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		return nil, errors.Wrapf(err, "Failed to get Entity")
 	}
 
+	priority, err := c.getWssdVirtualMachinePriority(*vm.Priority)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Failed to get Priority")
+	}
+
 	wssdvm = &wssdcompute.VirtualMachine{
 		Name:              *vm.Name,
 		Tags:              getWssdTags(vm.Tags),
@@ -72,6 +77,7 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		GuestAgent:        guestAgentConfig,
 		ZoneConfiguration: zoneConfig,
 		Entity:            entity,
+		Priority:          *priority,
 	}
 
 	if vm.DisableHighAvailability != nil {
@@ -468,6 +474,19 @@ func (c *client) getWssdVirtualMachineProxyConfiguration(proxyConfig *compute.Pr
 	return proxyConfiguration
 }
 
+func (c *client) getWssdVirtualMachinePriority(priority int32) (*wssdcommonproto.Priority, error) {
+	priorityValue := wssdcommonproto.Priority_DEFAULT
+	if priority == 1 {
+		priorityValue = wssdcommonproto.Priority_LOW
+	} else if priority == 2 {
+		priorityValue = wssdcommonproto.Priority_MEDIUM
+	} else if priority == 3 {
+		priorityValue = wssdcommonproto.Priority_HIGH
+	}
+
+	return &priorityValue, nil
+}
+
 // Conversion functions from wssdcompute to compute
 
 func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.VirtualMachine {
@@ -490,6 +509,7 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
 			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
 			ZoneConfiguration:       c.getVirtualMachineZoneConfiguration(vm),
+			Priority:                c.getVirtualMachinePriority(vm.Priority),
 		},
 	}
 }
@@ -845,4 +865,17 @@ func (c *client) getVirtualMachineZoneConfiguration(vm *wssdcompute.VirtualMachi
 		Zones:           &computeZones,
 		StrictPlacement: &strictPlacement,
 	}
+}
+
+func (c *client) getVirtualMachinePriority(priority wssdcommonproto.Priority) *int32 {
+	var priorityValue int32 = 0
+	if priority == wssdcommonproto.Priority_LOW {
+		priorityValue = 1
+	} else if priority == wssdcommonproto.Priority_MEDIUM {
+		priorityValue = 2
+	} else if priority == wssdcommonproto.Priority_HIGH {
+		priorityValue = 3
+	}
+
+	return &priorityValue
 }

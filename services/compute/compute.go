@@ -330,6 +330,8 @@ type VirtualMachineProperties struct {
 	HighAvailabilityState *string `json:"HighAvailabilityState,omitempty"`
 	// Zone Configuration
 	ZoneConfiguration *ZoneConfiguration `json:"zoneConfiguration,omitempty"`
+	// Priority
+	Priority *int32 `json:"priority,omitempty"`
 }
 
 type VirtualMachine struct {
