@@ -57,7 +57,11 @@ func getWssdPlacementGroup(pgroup *compute.PlacementGroup) (*wssdcompute.Placeme
 
 		wssdpgroup.Zones = &wssdcommonproto.ZoneConfiguration{
 			Zones:           []*wssdcommonproto.ZoneReference{},
-			StrictPlacement: *pgroup.PlacementGroupProperties.Zones.StrictPlacement,
+			StrictPlacement: false,
+		}
+
+		if pgroup.PlacementGroupProperties.Zones.StrictPlacement != nil {
+			wssdpgroup.Zones.StrictPlacement = *pgroup.PlacementGroupProperties.Zones.StrictPlacement
 		}
 
 		for _, zn := range *pgroup.PlacementGroupProperties.Zones.Zones {
