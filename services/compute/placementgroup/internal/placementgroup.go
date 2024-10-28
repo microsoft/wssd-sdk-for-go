@@ -32,15 +32,15 @@ func getWssdPlacementGroup(pgroup *compute.PlacementGroup) (*wssdcompute.Placeme
 
 	pgType := wssdcompute.PlacementGroupType_Affinity
 	if pgroup.Type == compute.Affinity {
-	   pgType = wssdcompute.PlacementGroupType_Affinity
+		pgType = wssdcompute.PlacementGroupType_Affinity
 	} else if pgroup.Type == compute.AntiAffinity {
-	   pgType = wssdcompute.PlacementGroupType_AntiAffinity
+		pgType = wssdcompute.PlacementGroupType_AntiAffinity
 	} else if pgroup.Type == compute.StrictAntiAffinity {
-	   pgType = wssdcompute.PlacementGroupType_StrictAntiAffinity
+		pgType = wssdcompute.PlacementGroupType_StrictAntiAffinity
 	}
 
 	pgScope := wssdcompute.PlacementGroupScope_Server
-    if pgroup.Scope == compute.ZoneScope {
+	if pgroup.Scope == compute.ZoneScope {
 		pgScope = wssdcompute.PlacementGroupScope_Zone
 	}
 
@@ -55,12 +55,12 @@ func getWssdPlacementGroup(pgroup *compute.PlacementGroup) (*wssdcompute.Placeme
 
 	if pgroup.PlacementGroupProperties != nil && pgroup.PlacementGroupProperties.Zones != nil {
 		wssdpgroup.Zones = &wssdcommonproto.ZoneConfiguration{
-			Zones: []*wssdcommonproto.ZoneReference{},
-            StrictPlacement: pgroup.PlacementGroupProperties.StrictPlacement,
+			Zones:           []*wssdcommonproto.ZoneReference{},
+			StrictPlacement: *pgroup.Zones.StrictPlacement,
 		}
 
 		for _, zn := range *pgroup.PlacementGroupProperties.Zones.Zones {
-            rpcZoneRef, err := getRpcZoneReference(&zn)
+			rpcZoneRef, err := getRpcZoneReference(&zn)
 			if err != nil {
 				return nil, err
 			}
@@ -77,8 +77,8 @@ func getRpcZoneReference(s *compute.ZoneReference) (*wssdcommonproto.ZoneReferen
 	}
 
 	return &wssdcommonproto.ZoneReference{
-        Name: *s.Name,
-	},nil
+		Name: *s.Name,
+	}, nil
 }
 
 func getWssdPlacementGroupEntity(pgroup *compute.PlacementGroup) *wssdcommonproto.Entity {
@@ -112,29 +112,29 @@ func getPlacementGroup(pgroup *wssdcompute.PlacementGroup) *compute.PlacementGro
 
 	for i, zn := range pgroup.Zones.Zones {
 		pgZnRef := compute.ZoneReference{
-			Name: &zn.Name,
-		    Nodes: &[]string{},
+			Name:  &zn.Name,
+			Nodes: &[]string{},
 		}
 		pgZoneRef[i] = pgZnRef
 	}
-	
+
 	pgZones := &compute.ZoneConfiguration{
-        Zones: &pgZoneRef,
-        StrictPlacement: &pgroup.Zones.StrictPlacement,
+		Zones:           &pgZoneRef,
+		StrictPlacement: &pgroup.Zones.StrictPlacement,
 	}
-	
+
 	pgScope := compute.ServerScope
-    if pgroup.Scope == wssdcompute.PlacementGroupScope_Zone {
+	if pgroup.Scope == wssdcompute.PlacementGroupScope_Zone {
 		pgScope = compute.ZoneScope
 	}
 
 	pgType := compute.Affinity
 	if pgroup.Type == wssdcompute.PlacementGroupType_Affinity {
-	   pgType = compute.Affinity
+		pgType = compute.Affinity
 	} else if pgroup.Type == wssdcompute.PlacementGroupType_AntiAffinity {
-	   pgType = compute.AntiAffinity
+		pgType = compute.AntiAffinity
 	} else if pgroup.Type == wssdcompute.PlacementGroupType_StrictAntiAffinity {
-	   pgType = compute.StrictAntiAffinity
+		pgType = compute.StrictAntiAffinity
 	}
 
 	return &compute.PlacementGroup{
@@ -146,8 +146,7 @@ func getPlacementGroup(pgroup *wssdcompute.PlacementGroup) *compute.PlacementGro
 			Statuses:        getPlacementGroupStatuses(pgroup),
 			IsPlaceholder:   getPlacementGroupIsPlaceholder(pgroup),
 			Zones:           pgZones,
-			Scope: 			 pgScope,
-			StrictPlacement: pgroup.Zones.StrictPlacement,
+			Scope:           pgScope,
 		},
 	}
 }

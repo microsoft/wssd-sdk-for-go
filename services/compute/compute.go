@@ -664,8 +664,6 @@ type PlacementGroupProperties struct {
 	Zones *ZoneConfiguration `json:"zoneconfiguration,omitempty"`
 	// scope
 	Scope PlacementGroupScope `json:"scope,omitempty"`
-	// strict placement
-	StrictPlacement bool `json:"strictplacement,omitempty"`
 	// A list of references to all virtual machines in the placement group.
 	VirtualMachines []*SubResource `json:"virtualMachines,omitempty"`
 	// READ-ONLY; The resource status information.
