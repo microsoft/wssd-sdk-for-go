@@ -24,6 +24,7 @@ type Service interface {
 	Stop(context.Context, string, string) error
 	Pause(context.Context, string, string) error
 	Save(context.Context, string, string) error
+	RemoveIsoDisk(context.Context, string, string) error
 	RepairGuestAgent(context.Context, string, string) error
 	RunCommand(context.Context, string, string, *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error)
 	Validate(context.Context, string, string) error
@@ -85,6 +86,11 @@ func (c *VirtualMachineClient) Pause(ctx context.Context, group string, name str
 }
 func (c *VirtualMachineClient) Save(ctx context.Context, group string, name string) (err error) {
 	err = c.internal.Save(ctx, group, name)
+	return
+}
+
+func (c *VirtualMachineClient) RemoveIsoDisk(ctx context.Context, group string, name string) (err error) {
+	err = c.internal.RemoveIsoDisk(ctx, group, name)
 	return
 }
 
