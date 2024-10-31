@@ -51,21 +51,28 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 	if err != nil {
 		return nil, errors.Wrapf(err, "Failed to get GuestAgent Configuration")
 	}
+
+	zoneConfig, err := c.getWssdVirtualMachineZoneConfiguration(vm.ZoneConfiguration)
+	if err != nil {
+		return nil, errors.Wrapf(err, "Failed to get Cluster Configuration")
+	}
+
 	entity, err := c.getWssdVirtualMachineEntity(vm)
 	if err != nil {
 		return nil, errors.Wrapf(err, "Failed to get Entity")
 	}
 
 	wssdvm = &wssdcompute.VirtualMachine{
-		Name:       *vm.Name,
-		Tags:       getWssdTags(vm.Tags),
-		Storage:    storageConfig,
-		Hardware:   hardwareConfig,
-		Security:   securityConfig,
-		Os:         osconfig,
-		Network:    networkConfig,
-		GuestAgent: guestAgentConfig,
-		Entity:     entity,
+		Name:              *vm.Name,
+		Tags:              getWssdTags(vm.Tags),
+		Storage:           storageConfig,
+		Hardware:          hardwareConfig,
+		Security:          securityConfig,
+		Os:                osconfig,
+		Network:           networkConfig,
+		GuestAgent:        guestAgentConfig,
+		ZoneConfiguration: zoneConfig,
+		Entity:            entity,
 	}
 
 	if vm.DisableHighAvailability != nil {
@@ -489,6 +496,7 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			Statuses:                c.getVirtualMachineStatuses(vm),
 			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
 			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
+			ZoneConfiguration:       c.getVirtualMachineZoneConfiguration(vm),
 		},
 	}
 }
@@ -795,5 +803,59 @@ func (c *client) getVirtualMachineProxyConfiguration(proxyConfiguration *wssdcom
 		HttpsProxy: &proxyConfiguration.HttpsProxy,
 		NoProxy:    &proxyConfiguration.NoProxy,
 		TrustedCa:  &proxyConfiguration.TrustedCa,
+	}
+}
+
+func (c *client) getWssdVirtualMachineZoneConfiguration(zoneProfile *compute.ZoneConfiguration) (*wssdcompute.ZoneConfiguration, error) {
+	if zoneProfile == nil {
+		return nil, nil
+	}
+
+	wssdZones := []*wssdcompute.ZoneReference{}
+	for _, computeZone := range *zoneProfile.Zones {
+		nodes := []string{}
+		nodes = append(nodes, *computeZone.Nodes...)
+		wssdZones = append(wssdZones, &wssdcompute.ZoneReference{
+			Name:  *computeZone.Name,
+			Nodes: nodes,
+		})
+	}
+	strictPlacement := false
+	if zoneProfile.StrictPlacement != nil {
+		strictPlacement = *zoneProfile.StrictPlacement
+	}
+	wssdZoneConfiguration := &wssdcompute.ZoneConfiguration{
+		Zones:           wssdZones,
+		StrictPlacement: strictPlacement,
+	}
+	return wssdZoneConfiguration, nil
+}
+
+func (c *client) getVirtualMachineZoneConfiguration(vm *wssdcompute.VirtualMachine) *compute.ZoneConfiguration {
+	zones := vm.GetZoneConfiguration().GetZones()
+	if zones == nil || len(zones) == 0 {
+		return nil
+	}
+
+	computeZones := []compute.ZoneReference{}
+
+	for _, avZone := range zones {
+		nodes := []string{}
+		nodes = append(nodes, avZone.GetNodes()...)
+		zoneName := avZone.GetName()
+		computeZones = append(computeZones, compute.ZoneReference{
+			Name:  &zoneName,
+			Nodes: &nodes,
+		})
+	}
+
+	strictPlacement := false
+	if vm.GetZoneConfiguration().GetStrictPlacement() {
+		strictPlacement = true
+	}
+
+	return &compute.ZoneConfiguration{
+		Zones:           &computeZones,
+		StrictPlacement: &strictPlacement,
 	}
 }
