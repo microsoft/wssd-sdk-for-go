@@ -65,14 +65,14 @@ func getWssdPlacementGroup(pgroup *compute.PlacementGroup) (*wssdcompute.Placeme
 		}
 
 		if pgroup.PlacementGroupProperties.Zones.Zones != nil {
-		    for _, zn := range *pgroup.PlacementGroupProperties.Zones.Zones {
-		    	rpcZoneRef, err := getRpcZoneReference(&zn)
-		    	if err != nil {
-		    		return nil, err
-		    	}
-		    	wssdpgroup.Zones.Zones = append(wssdpgroup.Zones.Zones, rpcZoneRef)
-		    }
-	    }
+			for _, zn := range *pgroup.PlacementGroupProperties.Zones.Zones {
+				rpcZoneRef, err := getRpcZoneReference(&zn)
+				if err != nil {
+					return nil, err
+				}
+				wssdpgroup.Zones.Zones = append(wssdpgroup.Zones.Zones, rpcZoneRef)
+			}
+		}
 	}
 
 	return wssdpgroup, nil

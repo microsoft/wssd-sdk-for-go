@@ -685,8 +685,8 @@ type PlacementGroupUpdate struct {
 }
 
 // PlacementGroup - Specifies information about the placement group that the virtual machine should be assigned to. Virtual
-// machines specified in the same placement group are allocated to different nodes to maximize
-// availability. For more information about placement groups, see placement groups overview [https://docs.microsoft.com/azure/virtual-machines/placement-group-overview].
+// machines specified in the same placement group are allocated to nodes/zones based on the placementgrouptype and placementgroupscope specified.
+// For more information about placement groups, see placement groups overview [https://docs.microsoft.com/azure/virtual-machines/placement-group-overview].
 // For more information on Azure
 // planned maintenance, see Maintenance and updates for Virtual Machines in Azure [https://docs.microsoft.com/azure/virtual-machines/maintenance-and-updates].
 // Currently, a VM can only be added to an
