@@ -109,7 +109,7 @@ func getContainer(ctainer *wssdstorage.Container) *storage.Container {
 			ContainerInfo: &storage.ContainerInfo{
 				AvailableSize: availSize,
 				TotalSize:     totalSize,
-				NodeName:      ctainer.Info.NodeName,
+				Node:          ctainer.Info.Node,
 			},
 			IsPlaceholder: getContainerPlaceHolder(ctainer),
 		},
@@ -143,7 +143,7 @@ func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 		if wssdctainer.Info != nil && wssdctainer.Info.Capacity != nil {
 			wssdctainer.Info.Capacity.AvailableBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.AvailableSize)
 			wssdctainer.Info.Capacity.TotalBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.TotalSize)
-			wssdctainer.Info.NodeName = ctainer.ContainerInfo.NodeName
+			wssdctainer.Info.Node = ctainer.ContainerInfo.Node
 		}
 	}
 	return wssdctainer

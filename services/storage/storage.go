@@ -100,7 +100,7 @@ type VirtualHardDisk struct {
 type ContainerInfo struct {
 	AvailableSize string `json:"AvailableSize,omitempty"`
 	TotalSize     string `json:"TotalSize,omitempty"`
-	NodeName      string `json:"NodeName,omitempty"`
+	Node          string `json:"Node,omitempty"`
 }
 
 // ContainerProperties defines the structure of a ContainerProperties
