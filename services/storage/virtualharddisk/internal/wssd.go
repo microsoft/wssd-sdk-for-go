@@ -92,8 +92,11 @@ func (c *client) Upload(ctx context.Context, containerName, name string, targetu
 		log.Errorf("[VirtualHardDisk] Upload failed with error %v", err)
 		return nil, err
 	}
+	fmt.Printf("wssd-sdk-for-go: wssd.go: Done with Operate\n")
 
 	vhd := getVirtualHardDisksFromOperationResponse(response)
+
+	fmt.Printf("wssd-sdk-for-go: wssd.go: Converted response to vhd\n")
 
 	if len(*vhd) == 0 {
 		return nil, fmt.Errorf("[VirtualHardDisk][Upload] Unexpected error: Uploading a VirtualHardDisk returned no result")
@@ -114,6 +117,7 @@ func (c *client) Delete(ctx context.Context, containerName, name string) error {
 
 func getVirtualHardDisksFromOperationResponse(response *wssdstorage.VirtualHardDiskOperationResponse) *[]storage.VirtualHardDisk {
 	virtualHardDisks := []storage.VirtualHardDisk{}
+	fmt.Printf("wssd-sdk-for-go: wssd.go: getVirtualHardDisksFromOperationResponse: Enter\n")
 	for _, vhd := range response.GetVirtualHardDisks() {
 		virtualHardDisks = append(virtualHardDisks, *(getVirtualHardDisk(vhd)))
 	}
@@ -129,6 +133,8 @@ func (c *client) getVirtualHardDiskOperationRequest(ctx context.Context, opType 
 		err = errors.Wrapf(errors.InvalidInput, "Multiple or No Virtual Hard Disks found in container %s with name %s", containerName, name)
 		return nil, err
 	}
+
+	fmt.Printf("wssd-sdk-for-go: wssd.go: getVirtualHardDiskOperationRequest: Get worked on the vhd\n")
 
 	vhd[0].TargetUrl = targeturl
 	if err != nil {
@@ -172,6 +178,7 @@ func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, container
 }
 
 func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDisk {
+	fmt.Printf("wssd-sdk-for-go: wssd.go: getVirtualHardDisk: Enter\n")
 
 	return &storage.VirtualHardDisk{
 		ID:   &vhd.Id,
