@@ -90,6 +90,21 @@ const (
 	StatusLevelError   StatusLevelType = "Error"
 )
 
+type PlacementGroupType string
+
+const (
+	Affinity           PlacementGroupType = "Affinity"
+	AntiAffinity       PlacementGroupType = "AntiAffinity"
+	StrictAntiAffinity PlacementGroupType = "StrictAntiAffinity"
+)
+
+type PlacementGroupScope string
+
+const (
+	ServerScope PlacementGroupScope = "Server"
+	ZoneScope   PlacementGroupScope = "Zone"
+)
+
 // ImageReference specifies information about the image to use. You can specify information about platform
 // images, marketplace images, or virtual machine images. This element is required when you want to use a
 // platform image, marketplace image, or virtual machine image, but is not used in other creation
@@ -331,6 +346,8 @@ type VirtualMachineProperties struct {
 	HighAvailabilityState *string `json:"HighAvailabilityState,omitempty"`
 	// Zone Configuration
 	ZoneConfiguration *ZoneConfiguration `json:"zoneConfiguration,omitempty"`
+	// Priority
+	Priority common.Priority `json:"priority,omitempty"`
 }
 
 type VirtualMachine struct {
@@ -641,6 +658,59 @@ type AvailabilitySetListResult struct {
 type SubResource struct {
 	// Resource Id
 	Name *string `json:"name,omitempty"`
+}
+
+// Placement Group: adapted from: https://github.com/Azure/azure-sdk-for-go/blob/main/sdk/resourcemanager/compute/armcompute/models.go
+// PlacementGroupProperties - The instance view of a resource.
+type PlacementGroupProperties struct {
+	// Zones
+	Zones *ZoneConfiguration `json:"zoneconfiguration,omitempty"`
+	// scope
+	Scope PlacementGroupScope `json:"scope,omitempty"`
+	// A list of references to all virtual machines in the placement group.
+	VirtualMachines []*SubResource `json:"virtualMachines,omitempty"`
+	// READ-ONLY; The resource status information.
+	Statuses map[string]*string `json:"statuses"`
+	// IsPlaceholder - On a multi-node system, the entity (such as a pgroup) is created on a node where
+	// IsPlacehoder is false. On all the other nodes, IsPlaceholder is set to true.
+	// platform specific commands will only be executed on the node where IsPlaceholder is false as
+	// platform specific commands only need to be executed once.
+	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
+}
+
+// PlacementGroupUpdate - Specifies information about the placement group that the virtual machine should be assigned to.
+// Only tags may be updated.
+type PlacementGroupUpdate struct {
+	// The instance view of a resource.
+	Properties *PlacementGroupProperties
+	// Resource tags
+	Tags map[string]*string
+}
+
+// PlacementGroup - Specifies information about the placement group that the virtual machine should be assigned to. Virtual
+// machines specified in the same placement group are allocated to nodes/zones based on the placementgrouptype and placementgroupscope specified.
+// For more information about placement groups, see placement groups overview [https://docs.microsoft.com/azure/virtual-machines/placement-group-overview].
+// For more information on Azure
+// planned maintenance, see Maintenance and updates for Virtual Machines in Azure [https://docs.microsoft.com/azure/virtual-machines/maintenance-and-updates].
+// Currently, a VM can only be added to an
+// placement group at creation time. An existing VM cannot be added to an placement group.
+type PlacementGroup struct {
+	// The instance view of a resource.
+	*PlacementGroupProperties `json:"properties,omitempty"`
+	// Resource tags
+	Tags map[string]*string `json:"tags"`
+	// READ-ONLY; Resource Id
+	ID *string `json:"ID,omitempty"`
+	// READ-ONLY; Resource name
+	Name *string `json:"name,omitempty"`
+	// Type
+	Type PlacementGroupType `json:"type,omitempty"`
+}
+
+// PlacementGroupListResult - The List Placement Group operation response.
+type PlacementGroupListResult struct {
+	// REQUIRED; The list of placement groups
+	Value []*PlacementGroup
 }
 
 // Zone describes the  zone associated with a virtual machine

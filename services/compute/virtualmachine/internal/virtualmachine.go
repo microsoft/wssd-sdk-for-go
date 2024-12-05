@@ -73,6 +73,7 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		GuestAgent:        guestAgentConfig,
 		ZoneConfiguration: zoneConfig,
 		Entity:            entity,
+		Priority:          vm.Priority,
 	}
 
 	if vm.DisableHighAvailability != nil {
@@ -497,6 +498,7 @@ func (c *client) getVirtualMachine(vm *wssdcompute.VirtualMachine) *compute.Virt
 			IsPlaceholder:           c.getVirtualMachineIsPlaceholder(vm),
 			HighAvailabilityState:   c.getVirtualMachineScaleSetHighAvailabilityState(vm),
 			ZoneConfiguration:       c.getVirtualMachineZoneConfiguration(vm),
+			Priority:                vm.Priority,
 		},
 	}
 }

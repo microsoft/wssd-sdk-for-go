@@ -94,10 +94,11 @@ func getContainerRequest(opType wssdcommonproto.Operation, name string, ctainer 
 }
 
 func getContainer(ctainer *wssdstorage.Container) *storage.Container {
-	var totalSize, availSize string
+	var totalSize, availSize, node string
 	if ctainer.Info != nil {
 		totalSize = bytefmt.ByteSize(ctainer.Info.Capacity.TotalBytes)
 		availSize = bytefmt.ByteSize(ctainer.Info.Capacity.AvailableBytes)
+		node = ctainer.Info.Node
 	}
 	return &storage.Container{
 		ID:   &ctainer.Id,
@@ -109,6 +110,7 @@ func getContainer(ctainer *wssdstorage.Container) *storage.Container {
 			ContainerInfo: &storage.ContainerInfo{
 				AvailableSize: availSize,
 				TotalSize:     totalSize,
+				Node:          node,
 			},
 			IsPlaceholder: getContainerPlaceHolder(ctainer),
 		},
@@ -142,6 +144,7 @@ func getWssdContainer(ctainer *storage.Container) *wssdstorage.Container {
 		if wssdctainer.Info != nil && wssdctainer.Info.Capacity != nil {
 			wssdctainer.Info.Capacity.AvailableBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.AvailableSize)
 			wssdctainer.Info.Capacity.TotalBytes, _ = bytefmt.ToBytes(ctainer.ContainerInfo.TotalSize)
+			wssdctainer.Info.Node = ctainer.ContainerInfo.Node
 		}
 	}
 	return wssdctainer
