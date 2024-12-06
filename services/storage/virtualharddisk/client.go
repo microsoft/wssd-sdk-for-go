@@ -16,7 +16,7 @@ type Service interface {
 	Get(context.Context, string, string) (*[]storage.VirtualHardDisk, error)
 	CreateOrUpdate(context.Context, string, string, *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error)
 	Delete(context.Context, string, string) error
-	Upload(context.Context, string, string, string) (*storage.VirtualHardDisk, error)
+	Upload(context.Context, string, string, string) error
 }
 
 // Client structure
@@ -51,6 +51,6 @@ func (c *VirtualHardDiskClient) Delete(ctx context.Context, container, name stri
 }
 
 // CreateOrUpdate methods invokes create or update on the client
-func (c *VirtualHardDiskClient) Upload(ctx context.Context, container, name string, targeturl string) (*storage.VirtualHardDisk, error) {
+func (c *VirtualHardDiskClient) Upload(ctx context.Context, container, name string, targeturl string) error {
 	return c.internal.Upload(ctx, container, name, targeturl)
 }

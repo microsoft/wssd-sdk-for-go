@@ -81,28 +81,20 @@ func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string,
 }
 
 // Upload
-func (c *client) Upload(ctx context.Context, containerName, name string, targeturl string) (*storage.VirtualHardDisk, error) {
+func (c *client) Upload(ctx context.Context, containerName, name string, targeturl string) error {
 	fmt.Printf("wssd-sdk-for-go: wssd.go: Creating operation request %s to %s\n", name, targeturl)
 	request, err := c.getVirtualHardDiskOperationRequest(ctx, wssdcommonproto.VirtualHardDiskOperation_UPLOAD, name, containerName, targeturl)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	response, err := c.VirtualHardDiskAgentClient.Operate(ctx, request)
+	_, err = c.VirtualHardDiskAgentClient.Operate(ctx, request)
 	if err != nil {
 		log.Errorf("[VirtualHardDisk] Upload failed with error %v", err)
-		return nil, err
+		return err
 	}
 	fmt.Printf("wssd-sdk-for-go: wssd.go: Done with Operate\n")
 
-	vhd := getVirtualHardDisksFromOperationResponse(response)
-
-	fmt.Printf("wssd-sdk-for-go: wssd.go: Converted response to vhd\n")
-
-	if len(*vhd) == 0 {
-		return nil, fmt.Errorf("[VirtualHardDisk][Upload] Unexpected error: Uploading a VirtualHardDisk returned no result")
-	}
-
-	return &((*vhd)[0]), err
+	return nil
 }
 
 // Delete methods invokes create or update on the client
@@ -113,16 +105,6 @@ func (c *client) Delete(ctx context.Context, containerName, name string) error {
 	}
 	_, err = c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	return err
-}
-
-func getVirtualHardDisksFromOperationResponse(response *wssdstorage.VirtualHardDiskOperationResponse) *[]storage.VirtualHardDisk {
-	virtualHardDisks := []storage.VirtualHardDisk{}
-	fmt.Printf("wssd-sdk-for-go: wssd.go: getVirtualHardDisksFromOperationResponse: Enter\n")
-	for _, vhd := range response.GetVirtualHardDisks() {
-		virtualHardDisks = append(virtualHardDisks, *(getVirtualHardDisk(vhd)))
-	}
-
-	return &virtualHardDisks
 }
 
 func (c *client) getVirtualHardDiskOperationRequest(ctx context.Context, opType wssdcommonproto.VirtualHardDiskOperation, name, containerName string, targeturl string) (*wssdstorage.VirtualHardDiskOperationRequest, error) {
@@ -205,7 +187,6 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			IsPlaceholder:       getVirtualHardDiskIsPlaceholder(vhd),
 			CloudInitDataSource: vhd.CloudInitDataSource,
 			DiskFileFormat:      vhd.DiskFileFormat,
-			TargetUrl:           &vhd.TargetUrl,
 		},
 	}
 }
@@ -240,10 +221,6 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	disk.HyperVGeneration = vhd.HyperVGeneration
 	disk.DiskFileFormat = vhd.DiskFileFormat
 	disk.SourceType = vhd.SourceType
-
-	if vhd.TargetUrl != nil {
-		disk.TargetUrl = *vhd.TargetUrl
-	}
 
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
 		if vhd.Source == nil {

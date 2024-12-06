@@ -13,8 +13,6 @@ type VirtualHardDiskProperties struct {
 	Path *string `json:"path,omitempty"`
 	// Source
 	Source *string `json:"source,omitempty"`
-	// TargetUrl
-	TargetUrl *string `json:"targeturl,omitempty"`
 	// DiskSizeBytes
 	DiskSizeBytes *int64 `json:"disksizebytes,omitempty"`
 	// Dynamic
