@@ -576,7 +576,7 @@ func (c *client) getVirtualMachineIsPlaceholder(vm *wssdcompute.VirtualMachine) 
 
 func (c *client) getVirtualMachineScaleSetHighAvailabilityState(vm *wssdcompute.VirtualMachine) *string {
 	haState := wssdcommonproto.HighAvailabilityState_UNKNOWN_HA_STATE
-	if vm != nil || cmp.Equal(vm, wssdcompute.VirtualMachine{}) {
+	if vm != nil {
 		haState = vm.HighAvailabilityState
 	}
 	stateString := haState.String()
@@ -589,9 +589,9 @@ func (c *client) getVirtualMachineSecurityProfile(vm *wssdcompute.VirtualMachine
 	uefiSettings = nil
 	var securityType compute.SecurityTypes = ""
 
-	if vm.Security != nil && !cmp.Equal(vm.Security, compute.SecurityProfile{}) {
+	if vm.Security != nil {
 		enableTPM = vm.Security.EnableTPM
-		if vm.Security.UefiSettings != nil && !cmp.Equal(vm.Security.UefiSettings, compute.UefiSettings{}) {
+		if vm.Security.UefiSettings != nil {
 			uefiSettings = &compute.UefiSettings{
 				SecureBootEnabled: &vm.Security.UefiSettings.SecureBootEnabled,
 			}
