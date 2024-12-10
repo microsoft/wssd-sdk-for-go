@@ -14,10 +14,7 @@ require (
 	k8s.io/klog v1.0.0
 )
 
-require github.com/Azure/go-autorest v14.2.0+incompatible // indirect
-
 require (
-	github.com/Azure/go-autorest/autorest/date v0.3.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
