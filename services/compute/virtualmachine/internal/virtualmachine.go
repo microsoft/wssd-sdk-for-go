@@ -415,8 +415,6 @@ func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) (*ws
 	osconfig.Publickeys = publickeys
 
 	switch s.OsBootstrapEngine {
-	case compute.Hydrated:
-		osconfig.OsBootstrapEngine = wssdcommonproto.OperatingSystemBootstrapEngine_HYDRATED
 	case compute.WindowsAnswerFiles:
 		osconfig.OsBootstrapEngine = wssdcommonproto.OperatingSystemBootstrapEngine_WINDOWS_ANSWER_FILES
 	case compute.CloudInit:
@@ -751,8 +749,6 @@ func (c *client) getVirtualMachineLinuxConfiguration(linuxConfiguration *wssdcom
 func (c *client) getVirtualMachineOSProfile(o *wssdcompute.OperatingSystemConfiguration) *compute.OSProfile {
 	osBootstrapEngine := compute.CloudInit
 	switch o.OsBootstrapEngine {
-	case wssdcommonproto.OperatingSystemBootstrapEngine_HYDRATED:
-		osBootstrapEngine = compute.Hydrated
 	case wssdcommonproto.OperatingSystemBootstrapEngine_WINDOWS_ANSWER_FILES:
 		osBootstrapEngine = compute.WindowsAnswerFiles
 	case wssdcommonproto.OperatingSystemBootstrapEngine_CLOUD_INIT:
