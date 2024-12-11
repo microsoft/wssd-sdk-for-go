@@ -32,7 +32,7 @@ func NewKeyClient(subID string, authorizer auth.Authorizer) (*client, error) {
 
 // Get
 func (c *client) Get(ctx context.Context, name string, vaultName string) (*[]keyvault.Key, error) {
-	request := getKeyRequest(wssdcommonproto.Operation_GET, name, vaultName, nil, nil)
+	request := getKeyRequest(wssdcommonproto.Operation_GET, name, vaultName, nil, 0, nil)
 	response, err := c.KeyAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, keyIn *keyvault.Key) (*keyv
 		return nil, err
 	}
 
-	request := getKeyRequest(wssdcommonproto.Operation_POST, "", "", nil, keyIn)
+	request := getKeyRequest(wssdcommonproto.Operation_POST, "", "", nil, 0, keyIn)
 	response, err := c.KeyAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[Key] Create failed with error %v", err)
@@ -81,7 +81,7 @@ func (c *client) Delete(ctx context.Context, key *keyvault.Key) error {
 		return errors.Wrapf(errors.NotFound, "Key [%s] not found", *key.Name)
 	}
 
-	request := getKeyRequest(wssdcommonproto.Operation_DELETE, "", "", nil, &(*keys)[0])
+	request := getKeyRequest(wssdcommonproto.Operation_DELETE, "", "", nil, 0, &(*keys)[0])
 	_, err = c.KeyAgentClient.Invoke(ctx, request)
 	return err
 }
@@ -164,7 +164,7 @@ func getKeysFromResponse(response *wssdsecurity.KeyResponse) *[]keyvault.Key {
 	return &Keys
 }
 
-func getKeyRequest(opType wssdcommonproto.Operation, name, vaultName string, keyType *keyvault.JSONWebKeyType, key *keyvault.Key) *wssdsecurity.KeyRequest {
+func getKeyRequest(opType wssdcommonproto.Operation, name, vaultName string, keyType *keyvault.JSONWebKeyType, keySize int32, key *keyvault.Key) *wssdsecurity.KeyRequest {
 	request := &wssdsecurity.KeyRequest{
 		OperationType: opType,
 		Keys:          []*wssdsecurity.Key{},
@@ -173,12 +173,16 @@ func getKeyRequest(opType wssdcommonproto.Operation, name, vaultName string, key
 	if key != nil {
 		request.Keys = append(request.Keys, getWssdKey(key))
 	} else if len(name) > 0 {
-		request.Keys = append(request.Keys,
-			&wssdsecurity.Key{
-				Name:      name,
-				VaultName: vaultName,
-				Type:      wssdcommonproto.JsonWebKeyType(wssdcommonproto.JsonWebKeyType_value[string(*keyType)]),
-				Size:      getMOCKeySize(key.KeySize)})
+		tempKey := &wssdsecurity.Key{
+			Name:      name,
+			VaultName: vaultName,
+			Size:      getMOCKeySize(keySize)}
+
+		if keyType != nil {
+			tempKey.Type = wssdcommonproto.JsonWebKeyType(wssdcommonproto.JsonWebKeyType_value[string(*keyType)])
+		}
+
+		request.Keys = append(request.Keys, tempKey)
 	}
 	return request
 }
