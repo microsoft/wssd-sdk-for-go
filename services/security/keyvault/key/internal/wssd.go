@@ -32,7 +32,7 @@ func NewKeyClient(subID string, authorizer auth.Authorizer) (*client, error) {
 
 // Get
 func (c *client) Get(ctx context.Context, name string, vaultName string) (*[]keyvault.Key, error) {
-	request := getKeyRequest(wssdcommonproto.Operation_GET, name, vaultName, nil)
+	request := getKeyRequest(wssdcommonproto.Operation_GET, name, vaultName, nil, nil)
 	response, err := c.KeyAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, keyIn *keyvault.Key) (*keyv
 		return nil, err
 	}
 
-	request := getKeyRequest(wssdcommonproto.Operation_POST, *keyIn.Name, *keyIn.VaultName, nil)
+	request := getKeyRequest(wssdcommonproto.Operation_POST, "", "", nil, keyIn)
 	response, err := c.KeyAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[Key] Create failed with error %v", err)
@@ -64,7 +64,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, keyIn *keyvault.Key) (*keyv
 }
 
 func (c *client) validate(ctx context.Context, key *keyvault.Key) (err error) {
-	if key == nil || key.VaultName == nil || key.Name == nil {
+	if key == nil || key.VaultName == nil || key.Name == nil || key.Type == nil {
 		return errors.Wrapf(errors.InvalidInput, "[Key][Create] Invalid Input")
 	}
 
@@ -81,7 +81,7 @@ func (c *client) Delete(ctx context.Context, key *keyvault.Key) error {
 		return errors.Wrapf(errors.NotFound, "Key [%s] not found", *key.Name)
 	}
 
-	request := getKeyRequest(wssdcommonproto.Operation_DELETE, *key.Name, *key.VaultName, &(*keys)[0])
+	request := getKeyRequest(wssdcommonproto.Operation_DELETE, "", "", nil, &(*keys)[0])
 	_, err = c.KeyAgentClient.Invoke(ctx, request)
 	return err
 }
@@ -164,7 +164,7 @@ func getKeysFromResponse(response *wssdsecurity.KeyResponse) *[]keyvault.Key {
 	return &Keys
 }
 
-func getKeyRequest(opType wssdcommonproto.Operation, name, vaultName string, key *keyvault.Key) *wssdsecurity.KeyRequest {
+func getKeyRequest(opType wssdcommonproto.Operation, name, vaultName string, keyType *keyvault.JSONWebKeyType, key *keyvault.Key) *wssdsecurity.KeyRequest {
 	request := &wssdsecurity.KeyRequest{
 		OperationType: opType,
 		Keys:          []*wssdsecurity.Key{},
@@ -177,28 +177,29 @@ func getKeyRequest(opType wssdcommonproto.Operation, name, vaultName string, key
 			&wssdsecurity.Key{
 				Name:      name,
 				VaultName: vaultName,
-			})
+				Type:      wssdcommonproto.JsonWebKeyType(wssdcommonproto.JsonWebKeyType_value[string(*keyType)])})
 	}
 	return request
 }
 
 func getKey(key *wssdsecurity.Key) *keyvault.Key {
 	ct := key.CreationTime.AsTime()
-
+	keyType := keyvault.JSONWebKeyType(wssdcommonproto.JsonWebKeyType_name[int32(key.Type)])
 	return &keyvault.Key{
 		ID:                &key.Id,
 		Name:              &key.Name,
 		VaultName:         &key.VaultName,
 		CreationTime:      &ct,
 		KeyVersion:        &key.KeyVersion,
-		ProvisioningState: status.GetProvisioningState(key.GetStatus().GetProvisioningStatus())}
+		ProvisioningState: status.GetProvisioningState(key.GetStatus().GetProvisioningStatus()),
+		Type:              &keyType}
 }
 
 func getWssdKey(key *keyvault.Key) *wssdsecurity.Key {
 	keyOut := &wssdsecurity.Key{
 		Name:      *key.Name,
 		VaultName: *key.VaultName,
-	}
+		Type:      wssdcommonproto.JsonWebKeyType(wssdcommonproto.JsonWebKeyType_value[string(*key.Type)])}
 
 	return keyOut
 }

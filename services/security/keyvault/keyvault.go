@@ -40,6 +40,14 @@ const (
 	A256KW JSONWebKeyEncryptionAlgorithm = "A256KW"
 )
 
+// JSONWebKeyType enumerates the values for json web key type.
+type JSONWebKeyType string
+
+const (
+	// AES Advanced Encrytion Standard.
+	AES JSONWebKeyType = "AES"
+)
+
 type Key struct {
 	// ID
 	ID *string `json:"ID,omitempty"`
@@ -47,10 +55,12 @@ type Key struct {
 	Name *string `json:"name,omitempty"`
 	// VaultName
 	VaultName *string `json:"vaultname"`
+	// Algorithm
+	Type *JSONWebKeyType `json:"keytype,omitempty"`
 	// CreationTime
 	CreationTime *time.Time `json:"ct,omitempty"`
 	// KeyVersion
-	KeyVersion *uint32 `json:"KeyVersion,omitempty"`
+	KeyVersion *uint32 `json:"keyversion,omitempty"`
 	// ProvisioningState - READ-ONLY; The provisioning state
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 }
