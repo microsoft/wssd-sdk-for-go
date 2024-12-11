@@ -124,7 +124,7 @@ func (c *client) WrapKey(ctx context.Context, keyReq *keyvault.KeyOperationReque
 	}
 
 	keyOpRes := keyvault.KeyOperationResult{
-		Key:    getKey(wssdRep.GetKey()),
+		Key:    nil, // No key changes expected
 		Result: &wssdRep.Data}
 
 	return &keyOpRes, nil
@@ -149,7 +149,7 @@ func (c *client) UnwrapKey(ctx context.Context, keyReq *keyvault.KeyOperationReq
 	}
 
 	keyOpRes := keyvault.KeyOperationResult{
-		Key:    getKey(wssdRep.GetKey()),
+		Key:    nil, // No key changes expected
 		Result: &wssdRep.Data}
 
 	return &keyOpRes, nil
