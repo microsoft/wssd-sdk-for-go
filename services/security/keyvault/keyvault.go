@@ -55,12 +55,14 @@ type Key struct {
 	Name *string `json:"name,omitempty"`
 	// VaultName
 	VaultName *string `json:"vaultname"`
-	// Algorithm
-	Type *JSONWebKeyType `json:"keytype,omitempty"`
+	// Key Type
+	KeyType *JSONWebKeyType `json:"keytype,omitempty"`
 	// CreationTime
 	CreationTime *time.Time `json:"ct,omitempty"`
 	// KeyVersion
-	KeyVersion *uint32 `json:"keyversion,omitempty"`
+	KeyVersion uint32 `json:"keyversion,omitempty"`
+	// KeySize in bits
+	KeySize int32 `json:"keysize,omitempty"`
 	// ProvisioningState - READ-ONLY; The provisioning state
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 }

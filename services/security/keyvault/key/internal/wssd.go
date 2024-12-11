@@ -64,7 +64,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, keyIn *keyvault.Key) (*keyv
 }
 
 func (c *client) validate(ctx context.Context, key *keyvault.Key) (err error) {
-	if key == nil || key.VaultName == nil || key.Name == nil || key.Type == nil {
+	if key == nil || key.VaultName == nil || key.Name == nil || key.KeyType == nil || getMOCKeySize(key.KeySize) == wssdcommonproto.KeySize_K_UNKNOWN {
 		return errors.Wrapf(errors.InvalidInput, "[Key][Create] Invalid Input")
 	}
 
@@ -177,7 +177,8 @@ func getKeyRequest(opType wssdcommonproto.Operation, name, vaultName string, key
 			&wssdsecurity.Key{
 				Name:      name,
 				VaultName: vaultName,
-				Type:      wssdcommonproto.JsonWebKeyType(wssdcommonproto.JsonWebKeyType_value[string(*keyType)])})
+				Type:      wssdcommonproto.JsonWebKeyType(wssdcommonproto.JsonWebKeyType_value[string(*keyType)]),
+				Size:      getMOCKeySize(key.KeySize)})
 	}
 	return request
 }
@@ -190,16 +191,38 @@ func getKey(key *wssdsecurity.Key) *keyvault.Key {
 		Name:              &key.Name,
 		VaultName:         &key.VaultName,
 		CreationTime:      &ct,
-		KeyVersion:        &key.KeyVersion,
-		ProvisioningState: status.GetProvisioningState(key.GetStatus().GetProvisioningStatus()),
-		Type:              &keyType}
+		KeyVersion:        key.KeyVersion,
+		KeyType:           &keyType,
+		KeySize:           getKeySize(key.Size),
+		ProvisioningState: status.GetProvisioningState(key.GetStatus().GetProvisioningStatus())}
 }
 
 func getWssdKey(key *keyvault.Key) *wssdsecurity.Key {
 	keyOut := &wssdsecurity.Key{
 		Name:      *key.Name,
 		VaultName: *key.VaultName,
-		Type:      wssdcommonproto.JsonWebKeyType(wssdcommonproto.JsonWebKeyType_value[string(*key.Type)])}
+		Type:      wssdcommonproto.JsonWebKeyType(wssdcommonproto.JsonWebKeyType_value[string(*key.KeyType)]),
+		Size:      getMOCKeySize(key.KeySize)}
 
 	return keyOut
+}
+
+func getMOCKeySize(size int32) (ksize wssdcommonproto.KeySize) {
+	switch size {
+	case 256:
+		ksize = wssdcommonproto.KeySize__256
+	default:
+		ksize = wssdcommonproto.KeySize_K_UNKNOWN
+	}
+	return
+}
+
+func getKeySize(ksize wssdcommonproto.KeySize) (size int32) {
+	switch ksize {
+	case wssdcommonproto.KeySize__256:
+		size = 256
+	default:
+		size = -1
+	}
+	return
 }
