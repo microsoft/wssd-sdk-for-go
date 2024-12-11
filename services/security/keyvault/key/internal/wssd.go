@@ -203,10 +203,11 @@ func getKey(key *wssdsecurity.Key) *keyvault.Key {
 
 func getWssdKey(key *keyvault.Key) *wssdsecurity.Key {
 	keyOut := &wssdsecurity.Key{
-		Name:      *key.Name,
-		VaultName: *key.VaultName,
-		Type:      wssdcommonproto.JsonWebKeyType(wssdcommonproto.JsonWebKeyType_value[string(*key.KeyType)]),
-		Size:      getMOCKeySize(key.KeySize)}
+		Name:       *key.Name,
+		VaultName:  *key.VaultName,
+		Type:       wssdcommonproto.JsonWebKeyType(wssdcommonproto.JsonWebKeyType_value[string(*key.KeyType)]),
+		Size:       getMOCKeySize(key.KeySize),
+		KeyVersion: key.KeyVersion}
 
 	return keyOut
 }
