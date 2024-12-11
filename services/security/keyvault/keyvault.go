@@ -58,15 +58,17 @@ type Key struct {
 // KeyOperationResult the key operation result.
 type KeyOperationResult struct {
 	// Key
-	*Key `json:"properties,omitempty"`
+	*Key `json:"key,omitempty"`
 	// Result - READ-ONLY; a URL-encoded base64 string
-	Result *string `json:"value,omitempty"`
+	Result *string `json:"result,omitempty"`
 }
 
 // KeyOperationResult the key operation result.
 type KeyOperationRequest struct {
 	// Key
-	*Key `json:"properties,omitempty"`
+	*Key `json:"key,omitempty"`
 	// Algorithm
 	Algorithm *JSONWebKeyEncryptionAlgorithm `json:"Algorithm,omitempty"`
+	//Data
+	Data *string `json:"data,omitempty"`
 }

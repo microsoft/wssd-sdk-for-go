@@ -110,7 +110,8 @@ func (c *client) WrapKey(ctx context.Context, keyReq *keyvault.KeyOperationReque
 	wssdReq := wssdsecurity.KeyOperationRequest{
 		Key:           getWssdKey(keyReq.Key),
 		Algorithm:     wssdcommonproto.Algorithm(wssdcommonproto.Algorithm_value[string(*keyReq.Algorithm)]),
-		OperationType: wssdcommonproto.ProviderAccessOperation_Key_WrapKey}
+		OperationType: wssdcommonproto.ProviderAccessOperation_Key_WrapKey,
+		Data:          *keyReq.Data}
 
 	wssdRep, err := c.KeyAgentClient.Operate(ctx, &wssdReq)
 
@@ -134,7 +135,8 @@ func (c *client) UnwrapKey(ctx context.Context, keyReq *keyvault.KeyOperationReq
 	wssdReq := wssdsecurity.KeyOperationRequest{
 		Key:           getWssdKey(keyReq.Key),
 		Algorithm:     wssdcommonproto.Algorithm(wssdcommonproto.Algorithm_value[string(*keyReq.Algorithm)]),
-		OperationType: wssdcommonproto.ProviderAccessOperation_Key_UnwrapKey}
+		OperationType: wssdcommonproto.ProviderAccessOperation_Key_UnwrapKey,
+		Data:          *keyReq.Data}
 
 	wssdRep, err := c.KeyAgentClient.Operate(ctx, &wssdReq)
 

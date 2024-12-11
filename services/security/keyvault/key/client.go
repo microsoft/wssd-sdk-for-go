@@ -60,13 +60,13 @@ func (c *KeyClient) RotateKey(ctx context.Context, key *keyvault.Key) (*keyvault
 }
 
 // WrapKey methods invokes delete of the key resource
-func (c *KeyClient) WrapKey(ctx context.Context, key *keyvault.Key, alg *keyvault.JSONWebKeyEncryptionAlgorithm) (*keyvault.KeyOperationResult, error) {
-	keyOpRequest := &keyvault.KeyOperationRequest{Key: key, Algorithm: alg}
+func (c *KeyClient) WrapKey(ctx context.Context, key *keyvault.Key, alg *keyvault.JSONWebKeyEncryptionAlgorithm, data *string) (*keyvault.KeyOperationResult, error) {
+	keyOpRequest := &keyvault.KeyOperationRequest{Key: key, Algorithm: alg, Data: data}
 	return c.internal.WrapKey(ctx, keyOpRequest)
 }
 
 // UnwrapKey methods invokes delete of the key resource
-func (c *KeyClient) UnwrapKey(ctx context.Context, key *keyvault.Key, alg *keyvault.JSONWebKeyEncryptionAlgorithm) (*keyvault.KeyOperationResult, error) {
-	keyOpRequest := &keyvault.KeyOperationRequest{Key: key, Algorithm: alg}
+func (c *KeyClient) UnwrapKey(ctx context.Context, key *keyvault.Key, alg *keyvault.JSONWebKeyEncryptionAlgorithm, data *string) (*keyvault.KeyOperationResult, error) {
+	keyOpRequest := &keyvault.KeyOperationRequest{Key: key, Algorithm: alg, Data: data}
 	return c.internal.UnwrapKey(ctx, keyOpRequest)
 }
