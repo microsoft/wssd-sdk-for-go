@@ -290,6 +290,20 @@ type IPConfiguration struct {
 	*IPConfigurationProperties `json:"properties,omitempty"`
 }
 
+type PolicyType string
+
+const (
+	PolicyType_Unknown PolicyType = "Unknown"
+	PolicyType_SDN_All PolicyType = "SDN_All"
+)
+
+type AdvancedNetworkPolicy struct {
+	// PolicyType
+	Type PolicyType `json:"type,omitempty"`
+	// Enabled - Enable or disable advanced network policy
+	Enabled bool `json:"enabled,omitempty"`
+}
+
 type VirtualNetworkInterfaceProperties struct {
 	// VirtualMachineID
 	VirtualMachineID *string `json:"virtualMachineID,omitempty"`
@@ -324,6 +338,8 @@ type VirtualNetworkInterfaceProperties struct {
 	IsPlaceholder *bool `json:"isPlaceholder,omitempty"`
 	// EnableAcceleratedNetworking - If the network interface is accelerated networking enabled.
 	EnableAcceleratedNetworking *bool `json:"enableAcceleratedNetworking,omitempty"`
+	// AdvancedNetworkPolicies
+	AdvancedNetworkPolicies *[]AdvancedNetworkPolicy `json:"advancedNetworkPolicies,omitempty"`
 }
 
 // VirtualNetwork defines the structure of a VNET
