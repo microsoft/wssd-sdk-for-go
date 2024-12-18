@@ -69,6 +69,53 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, vnetInt
 	return &(*vnics)[0], nil
 }
 
+// Find a vnic with the given MAC address and return a protobuf object with all IP configurations
+// This function can be extended to match other IP configrations and discover multiple NICs
+func (c *client) Discover(ctx context.Context, group, name string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
+
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_DISCOVER, name, vnetInterface)
+	if err != nil {
+		return nil, err
+	}
+	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	vnics, err := c.getVirtualNetworkInterfacesFromResponse(group, response)
+	if err != nil {
+		return nil, err
+	}
+	if len(*vnics) == 0 {
+		return nil, fmt.Errorf("unable to find a NIC with MAC address [%s]", *vnetInterface.MACAddress)
+	}
+
+	return &(*vnics)[0], nil
+}
+
+// Hydrate a NIC by finding it with a given MAC address
+// Additionally, we need a given subnet ID and group to save in the metadata as these cannot be inferred from reading out the NIC information from the host
+// func (c *client) Hydrate(ctx context.Context, group, name string, subnetId string, macAddress string) (*network.VirtualNetworkInterface, error) {
+func (c *client) Hydrate(ctx context.Context, group, name string, vnetInterface *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error) {
+
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_HYDRATE, name, vnetInterface)
+	if err != nil {
+		return nil, err
+	}
+	response, err := c.VirtualNetworkInterfaceAgentClient.Invoke(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	vnics, err := c.getVirtualNetworkInterfacesFromResponse(group, response)
+	if err != nil {
+		return nil, err
+	}
+	if len(*vnics) == 0 {
+		return nil, fmt.Errorf("hydration of Virtual Network Interface failed to find a NIC with MAC address [%s]", *vnetInterface.MACAddress)
+	}
+
+	return &(*vnics)[0], nil
+}
+
 // Delete methods invokes create or update on the client
 func (c *client) Delete(ctx context.Context, group, name string) error {
 	vnetInterface, err := c.Get(ctx, group, name)

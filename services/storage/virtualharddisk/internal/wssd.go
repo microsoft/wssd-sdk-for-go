@@ -107,6 +107,27 @@ func (c *client) Delete(ctx context.Context, containerName, name string) error {
 	return err
 }
 
+// The interface for the hydrate call takes the container name and the name of the disk file.
+// Ultimately, we need the full path on disk to the disk file which we assemble from the path of the container plus the file name of the disk.
+// (e.g. "C:\ClusterStorage\Userdata_1\abc123" for the container path and "my_disk.vhd" for the disk name)
+func (c *client) Hydrate(ctx context.Context, containerName, name string, vhdDef *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_HYDRATE, name, containerName, vhdDef)
+	if err != nil {
+		return nil, err
+	}
+	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+
+	vhd := getVirtualHardDisksFromResponse(response)
+	if len(*vhd) == 0 {
+		return nil, fmt.Errorf("[VirtualHardDisk][Hydrate] Unexpected error: Hydrating a disk returned no result")
+	}
+
+	return &((*vhd)[0]), err
+}
+
 func (c *client) getVirtualHardDiskOperationRequest(ctx context.Context, opType wssdcommonproto.VirtualHardDiskOperation, name, containerName string, targeturl string) (*wssdstorage.VirtualHardDiskOperationRequest, error) {
 	var err error
 	vhd, err := c.get(ctx, containerName, name)
@@ -155,6 +176,7 @@ func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, container
 			return nil, err
 		}
 	}
+
 	request.VirtualHardDiskSystems = append(request.VirtualHardDiskSystems, wssdvhd)
 	return request, nil
 }
@@ -186,7 +208,8 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			Statuses:            status.GetStatuses(vhd.Status),
 			IsPlaceholder:       getVirtualHardDiskIsPlaceholder(vhd),
 			CloudInitDataSource: vhd.CloudInitDataSource,
-			DiskFileFormat:      vhd.DiskFileFormat,
+			DiskFileFormat:      common.DiskFileFormat(vhd.DiskFileFormat),
+			ContainerName:       &vhd.ContainerName,
 		},
 	}
 }
@@ -221,6 +244,10 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 	disk.HyperVGeneration = vhd.HyperVGeneration
 	disk.DiskFileFormat = vhd.DiskFileFormat
 	disk.SourceType = vhd.SourceType
+
+	if vhd.Path != nil {
+		disk.Path = *vhd.Path
+	}
 
 	if disk.Virtualharddisktype == wssdstorage.VirtualHardDiskType_OS_VIRTUALHARDDISK {
 		if vhd.Source == nil {
