@@ -41,5 +41,6 @@ unittest:
 
 golangci-lint:
 	$(GOCMD) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	$(GOPATH_BIN)/golangci-lint run --config .golangci.yml
 
 	
