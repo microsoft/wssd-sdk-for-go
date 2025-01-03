@@ -83,6 +83,9 @@ func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string,
 // Upload
 func (c *client) Upload(ctx context.Context, containerName, name string, targeturl string) error {
 	fmt.Printf("wssd-sdk-for-go: wssd.go: Creating operation request %s to %s\n", name, targeturl)
+	if targeturl == "" {
+		return errors.Wrapf(errors.InvalidInput, "Target URL cannot be empty")
+	}
 	request, err := c.getVirtualHardDiskOperationRequest(ctx, wssdcommonproto.VirtualHardDiskOperation_UPLOAD, name, containerName, targeturl)
 	if err != nil {
 		return err
@@ -140,9 +143,7 @@ func (c *client) getVirtualHardDiskOperationRequest(ctx context.Context, opType 
 	fmt.Printf("wssd-sdk-for-go: wssd.go: getVirtualHardDiskOperationRequest: Get worked on the vhd\n")
 
 	vhd[0].TargetUrl = targeturl
-	if err != nil {
-		return nil, err
-	}
+
 	request := &wssdstorage.VirtualHardDiskOperationRequest{
 		OperationType:    opType,
 		VirtualHardDisks: vhd,
