@@ -3,6 +3,7 @@
 GOCMD=go
 GOBUILD=$(GOCMD) build -v #-mod=vendor
 GOHOSTOS=$(strip $(shell $(GOCMD) env get GOHOSTOS))
+GOPATH_BIN := $(shell go env GOPATH)/bin
 GOTEST=GOOS=$(GOHOSTOS) $(GOCMD) test -v -coverprofile=coverage.out -covermode count -timeout 60m0s
 TESTDIRECTORIES= ./services/compute/virtualmachine/internal
 
@@ -37,3 +38,9 @@ build:
 
 unittest:
 	$(GOTEST) $(TESTDIRECTORIES)
+
+golangci-lint:
+	$(GOCMD) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	$(GOPATH_BIN)/golangci-lint run --config .golangci.yml
+
+	
