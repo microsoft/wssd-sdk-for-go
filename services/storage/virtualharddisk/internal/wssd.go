@@ -133,6 +133,10 @@ func (c *client) getVirtualHardDiskOperationRequest(ctx context.Context, opType 
 	var err error
 	vhd, err := c.get(ctx, containerName, name)
 
+	if err != nil {
+		return nil, err
+	}
+
 	if len(vhd) != 1 {
 		err = errors.Wrapf(errors.InvalidInput, "Multiple or No Virtual Hard Disks found in container %s with name %s", containerName, name)
 		return nil, err
