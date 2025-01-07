@@ -46,8 +46,6 @@ func (c *client) ForwardLogFile(ctx context.Context, forwardFunc func([]byte, er
 
 	}
 	return loggingHelpers.Forward(ctx, forwardFunc, recFunc)
-
-	return nil
 }
 
 // Get
