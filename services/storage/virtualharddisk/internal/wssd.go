@@ -74,7 +74,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string,
 	vhd := getVirtualHardDisksFromResponse(response)
 
 	if len(*vhd) == 0 {
-		return nil, fmt.Errorf("[VirtualHardDisk][Create] Unexpected error: Creating a network interface returned no result")
+		return nil, fmt.Errorf("[VirtualHardDisk][Create] Unexpected error: Creating a virtualharddisk returned no result")
 	}
 
 	return &((*vhd)[0]), err
@@ -82,7 +82,6 @@ func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string,
 
 // Upload
 func (c *client) Upload(ctx context.Context, containerName, name string, targeturl string) error {
-	fmt.Printf("wssd-sdk-for-go: wssd.go: Creating operation request %s to %s\n", name, targeturl)
 	if targeturl == "" {
 		return errors.Wrapf(errors.InvalidInput, "Target URL cannot be empty")
 	}
@@ -95,7 +94,6 @@ func (c *client) Upload(ctx context.Context, containerName, name string, targetu
 		log.Errorf("[VirtualHardDisk] Upload failed with error %v", err)
 		return err
 	}
-	fmt.Printf("wssd-sdk-for-go: wssd.go: Done with Operate\n")
 
 	return nil
 }
@@ -140,8 +138,6 @@ func (c *client) getVirtualHardDiskOperationRequest(ctx context.Context, opType 
 		return nil, err
 	}
 
-	fmt.Printf("wssd-sdk-for-go: wssd.go: getVirtualHardDiskOperationRequest: Get worked on the vhd\n")
-
 	vhd[0].TargetUrl = targeturl
 
 	request := &wssdstorage.VirtualHardDiskOperationRequest{
@@ -183,8 +179,6 @@ func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, container
 }
 
 func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDisk {
-	fmt.Printf("wssd-sdk-for-go: wssd.go: getVirtualHardDisk: Enter\n")
-
 	return &storage.VirtualHardDisk{
 		ID:   &vhd.Id,
 		Name: &vhd.Name,
