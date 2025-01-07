@@ -2,8 +2,6 @@ module github.com/microsoft/wssd-sdk-for-go
 
 go 1.22.4
 
-toolchain go1.23.2
-
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
 	github.com/golang/protobuf v1.5.4
