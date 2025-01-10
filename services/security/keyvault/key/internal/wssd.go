@@ -88,11 +88,12 @@ func (c *client) Delete(ctx context.Context, key *keyvault.Key) error {
 
 // Rotates a key and returns the new key
 func (c *client) RotateKey(ctx context.Context, keyReq *keyvault.KeyOperationRequest) (*keyvault.KeyOperationResult, error) {
-	wssdReq := wssdsecurity.KeyOperationRequest{
-		Key:           getWssdKey(keyReq.Key),
-		OperationType: wssdcommonproto.ProviderAccessOperation_Key_Rotate}
+	wssdReq, err := getKeyOperationRequest(keyReq, wssdcommonproto.ProviderAccessOperation_Key_Rotate)
+	if err != nil {
+		return nil, err
+	}
 
-	wssdRep, err := c.KeyAgentClient.Operate(ctx, &wssdReq)
+	wssdRep, err := c.KeyAgentClient.Operate(ctx, wssdReq)
 
 	if err != nil {
 		return nil, err
@@ -107,13 +108,12 @@ func (c *client) RotateKey(ctx context.Context, keyReq *keyvault.KeyOperationReq
 
 // Wraps a key and returns the result
 func (c *client) WrapKey(ctx context.Context, keyReq *keyvault.KeyOperationRequest) (*keyvault.KeyOperationResult, error) {
-	wssdReq := wssdsecurity.KeyOperationRequest{
-		Key:           getWssdKey(keyReq.Key),
-		Algorithm:     wssdcommonproto.Algorithm(wssdcommonproto.Algorithm_value[string(*keyReq.Algorithm)]),
-		OperationType: wssdcommonproto.ProviderAccessOperation_Key_WrapKey,
-		Data:          *keyReq.Data}
+	wssdReq, err := getKeyOperationRequest(keyReq, wssdcommonproto.ProviderAccessOperation_Key_WrapKey)
+	if err != nil {
+		return nil, err
+	}
 
-	wssdRep, err := c.KeyAgentClient.Operate(ctx, &wssdReq)
+	wssdRep, err := c.KeyAgentClient.Operate(ctx, wssdReq)
 
 	if err != nil {
 		return nil, err
@@ -132,13 +132,12 @@ func (c *client) WrapKey(ctx context.Context, keyReq *keyvault.KeyOperationReque
 
 // Unwraps a key and returns the result
 func (c *client) UnwrapKey(ctx context.Context, keyReq *keyvault.KeyOperationRequest) (*keyvault.KeyOperationResult, error) {
-	wssdReq := wssdsecurity.KeyOperationRequest{
-		Key:           getWssdKey(keyReq.Key),
-		Algorithm:     wssdcommonproto.Algorithm(wssdcommonproto.Algorithm_value[string(*keyReq.Algorithm)]),
-		OperationType: wssdcommonproto.ProviderAccessOperation_Key_UnwrapKey,
-		Data:          *keyReq.Data}
+	wssdReq, err := getKeyOperationRequest(keyReq, wssdcommonproto.ProviderAccessOperation_Key_UnwrapKey)
+	if err != nil {
+		return nil, err
+	}
 
-	wssdRep, err := c.KeyAgentClient.Operate(ctx, &wssdReq)
+	wssdRep, err := c.KeyAgentClient.Operate(ctx, wssdReq)
 
 	if err != nil {
 		return nil, err
@@ -153,6 +152,28 @@ func (c *client) UnwrapKey(ctx context.Context, keyReq *keyvault.KeyOperationReq
 		Result: &wssdRep.Data}
 
 	return &keyOpRes, nil
+}
+
+func getKeyOperationRequest(keyReq *keyvault.KeyOperationRequest, op wssdcommonproto.ProviderAccessOperation) (*wssdsecurity.KeyOperationRequest, error) {
+	var wssdReq wssdsecurity.KeyOperationRequest
+	switch op {
+	case wssdcommonproto.ProviderAccessOperation_Key_Rotate:
+		wssdReq = wssdsecurity.KeyOperationRequest{
+			Key:           getWssdKey(keyReq.Key),
+			OperationType: wssdcommonproto.ProviderAccessOperation_Key_Rotate}
+
+	case wssdcommonproto.ProviderAccessOperation_Key_UnwrapKey:
+	case wssdcommonproto.ProviderAccessOperation_Key_WrapKey:
+		wssdReq = wssdsecurity.KeyOperationRequest{
+			Key:           getWssdKey(keyReq.Key),
+			Algorithm:     wssdcommonproto.Algorithm(wssdcommonproto.Algorithm_value[string(*keyReq.Algorithm)]),
+			OperationType: op,
+			Data:          *keyReq.Data}
+	default:
+		return nil, errors.InvalidInput
+	}
+
+	return &wssdReq, nil
 }
 
 func getKeysFromResponse(response *wssdsecurity.KeyResponse) *[]keyvault.Key {

@@ -125,6 +125,7 @@ func getIdentity(identity *wssdsecurity.Identity) *security.Identity {
 		ID:          &identity.Id,
 		Name:        &identity.Name,
 		TokenExpiry: &identity.TokenExpiry,
+		Token:       &identity.Token,
 		IdentityProperties: &security.IdentityProperties{
 			ProvisioningState: status.GetProvisioningState(identity.GetStatus().GetProvisioningStatus()),
 			Statuses:          status.GetStatuses(identity.GetStatus()),

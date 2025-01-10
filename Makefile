@@ -4,7 +4,7 @@ GOCMD=go
 GOBUILD=$(GOCMD) build -v #-mod=vendor
 GOHOSTOS=$(strip $(shell $(GOCMD) env get GOHOSTOS))
 GOTEST=GOOS=$(GOHOSTOS) $(GOCMD) test -v -coverprofile=coverage.out -covermode count -timeout 60m0s
-TESTDIRECTORIES= ./services/compute/virtualmachine/internal
+TESTDIRECTORIES= ./services/compute/virtualmachine/internal ./services/security/keyvault/key/internal
 
 TAG ?= $(shell git describe --tags)
 COMMIT ?= $(shell git describe --always)
