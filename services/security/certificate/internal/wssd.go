@@ -226,9 +226,9 @@ func getWssdCSR(csr *security.CertificateRequest) (*wssdsecurity.CertificateSign
 	var csrRequest []byte
 	var err error
 	if csr.PrivateKey != nil {
-		pemKey, err := marshal.FromBase64(*csr.PrivateKey)
-		if err != nil {
-			return nil, "", err
+		pemKey, marshalErr := marshal.FromBase64(*csr.PrivateKey)
+		if marshalErr != nil {
+			return nil, "", marshalErr
 		}
 		csrRequest, key, err = certs.GenerateCertificateRequest(&conf, pemKey)
 	} else {

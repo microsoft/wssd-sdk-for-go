@@ -46,6 +46,19 @@ func (c *client) Get(ctx context.Context, containerName, name string) (*[]storag
 	return getVirtualHardDisksFromResponse(response), nil
 }
 
+// Get
+func (c *client) get(ctx context.Context, containerName, name string) ([]*wssdstorage.VirtualHardDisk, error) {
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_GET, name, containerName, nil)
+	if err != nil {
+		return nil, err
+	}
+	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	return response.GetVirtualHardDiskSystems(), nil
+}
+
 // CreateOrUpdate
 func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string, sg *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
 	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_POST, name, containerName, sg)
@@ -61,10 +74,28 @@ func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string,
 	vhd := getVirtualHardDisksFromResponse(response)
 
 	if len(*vhd) == 0 {
-		return nil, fmt.Errorf("[VirtualHardDisk][Create] Unexpected error: Creating a network interface returned no result")
+		return nil, fmt.Errorf("[VirtualHardDisk][Create] Unexpected error: Creating a virtualharddisk returned no result")
 	}
 
 	return &((*vhd)[0]), err
+}
+
+// Upload
+func (c *client) Upload(ctx context.Context, containerName, name string, targeturl string) error {
+	if targeturl == "" {
+		return errors.Wrapf(errors.InvalidInput, "Target URL cannot be empty")
+	}
+	request, err := c.getVirtualHardDiskOperationRequest(ctx, wssdcommonproto.VirtualHardDiskOperation_UPLOAD, name, containerName, targeturl)
+	if err != nil {
+		return err
+	}
+	_, err = c.VirtualHardDiskAgentClient.Operate(ctx, request)
+	if err != nil {
+		log.Errorf("[VirtualHardDisk] Upload failed with error %v", err)
+		return err
+	}
+
+	return nil
 }
 
 // Delete methods invokes create or update on the client
@@ -98,6 +129,29 @@ func (c *client) Hydrate(ctx context.Context, containerName, name string, vhdDef
 	return &((*vhd)[0]), err
 }
 
+func (c *client) getVirtualHardDiskOperationRequest(ctx context.Context, opType wssdcommonproto.VirtualHardDiskOperation, name, containerName string, targeturl string) (*wssdstorage.VirtualHardDiskOperationRequest, error) {
+	var err error
+	vhd, err := c.get(ctx, containerName, name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(vhd) != 1 {
+		err = errors.Wrapf(errors.InvalidInput, "Multiple or No Virtual Hard Disks found in container %s with name %s", containerName, name)
+		return nil, err
+	}
+
+	vhd[0].TargetUrl = targeturl
+
+	request := &wssdstorage.VirtualHardDiskOperationRequest{
+		OperationType:    opType,
+		VirtualHardDisks: vhd,
+	}
+
+	return request, nil
+}
+
 func getVirtualHardDisksFromResponse(response *wssdstorage.VirtualHardDiskResponse) *[]storage.VirtualHardDisk {
 	virtualHardDisks := []storage.VirtualHardDisk{}
 	for _, vhd := range response.GetVirtualHardDiskSystems() {
@@ -129,7 +183,6 @@ func getVirtualHardDiskRequest(opType wssdcommonproto.Operation, name, container
 }
 
 func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDisk {
-
 	return &storage.VirtualHardDisk{
 		ID:   &vhd.Id,
 		Name: &vhd.Name,

@@ -373,7 +373,7 @@ func (c *client) getVirtualMachineLinuxConfiguration(linuxConfiguration *wssdcom
 }
 
 func (c *client) getVirtualMachineScaleSetOSProfile(o *wssdcompute.OperatingSystemConfiguration) *compute.OSProfile {
-	osBootstrapEngine := compute.CloudInit
+	var osBootstrapEngine compute.OperatingSystemBootstrapEngine
 	switch o.OsBootstrapEngine {
 	case wssdcommonproto.OperatingSystemBootstrapEngine_WINDOWS_ANSWER_FILES:
 		osBootstrapEngine = compute.WindowsAnswerFiles
@@ -656,7 +656,7 @@ func (c *client) getWssdVirtualMachineScaleSetOSConfiguration(s *compute.OSProfi
 		adminuser.Password = *s.AdminPassword
 	}
 
-	osBootstrapEngine := wssdcommonproto.OperatingSystemBootstrapEngine_CLOUD_INIT
+	var osBootstrapEngine wssdcommonproto.OperatingSystemBootstrapEngine
 	switch s.OsBootstrapEngine {
 	case compute.WindowsAnswerFiles:
 		osBootstrapEngine = wssdcommonproto.OperatingSystemBootstrapEngine_WINDOWS_ANSWER_FILES
