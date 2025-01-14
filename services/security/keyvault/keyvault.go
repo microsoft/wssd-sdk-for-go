@@ -3,6 +3,8 @@
 
 package keyvault
 
+import "time"
+
 type SecretProperties struct {
 	// VaultName
 	VaultName *string `json:"vaultname"`
@@ -28,4 +30,57 @@ type Secret struct {
 	Value *string `json:"value"`
 	// Properties
 	*SecretProperties `json:"properties,omitempty"`
+}
+
+// JSONWebKeyEncryptionAlgorithm enumerates the values for json web key encryption algorithm.
+type JSONWebKeyEncryptionAlgorithm string
+
+const (
+	// A256KW AES Key Wrap with 256 bit key-encryption key
+	A256KW JSONWebKeyEncryptionAlgorithm = "A256KW"
+)
+
+// JSONWebKeyType enumerates the values for json web key type.
+type JSONWebKeyType string
+
+const (
+	// AES Advanced Encrytion Standard.
+	AES JSONWebKeyType = "AES"
+)
+
+type Key struct {
+	// ID
+	ID *string `json:"ID,omitempty"`
+	// Name
+	Name *string `json:"name,omitempty"`
+	// VaultName
+	VaultName *string `json:"vaultname"`
+	// Key Type
+	KeyType *JSONWebKeyType `json:"keytype,omitempty"`
+	// CreationTime
+	CreationTime *time.Time `json:"ct,omitempty"`
+	// KeyVersion
+	KeyVersion uint32 `json:"keyversion,omitempty"`
+	// KeySize in bits
+	KeySize int32 `json:"keysize,omitempty"`
+	// ProvisioningState - READ-ONLY; The provisioning state
+	ProvisioningState *string `json:"provisioningState,omitempty"`
+}
+
+// KeyOperationResult the key operation result.
+type KeyOperationResult struct {
+	// Key
+	*Key `json:"key,omitempty"`
+	// Result - READ-ONLY; a URL-encoded base64 string
+	Result *string `json:"result,omitempty"`
+}
+
+// KeyOperationResult the key operation result.
+type KeyOperationRequest struct {
+	// Key
+	*Key `json:"key,omitempty"`
+	// Algorithm
+	Algorithm *JSONWebKeyEncryptionAlgorithm `json:"Algorithm,omitempty"`
+	//Data
+	Data *string `json:"data,omitempty"`
 }

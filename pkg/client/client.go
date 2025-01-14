@@ -324,6 +324,16 @@ func GetSecretClient(serverAddress *string, authorizer auth.Authorizer) (securit
 	return security_pb.NewSecretAgentClient(conn), nil
 }
 
+// GetKeyClient returns the secret client to communicate with the wssdagent
+func GetKeyClient(serverAddress *string, authorizer auth.Authorizer) (security_pb.KeyAgentClient, error) {
+	conn, err := getClientConnection(serverAddress, authorizer)
+	if err != nil {
+		log.Fatalf("Unable to get KeyVaultClient. Failed to dial: %v", err)
+	}
+
+	return security_pb.NewKeyAgentClient(conn), nil
+}
+
 // GetIdentityClient returns the secret client to communicate with the wssdagent
 func GetIdentityClient(serverAddress *string, authorizer auth.Authorizer) (security_pb.IdentityAgentClient, error) {
 	conn, err := getClientConnection(serverAddress, authorizer)

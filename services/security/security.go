@@ -58,6 +58,8 @@ type Identity struct {
 	Certificate *string `json:"certificate,omitempty"`
 	// Token Expiry
 	TokenExpiry *int64 `json:"tokenexpiry,omitempty"`
+	// Token
+	Token *string `json:"token,omitempty"`
 	// Properties
 	*IdentityProperties `json:"properties,omitempty"`
 }
