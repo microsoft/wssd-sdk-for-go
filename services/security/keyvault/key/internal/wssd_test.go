@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/microsoft/moc/rpc/common"
+	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	"github.com/microsoft/wssd-sdk-for-go/services/security/keyvault"
 	"github.com/stretchr/testify/assert"
 )
@@ -34,6 +35,7 @@ func Test_KeyOperation(t *testing.T) {
 		assert.Equal(t, res.Key.VaultName, "testVault")
 		assert.Equal(t, res.Key.Type, common.JsonWebKeyType_AES)
 		assert.Equal(t, res.Data, "") // No data during rotate
+		assert.Equal(t, res.OperationType, wssdcommonproto.ProviderAccessOperation_Key_Rotate)
 	})
 
 	t.Run("Test wrap marshaling", func(t *testing.T) {
@@ -47,6 +49,21 @@ func Test_KeyOperation(t *testing.T) {
 		assert.Equal(t, res.Key.VaultName, "testVault")
 		assert.Equal(t, res.Key.Type, common.JsonWebKeyType_AES)
 		assert.Equal(t, res.Data, "test data")
+		assert.Equal(t, res.OperationType, wssdcommonproto.ProviderAccessOperation_Key_WrapKey)
+	})
+
+	t.Run("Test unwrap marshaling", func(t *testing.T) {
+		keyReq := keyvault.KeyOperationRequest{
+			Key:       &testKey,
+			Algorithm: &alg,
+			Data:      StringPtr("test data")}
+		res, err := getKeyOperationRequest(&keyReq, common.ProviderAccessOperation_Key_UnwrapKey)
+		assert.Nil(t, err)
+		assert.Equal(t, res.Key.Name, "testKeyName")
+		assert.Equal(t, res.Key.VaultName, "testVault")
+		assert.Equal(t, res.Key.Type, common.JsonWebKeyType_AES)
+		assert.Equal(t, res.Data, "test data")
+		assert.Equal(t, res.OperationType, wssdcommonproto.ProviderAccessOperation_Key_UnwrapKey)
 	})
 
 	t.Run("Test error", func(t *testing.T) {
