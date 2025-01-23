@@ -162,8 +162,7 @@ func getKeyOperationRequest(keyReq *keyvault.KeyOperationRequest, op wssdcommonp
 			Key:           getWssdKey(keyReq.Key),
 			OperationType: wssdcommonproto.ProviderAccessOperation_Key_Rotate}
 
-	case wssdcommonproto.ProviderAccessOperation_Key_UnwrapKey:
-	case wssdcommonproto.ProviderAccessOperation_Key_WrapKey:
+	case wssdcommonproto.ProviderAccessOperation_Key_UnwrapKey, wssdcommonproto.ProviderAccessOperation_Key_WrapKey:
 		wssdReq = wssdsecurity.KeyOperationRequest{
 			Key:           getWssdKey(keyReq.Key),
 			Algorithm:     wssdcommonproto.Algorithm(wssdcommonproto.Algorithm_value[string(*keyReq.Algorithm)]),
