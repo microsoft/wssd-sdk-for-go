@@ -274,6 +274,13 @@ type IPConfigurationProperties struct {
 	LoadBalancerInboundNatPoolIDs *[]string `json:"loadBalancerInboundNatPools,omitempty"`
 	// IPAllocationMethod - The IP address allocation method. Possible values include: 'Static', 'Dynamic'
 	IPAllocationMethod IPAllocationMethod `json:"ipAllocationMethod,omitempty"`
+
+	// aweston poc - new fields to pass full vnic data in resource,
+	// rather than relying on fetching data from vnet provider
+	// SwitchName - name of the underlying vswitch
+	SwitchName *string `json:"switchName,omitempty"`
+	// VLAN ID - vlan id corresponding to the subnet
+	SubnetVlan *uint32 `json:"subnetVlan,omitempty"`
 }
 
 // IPConfiguration

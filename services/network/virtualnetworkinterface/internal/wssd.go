@@ -288,15 +288,22 @@ func ipAllocationMethodSdkToProtobuf(allocation network.IPAllocationMethod) wssd
 
 func (c *client) getWssdNetworkInterfaceIPConfig(ipconfig *network.IPConfiguration) (*wssdnetwork.IpConfiguration, error) {
 	if ipconfig.IPConfigurationProperties == nil {
-		return nil, errors.Wrapf(errors.InvalidInput, "Missing IPConfiguration Properties")
+		return nil, errors.Wrap(errors.InvalidInput, "Missing IPConfiguration Properties")
 	}
-	if ipconfig.IPConfigurationProperties.SubnetID == nil ||
-		len(*ipconfig.IPConfigurationProperties.SubnetID) == 0 {
-		return nil, errors.Wrapf(errors.InvalidInput, "Missing IPConfiguration Properties")
+
+	// aweston poc - use switchname instead of subnetid
+	// in old code, subnetid was a reference to a nodeagent vnet resource
+	if ipconfig.IPConfigurationProperties.SwitchName == nil ||
+		len(*ipconfig.IPConfigurationProperties.SwitchName) == 0 {
+		return nil, errors.Wrap(errors.InvalidInput, "Missing required field Switch Name")
+	}
+
+	if ipconfig.IPConfigurationProperties.SubnetID != nil {
+		return nil, errors.Wrap(errors.InvalidInput, "Subnet ID is not supported, should be left unset")
 	}
 
 	wssdipconfig := &wssdnetwork.IpConfiguration{
-		Subnetid:    *ipconfig.SubnetID,
+		SwitchName:  *ipconfig.SwitchName,
 		NetworkType: networkTypeSdkToProtobuf(ipconfig.NetworkType),
 	}
 	if ipconfig.IPAddress != nil {
@@ -309,6 +316,10 @@ func (c *client) getWssdNetworkInterfaceIPConfig(ipconfig *network.IPConfigurati
 		wssdipconfig.Gateway = *ipconfig.Gateway
 	}
 	wssdipconfig.Allocation = ipAllocationMethodSdkToProtobuf(ipconfig.IPAllocationMethod)
+
+	if ipconfig.SubnetVlan != nil {
+		wssdipconfig.SubnetVlan = *ipconfig.SubnetVlan
+	}
 
 	return wssdipconfig, nil
 }
@@ -396,6 +407,8 @@ func (c *client) getNetworkIpConfigs(wssdipconfigs []*wssdnetwork.IpConfiguratio
 				Gateway:            &wssdipconfig.Gateway,
 				IPAllocationMethod: ipAllocationMethodProtobufToSdk(wssdipconfig.Allocation),
 				NetworkType:        networkTypeProtobufToSdk(wssdipconfig.NetworkType),
+				SwitchName:         &wssdipconfig.SwitchName,
+				SubnetVlan:         &wssdipconfig.SubnetVlan,
 			},
 		})
 	}
