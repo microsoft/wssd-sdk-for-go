@@ -55,3 +55,5 @@ replace (
 	golang.org/x/image => golang.org/x/image v0.23.0
 	golang.org/x/sys => golang.org/x/sys v0.0.0-20220823224334-20c2bfdbfe24
 )
+
+replace github.com/microsoft/moc => ../moc
