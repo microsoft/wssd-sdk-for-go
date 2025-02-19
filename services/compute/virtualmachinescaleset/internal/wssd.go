@@ -574,12 +574,12 @@ func (c *client) getWssdVirtualMachineScaleSetNetworkConfigurationNetworkInterfa
 	if ipconfig.IPConfigurationProperties == nil {
 		return nil, errors.Wrapf(errors.InvalidConfiguration, "Missing IPConfiguration Properties")
 	}
-	if ipconfig.SubnetID == nil {
+	if ipconfig.SwitchName == nil {
 		return nil, errors.Wrapf(errors.InvalidConfiguration, "Missing Subnet Reference in IPConfiguration Properties")
 	}
 
 	wssdipconfig := &wssdnetwork.IpConfiguration{
-		Subnetid: *ipconfig.SubnetID,
+		SwitchName: *ipconfig.SwitchName,
 	}
 
 	if ipconfig.IPAddress != nil {
