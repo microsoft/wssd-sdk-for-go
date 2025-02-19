@@ -298,8 +298,9 @@ func (c *client) getWssdNetworkInterfaceIPConfig(ipconfig *network.IPConfigurati
 		return nil, errors.Wrap(errors.InvalidInput, "Missing required field Switch Name")
 	}
 
-	if ipconfig.IPConfigurationProperties.SubnetID != nil {
-		return nil, errors.Wrap(errors.InvalidInput, "Subnet ID is not supported, should be left unset")
+	// this is getting propagated back as a empty string, but non-nil
+	if ipconfig.IPConfigurationProperties.SubnetID != nil && len(*ipconfig.IPConfigurationProperties.SubnetID) > 0 {
+		return nil, errors.Wrapf(errors.InvalidInput, "Subnet ID is not supported, should be left unset. Value is: %s", *ipconfig.IPConfigurationProperties.SubnetID)
 	}
 
 	wssdipconfig := &wssdnetwork.IpConfiguration{
