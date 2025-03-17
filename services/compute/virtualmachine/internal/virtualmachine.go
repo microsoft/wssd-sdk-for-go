@@ -74,7 +74,6 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		ZoneConfiguration: zoneConfig,
 		Entity:            entity,
 		Priority:          vm.Priority,
-		Priority:                vm.Priority,
 		HyperVVmId:              vm.HyperVVmId,
 		HostNodeName:            vm.HostNodeName,
 	}
