@@ -89,12 +89,16 @@ func getAuthServerEndpoint(serverAddress *string) string {
 	return *serverAddress
 }
 
+func getServerAddressOnly(serverAddress string) string {
+	return strings.Split(serverAddress, ":")[0]
+}
+
 func GetServerAddress(cc *grpc.ClientConn) string {
 	mux.Lock()
 	defer mux.Unlock()
 
 	for key, value := range connectionCache {
-	        if value == cc {
+		if value == cc {
 			return key
 		}
 	}
@@ -109,7 +113,7 @@ func AddNodeNameToErrorMessageInterceptor() grpc.UnaryClientInterceptor {
 			serverAddressPort := GetServerAddress(cc)
 			if len(serverAddressPort) != 0 {
 				serverAddress := (strings.Split(serverAddressPort, ":"))[0]
-		 		err = errors.Wrapf(err, "nodename = %s", serverAddress)
+				err = errors.Wrapf(err, "nodename = %s", serverAddress)
 			}
 		}
 
@@ -117,7 +121,7 @@ func AddNodeNameToErrorMessageInterceptor() grpc.UnaryClientInterceptor {
 	}
 }
 
-func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
+func getDefaultDialOption(authorizer auth.Authorizer, endpoint *string) []grpc.DialOption {
 	var opts []grpc.DialOption
 
 	// Debug Mode allows us to talk to wssdagent without a proper handshake
@@ -128,6 +132,17 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 		opts = append(opts, grpc.WithInsecure())
 	} else {
 		opts = append(opts, grpc.WithTransportCredentials(authorizer.WithTransportAuthorization()))
+
+		if authorizer.GetNodeAgentAuthorizerType() == auth.NodeAgentAuthPopToken {
+			// advancedtls used by popToken authorizor returns the server name as "server_name:port" instead of "server_name".
+			// This breaks sni-proxy since it uses server_name as a key to find the cached relay. The code below overrides the
+			// authority/server name to be always just server_name.
+			opts = append(opts, grpc.WithAuthority(getServerAddressOnly(*endpoint)))
+
+			// While authorizer supports rpc authorization, it has never been used for the regular tls certificates transport flow.
+			// hence we only add the rpc for poptoken auth
+			opts = append(opts, grpc.WithPerRPCCredentials(authorizer.WithRPCAuthorization()))
+		}
 	}
 
 	opts = append(opts, grpc.WithKeepaliveParams(
@@ -154,7 +169,7 @@ func getClientConnection(serverAddress *string, authorizer auth.Authorizer) (*gr
 		return conn, nil
 	}
 
-	opts := getDefaultDialOption(authorizer)
+	opts := getDefaultDialOption(authorizer, &endpoint)
 	conn, err := grpc.Dial(endpoint, opts...)
 	if err != nil {
 		return nil, err
