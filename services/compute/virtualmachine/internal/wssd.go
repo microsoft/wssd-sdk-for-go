@@ -114,6 +114,34 @@ func (c *client) Hydrate(ctx context.Context, group, name string, sg *compute.Vi
 	return &(*vms)[0], nil
 }
 
+func (c *client) GetHyperVVmId(ctx context.Context, group, name string) (*compute.VirtualMachineHyperVVmId, error) {
+	vm, err := c.get(ctx, group, name)
+
+	mocResponse, err := c.VirtualMachineAgentClient.GetHyperVVmId(ctx, vm[0])
+	if err != nil {
+		return nil, err
+	}
+	response := &compute.VirtualMachineHyperVVmId{
+		HyperVVmId: &mocResponse.HyperVVmId,
+	}
+
+	return response, nil
+}
+
+func (c *client) GetHostNodeName(ctx context.Context, group, name string) (*compute.VirtualMachineHostNodeName, error) {
+	vm, err := c.get(ctx, group, name)
+
+	mocResponse, err := c.VirtualMachineAgentClient.GetHostNodeName(ctx, vm[0])
+	if err != nil {
+		return nil, err
+	}
+	response := &compute.VirtualMachineHostNodeName{
+		HostNodeName: &mocResponse.HostNodeName,
+	}
+
+	return response, nil
+}
+
 func (c *client) Start(ctx context.Context, group, name string) (err error) {
 	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_START, name)
 	if err != nil {
