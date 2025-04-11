@@ -146,6 +146,8 @@ github.com/hvedati/moc v0.11.0-alpha h1:jyeogURB8GEaEKPuGOszm/dW5NjPNFrTxWBy57Q1
 github.com/hvedati/moc v0.11.0-alpha/go.mod h1:fml48yfCVfYDmpoL1Yt40dN5dLOyQbN9UeBKlQxLiG4=
 github.com/hvedati/moc v0.11.1-alpha h1:Oaaxw9+AhXQ/GhtNg5qCMEHXlk7ehRNsZBWaWYCIsH8=
 github.com/hvedati/moc v0.11.1-alpha/go.mod h1:fml48yfCVfYDmpoL1Yt40dN5dLOyQbN9UeBKlQxLiG4=
+github.com/hvedati/moc v0.11.2-alpha h1:9d392A4PzSOOxLKVqqMa07DEWu2UtKFtQIm9IOLotCc=
+github.com/hvedati/moc v0.11.2-alpha/go.mod h1:emM0LStnDYZRIUP9bAdpOQ2G/h1Ry1oyxCDQmq25TeU=
 github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
 github.com/ianlancetaylor/demangle v0.0.0-20200824232613-28f6c0f3b639/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
 github.com/jmespath/go-jmespath v0.4.0 h1:BEgLn5cpjn8UN1mAw4NjwDrS35OdebyEtFe+9YPoQUg=
