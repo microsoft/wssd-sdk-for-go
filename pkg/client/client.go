@@ -19,6 +19,7 @@ import (
 	log "k8s.io/klog"
 
 	"github.com/microsoft/moc/pkg/auth"
+	"github.com/microsoft/moc/pkg/intercept"
 	admin_pb "github.com/microsoft/moc/rpc/common/admin"
 	compute_pb "github.com/microsoft/moc/rpc/nodeagent/compute"
 	network_pb "github.com/microsoft/moc/rpc/nodeagent/network"
@@ -101,10 +102,9 @@ func GetServerAddress(cc *grpc.ClientConn) string {
 	return ""
 }
 
-func ErrorMessageInterceptor() grpc.UnaryClientInterceptor {
+func AddNodeNameToErrorMessageInterceptor() grpc.UnaryClientInterceptor {
 	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		err := invoker(ctx, method, req, reply, cc, opts...)
-		err = errors.ParseGRPCError(err)
 		if err != nil {
 			serverAddressPort := GetServerAddress(cc)
 			if len(serverAddressPort) != 0 {
@@ -139,7 +139,9 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 
 	opts = append(opts, grpc.WithStatsHandler(&ocgrpc.ClientHandler{}))
 
-	opts = append(opts, grpc.WithUnaryInterceptor(ErrorMessageInterceptor()))
+	opts = append(opts, grpc.WithUnaryInterceptor(intercept.NewErrorParsingInterceptor()))
+
+	opts = append(opts, grpc.WithUnaryInterceptor(AddNodeNameToErrorMessageInterceptor()))
 
 	return opts
 }
