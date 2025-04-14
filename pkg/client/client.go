@@ -96,7 +96,7 @@ func GetServerAddress(cc *grpc.ClientConn) string {
 	        if value == cc {
 			return key
 		}
-    }
+	}
 
 	return ""
 }
