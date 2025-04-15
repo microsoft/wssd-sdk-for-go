@@ -139,9 +139,7 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 
 	opts = append(opts, grpc.WithStatsHandler(&ocgrpc.ClientHandler{}))
 
-	opts = append(opts, grpc.WithUnaryInterceptor(intercept.NewErrorParsingInterceptor()))
-
-	opts = append(opts, grpc.WithUnaryInterceptor(AddNodeNameToErrorMessageInterceptor()))
+	opts = append(opts, grpc.WithChainUnaryInterceptor(AddNodeNameToErrorMessageInterceptor(), intercept.NewErrorParsingInterceptor()))
 
 	return opts
 }
