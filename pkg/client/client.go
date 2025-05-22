@@ -4,12 +4,14 @@
 package client
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/microsoft/moc/pkg/errors"
 	"github.com/spf13/viper"
 	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
@@ -87,6 +89,34 @@ func getAuthServerEndpoint(serverAddress *string) string {
 	return *serverAddress
 }
 
+func GetServerAddress(cc *grpc.ClientConn) string {
+	mux.Lock()
+	defer mux.Unlock()
+
+	for key, value := range connectionCache {
+	        if value == cc {
+			return key
+		}
+	}
+
+	return ""
+}
+
+func AddNodeNameToErrorMessageInterceptor() grpc.UnaryClientInterceptor {
+	return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		err := invoker(ctx, method, req, reply, cc, opts...)
+		if err != nil {
+			serverAddressPort := GetServerAddress(cc)
+			if len(serverAddressPort) != 0 {
+				serverAddress := (strings.Split(serverAddressPort, ":"))[0]
+		 		err = errors.Wrapf(err, "nodename = %s", serverAddress)
+			}
+		}
+
+		return err
+	}
+}
+
 func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 	var opts []grpc.DialOption
 
@@ -109,7 +139,7 @@ func getDefaultDialOption(authorizer auth.Authorizer) []grpc.DialOption {
 
 	opts = append(opts, grpc.WithStatsHandler(&ocgrpc.ClientHandler{}))
 
-	opts = append(opts, grpc.WithUnaryInterceptor(intercept.NewErrorParsingInterceptor()))
+	opts = append(opts, grpc.WithChainUnaryInterceptor(AddNodeNameToErrorMessageInterceptor(), intercept.NewErrorParsingInterceptor()))
 
 	return opts
 }

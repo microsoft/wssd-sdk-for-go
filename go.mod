@@ -1,23 +1,26 @@
 module github.com/microsoft/wssd-sdk-for-go
 
-go 1.22.4
+go 1.23.0
+
+toolchain go1.23.8
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
 	github.com/golang/protobuf v1.5.4
 	github.com/google/go-cmp v0.6.0
-	github.com/microsoft/moc v0.25.5
+	github.com/microsoft/moc v0.28.7
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.9.0
 	go.opencensus.io v0.24.0
-	google.golang.org/grpc v1.60.1
-	google.golang.org/protobuf v1.36.4
+	google.golang.org/grpc v1.72.0
+	google.golang.org/protobuf v1.36.6
 	k8s.io/klog v1.0.0
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
@@ -44,7 +47,6 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
 	github.com/microsoft/moc => github.com/hvedati/moc v0.11.2-alpha
