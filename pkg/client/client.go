@@ -90,7 +90,7 @@ func getAuthServerEndpoint(serverAddress *string) string {
 }
 
 func getServerAddressOnly(serverAddress string) string {
-	return strings.Split(serverAddress, ":")[0]
+	return strings.TrimSpace(strings.Split(serverAddress, ":")[0])
 }
 
 func GetServerAddress(cc *grpc.ClientConn) string {
@@ -132,17 +132,22 @@ func getDefaultDialOption(authorizer auth.Authorizer, endpoint *string) []grpc.D
 		opts = append(opts, grpc.WithInsecure())
 	} else {
 		opts = append(opts, grpc.WithTransportCredentials(authorizer.WithTransportAuthorization()))
+	}
 
-		if authorizer.GetNodeAgentAuthorizerType() == auth.NodeAgentAuthPopToken {
-			// advancedtls used by popToken authorizor returns the server name as "server_name:port" instead of "server_name".
-			// This breaks sni-proxy since it uses server_name as a key to find the cached relay. The code below overrides the
-			// authority/server name to be always just server_name.
-			opts = append(opts, grpc.WithAuthority(getServerAddressOnly(*endpoint)))
-
-			// While authorizer supports rpc authorization, it has never been used for the regular tls certificates transport flow.
-			// hence we only add the rpc for poptoken auth
-			opts = append(opts, grpc.WithPerRPCCredentials(authorizer.WithRPCAuthorization()))
+	if authorizer.GetNodeAgentAuthorizerType() == auth.NodeAgentAuthPopToken {
+		// pop token does not support grpc.WithInsecure() flag
+		if ok := isDebugMode(); ok == nil {
+			panic("Poptoken authorizer does not support IsDebug mode")
 		}
+
+		// advancedtls used by popToken authorizor returns the server name as "server_name:port" instead of "server_name".
+		// This breaks sni-proxy since it uses server_name as a key to find the cached relay. The code below overrides the
+		// authority/server name to be always just server_name.
+		opts = append(opts, grpc.WithAuthority(getServerAddressOnly(*endpoint)))
+
+		// While authorizer supports rpc authorization, it has never been used for the regular tls certificates transport flow.
+		// hence we only add the rpc for poptoken auth
+		opts = append(opts, grpc.WithPerRPCCredentials(authorizer.WithRPCAuthorization()))
 	}
 
 	opts = append(opts, grpc.WithKeepaliveParams(
