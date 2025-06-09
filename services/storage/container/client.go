@@ -5,6 +5,7 @@ package container
 
 import (
 	"context"
+
 	"github.com/microsoft/moc/pkg/auth"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage"
 	"github.com/microsoft/wssd-sdk-for-go/services/storage/container/internal"
@@ -12,9 +13,9 @@ import (
 
 // Service interface
 type Service interface {
-	Get(context.Context, string, string) (*[]storage.Container, error)
+	Get(context.Context, string, string, string) (*[]storage.Container, error)
 	CreateOrUpdate(context.Context, string, string, *storage.Container) (*storage.Container, error)
-	Delete(context.Context, string, string) error
+	Delete(context.Context, string, string, string) error
 }
 
 // Client structure
@@ -34,8 +35,8 @@ func NewContainerClient(nodeFQDN string, authorizer auth.Authorizer) (*Container
 }
 
 // Get methods invokes the client Get method
-func (c *ContainerClient) Get(ctx context.Context, group, name string) (*[]storage.Container, error) {
-	return c.internal.Get(ctx, group, name)
+func (c *ContainerClient) Get(ctx context.Context, group, name string, path string) (*[]storage.Container, error) {
+	return c.internal.Get(ctx, group, name, path)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
@@ -44,6 +45,6 @@ func (c *ContainerClient) CreateOrUpdate(ctx context.Context, group, name string
 }
 
 // Delete methods invokes delete of the storage resource
-func (c *ContainerClient) Delete(ctx context.Context, group, name string) error {
-	return c.internal.Delete(ctx, group, name)
+func (c *ContainerClient) Delete(ctx context.Context, group, name string, path string) error {
+	return c.internal.Delete(ctx, group, name, path)
 }
