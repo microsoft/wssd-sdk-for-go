@@ -220,7 +220,7 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 	}
 
 	if c.VirtualMachineID != nil {
-		vnic.VirtualMachineName = *c.VirtualMachineID
+		vnic.Vmid = *c.VirtualMachineID
 	}
 
 	if c.EnableAcceleratedNetworking != nil {
@@ -231,7 +231,6 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 		}
 	}
 
-	vnic.Entity = cc.getWssdVirtualMachineEntity(c)
 	return vnic, nil
 }
 
@@ -331,7 +330,7 @@ func (cc *client) getVirtualNetworkInterface(server, group string, c *wssdnetwor
 		Name: &c.Name,
 		ID:   &c.Id,
 		VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
-			VirtualMachineID:            &c.VirtualMachineName,
+			VirtualMachineID:            &c.Vmid,
 			MACAddress:                  &c.Macaddress,
 			DNSSettings:                 cc.getWssdDNSSettings(c.DnsSettings),
 			IPConfigurations:            cc.getNetworkIpConfigs(c.Ipconfigs),
@@ -431,10 +430,6 @@ func (cc *client) getWssdDNSSettings(dnssetting *wssdcommonproto.Dns) *network.D
 
 func (c *client) getVirtualNetworkIsPlaceholder(vnic *wssdnetwork.VirtualNetworkInterface) *bool {
 	isPlaceholder := false
-	entity := vnic.GetEntity()
-	if entity != nil {
-		isPlaceholder = entity.IsPlaceholder
-	}
 	return &isPlaceholder
 }
 

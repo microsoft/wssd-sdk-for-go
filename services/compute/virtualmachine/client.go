@@ -13,21 +13,22 @@ import (
 
 	"github.com/microsoft/wssd-sdk-for-go/services/compute"
 	"github.com/microsoft/wssd-sdk-for-go/services/compute/virtualmachine/internal"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
 )
 
 type Service interface {
-	Get(context.Context, string, string) (*[]compute.VirtualMachine, error)
-	CreateOrUpdate(context.Context, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
-	Delete(context.Context, string, string) error
-	Hydrate(context.Context, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
-	Start(context.Context, string, string) error
-	Stop(context.Context, string, string) error
-	Pause(context.Context, string, string) error
-	Save(context.Context, string, string) error
-	RemoveIsoDisk(context.Context, string, string) error
-	RepairGuestAgent(context.Context, string, string) error
-	RunCommand(context.Context, string, string, *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error)
-	Validate(context.Context, string, string) error
+	Get(context.Context, string, string, string) (*[]compute.VirtualMachine, error)
+	CreateOrUpdate(context.Context, string, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
+	Delete(context.Context, string, string, string) error
+	Hydrate(context.Context, string, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
+	Start(context.Context, string, string, string) error
+	Stop(context.Context, string, string, string) error
+	Pause(context.Context, string, string, string) error
+	Save(context.Context, string, string, string) error
+	RemoveIsoDisk(context.Context, string, string, string) error
+	RepairGuestAgent(context.Context, string, string, string) error
+	RunCommand(context.Context, string, string, string, *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error)
+	Validate(context.Context, string, string, string) error
 }
 
 type VirtualMachineClient struct {
@@ -45,71 +46,65 @@ func NewVirtualMachineClient(cloudFQDN string, authorizer auth.Authorizer) (*Vir
 }
 
 // Get methods invokes the client Get method
-func (c *VirtualMachineClient) Get(ctx context.Context, group, name string) (*[]compute.VirtualMachine, error) {
-	return c.internal.Get(ctx, group, name)
+func (c *VirtualMachineClient) Get(ctx context.Context, group, name, id string) (*[]compute.VirtualMachine, error) {
+	return c.internal.Get(ctx, group, name, id)
 }
 
-// CreateOrUpdate methods invokes create or update on the client
-func (c *VirtualMachineClient) CreateOrUpdate(ctx context.Context, group, name string, compute *compute.VirtualMachine) (*compute.VirtualMachine, error) {
-	return c.internal.CreateOrUpdate(ctx, group, name, compute)
+func (c *VirtualMachineClient) CreateOrUpdate(ctx context.Context, group, name, id string, compute *compute.VirtualMachine) (*compute.VirtualMachine, error) {
+	return c.internal.CreateOrUpdate(ctx, group, name, id, compute)
 }
 
-// Delete methods invokes delete of the compute resource
-func (c *VirtualMachineClient) Delete(ctx context.Context, group string, name string) error {
-	return c.internal.Delete(ctx, group, name)
+func (c *VirtualMachineClient) Delete(ctx context.Context, group, name, id string) error {
+	return c.internal.Delete(ctx, group, name, id)
 }
 
-// Hydrate methods creates MOC representation of the VM resource
-func (c *VirtualMachineClient) Hydrate(ctx context.Context, group string, name string, compute *compute.VirtualMachine) (*compute.VirtualMachine, error) {
-	return c.internal.Hydrate(ctx, group, name, compute)
+func (c *VirtualMachineClient) Hydrate(ctx context.Context, group, name, id string, compute *compute.VirtualMachine) (*compute.VirtualMachine, error) {
+	return c.internal.Hydrate(ctx, group, name, id, compute)
 }
 
-func (c *VirtualMachineClient) Start(ctx context.Context, group string, name string) (err error) {
-	err = c.internal.Start(ctx, group, name)
-	return
+func (c *VirtualMachineClient) Start(ctx context.Context, group, name, id string) error {
+	return c.internal.Start(ctx, group, name, id)
 }
-func (c *VirtualMachineClient) Stop(ctx context.Context, group string, name string) (err error) {
-	err = c.internal.Stop(ctx, group, name)
-	return
+
+func (c *VirtualMachineClient) Stop(ctx context.Context, group, name, id string) error {
+	return c.internal.Stop(ctx, group, name, id)
 }
-func (c *VirtualMachineClient) Restart(ctx context.Context, group string, name string) (err error) {
-	err = c.internal.Stop(ctx, group, name)
+
+func (c *VirtualMachineClient) Restart(ctx context.Context, group, name, id string) error {
+	err := c.internal.Stop(ctx, group, name, id)
 	if err != nil {
-		return
+		return err
 	}
-	err = c.internal.Start(ctx, group, name)
-	return
-}
-func (c *VirtualMachineClient) Pause(ctx context.Context, group string, name string) (err error) {
-	err = c.internal.Pause(ctx, group, name)
-	return
-}
-func (c *VirtualMachineClient) Save(ctx context.Context, group string, name string) (err error) {
-	err = c.internal.Save(ctx, group, name)
-	return
+	return c.internal.Start(ctx, group, name, id)
 }
 
-func (c *VirtualMachineClient) RemoveIsoDisk(ctx context.Context, group string, name string) (err error) {
-	err = c.internal.RemoveIsoDisk(ctx, group, name)
-	return
+func (c *VirtualMachineClient) Pause(ctx context.Context, group, name, id string) error {
+	return c.internal.Pause(ctx, group, name, id)
 }
 
-func (c *VirtualMachineClient) RepairGuestAgent(ctx context.Context, group string, name string) (err error) {
-	err = c.internal.RepairGuestAgent(ctx, group, name)
-	return
+func (c *VirtualMachineClient) Save(ctx context.Context, group, name, id string) error {
+	return c.internal.Save(ctx, group, name, id)
+}
+
+func (c *VirtualMachineClient) RemoveIsoDisk(ctx context.Context, group, name, id string) error {
+	return c.internal.RemoveIsoDisk(ctx, group, name, id)
+}
+
+func (c *VirtualMachineClient) RepairGuestAgent(ctx context.Context, group, name, id string) error {
+	return c.internal.RepairGuestAgent(ctx, group, name, id)
 }
 
 // Validate methods invokes the validate Get method
-func (c *VirtualMachineClient) Validate(ctx context.Context, group, name string) error {
-	return c.internal.Validate(ctx, group, name)
+func (c *VirtualMachineClient) Validate(ctx context.Context, group, name, id string) error {
+	return c.internal.Validate(ctx, group, name, id)
 }
 
-func (c *VirtualMachineClient) Resize(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize) (err error) {
-	return c.ResizeEx(ctx, group, name, newSize, newCustomSize, nil)
+func (c *VirtualMachineClient) Resize(ctx context.Context, group, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize, id string) error {
+	return c.ResizeEx(ctx, group, name, newSize, newCustomSize, nil, id)
 }
 
-func (c *VirtualMachineClient) ResizeEx(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize, newVirtualMachineGPUs []*compute.VirtualMachineGPU) (err error) {
-	vms, err := c.Get(ctx, group, name)
+func (c *VirtualMachineClient) ResizeEx(ctx context.Context, group string, name string, newSize compute.VirtualMachineSizeTypes, newCustomSize *compute.VirtualMachineCustomSize, newVirtualMachineGPUs []*compute.VirtualMachineGPU, id string) (err error) {
+	vms, err := c.Get(ctx, group, name, id)
 	if err != nil {
 		return
 	}
@@ -130,12 +125,12 @@ func (c *VirtualMachineClient) ResizeEx(ctx context.Context, group string, name 
 	vm.HardwareProfile.CustomSize = newCustomSize
 	vm.HardwareProfile.VirtualMachineGPUs = newVirtualMachineGPUs
 
-	_, err = c.CreateOrUpdate(ctx, group, name, &vm)
+	_, err = c.CreateOrUpdate(ctx, group, name, id, &vm)
 	return
 }
 
-func (c *VirtualMachineClient) DiskAttach(ctx context.Context, group string, vmName, diskName string) (err error) {
-	vms, err := c.Get(ctx, group, vmName)
+func (c *VirtualMachineClient) DiskAttach(ctx context.Context, group, vmName, diskName, id string) error {
+	vms, err := c.Get(ctx, group, vmName, id)
 	if err != nil {
 		return err
 	}
@@ -145,24 +140,23 @@ func (c *VirtualMachineClient) DiskAttach(ctx context.Context, group string, vmN
 
 	vm := (*vms)[0]
 	for _, disk := range *vm.StorageProfile.DataDisks {
-		if *disk.VhdName == diskName {
+		if disk.Vhd.Name == diskName {
 			return errors.Wrapf(errors.AlreadyExists, "DataDisk [%s] is already attached to the VM [%s]", diskName, vmName)
 		}
 	}
 
-	*vm.StorageProfile.DataDisks = append(*vm.StorageProfile.DataDisks, compute.DataDisk{VhdName: &diskName})
+	*vm.StorageProfile.DataDisks = append(*vm.StorageProfile.DataDisks, compute.DataDisk{Vhd: &compute.VirtualHardDisk{Name: diskName}})
 
-	_, err = c.CreateOrUpdate(ctx, group, vmName, &vm)
+	_, err = c.CreateOrUpdate(ctx, group, vmName, id, &vm)
 	if err != nil {
 		return err
 	}
 
-	return
-
+	return nil
 }
 
-func (c *VirtualMachineClient) DiskDetach(ctx context.Context, group string, vmName, diskName string) (err error) {
-	vms, err := c.Get(ctx, group, vmName)
+func (c *VirtualMachineClient) DiskDetach(ctx context.Context, group, vmName, diskName, id string) error {
+	vms, err := c.Get(ctx, group, vmName, id)
 	if err != nil {
 		return err
 	}
@@ -172,21 +166,21 @@ func (c *VirtualMachineClient) DiskDetach(ctx context.Context, group string, vmN
 
 	vm := (*vms)[0]
 	for i, element := range *vm.StorageProfile.DataDisks {
-		if *element.VhdName == diskName {
+		if element.Vhd.Name == diskName {
 			*vm.StorageProfile.DataDisks = append((*vm.StorageProfile.DataDisks)[:i], (*vm.StorageProfile.DataDisks)[i+1:]...)
 			break
 		}
 	}
 
-	_, err = c.CreateOrUpdate(ctx, group, vmName, &vm)
+	_, err = c.CreateOrUpdate(ctx, group, vmName, id, &vm)
 	if err != nil {
 		return err
 	}
-	return
+	return nil
 }
 
-func (c *VirtualMachineClient) NetworkInterfaceAdd(ctx context.Context, group string, vmName, nicName string) (err error) {
-	vms, err := c.Get(ctx, group, vmName)
+func (c *VirtualMachineClient) NetworkInterfaceAdd(ctx context.Context, group, vmName, nicName, id string) error {
+	vms, err := c.Get(ctx, group, vmName, id)
 	if err != nil {
 		return err
 	}
@@ -196,23 +190,22 @@ func (c *VirtualMachineClient) NetworkInterfaceAdd(ctx context.Context, group st
 
 	vm := (*vms)[0]
 	for _, nic := range *vm.NetworkProfile.NetworkInterfaces {
-		if *nic.VirtualNetworkInterfaceReference == nicName {
+		if *nic.Vnic.Name == nicName {
 			return errors.Wrapf(errors.AlreadyExists, "NetworkInterface [%s] is already attached to the VM [%s]", nicName, vmName)
 		}
 	}
 
-	*vm.NetworkProfile.NetworkInterfaces = append(*vm.NetworkProfile.NetworkInterfaces, compute.NetworkInterfaceReference{VirtualNetworkInterfaceReference: &nicName})
+	*vm.NetworkProfile.NetworkInterfaces = append(*vm.NetworkProfile.NetworkInterfaces, compute.NetworkInterfaceReference{Vnic: &network.VirtualNetworkInterface{Name: &nicName}})
 
-	_, err = c.CreateOrUpdate(ctx, group, vmName, &vm)
+	_, err = c.CreateOrUpdate(ctx, group, vmName, id, &vm)
 	if err != nil {
 		return err
 	}
-	return
-
+	return nil
 }
 
-func (c *VirtualMachineClient) NetworkInterfaceRemove(ctx context.Context, group string, vmName, nicName string) (err error) {
-	vms, err := c.Get(ctx, group, vmName)
+func (c *VirtualMachineClient) NetworkInterfaceRemove(ctx context.Context, group, vmName, nicName, id string) error {
+	vms, err := c.Get(ctx, group, vmName, id)
 	if err != nil {
 		return err
 	}
@@ -222,21 +215,21 @@ func (c *VirtualMachineClient) NetworkInterfaceRemove(ctx context.Context, group
 
 	vm := (*vms)[0]
 	for i, element := range *vm.NetworkProfile.NetworkInterfaces {
-		if *element.VirtualNetworkInterfaceReference == nicName {
+		if *element.Vnic.Name == nicName {
 			*vm.NetworkProfile.NetworkInterfaces = append((*vm.NetworkProfile.NetworkInterfaces)[:i], (*vm.NetworkProfile.NetworkInterfaces)[i+1:]...)
 			break
 		}
 	}
 
-	_, err = c.CreateOrUpdate(ctx, group, vmName, &vm)
+	_, err = c.CreateOrUpdate(ctx, group, vmName, id, &vm)
 	if err != nil {
 		return err
 	}
-	return
+	return nil
 }
 
-func (c *VirtualMachineClient) NetworkInterfaceList(ctx context.Context, group string, vmName string) (err error) {
-	vms, err := c.Get(ctx, group, vmName)
+func (c *VirtualMachineClient) NetworkInterfaceList(ctx context.Context, group, vmName, id string) error {
+	vms, err := c.Get(ctx, group, vmName, id)
 	if err != nil {
 		return err
 	}
@@ -249,11 +242,11 @@ func (c *VirtualMachineClient) NetworkInterfaceList(ctx context.Context, group s
 		log.Printf("%+v\n", marshal.ToString(element))
 	}
 
-	return
+	return nil
 }
 
-func (c *VirtualMachineClient) NetworkInterfaceShow(ctx context.Context, group string, vmName, nicName string) (err error) {
-	vms, err := c.Get(ctx, group, vmName)
+func (c *VirtualMachineClient) NetworkInterfaceShow(ctx context.Context, group, vmName, nicName, id string) error {
+	vms, err := c.Get(ctx, group, vmName, id)
 	if err != nil {
 		return err
 	}
@@ -263,20 +256,19 @@ func (c *VirtualMachineClient) NetworkInterfaceShow(ctx context.Context, group s
 
 	vm := (*vms)[0]
 	for _, nic := range *vm.NetworkProfile.NetworkInterfaces {
-		if *nic.VirtualNetworkInterfaceReference == nicName {
+		if *nic.Vnic.Name == nicName {
 			// TODO - implement detailed show
 			log.Printf("%+v\n", marshal.ToString(nic))
 			break
 		}
 	}
 
-	return
+	return nil
 }
 
-func (c *VirtualMachineClient) RunCommand(ctx context.Context, group, vmName string, request *compute.VirtualMachineRunCommandRequest) (response *compute.VirtualMachineRunCommandResponse, err error) {
-	return c.internal.RunCommand(ctx, group, vmName, request)
+func (c *VirtualMachineClient) RunCommand(ctx context.Context, group, name, id string, request *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error) {
+	return c.internal.RunCommand(ctx, group, name, id, request)
 }
-
 func isDifferentVmSize(oldSizeType, newSizeType compute.VirtualMachineSizeTypes, oldCustomSize, newCustomSize *compute.VirtualMachineCustomSize) bool {
 	if oldSizeType != newSizeType {
 		return true

@@ -10,6 +10,9 @@ import (
 
 	wssdcommonproto "github.com/microsoft/moc/rpc/common"
 	wssdcompute "github.com/microsoft/moc/rpc/nodeagent/compute"
+	wssdnetwork "github.com/microsoft/moc/rpc/nodeagent/network"
+	wssdstorage "github.com/microsoft/moc/rpc/nodeagent/storage"
+	"github.com/microsoft/wssd-sdk-for-go/services/network"
 )
 
 // Conversion functions from compute to wssdcompute
@@ -18,8 +21,14 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 		return nil, errors.Wrapf(errors.InvalidInput, "Virtual Machine name is missing")
 	}
 
+	vmID := ""
+	if vm.ID != nil {
+		vmID = *vm.ID
+	}
+
 	wssdvm := &wssdcompute.VirtualMachine{
 		Name: *vm.Name,
+		Id:   vmID,
 		Tags: getWssdTags(vm.Tags),
 	}
 
@@ -64,6 +73,7 @@ func (c *client) getWssdVirtualMachine(vm *compute.VirtualMachine) (*wssdcompute
 
 	wssdvm = &wssdcompute.VirtualMachine{
 		Name:              *vm.Name,
+		Id:                vmID,
 		Tags:              getWssdTags(vm.Tags),
 		Storage:           storageConfig,
 		Hardware:          hardwareConfig,
@@ -232,7 +242,7 @@ func (c *client) getWssdVirtualMachineStorageConfiguration(s *compute.StoragePro
 }
 
 func (c *client) getWssdVirtualMachineStorageConfigurationOsDisk(s *compute.OSDisk) (*wssdcompute.Disk, error) {
-	if s.VhdName == nil {
+	if s.Vhd == nil || s.Vhd.Name == "" {
 		return nil, errors.Wrapf(errors.InvalidInput, "Vhd Name is missing in OSDisk")
 	}
 	var managedDisk *wssdcommonproto.VirtualMachineManagedDiskParameters
@@ -253,7 +263,30 @@ func (c *client) getWssdVirtualMachineStorageConfigurationOsDisk(s *compute.OSDi
 	}
 
 	return &wssdcompute.Disk{
-		Diskname:    *s.VhdName,
+		Vhd: &wssdstorage.VirtualHardDisk{
+			Name:                s.Vhd.Name,
+			Id:                  s.Vhd.Id,
+			Source:              s.Vhd.Source,
+			Path:                s.Vhd.Path,
+			ContainerName:       s.Vhd.ContainerName,
+			Size:                s.Vhd.Size,
+			Dynamic:             s.Vhd.Dynamic,
+			Blocksizebytes:      s.Vhd.Blocksizebytes,
+			Logicalsectorbytes:  s.Vhd.Logicalsectorbytes,
+			Physicalsectorbytes: s.Vhd.Physicalsectorbytes,
+			Controllernumber:    s.Vhd.Controllernumber,
+			Controllerlocation:  s.Vhd.Controllerlocation,
+			Disknumber:          s.Vhd.Disknumber,
+			VirtualmachineName:  s.Vhd.VirtualmachineName,
+			Scsipath:            s.Vhd.Scsipath,
+			Virtualharddisktype: wssdstorage.VirtualHardDiskType(s.Vhd.Virtualharddisktype),
+			SourceType:          s.Vhd.SourceType,
+			HyperVGeneration:    s.Vhd.HyperVGeneration,
+			CloudInitDataSource: s.Vhd.CloudInitDataSource,
+			DiskFileFormat:      s.Vhd.DiskFileFormat,
+			TargetUrl:           s.Vhd.TargetUrl,
+			Vmid:                s.Vhd.Vmid,
+		},
 		ManagedDisk: managedDisk,
 	}, nil
 }
@@ -261,11 +294,34 @@ func (c *client) getWssdVirtualMachineStorageConfigurationOsDisk(s *compute.OSDi
 func (c *client) getWssdVirtualMachineStorageConfigurationDataDisks(s *[]compute.DataDisk) ([]*wssdcompute.Disk, error) {
 	datadisks := []*wssdcompute.Disk{}
 	for _, d := range *s {
-		if d.VhdName == nil {
+		if d.Vhd == nil || d.Vhd.Name == "" {
 			return nil, errors.Wrapf(errors.InvalidInput, "Vhd Name is missing in DataDisk ")
 		}
 		datadisk := &wssdcompute.Disk{
-			Diskname: *d.VhdName,
+			Vhd: &wssdstorage.VirtualHardDisk{
+				Name:                d.Vhd.Name,
+				Id:                  d.Vhd.Id,
+				Source:              d.Vhd.Source,
+				Path:                d.Vhd.Path,
+				ContainerName:       d.Vhd.ContainerName,
+				Size:                d.Vhd.Size,
+				Dynamic:             d.Vhd.Dynamic,
+				Blocksizebytes:      d.Vhd.Blocksizebytes,
+				Logicalsectorbytes:  d.Vhd.Logicalsectorbytes,
+				Physicalsectorbytes: d.Vhd.Physicalsectorbytes,
+				Controllernumber:    d.Vhd.Controllernumber,
+				Controllerlocation:  d.Vhd.Controllerlocation,
+				Disknumber:          d.Vhd.Disknumber,
+				VirtualmachineName:  d.Vhd.VirtualmachineName,
+				Scsipath:            d.Vhd.Scsipath,
+				Virtualharddisktype: wssdstorage.VirtualHardDiskType(d.Vhd.Virtualharddisktype),
+				SourceType:          d.Vhd.SourceType,
+				HyperVGeneration:    d.Vhd.HyperVGeneration,
+				CloudInitDataSource: d.Vhd.CloudInitDataSource,
+				DiskFileFormat:      d.Vhd.DiskFileFormat,
+				TargetUrl:           d.Vhd.TargetUrl,
+				Vmid:                d.Vhd.Vmid,
+			},
 		}
 		datadisks = append(datadisks, datadisk)
 	}
@@ -276,16 +332,46 @@ func (c *client) getWssdVirtualMachineStorageConfigurationDataDisks(s *[]compute
 
 func (c *client) getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkProfile) (*wssdcompute.NetworkConfiguration, error) {
 	nc := &wssdcompute.NetworkConfiguration{
-		Interfaces: []*wssdcompute.NetworkInterface{},
+		Vnics: []*wssdnetwork.VirtualNetworkInterface{},
 	}
 	if s == nil || s.NetworkInterfaces == nil {
 		return nc, nil
 	}
 	for _, nic := range *s.NetworkInterfaces {
-		if nic.VirtualNetworkInterfaceReference == nil {
+		if nic.Vnic == nil {
 			continue
 		}
-		nc.Interfaces = append(nc.Interfaces, &wssdcompute.NetworkInterface{NetworkInterfaceName: *nic.VirtualNetworkInterfaceReference})
+		var ipconfigs []*wssdnetwork.IpConfiguration
+		for _, ipconf := range *nic.Vnic.IPConfigurations {
+			subnetId := ""
+			switchName := ""
+			if ipconf.SubnetID != nil {
+				subnetId = *ipconf.SubnetID
+			}
+			if ipconf.SwitchName != nil {
+				switchName = *ipconf.SwitchName
+			}
+			ipconfigs = append(ipconfigs, &wssdnetwork.IpConfiguration{Subnetid: subnetId, SwitchName: switchName})
+		}
+
+		vnicname := ""
+		vnicid := ""
+		vnicvmid := ""
+		if nic.Vnic.Name != nil {
+			vnicname = *nic.Vnic.Name
+		}
+		if nic.Vnic.ID != nil {
+			vnicid = *nic.Vnic.ID
+		}
+		if nic.Vnic.VirtualMachineID != nil {
+			vnicvmid = *nic.Vnic.VirtualMachineID
+		}
+		nc.Vnics = append(nc.Vnics, &wssdnetwork.VirtualNetworkInterface{
+			Name:      vnicname,
+			Id:        vnicid,
+			Vmid:      vnicvmid,
+			Ipconfigs: ipconfigs,
+		})
 	}
 
 	return nc, nil
@@ -612,6 +698,9 @@ func (c *client) getVirtualMachineSecurityProfile(vm *wssdcompute.VirtualMachine
 }
 
 func (c *client) getVirtualMachineStorageProfile(s *wssdcompute.StorageConfiguration) *compute.StorageProfile {
+	if s == nil || cmp.Equal(s, wssdcompute.StorageConfiguration{}) {
+		return &compute.StorageProfile{}
+	}
 	return &compute.StorageProfile{
 		OsDisk:                c.getVirtualMachineStorageProfileOsDisk(s.Osdisk),
 		DataDisks:             c.getVirtualMachineStorageProfileDataDisks(s.Datadisks),
@@ -620,6 +709,9 @@ func (c *client) getVirtualMachineStorageProfile(s *wssdcompute.StorageConfigura
 }
 
 func (c *client) getVirtualMachineStorageProfileOsDisk(d *wssdcompute.Disk) *compute.OSDisk {
+	if d == nil {
+		return nil
+	}
 	var managedDisk *compute.VirtualMachineManagedDiskParameters
 	if d.ManagedDisk != nil {
 		managedDisk = &compute.VirtualMachineManagedDiskParameters{}
@@ -637,7 +729,30 @@ func (c *client) getVirtualMachineStorageProfileOsDisk(d *wssdcompute.Disk) *com
 		}
 	}
 	return &compute.OSDisk{
-		VhdName:     &d.Diskname,
+		Vhd: &compute.VirtualHardDisk{
+			Name:                d.Vhd.Name,
+			Id:                  d.Vhd.Id,
+			Source:              d.Vhd.Source,
+			Path:                d.Vhd.Path,
+			ContainerName:       d.Vhd.ContainerName,
+			Size:                d.Vhd.Size,
+			Dynamic:             d.Vhd.Dynamic,
+			Blocksizebytes:      d.Vhd.Blocksizebytes,
+			Logicalsectorbytes:  d.Vhd.Logicalsectorbytes,
+			Physicalsectorbytes: d.Vhd.Physicalsectorbytes,
+			Controllernumber:    d.Vhd.Controllernumber,
+			Controllerlocation:  d.Vhd.Controllerlocation,
+			Disknumber:          d.Vhd.Disknumber,
+			VirtualmachineName:  d.Vhd.VirtualmachineName,
+			Scsipath:            d.Vhd.Scsipath,
+			Virtualharddisktype: compute.VirtualHardDiskType(d.Vhd.Virtualharddisktype),
+			SourceType:          d.Vhd.SourceType,
+			HyperVGeneration:    d.Vhd.HyperVGeneration,
+			CloudInitDataSource: d.Vhd.CloudInitDataSource,
+			DiskFileFormat:      d.Vhd.DiskFileFormat,
+			TargetUrl:           d.Vhd.TargetUrl,
+			Vmid:                d.Vhd.Vmid,
+		},
 		ManagedDisk: managedDisk,
 	}
 }
@@ -646,7 +761,31 @@ func (c *client) getVirtualMachineStorageProfileDataDisks(dd []*wssdcompute.Disk
 	cdd := []compute.DataDisk{}
 
 	for _, i := range dd {
-		cdd = append(cdd, compute.DataDisk{VhdName: &(i.Diskname)})
+		cdd = append(cdd, compute.DataDisk{
+			Vhd: &compute.VirtualHardDisk{
+				Name:                i.Vhd.Name,
+				Id:                  i.Vhd.Id,
+				Source:              i.Vhd.Source,
+				Path:                i.Vhd.Path,
+				ContainerName:       i.Vhd.ContainerName,
+				Size:                i.Vhd.Size,
+				Dynamic:             i.Vhd.Dynamic,
+				Blocksizebytes:      i.Vhd.Blocksizebytes,
+				Logicalsectorbytes:  i.Vhd.Logicalsectorbytes,
+				Physicalsectorbytes: i.Vhd.Physicalsectorbytes,
+				Controllernumber:    i.Vhd.Controllernumber,
+				Controllerlocation:  i.Vhd.Controllerlocation,
+				Disknumber:          i.Vhd.Disknumber,
+				VirtualmachineName:  i.Vhd.VirtualmachineName,
+				Scsipath:            i.Vhd.Scsipath,
+				Virtualharddisktype: compute.VirtualHardDiskType(i.Vhd.Virtualharddisktype),
+				SourceType:          i.Vhd.SourceType,
+				HyperVGeneration:    i.Vhd.HyperVGeneration,
+				CloudInitDataSource: i.Vhd.CloudInitDataSource,
+				DiskFileFormat:      i.Vhd.DiskFileFormat,
+				TargetUrl:           i.Vhd.TargetUrl,
+				Vmid:                i.Vhd.Vmid,
+			}})
 	}
 
 	return &cdd
@@ -662,11 +801,27 @@ func (c *client) getVirtualMachineNetworkProfile(n *wssdcompute.NetworkConfigura
 		return np
 	}
 
-	for _, nic := range n.Interfaces {
+	for _, nic := range n.Vnics {
 		if nic == nil {
 			continue
 		}
-		*np.NetworkInterfaces = append(*np.NetworkInterfaces, compute.NetworkInterfaceReference{VirtualNetworkInterfaceReference: &((*nic).NetworkInterfaceName)})
+		var ipconfigs []network.IPConfiguration
+		for _, ipconf := range nic.Ipconfigs {
+			ipconfigs = append(ipconfigs, network.IPConfiguration{
+				IPConfigurationProperties: &network.IPConfigurationProperties{SubnetID: &ipconf.Subnetid, SwitchName: &ipconf.SwitchName, IPAddress: &ipconf.Ipaddress},
+			})
+		}
+
+		*np.NetworkInterfaces = append(*np.NetworkInterfaces, compute.NetworkInterfaceReference{
+			Vnic: &network.VirtualNetworkInterface{
+				Name: &nic.Name,
+				ID:   &nic.Id,
+				VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
+					VirtualMachineID: &nic.Vmid,
+					IPConfigurations: &ipconfigs,
+				},
+			},
+		})
 	}
 	return np
 }
@@ -747,6 +902,9 @@ func (c *client) getVirtualMachineLinuxConfiguration(linuxConfiguration *wssdcom
 }
 
 func (c *client) getVirtualMachineOSProfile(o *wssdcompute.OperatingSystemConfiguration) *compute.OSProfile {
+	if o == nil || cmp.Equal(o, wssdcompute.OperatingSystemConfiguration{}) {
+		return &compute.OSProfile{}
+	}
 	var osBootstrapEngine compute.OperatingSystemBootstrapEngine
 	switch o.OsBootstrapEngine {
 	case wssdcommonproto.OperatingSystemBootstrapEngine_WINDOWS_ANSWER_FILES:
