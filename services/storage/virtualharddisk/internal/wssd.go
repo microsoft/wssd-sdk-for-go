@@ -34,11 +34,12 @@ func NewVirtualHardDiskClient(subID string, authorizer auth.Authorizer) (*client
 }
 
 // Get
-func (c *client) Get(ctx context.Context, containerName, name string) (*[]storage.VirtualHardDisk, error) {
+func (c *client) Get(ctx context.Context, containerName, name string, vhdpath string) (*[]storage.VirtualHardDisk, error) {
 	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_GET, name, containerName, nil)
 	if err != nil {
 		return nil, err
 	}
+	request.VirtualHardDiskSystems[0].Path = vhdpath // set the path for the vhd to be retrieved
 	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -65,6 +66,7 @@ func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string,
 	if err != nil {
 		return nil, err
 	}
+	request.VirtualHardDiskSystems[0].Size = *sg.DiskSizeBytes
 	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[VirtualHardDisk] Create failed with error %v", err)
@@ -99,11 +101,19 @@ func (c *client) Upload(ctx context.Context, containerName, name string, targetu
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, containerName, name string) error {
+func (c *client) Delete(ctx context.Context, containerName, name string, vhdPath string) error {
+	// vhdDelete := &storage.VirtualHardDisk{
+	// 	Name: &name,
+	// 	VirtualHardDiskProperties: &storage.VirtualHardDiskProperties{
+	// 		Path: &vhdPath,
+	// 	},
+	// }
 	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_DELETE, name, containerName, nil)
 	if err != nil {
 		return err
 	}
+	// Temp Workaround for attempting to delete a virtual harddisk
+	request.VirtualHardDiskSystems[0].Path = vhdPath
 	_, err = c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	return err
 }

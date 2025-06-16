@@ -13,9 +13,9 @@ import (
 
 // Service interface
 type Service interface {
-	Get(context.Context, string, string) (*[]storage.VirtualHardDisk, error)
+	Get(context.Context, string, string, string) (*[]storage.VirtualHardDisk, error)
 	CreateOrUpdate(context.Context, string, string, *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error)
-	Delete(context.Context, string, string) error
+	Delete(context.Context, string, string, string) error
 	Hydrate(context.Context, string, string, *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error)
 	Upload(context.Context, string, string, string) error
 }
@@ -37,8 +37,8 @@ func NewVirtualHardDiskClient(cloudFQDN string, authorizer auth.Authorizer) (*Vi
 }
 
 // Get methods invokes the client Get method
-func (c *VirtualHardDiskClient) Get(ctx context.Context, container, name string) (*[]storage.VirtualHardDisk, error) {
-	return c.internal.Get(ctx, container, name)
+func (c *VirtualHardDiskClient) Get(ctx context.Context, container, name string, vhdpath string) (*[]storage.VirtualHardDisk, error) {
+	return c.internal.Get(ctx, container, name, vhdpath)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
@@ -47,8 +47,8 @@ func (c *VirtualHardDiskClient) CreateOrUpdate(ctx context.Context, container, n
 }
 
 // Delete methods invokes delete of the storage resource
-func (c *VirtualHardDiskClient) Delete(ctx context.Context, container, name string) error {
-	return c.internal.Delete(ctx, container, name)
+func (c *VirtualHardDiskClient) Delete(ctx context.Context, container, name string, vhdPath string) error {
+	return c.internal.Delete(ctx, container, name, vhdPath)
 }
 
 // The interface for the hydrate call takes the container name and the name of the disk file.

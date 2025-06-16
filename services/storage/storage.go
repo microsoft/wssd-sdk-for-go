@@ -56,6 +56,8 @@ type VirtualHardDiskProperties struct {
 	DiskFileFormat common.DiskFileFormat `json:"diskFileFormat"`
 	//Container name where VHD is stored
 	ContainerName *string `json:"containerName,omitempty"`
+	//VirtualMachineID is the id of a vm
+	VirtualMachineID *string `json:"virtualMachineID,omitempty"`
 }
 
 // Http Image properties

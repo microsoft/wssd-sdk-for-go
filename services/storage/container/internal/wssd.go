@@ -34,8 +34,14 @@ func NewContainerClient(subID string, authorizer auth.Authorizer) (*client, erro
 }
 
 // Get
-func (c *client) Get(ctx context.Context, group, name string) (*[]storage.Container, error) {
-	request := getContainerRequest(wssdcommonproto.Operation_GET, name, nil)
+func (c *client) Get(ctx context.Context, group, name string, path string) (*[]storage.Container, error) {
+	ctainerGet := &storage.Container{
+		Name: &name,
+		ContainerProperties: &storage.ContainerProperties{
+			Path: &path,
+		},
+	}
+	request := getContainerRequest(wssdcommonproto.Operation_GET, name, ctainerGet)
 	response, err := c.ContainerAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
@@ -62,8 +68,14 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *sto
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, group, name string) error {
-	request := getContainerRequest(wssdcommonproto.Operation_DELETE, name, nil)
+func (c *client) Delete(ctx context.Context, group, name string, path string) error {
+	ctainerDelete := &storage.Container{
+		Name: &name,
+		ContainerProperties: &storage.ContainerProperties{
+			Path: &path,
+		},
+	}
+	request := getContainerRequest(wssdcommonproto.Operation_DELETE, name, ctainerDelete)
 	_, err := c.ContainerAgentClient.Invoke(ctx, request)
 	return err
 }
