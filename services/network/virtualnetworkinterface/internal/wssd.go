@@ -34,8 +34,21 @@ func NewVirtualNetworkInterfaceClient(subID string, authorizer auth.Authorizer) 
 }
 
 // Get
-func (c *client) Get(ctx context.Context, group, name string) (*[]network.VirtualNetworkInterface, error) {
-	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_GET, name, nil)
+func (c *client) Get(ctx context.Context, group, name, vmid, switchName string) (*[]network.VirtualNetworkInterface, error) {
+	vnetInterface := &network.VirtualNetworkInterface{
+		Name: &name,
+		VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
+			VirtualMachineID: &vmid,
+			IPConfigurations: &[]network.IPConfiguration{
+				{
+					IPConfigurationProperties: &network.IPConfigurationProperties{
+						SwitchName: &switchName,
+					},
+				},
+			},
+		},
+	}
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_GET, name, vnetInterface)
 	if err != nil {
 		return nil, err
 	}
@@ -117,16 +130,15 @@ func (c *client) Hydrate(ctx context.Context, group, name string, vnetInterface 
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, group, name string) error {
-	vnetInterface, err := c.Get(ctx, group, name)
-	if err != nil {
-		return err
-	}
-	if len(*vnetInterface) == 0 {
-		return fmt.Errorf("Virtual Network Interface [%s] not found", name)
+func (c *client) Delete(ctx context.Context, group, name string, vmid string) error {
+	vnetInterface := &network.VirtualNetworkInterface{
+		Name: &name,
+		VirtualNetworkInterfaceProperties: &network.VirtualNetworkInterfaceProperties{
+			VirtualMachineID: &vmid,
+		},
 	}
 
-	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_DELETE, name, &(*vnetInterface)[0])
+	request, err := c.getVirtualNetworkInterfaceRequest(wssdcommonproto.Operation_DELETE, name, vnetInterface)
 	if err != nil {
 		return err
 	}
@@ -200,12 +212,14 @@ func (cc *client) getWssdVirtualNetworkInterface(c *network.VirtualNetworkInterf
 	}
 
 	wssdipconfigs := []*wssdnetwork.IpConfiguration{}
-	for _, ipconfig := range *c.IPConfigurations {
-		wssdipconfig, err := cc.getWssdNetworkInterfaceIPConfig(&ipconfig)
-		if err != nil {
-			return nil, err
+	if c.IPConfigurations != nil {
+		for _, ipconfig := range *c.IPConfigurations {
+			wssdipconfig, err := cc.getWssdNetworkInterfaceIPConfig(&ipconfig)
+			if err != nil {
+				return nil, err
+			}
+			wssdipconfigs = append(wssdipconfigs, wssdipconfig)
 		}
-		wssdipconfigs = append(wssdipconfigs, wssdipconfig)
 	}
 
 	vnic := &wssdnetwork.VirtualNetworkInterface{
@@ -429,8 +443,7 @@ func (cc *client) getWssdDNSSettings(dnssetting *wssdcommonproto.Dns) *network.D
 }
 
 func (c *client) getVirtualNetworkIsPlaceholder(vnic *wssdnetwork.VirtualNetworkInterface) *bool {
-	isPlaceholder := false
-	return &isPlaceholder
+	return nil
 }
 
 func (c *client) getIovSetting(vnic *wssdnetwork.VirtualNetworkInterface) *bool {
