@@ -294,7 +294,7 @@ type IPConfiguration struct {
 	// Tags - Custom resource tags
 	Tags map[string]*string `json:"tags"`
 	// Properties
-	*IPConfigurationProperties `json:"properties,omitempty"`
+	*IPConfigurationProperties `json:"ipconfigurationproperties,omitempty"`
 }
 
 type VirtualNetworkInterfaceProperties struct {
@@ -344,7 +344,7 @@ type VirtualNetworkInterface struct {
 	// Tags - Custom resource tags
 	Tags map[string]*string `json:"tags"`
 	// Properties
-	*VirtualNetworkInterfaceProperties `json:"properties,omitempty"`
+	*VirtualNetworkInterfaceProperties `json:"virtualnetworkinterfaceproperties,omitempty"`
 }
 
 // LogicalSubnet is associated with a Logical Network.
