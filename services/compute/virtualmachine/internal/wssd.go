@@ -30,8 +30,18 @@ func NewVirtualMachineClient(subID string, authorizer auth.Authorizer) (*client,
 }
 
 // Get
-func (c *client) Get(ctx context.Context, group, name string) (*[]compute.VirtualMachine, error) {
-	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_GET, name, nil)
+func (c *client) Get(ctx context.Context, group, name string, id string) (*[]compute.VirtualMachine, error) {
+	var wssdvm *compute.VirtualMachine
+	wssdvm = nil
+	fmt.Printf("Get Virtual Machine with name %s and id %s\n", name, id)
+	if id != "" {
+		// If id is provided, we will use it to get the VM
+		wssdvm = &compute.VirtualMachine{
+			Name: &name,
+			ID:   &id,
+		}
+	}
+	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_GET, name, wssdvm)
 	if err != nil {
 		return nil, err
 	}
@@ -44,8 +54,17 @@ func (c *client) Get(ctx context.Context, group, name string) (*[]compute.Virtua
 }
 
 // Get
-func (c *client) get(ctx context.Context, group, name string) ([]*wssdcompute.VirtualMachine, error) {
-	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_GET, name, nil)
+func (c *client) get(ctx context.Context, group, name string, id string) ([]*wssdcompute.VirtualMachine, error) {
+	var wssdvm *compute.VirtualMachine
+	wssdvm = nil
+	if id != "" {
+		// If id is provided, we will use it to get the VM
+		wssdvm = &compute.VirtualMachine{
+			Name: &name,
+			ID:   &id,
+		}
+	}
+	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_GET, name, wssdvm)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +77,11 @@ func (c *client) get(ctx context.Context, group, name string) ([]*wssdcompute.Vi
 }
 
 // CreateOrUpdate
-func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
+func (c *client) CreateOrUpdate(ctx context.Context, group, name string, id string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
+	if id != "" {
+		// If id is provided, we will use it to get the VM
+		sg.ID = &id
+	}
 	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_POST, name, sg)
 	if err != nil {
 		return nil, err
@@ -71,13 +94,12 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, sg *com
 	if len(*vms) == 0 {
 		return nil, fmt.Errorf("Creation of Virtual Machine failed to unknown reason.")
 	}
-
 	return &(*vms)[0], nil
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, group, name string) error {
-	vm, err := c.Get(ctx, group, name)
+func (c *client) Delete(ctx context.Context, group, name string, id string) error {
+	vm, err := c.Get(ctx, group, name, id)
 	if err != nil {
 		return err
 	}
@@ -95,27 +117,27 @@ func (c *client) Delete(ctx context.Context, group, name string) error {
 }
 
 // Hydrate methods creates MOC representation of the VM resource
-func (c *client) Hydrate(ctx context.Context, group, name string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
+func (c *client) Hydrate(ctx context.Context, group, name string, id string, sg *compute.VirtualMachine) (*compute.VirtualMachine, error) {
+	if id != "" {
+		sg.ID = &id
+	}
 	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_HYDRATE, name, sg)
 	if err != nil {
 		return nil, err
 	}
-
 	response, err := c.VirtualMachineAgentClient.Invoke(ctx, request)
 	if err != nil {
 		return nil, err
 	}
-
 	vms := c.getVirtualMachineFromResponse(response)
 	if len(*vms) == 0 {
 		return nil, fmt.Errorf("hydration of Virtual Machine [%s] in group [%s] failed due to an unknown reason", name, group)
 	}
-
 	return &(*vms)[0], nil
 }
 
-func (c *client) Start(ctx context.Context, group, name string) (err error) {
-	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_START, name)
+func (c *client) Start(ctx context.Context, group, name string, id string) (err error) {
+	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_START, name, id)
 	if err != nil {
 		return
 	}
@@ -123,8 +145,8 @@ func (c *client) Start(ctx context.Context, group, name string) (err error) {
 	return
 }
 
-func (c *client) Stop(ctx context.Context, group, name string) (err error) {
-	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_STOP, name)
+func (c *client) Stop(ctx context.Context, group, name string, id string) (err error) {
+	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_STOP, name, id)
 	if err != nil {
 		return
 	}
@@ -132,8 +154,8 @@ func (c *client) Stop(ctx context.Context, group, name string) (err error) {
 	return
 }
 
-func (c *client) Pause(ctx context.Context, group, name string) (err error) {
-	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_PAUSE, name)
+func (c *client) Pause(ctx context.Context, group, name string, id string) (err error) {
+	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_PAUSE, name, id)
 	if err != nil {
 		return
 	}
@@ -141,8 +163,8 @@ func (c *client) Pause(ctx context.Context, group, name string) (err error) {
 	return
 }
 
-func (c *client) Save(ctx context.Context, group, name string) (err error) {
-	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_SAVE, name)
+func (c *client) Save(ctx context.Context, group, name string, id string) (err error) {
+	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_SAVE, name, id)
 	if err != nil {
 		return
 	}
@@ -150,8 +172,8 @@ func (c *client) Save(ctx context.Context, group, name string) (err error) {
 	return
 }
 
-func (c *client) RemoveIsoDisk(ctx context.Context, group, name string) (err error) {
-	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_REMOVE_ISO_DISK, name)
+func (c *client) RemoveIsoDisk(ctx context.Context, group, name string, id string) (err error) {
+	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_REMOVE_ISO_DISK, name, id)
 	if err != nil {
 		return
 	}
@@ -159,8 +181,8 @@ func (c *client) RemoveIsoDisk(ctx context.Context, group, name string) (err err
 	return
 }
 
-func (c *client) RepairGuestAgent(ctx context.Context, group, name string) (err error) {
-	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_REPAIR_GUEST_AGENT, name)
+func (c *client) RepairGuestAgent(ctx context.Context, group, name string, id string) (err error) {
+	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_REPAIR_GUEST_AGENT, name, id)
 	if err != nil {
 		return
 	}
@@ -168,12 +190,11 @@ func (c *client) RepairGuestAgent(ctx context.Context, group, name string) (err 
 	return
 }
 
-func (c *client) RunCommand(ctx context.Context, group, name string, request *compute.VirtualMachineRunCommandRequest) (response *compute.VirtualMachineRunCommandResponse, err error) {
-	mocRequest, err := c.getVirtualMachineRunCommandRequest(ctx, group, name, request)
+func (c *client) RunCommand(ctx context.Context, group, name string, id string, request *compute.VirtualMachineRunCommandRequest) (response *compute.VirtualMachineRunCommandResponse, err error) {
+	mocRequest, err := c.getVirtualMachineRunCommandRequest(ctx, group, name, id, request)
 	if err != nil {
 		return
 	}
-
 	mocResponse, err := c.VirtualMachineAgentClient.RunCommand(ctx, mocRequest)
 	if err != nil {
 		return
@@ -183,8 +204,17 @@ func (c *client) RunCommand(ctx context.Context, group, name string, request *co
 }
 
 // Validate
-func (c *client) Validate(ctx context.Context, group, name string) error {
-	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_VALIDATE, name, nil)
+func (c *client) Validate(ctx context.Context, group, name string, id string) error {
+	var wssdvm *compute.VirtualMachine
+	wssdvm = nil
+	if id != "" {
+		// If id is provided, we will use it to get the VM
+		wssdvm = &compute.VirtualMachine{
+			Name: &name,
+			ID:   &id,
+		}
+	}
+	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_VALIDATE, name, wssdvm)
 	if err != nil {
 		return err
 	}
@@ -193,7 +223,6 @@ func (c *client) Validate(ctx context.Context, group, name string) error {
 		return err
 	}
 	return nil
-
 }
 
 func (c *client) getVirtualMachineFromResponse(response *wssdcompute.VirtualMachineResponse) *[]compute.VirtualMachine {
@@ -226,8 +255,8 @@ func (c *client) getVirtualMachineRequest(opType wssdcommonproto.Operation, name
 	return request, nil
 }
 
-func (c *client) getVirtualMachineOperationRequest(ctx context.Context, opType wssdcommonproto.VirtualMachineOperation, name string) (request *wssdcompute.VirtualMachineOperationRequest, err error) {
-	vms, err := c.get(ctx, "", name)
+func (c *client) getVirtualMachineOperationRequest(ctx context.Context, opType wssdcommonproto.VirtualMachineOperation, name string, id string) (request *wssdcompute.VirtualMachineOperationRequest, err error) {
+	vms, err := c.get(ctx, "", name, id)
 	if err != nil {
 		return
 	}
@@ -240,18 +269,16 @@ func (c *client) getVirtualMachineOperationRequest(ctx context.Context, opType w
 	return
 }
 
-func (c *client) getVirtualMachineRunCommandRequest(ctx context.Context, group, name string, request *compute.VirtualMachineRunCommandRequest) (mocRequest *wssdcompute.VirtualMachineRunCommandRequest, err error) {
-	vms, err := c.get(ctx, group, name)
+func (c *client) getVirtualMachineRunCommandRequest(ctx context.Context, group, name string, id string, request *compute.VirtualMachineRunCommandRequest) (mocRequest *wssdcompute.VirtualMachineRunCommandRequest, err error) {
+	vms, err := c.get(ctx, group, name, id)
 	if err != nil {
 		return
 	}
-
 	if len(vms) != 1 {
 		err = errors.Wrapf(errors.InvalidInput, "Multiple Virtual Machines found in group %s with name %s", group, name)
 		return
 	}
 	vm := vms[0]
-
 	var params []*wssdcommonproto.VirtualMachineRunCommandInputParameter
 	if request.Parameters != nil {
 		params = make([]*wssdcommonproto.VirtualMachineRunCommandInputParameter, len(*request.Parameters))
@@ -263,7 +290,6 @@ func (c *client) getVirtualMachineRunCommandRequest(ctx context.Context, group, 
 			params[i] = tmp
 		}
 	}
-
 	var scriptSource wssdcommonproto.VirtualMachineRunCommandScriptSource
 	if request.Source.Script != nil {
 		scriptSource.Script = *request.Source.Script
@@ -274,13 +300,11 @@ func (c *client) getVirtualMachineRunCommandRequest(ctx context.Context, group, 
 	if request.Source.CommandID != nil {
 		scriptSource.CommandID = *request.Source.CommandID
 	}
-
 	mocRequest = &wssdcompute.VirtualMachineRunCommandRequest{
 		VirtualMachine:            vm,
 		RunCommandInputParameters: params,
 		Source:                    &scriptSource,
 	}
-
 	if request.RunAsUser != nil {
 		mocRequest.RunAsUser = *request.RunAsUser
 	}

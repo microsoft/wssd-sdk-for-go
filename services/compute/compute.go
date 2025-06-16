@@ -139,23 +139,48 @@ type VirtualMachineManagedDiskParameters struct {
 }
 
 type OSDisk struct {
-	// Name
-	Name *string `json:"name,omitempty"`
-	// OsType
-	OsType OperatingSystemTypes `json:"osType,omitempty"`
-	// VhdName reference to virtual hard disk
-	VhdName *string `json:"vhd,omitempty"`
+	// Vhd representation
+	Vhd *VirtualHardDisk `json:"vhd,omitempty"`
 	// ManagedDisk - The managed disk parameters
 	ManagedDisk *VirtualMachineManagedDiskParameters `json:"managedDisk,omitempty"`
 }
 
 type DataDisk struct {
-	// Name
-	Name *string `json:"name,omitempty"`
-	// VhdName reference to VirtualHardDisk
-	VhdName        *string         `json:"vhd,omitempty"`
-	ImageReference *ImageReference `json:"imageReference,omitempty"`
+	Vhd            *VirtualHardDisk `json:"vhd,omitempty"`
+	ImageReference *ImageReference  `json:"imageReference,omitempty"`
 }
+
+type VirtualHardDisk struct {
+	Name                string                     `json:"name,omitempty"`
+	Id                  string                     `json:"id,omitempty"`
+	Source              string                     `json:"source,omitempty"`
+	Path                string                     `json:"path,omitempty"`
+	ContainerName       string                     `json:"containerName,omitempty"` // Storage container name to hold this vhd
+	Size                int64                      `json:"size,omitempty"`
+	Dynamic             bool                       `json:"dynamic,omitempty"`
+	Blocksizebytes      int32                      `json:"blocksizebytes,omitempty"`
+	Logicalsectorbytes  int32                      `json:"logicalsectorbytes,omitempty"`
+	Physicalsectorbytes int32                      `json:"physicalsectorbytes,omitempty"`
+	Controllernumber    int64                      `json:"controllernumber,omitempty"`
+	Controllerlocation  int64                      `json:"controllerlocation,omitempty"`
+	Disknumber          int64                      `json:"disknumber,omitempty"`
+	VirtualmachineName  string                     `json:"virtualmachineName,omitempty"`
+	Scsipath            string                     `json:"scsipath,omitempty"`
+	Virtualharddisktype VirtualHardDiskType        `json:"virtualharddisktype,omitempty"`
+	SourceType          common.ImageSource         `json:"sourceType,omitempty"`
+	HyperVGeneration    common.HyperVGeneration    `json:"hyperVGeneration,omitempty"`
+	CloudInitDataSource common.CloudInitDataSource `json:"cloudInitDataSource,omitempty"`
+	DiskFileFormat      common.DiskFileFormat      `json:"diskFileFormat,omitempty"`
+	TargetUrl           string                     `json:"TargetUrl,omitempty"`
+	Vmid                string                     `json:"vmid,omitempty"`
+}
+
+type VirtualHardDiskType int32
+
+const (
+	VirtualHardDiskType_OS_VIRTUALHARDDISK       VirtualHardDiskType = 0
+	VirtualHardDiskType_DATADISK_VIRTUALHARDDISK VirtualHardDiskType = 1
+)
 
 type StorageProfile struct {
 	// ImageReference - Specifies information about the image to use. You can specify information about platform images, marketplace images, or virtual machine images. This element is required when you want to use a platform image, marketplace image, or virtual machine image, but is not used in other creation operations.
@@ -254,9 +279,7 @@ type OSProfile struct {
 
 type NetworkInterfaceReference struct {
 	// VirtualNetworkReference
-	VirtualNetworkReference *string `json:"virtualNetworkReference,omitempty"`
-	// VirtualNetworkInterfaceReference
-	VirtualNetworkInterfaceReference *string `json:"virtualNetworkInterfaceReference,omitempty"`
+	Vnic *network.VirtualNetworkInterface `json:"vnic,omitempty"`
 }
 type NetworkProfile struct {
 	// NetworkInterfaces
