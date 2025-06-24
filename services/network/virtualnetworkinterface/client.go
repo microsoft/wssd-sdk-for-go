@@ -13,11 +13,11 @@ import (
 
 // Service interface
 type Service interface {
-	Get(context.Context, string, string) (*[]network.VirtualNetworkInterface, error)
+	Get(context.Context, string, string, string, string) (*[]network.VirtualNetworkInterface, error)
 	CreateOrUpdate(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
 	Discover(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
 	Hydrate(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
-	Delete(context.Context, string, string) error
+	Delete(context.Context, string, string, string) error
 	Update(context.Context, string, string, *network.VirtualNetworkInterface) (*network.VirtualNetworkInterface, error)
 }
 
@@ -38,8 +38,8 @@ func NewVirtualNetworkInterfaceClient(cloudFQDN string, authorizer auth.Authoriz
 }
 
 // Get methods invokes the client Get method
-func (c *VirtualNetworkInterfaceClient) Get(ctx context.Context, group, name string) (*[]network.VirtualNetworkInterface, error) {
-	return c.internal.Get(ctx, group, name)
+func (c *VirtualNetworkInterfaceClient) Get(ctx context.Context, group, name, vmid, switchName string) (*[]network.VirtualNetworkInterface, error) {
+	return c.internal.Get(ctx, group, name, vmid, switchName)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
@@ -63,6 +63,6 @@ func (c *VirtualNetworkInterfaceClient) Update(ctx context.Context, group, name 
 }
 
 // Delete methods invokes delete of the network interface resource
-func (c *VirtualNetworkInterfaceClient) Delete(ctx context.Context, group, name string) error {
-	return c.internal.Delete(ctx, group, name)
+func (c *VirtualNetworkInterfaceClient) Delete(ctx context.Context, group, name string, vmid string) error {
+	return c.internal.Delete(ctx, group, name, vmid)
 }
