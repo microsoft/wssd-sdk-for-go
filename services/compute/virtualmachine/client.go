@@ -19,7 +19,7 @@ import (
 type Service interface {
 	Get(context.Context, string, string, string) (*[]compute.VirtualMachine, error)
 	CreateOrUpdate(context.Context, string, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
-	Delete(context.Context, string, string, string) error
+	Delete(context.Context, string, *compute.VirtualMachine) error
 	Hydrate(context.Context, string, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
 	Start(context.Context, string, string, string) error
 	Stop(context.Context, string, string, string) error
@@ -54,8 +54,8 @@ func (c *VirtualMachineClient) CreateOrUpdate(ctx context.Context, group, name, 
 	return c.internal.CreateOrUpdate(ctx, group, name, id, compute)
 }
 
-func (c *VirtualMachineClient) Delete(ctx context.Context, group, name, id string) error {
-	return c.internal.Delete(ctx, group, name, id)
+func (c *VirtualMachineClient) Delete(ctx context.Context, name string, compute *compute.VirtualMachine) error {
+	return c.internal.Delete(ctx, name, compute)
 }
 
 func (c *VirtualMachineClient) Hydrate(ctx context.Context, group, name, id string, compute *compute.VirtualMachine) (*compute.VirtualMachine, error) {
