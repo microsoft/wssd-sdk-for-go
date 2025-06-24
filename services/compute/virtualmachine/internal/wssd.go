@@ -98,16 +98,9 @@ func (c *client) CreateOrUpdate(ctx context.Context, group, name string, id stri
 }
 
 // Delete methods invokes create or update on the client
-func (c *client) Delete(ctx context.Context, group, name string, id string) error {
-	vm, err := c.Get(ctx, group, name, id)
-	if err != nil {
-		return err
-	}
-	if len(*vm) == 0 {
-		return fmt.Errorf("Virtual Machine [%s] not found", name)
-	}
+func (c *client) Delete(ctx context.Context, name string, vm *compute.VirtualMachine) error {
 
-	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_DELETE, name, &(*vm)[0])
+	request, err := c.getVirtualMachineRequest(wssdcommonproto.Operation_DELETE, name, vm)
 	if err != nil {
 		return err
 	}

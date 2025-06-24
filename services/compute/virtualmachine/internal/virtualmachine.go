@@ -294,8 +294,8 @@ func (c *client) getWssdVirtualMachineStorageConfigurationOsDisk(s *compute.OSDi
 func (c *client) getWssdVirtualMachineStorageConfigurationDataDisks(s *[]compute.DataDisk) ([]*wssdcompute.Disk, error) {
 	datadisks := []*wssdcompute.Disk{}
 	for _, d := range *s {
-		if d.Vhd == nil || d.Vhd.Name == "" {
-			return nil, errors.Wrapf(errors.InvalidInput, "Vhd Name is missing in DataDisk ")
+		if d.Vhd == nil || d.Vhd.Path == "" {
+			return nil, errors.Wrapf(errors.InvalidInput, "Vhd path is missing ")
 		}
 		datadisk := &wssdcompute.Disk{
 			Vhd: &wssdstorage.VirtualHardDisk{
@@ -468,7 +468,7 @@ func (c *client) getWssdVirtualMachineOSConfiguration(s *compute.OSProfile) (*ws
 		OsBootstrapEngine: wssdcommonproto.OperatingSystemBootstrapEngine_CLOUD_INIT,
 	}
 
-	if s == nil {
+	if s == nil || cmp.Equal(s, compute.OSProfile{}) {
 		return &osconfig, nil
 	}
 
@@ -903,7 +903,7 @@ func (c *client) getVirtualMachineLinuxConfiguration(linuxConfiguration *wssdcom
 
 func (c *client) getVirtualMachineOSProfile(o *wssdcompute.OperatingSystemConfiguration) *compute.OSProfile {
 	if o == nil || cmp.Equal(o, wssdcompute.OperatingSystemConfiguration{}) {
-		return &compute.OSProfile{}
+		return nil
 	}
 	var osBootstrapEngine compute.OperatingSystemBootstrapEngine
 	switch o.OsBootstrapEngine {
