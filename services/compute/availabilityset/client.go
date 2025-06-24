@@ -15,6 +15,8 @@ type Service interface {
 	Get(context.Context, string) (*[]compute.AvailabilitySet, error)
 	CreateOrUpdate(context.Context, string, *compute.AvailabilitySet) (*compute.AvailabilitySet, error)
 	Delete(context.Context, string) error
+	AddVmToAvailabilitySet(context.Context, string, string) error
+	RemoveVmFromAvailabilitySet(context.Context, string, string) error
 }
 
 type AvailabilitySetClient struct {
@@ -41,4 +43,12 @@ func (c *AvailabilitySetClient) CreateOrUpdate(ctx context.Context, name string,
 
 func (c *AvailabilitySetClient) Delete(ctx context.Context, name string) error {
 	return c.internal.Delete(ctx, name)
+}
+
+func (c *AvailabilitySetClient) AddVmToAvailabilitySet(ctx context.Context, avset string, virtualmachine string) error {
+	return c.internal.AddVmToAvailabilitySet(ctx, avset, virtualmachine)
+}
+
+func (c *AvailabilitySetClient) RemoveVmFromAvailabilitySet(ctx context.Context, avset string, virtualmachine string) error {
+	return c.internal.RemoveVmFromAvailabilitySet(ctx, avset, virtualmachine)
 }

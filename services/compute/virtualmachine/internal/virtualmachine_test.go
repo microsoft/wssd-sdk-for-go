@@ -19,7 +19,7 @@ func Test_getVirtualMachine(t *testing.T) {
 	defer proxy.Target.Close()
 	caCert, _, err := certs.GenerateClientCertificate("ValidCertificate")
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatalf("%s", err.Error())
 	}
 	certBytes := certs.EncodeCertPEM(caCert)
 	caCertString := string(certBytes)
