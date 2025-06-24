@@ -109,3 +109,25 @@ func (c *wssdClient) Delete(ctx context.Context, name string) error {
 	_, err = c.AvailabilitySetAgentClient.Invoke(ctx, request)
 	return err
 }
+
+func (c *wssdClient) AddVmToAvailabilitySet(ctx context.Context, avset string, virtualmachine string) error {
+	request := &wssdcompute.AvailabilitySetOperationRequest{
+		OperationType:   wssdcommonproto.AvailabilitySetOperation_ADD_VM,
+		AvailabilitySet: avset,
+		VirtualMachine:  virtualmachine,
+	}
+
+	_, err := c.AvailabilitySetAgentClient.Operate(ctx, request)
+	return err
+}
+
+func (c *wssdClient) RemoveVmFromAvailabilitySet(ctx context.Context, avset string, virtualmachine string) error {
+	request := &wssdcompute.AvailabilitySetOperationRequest{
+		OperationType:   wssdcommonproto.AvailabilitySetOperation_REMOVE_VM,
+		AvailabilitySet: avset,
+		VirtualMachine:  virtualmachine,
+	}
+
+	_, err := c.AvailabilitySetAgentClient.Operate(ctx, request)
+	return err
+}
