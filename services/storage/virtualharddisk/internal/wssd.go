@@ -66,7 +66,6 @@ func (c *client) CreateOrUpdate(ctx context.Context, containerName, name string,
 	if err != nil {
 		return nil, err
 	}
-	request.VirtualHardDiskSystems[0].Size = *sg.DiskSizeBytes
 	response, err := c.VirtualHardDiskAgentClient.Invoke(ctx, request)
 	if err != nil {
 		log.Errorf("[VirtualHardDisk] Create failed with error %v", err)
