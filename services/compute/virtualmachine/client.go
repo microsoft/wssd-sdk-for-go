@@ -28,6 +28,7 @@ type Service interface {
 	RepairGuestAgent(context.Context, string, string) error
 	RunCommand(context.Context, string, string, *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error)
 	Validate(context.Context, string, string) error
+	GetHyperVVmId(context.Context, string, string) (*compute.VirtualMachineHyperVVmId, error)
 }
 
 type VirtualMachineClient struct {
@@ -275,6 +276,10 @@ func (c *VirtualMachineClient) NetworkInterfaceShow(ctx context.Context, group s
 
 func (c *VirtualMachineClient) RunCommand(ctx context.Context, group, vmName string, request *compute.VirtualMachineRunCommandRequest) (response *compute.VirtualMachineRunCommandResponse, err error) {
 	return c.internal.RunCommand(ctx, group, vmName, request)
+}
+
+func (c *VirtualMachineClient) GetHyperVVmId(ctx context.Context, group string, name string) (*compute.VirtualMachineHyperVVmId, error) {
+	return c.internal.GetHyperVVmId(ctx, group, name)
 }
 
 func isDifferentVmSize(oldSizeType, newSizeType compute.VirtualMachineSizeTypes, oldCustomSize, newCustomSize *compute.VirtualMachineCustomSize) bool {

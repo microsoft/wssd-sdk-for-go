@@ -94,7 +94,7 @@ func GetServerAddress(cc *grpc.ClientConn) string {
 	defer mux.Unlock()
 
 	for key, value := range connectionCache {
-	        if value == cc {
+		if value == cc {
 			return key
 		}
 	}
@@ -109,7 +109,7 @@ func AddNodeNameToErrorMessageInterceptor() grpc.UnaryClientInterceptor {
 			serverAddressPort := GetServerAddress(cc)
 			if len(serverAddressPort) != 0 {
 				serverAddress := (strings.Split(serverAddressPort, ":"))[0]
-		 		err = errors.Wrapf(err, "nodename = %s", serverAddress)
+				err = errors.Wrapf(err, "nodename = %s", serverAddress)
 			}
 		}
 
