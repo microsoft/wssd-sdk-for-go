@@ -242,8 +242,8 @@ func (c *client) getWssdVirtualMachineStorageConfiguration(s *compute.StoragePro
 }
 
 func (c *client) getWssdVirtualMachineStorageConfigurationOsDisk(s *compute.OSDisk) (*wssdcompute.Disk, error) {
-	if s.Vhd == nil || s.Vhd.Name == "" {
-		return nil, errors.Wrapf(errors.InvalidInput, "Vhd Name is missing in OSDisk")
+	if s.Vhd == nil || s.Vhd.Path == "" {
+		return nil, errors.Wrapf(errors.InvalidInput, "Vhd Path is missing in OSDisk")
 	}
 	var managedDisk *wssdcommonproto.VirtualMachineManagedDiskParameters
 	if s.ManagedDisk != nil {
