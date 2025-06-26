@@ -345,15 +345,44 @@ func (c *client) getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkPro
 		for _, ipconf := range *nic.Vnic.IPConfigurations {
 			subnetId := ""
 			switchName := ""
+			ipAddress := ""
+			prefixLength := ""
+			gateway := ""
+			ipAlloactionMethod := wssdcommonproto.IPAllocationMethod_Invalid
 			if ipconf.SubnetID != nil {
 				subnetId = *ipconf.SubnetID
 			}
 			if ipconf.SwitchName != nil {
 				switchName = *ipconf.SwitchName
 			}
-			ipconfigs = append(ipconfigs, &wssdnetwork.IpConfiguration{Subnetid: subnetId, SwitchName: switchName})
+			if ipconf.IPAddress != nil {
+				ipAddress = *ipconf.IPAddress
+			}
+			if ipconf.PrefixLength != nil {
+				prefixLength = *ipconf.PrefixLength
+			}
+			if ipconf.Gateway != nil {
+				gateway = *ipconf.Gateway
+			}
+			if ipconf.IPAllocationMethod != "" {
+				ipAlloactionMethod = wssdcommonproto.IPAllocationMethod(wssdcommonproto.IPAllocationMethod_value[string(ipconf.IPAllocationMethod)])
+			}
+
+			ipconfigs = append(ipconfigs, &wssdnetwork.IpConfiguration{
+				Subnetid:     subnetId,
+				SwitchName:   switchName,
+				Ipaddress:    ipAddress,
+				Prefixlength: prefixLength,
+				Gateway:      gateway,
+				Allocation:   ipAlloactionMethod})
 		}
 
+		dnsSettings := &wssdcommonproto.Dns{}
+		if nic.Vnic.DNSSettings != nil && nic.Vnic.DNSSettings.Servers != nil {
+			dnsSettings.Servers = *nic.Vnic.DNSSettings.Servers
+		}
+
+		macAddress := ""
 		vnicname := ""
 		vnicid := ""
 		vnicvmid := ""
@@ -366,11 +395,16 @@ func (c *client) getWssdVirtualMachineNetworkConfiguration(s *compute.NetworkPro
 		if nic.Vnic.VirtualMachineID != nil {
 			vnicvmid = *nic.Vnic.VirtualMachineID
 		}
+		if nic.Vnic.MACAddress != nil {
+			macAddress = *nic.Vnic.MACAddress
+		}
 		nc.Vnics = append(nc.Vnics, &wssdnetwork.VirtualNetworkInterface{
-			Name:      vnicname,
-			Id:        vnicid,
-			Vmid:      vnicvmid,
-			Ipconfigs: ipconfigs,
+			Name:        vnicname,
+			Id:          vnicid,
+			Vmid:        vnicvmid,
+			Ipconfigs:   ipconfigs,
+			DnsSettings: dnsSettings,
+			Macaddress:  macAddress,
 		})
 	}
 
