@@ -29,7 +29,6 @@ type Service interface {
 	RunCommand(context.Context, string, string, *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error)
 	Validate(context.Context, string, string) error
 	GetHyperVVmId(context.Context, string, string) (*compute.VirtualMachineHyperVVmId, error)
-	GetHostNodeName(context.Context, string, string) (*compute.VirtualMachineHostNodeName, error)
 }
 
 type VirtualMachineClient struct {
@@ -281,10 +280,6 @@ func (c *VirtualMachineClient) RunCommand(ctx context.Context, group, vmName str
 
 func (c *VirtualMachineClient) GetHyperVVmId(ctx context.Context, group string, name string) (*compute.VirtualMachineHyperVVmId, error) {
 	return c.internal.GetHyperVVmId(ctx, group, name)
-}
-
-func (c *VirtualMachineClient) GetHostNodeName(ctx context.Context, group string, name string) (*compute.VirtualMachineHostNodeName, error) {
-	return c.internal.GetHostNodeName(ctx, group, name)
 }
 
 func isDifferentVmSize(oldSizeType, newSizeType compute.VirtualMachineSizeTypes, oldCustomSize, newCustomSize *compute.VirtualMachineCustomSize) bool {

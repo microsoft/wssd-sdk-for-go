@@ -131,23 +131,6 @@ func (c *client) GetHyperVVmId(ctx context.Context, group, name string) (*comput
 	return response, nil
 }
 
-func (c *client) GetHostNodeName(ctx context.Context, group, name string) (*compute.VirtualMachineHostNodeName, error) {
-	vm, err := c.get(ctx, group, name)
-	if err != nil {
-		return nil, err
-	}
-
-	mocResponse, err := c.VirtualMachineAgentClient.GetHostNodeName(ctx, vm[0])
-	if err != nil {
-		return nil, err
-	}
-	response := &compute.VirtualMachineHostNodeName{
-		HostNodeName: &mocResponse.HostNodeName,
-	}
-
-	return response, nil
-}
-
 func (c *client) Start(ctx context.Context, group, name string) (err error) {
 	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_START, name)
 	if err != nil {
