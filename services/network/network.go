@@ -214,6 +214,20 @@ type LoadBalancer struct {
 	*LoadBalancerProperties `json:"properties,omitempty"`
 }
 
+// PortForwardingRule defines the structure of a port forwading rule
+type PortForwardingRule struct {
+	// Type
+	Type *string `json:"type,omitempty"`
+	// ConnectAddress
+	ConnectAddress *string `json:"connectaddress,omitempty"`
+	// ConnectPort
+	ConnectPort *string `json:"connectport,omitempty"`
+	// ListenAddress
+	ListenAddress *string `json:"listenaddress,omitempty"`
+	// ListenPort
+	ListenPort *string `json:"listenport,omitempty"`
+}
+
 type VirtualNetworkProperties struct {
 	// AddressSpace
 	AddressSpace *AddressSpace `json:"addressSpace,omitempty"`
@@ -225,6 +239,8 @@ type VirtualNetworkProperties struct {
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// Subnets that could hold ipv4 and ipv6 subnets
 	Subnets *[]Subnet `json:"subnets,omitempty"`
+	// Port forwarding rules
+	PortForwardingRules *[]PortForwardingRule `json:"portforwardingrules,omitempty"`
 	// Statuses - Status
 	Statuses map[string]*string `json:"statuses"`
 }

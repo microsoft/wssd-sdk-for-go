@@ -42,11 +42,11 @@ require (
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/zeebo/errs v1.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.38.0 // indirect
-	golang.org/x/net v0.40.0 // indirect
+	golang.org/x/crypto v0.39.0 // indirect
+	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
-	golang.org/x/text v0.25.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250519155744-55703ea1f237 // indirect
+	golang.org/x/text v0.26.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822 // indirect
 	google.golang.org/grpc/security/advancedtls v1.0.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
@@ -56,7 +56,7 @@ require (
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
 	// to refresh, replace the line with "=> github.com/microsoft/moc feature/cmp", save and run "go mod tidy"
-	github.com/microsoft/moc => github.com/microsoft/moc v0.31.0-test.0.20250606162738-310cd411c563
+	github.com/microsoft/moc => ../moc
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
 	golang.org/x/crypto => golang.org/x/crypto v0.32.0
 	golang.org/x/image => golang.org/x/image v0.23.0
