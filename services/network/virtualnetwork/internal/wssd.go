@@ -150,6 +150,7 @@ func getWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 	if c.DNSSettings == nil {
 		return wssdvnet
 	}
+
 	wssdvnet.Dns = &wssdcommonproto.Dns{
 		Domain:  *c.DNSSettings.Domain,
 		Search:  *c.DNSSettings.Search,
@@ -242,7 +243,6 @@ func getWssdNetworkPortForwardingRules(rules *[]network.PortForwardingRule) []*w
 			Listenaddress:  *rule.ListenAddress,
 			Listenport:     *rule.ListenPort,
 		})
-
 	}
 
 	return wssdrules
