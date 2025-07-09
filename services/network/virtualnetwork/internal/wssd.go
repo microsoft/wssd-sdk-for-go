@@ -145,9 +145,12 @@ func getWssdVirtualNetwork(c *network.VirtualNetwork) *wssdnetwork.VirtualNetwor
 
 	wssdvnet.Ipams = getWssdNetworkIpams(c.VirtualNetworkProperties.Subnets)
 
+	wssdvnet.Portforwardingrules = getWssdNetworkPortForwardingRules(c.VirtualNetworkProperties.PortForwardingRules)
+
 	if c.DNSSettings == nil {
 		return wssdvnet
 	}
+
 	wssdvnet.Dns = &wssdcommonproto.Dns{
 		Domain:  *c.DNSSettings.Domain,
 		Search:  *c.DNSSettings.Search,
@@ -226,6 +229,25 @@ func getWssdNetworkIpams(subnets *[]network.Subnet) []*wssdnetwork.Ipam {
 	return []*wssdnetwork.Ipam{&ipam}
 }
 
+func getWssdNetworkPortForwardingRules(rules *[]network.PortForwardingRule) []*wssdnetwork.PortForwardingRule {
+	wssdrules := []*wssdnetwork.PortForwardingRule{}
+	if rules == nil {
+		return wssdrules
+	}
+
+	for _, rule := range *rules {
+		wssdrules = append(wssdrules, &wssdnetwork.PortForwardingRule{
+			Type:           *rule.Type,
+			Connectaddress: *rule.ConnectAddress,
+			Connectport:    *rule.ConnectPort,
+			Listenaddress:  *rule.ListenAddress,
+			Listenport:     *rule.ListenPort,
+		})
+	}
+
+	return wssdrules
+}
+
 func getWssdNetworkRoutes(routes *[]network.Route) []*wssdcommonproto.Route {
 	wssdroutes := []*wssdcommonproto.Route{}
 	if routes == nil {
@@ -257,10 +279,11 @@ func GetVirtualNetwork(c *wssdnetwork.VirtualNetwork) *network.VirtualNetwork {
 		Tags: getNetworkTags(c.GetTags()),
 		VirtualNetworkProperties: &network.VirtualNetworkProperties{
 			// TODO: MACPool (it is currently missing from network.VirtualNetwork)
-			Subnets:           getNetworkSubnets(c.Ipams),
-			ProvisioningState: status.GetProvisioningState(c.Status.GetProvisioningStatus()),
-			Statuses:          status.GetStatuses(c.Status),
-			MACPool:           getMacPool(c.MacPool),
+			Subnets:             getNetworkSubnets(c.Ipams),
+			ProvisioningState:   status.GetProvisioningState(c.Status.GetProvisioningStatus()),
+			Statuses:            status.GetStatuses(c.Status),
+			MACPool:             getMacPool(c.MacPool),
+			PortForwardingRules: getNetworkPortForwardingRules(c.Portforwardingrules),
 		},
 	}
 
@@ -298,6 +321,22 @@ func getNetworkSubnets(ipams []*wssdnetwork.Ipam) *[]network.Subnet {
 	}
 
 	return &subnets
+}
+
+func getNetworkPortForwardingRules(wssdRules []*wssdnetwork.PortForwardingRule) *[]network.PortForwardingRule {
+	rules := []network.PortForwardingRule{}
+
+	for _, rule := range wssdRules {
+		rules = append(rules, network.PortForwardingRule{
+			Type:           &rule.Type,
+			ConnectAddress: &rule.Connectaddress,
+			ConnectPort:    &rule.Connectport,
+			ListenAddress:  &rule.Listenaddress,
+			ListenPort:     &rule.Listenport,
+		})
+	}
+
+	return &rules
 }
 
 func getNetworkRoutes(wssdroutes []*wssdcommonproto.Route) *[]network.Route {
