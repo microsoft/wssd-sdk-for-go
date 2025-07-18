@@ -222,6 +222,12 @@ func (c *client) getWssdVirtualMachineStorageConfiguration(s *compute.StoragePro
 	}
 	wssdstorage.VmConfigContainerName = vmConfigContainerName
 
+	vmConfigContainerPath := ""
+	if s.VmConfigContainerPath != nil {
+		vmConfigContainerPath = *s.VmConfigContainerPath
+	}
+	wssdstorage.VmConfigContainerPath = vmConfigContainerPath
+
 	if s.OsDisk != nil {
 		osdisk, err := c.getWssdVirtualMachineStorageConfigurationOsDisk(s.OsDisk)
 		if err != nil {

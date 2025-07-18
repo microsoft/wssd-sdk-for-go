@@ -191,6 +191,8 @@ type StorageProfile struct {
 	DataDisks *[]DataDisk `json:"dataDisks,omitempty"`
 	// VmConfigContainerName
 	VmConfigContainerName *string `json:"vmConfigContainerName,omitempty"`
+	// vmConfigContainerPath
+	VmConfigContainerPath *string `json:"vmConfigContainerPath,omitempty"`
 }
 
 type SSHPublicKey struct {
