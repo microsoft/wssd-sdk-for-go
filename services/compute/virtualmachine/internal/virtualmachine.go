@@ -745,6 +745,7 @@ func (c *client) getVirtualMachineStorageProfile(s *wssdcompute.StorageConfigura
 		OsDisk:                c.getVirtualMachineStorageProfileOsDisk(s.Osdisk),
 		DataDisks:             c.getVirtualMachineStorageProfileDataDisks(s.Datadisks),
 		VmConfigContainerName: &s.VmConfigContainerName,
+		VmConfigContainerPath: &s.VmConfigContainerPath,
 	}
 }
 
