@@ -28,6 +28,7 @@ type Service interface {
 	RepairGuestAgent(context.Context, string, string) error
 	RunCommand(context.Context, string, string, *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error)
 	Validate(context.Context, string, string) error
+	GetHyperVVmId(context.Context, string, string) (*compute.VirtualMachineHyperVVmId, error)
 }
 
 type VirtualMachineClient struct {
@@ -308,4 +309,8 @@ func isDifferentVmSize(oldSizeType, newSizeType compute.VirtualMachineSizeTypes,
 func isDifferentGpuList(oldGpuList, newGpuList []*compute.VirtualMachineGPU) bool {
 	// simultaneous addtion and removal of GPU is not supported
 	return len(oldGpuList) != len(newGpuList)
+}
+
+func (c *VirtualMachineClient) GetHyperVVmId(ctx context.Context, group string, name string) (*compute.VirtualMachineHyperVVmId, error) {
+	return c.internal.GetHyperVVmId(ctx, group, name)
 }
