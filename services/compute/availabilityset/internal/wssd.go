@@ -110,24 +110,22 @@ func (c *wssdClient) Delete(ctx context.Context, name string) error {
 	return err
 }
 
-func (c *wssdClient) AddVmToAvailabilitySet(ctx context.Context, avset string, nodeagnetVMName, platformVMName string) error {
+func (c *wssdClient) AddVmToAvailabilitySet(ctx context.Context, avset string, nodeagnetVMName string) error {
 	request := &wssdcompute.AvailabilitySetOperationRequest{
 		OperationType:   wssdcommonproto.AvailabilitySetOperation_ADD_VM,
 		AvailabilitySet: avset,
 		NodeagentVMName: nodeagnetVMName,
-		PlatformVMName:  platformVMName,
 	}
 
 	_, err := c.AvailabilitySetAgentClient.Operate(ctx, request)
 	return err
 }
 
-func (c *wssdClient) RemoveVmFromAvailabilitySet(ctx context.Context, avset string, nodeagnetVMName, platformVMName string) error {
+func (c *wssdClient) RemoveVmFromAvailabilitySet(ctx context.Context, avset string, nodeagnetVMName string) error {
 	request := &wssdcompute.AvailabilitySetOperationRequest{
 		OperationType:   wssdcommonproto.AvailabilitySetOperation_REMOVE_VM,
 		AvailabilitySet: avset,
 		NodeagentVMName: nodeagnetVMName,
-		PlatformVMName:  platformVMName,
 	}
 
 	_, err := c.AvailabilitySetAgentClient.Operate(ctx, request)
