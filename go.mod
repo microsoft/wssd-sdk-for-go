@@ -1,6 +1,8 @@
 module github.com/microsoft/wssd-sdk-for-go
 
-go 1.24.3
+go 1.23.0
+
+toolchain go1.23.8
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
