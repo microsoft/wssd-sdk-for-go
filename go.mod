@@ -8,7 +8,7 @@ require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20200131002437-cf55d5288a48
 	github.com/golang/protobuf v1.5.4
 	github.com/google/go-cmp v0.6.0
-	github.com/microsoft/moc v0.31.0-test.0.20250708220738-6f242b765d35
+	github.com/microsoft/moc v0.31.1
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.10.0
 	go.opencensus.io v0.24.0
@@ -42,11 +42,11 @@ require (
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/zeebo/errs v1.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/crypto v0.39.0 // indirect
-	golang.org/x/net v0.41.0 // indirect
-	golang.org/x/sys v0.33.0 // indirect
-	golang.org/x/text v0.26.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822 // indirect
+	golang.org/x/crypto v0.40.0 // indirect
+	golang.org/x/net v0.42.0 // indirect
+	golang.org/x/sys v0.34.0 // indirect
+	golang.org/x/text v0.27.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250707201910-8d1bb00bc6a7 // indirect
 	google.golang.org/grpc/security/advancedtls v1.0.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
@@ -56,7 +56,7 @@ require (
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
 	// to refresh, replace the line with "=> github.com/microsoft/moc feature/cmp", save and run "go mod tidy"
-	github.com/microsoft/moc => github.com/microsoft/moc v0.31.0-test.0.20250708220738-6f242b765d35
+	github.com/microsoft/moc => github.com/microsoft/moc v0.31.0-test.0.20250812231609-d89eb3ca222a
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
 	golang.org/x/crypto => golang.org/x/crypto v0.32.0
 	golang.org/x/image => golang.org/x/image v0.23.0

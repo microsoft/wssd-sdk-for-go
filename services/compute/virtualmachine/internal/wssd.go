@@ -321,3 +321,24 @@ func getComputeTags(tags *wssdcommonproto.Tags) map[string]*string {
 func getWssdTags(tags map[string]*string) *wssdcommonproto.Tags {
 	return prototags.MapToProto(tags)
 }
+
+func (c *client) GetHyperVVmId(ctx context.Context, group, name string) (*compute.VirtualMachineHyperVVmId, error) {
+	vm, err := c.get(ctx, group, name)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(vm) == 0 {
+		return nil, fmt.Errorf("Virtual Machine [%s] not found", name)
+	}
+	
+	mocResponse, err := c.VirtualMachineAgentClient.GetHyperVVmId(ctx, vm[0])
+	if err != nil {
+		return nil, err
+	}
+	response := &compute.VirtualMachineHyperVVmId{
+		HyperVVmId: &mocResponse.HyperVVmId,
+	}
+
+	return response, nil
+}
