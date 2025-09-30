@@ -10,7 +10,7 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/microsoft/moc v0.35.3
 	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.11.1
 	go.opencensus.io v0.24.0
 	google.golang.org/grpc v1.72.0
 	google.golang.org/protobuf v1.36.9
