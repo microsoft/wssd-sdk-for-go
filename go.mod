@@ -3,7 +3,7 @@ module github.com/microsoft/wssd-sdk-for-go
 go 1.24.0
 
 require (
-	code.cloudfoundry.org/bytefmt v0.53.0
+	code.cloudfoundry.org/bytefmt v0.54.0
 	github.com/golang/protobuf v1.5.4
 	github.com/google/go-cmp v0.7.0
 	github.com/microsoft/moc v0.35.3
