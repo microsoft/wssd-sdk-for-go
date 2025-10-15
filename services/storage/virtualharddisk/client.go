@@ -51,9 +51,7 @@ func (c *VirtualHardDiskClient) Delete(ctx context.Context, container, name stri
 	return c.internal.Delete(ctx, container, name)
 }
 
-// The interface for the hydrate call takes the container name and the name of the disk file.
-// Ultimately, we need the full path on disk to the disk file which we assemble from the path of the container plus the file name of the disk.
-// (e.g. "C:\ClusterStorage\Userdata_1\abc123" for the container path and "my_disk.vhd" for the disk name)
+// The interface for the hydrate call takes the name of the disk filealong with the configuration object.
 func (c *VirtualHardDiskClient) Hydrate(ctx context.Context, name string, vhdDef *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
 	return c.internal.Hydrate(ctx, name, vhdDef)
 }
