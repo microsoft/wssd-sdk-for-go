@@ -56,7 +56,8 @@ type VirtualHardDiskProperties struct {
 	DiskFileFormat common.DiskFileFormat `json:"diskFileFormat"`
 	//Container name where VHD is stored
 	ContainerName *string `json:"containerName,omitempty"`
-	// PlatformDiskId of the VHD
+	// PlatformDiskId is the underlying platform disk unique identifier (e.g., from Get-Disk UniqueId on Windows or lsblk SERIAL on Linux).
+	// This value is used to correlate the guest-visible disk with its ARM resource.
 	PlatformDiskId *string `json:"platformDiskId,omitempty"`
 }
 
