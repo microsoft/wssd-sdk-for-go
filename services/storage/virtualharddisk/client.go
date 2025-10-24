@@ -51,7 +51,7 @@ func (c *VirtualHardDiskClient) Delete(ctx context.Context, container, name stri
 	return c.internal.Delete(ctx, container, name)
 }
 
-// The interface for the hydrate call takes the name of the disk filealong with the configuration object.
+// The interface for the hydrate call takes the name of the disk file along with the configuration object.
 func (c *VirtualHardDiskClient) Hydrate(ctx context.Context, name string, vhdDef *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
 	return c.internal.Hydrate(ctx, name, vhdDef)
 }
