@@ -209,6 +209,7 @@ func getVirtualHardDisk(vhd *wssdstorage.VirtualHardDisk) *storage.VirtualHardDi
 			CloudInitDataSource: vhd.CloudInitDataSource,
 			DiskFileFormat:      common.DiskFileFormat(vhd.DiskFileFormat),
 			ContainerName:       &vhd.ContainerName,
+			PlatformDiskId:      &vhd.PlatformDiskId,
 		},
 	}
 }
@@ -283,6 +284,10 @@ func getWssdVirtualHardDisk(containerName string, vhd *storage.VirtualHardDisk) 
 		if vhd.VirtualMachineName != nil {
 			disk.VirtualmachineName = *vhd.VirtualMachineName
 		}
+	}
+
+	if vhd.PlatformDiskId != nil {
+		disk.PlatformDiskId = *vhd.PlatformDiskId
 	}
 
 	return &disk, nil
