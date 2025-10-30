@@ -29,6 +29,7 @@ type Service interface {
 	RunCommand(context.Context, string, string, *compute.VirtualMachineRunCommandRequest) (*compute.VirtualMachineRunCommandResponse, error)
 	Validate(context.Context, string, string) error
 	GetHyperVVmId(context.Context, string, string) (*compute.VirtualMachineHyperVVmId, error)
+	HasHyperVVm(context.Context, string) (bool, error)
 }
 
 type VirtualMachineClient struct {
@@ -313,4 +314,8 @@ func isDifferentGpuList(oldGpuList, newGpuList []*compute.VirtualMachineGPU) boo
 
 func (c *VirtualMachineClient) GetHyperVVmId(ctx context.Context, group string, name string) (*compute.VirtualMachineHyperVVmId, error) {
 	return c.internal.GetHyperVVmId(ctx, group, name)
+}
+
+func (c *VirtualMachineClient) HasHyperVVm(ctx context.Context, vmName string) (bool, error) {
+	return c.internal.HasHyperVVm(ctx, vmName)
 }
