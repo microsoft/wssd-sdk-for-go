@@ -370,3 +370,20 @@ func (c *client) GetHyperVVmId(ctx context.Context, group, name string) (*comput
 
 	return response, nil
 }
+
+func (c *client) HasHyperVVm(ctx context.Context, vmName string) (bool, error) {
+	if len(vmName) == 0 {
+		return false, errors.Wrapf(errors.InvalidInput, "VM name is empty")
+	}
+
+	request := &wssdcompute.VirtualMachineHyperVVmRequest{
+		HyperVVmName: vmName,
+	}
+
+	mocResponse, err := c.VirtualMachineAgentClient.HasHyperVVm(ctx, request)
+	if err != nil {
+		return false, err
+	}
+
+	return mocResponse.GetExists(), nil
+}

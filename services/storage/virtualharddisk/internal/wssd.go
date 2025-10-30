@@ -108,11 +108,9 @@ func (c *client) Delete(ctx context.Context, containerName, name string) error {
 	return err
 }
 
-// The interface for the hydrate call takes the container name and the name of the disk file.
-// Ultimately, we need the full path on disk to the disk file which we assemble from the path of the container plus the file name of the disk.
-// (e.g. "C:\ClusterStorage\Userdata_1\abc123" for the container path and "my_disk.vhd" for the disk name)
-func (c *client) Hydrate(ctx context.Context, containerName, name string, vhdDef *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
-	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_HYDRATE, name, containerName, vhdDef)
+// The interface for the hydrate call takes the name of the disk file and its configuration.
+func (c *client) Hydrate(ctx context.Context, name string, vhdDef *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
+	request, err := getVirtualHardDiskRequest(wssdcommonproto.Operation_HYDRATE, name, "", vhdDef)
 	if err != nil {
 		return nil, err
 	}

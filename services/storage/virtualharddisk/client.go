@@ -16,7 +16,7 @@ type Service interface {
 	Get(context.Context, string, string) (*[]storage.VirtualHardDisk, error)
 	CreateOrUpdate(context.Context, string, string, *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error)
 	Delete(context.Context, string, string) error
-	Hydrate(context.Context, string, string, *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error)
+	Hydrate(context.Context, string, *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error)
 	Upload(context.Context, string, string, string) error
 }
 
@@ -51,11 +51,9 @@ func (c *VirtualHardDiskClient) Delete(ctx context.Context, container, name stri
 	return c.internal.Delete(ctx, container, name)
 }
 
-// The interface for the hydrate call takes the container name and the name of the disk file.
-// Ultimately, we need the full path on disk to the disk file which we assemble from the path of the container plus the file name of the disk.
-// (e.g. "C:\ClusterStorage\Userdata_1\abc123" for the container path and "my_disk.vhd" for the disk name)
-func (c *VirtualHardDiskClient) Hydrate(ctx context.Context, container, name string, vhdDef *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
-	return c.internal.Hydrate(ctx, container, name, vhdDef)
+// The interface for the hydrate call takes the name of the disk file along with the configuration object.
+func (c *VirtualHardDiskClient) Hydrate(ctx context.Context, name string, vhdDef *storage.VirtualHardDisk) (*storage.VirtualHardDisk, error) {
+	return c.internal.Hydrate(ctx, name, vhdDef)
 }
 
 // CreateOrUpdate methods invokes create or update on the client
