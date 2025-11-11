@@ -22,6 +22,7 @@ type Service interface {
 	Hydrate(context.Context, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
 	Start(context.Context, string, string) error
 	Stop(context.Context, string, string) error
+	Poweroff(context.Context, string, string, bool) error
 	Pause(context.Context, string, string) error
 	Save(context.Context, string, string) error
 	RemoveIsoDisk(context.Context, string, string) error
