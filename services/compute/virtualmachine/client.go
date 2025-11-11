@@ -22,7 +22,7 @@ type Service interface {
 	Hydrate(context.Context, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
 	Start(context.Context, string, string) error
 	Stop(context.Context, string, string) error
-	Poweroff(context.Context, string, string, bool) error
+	StopGraceful(context.Context, string, string, bool) error
 	Pause(context.Context, string, string) error
 	Save(context.Context, string, string) error
 	RemoveIsoDisk(context.Context, string, string) error
@@ -71,10 +71,21 @@ func (c *VirtualMachineClient) Start(ctx context.Context, group string, name str
 	err = c.internal.Start(ctx, group, name)
 	return
 }
+
 func (c *VirtualMachineClient) Stop(ctx context.Context, group string, name string) (err error) {
-	err = c.internal.Stop(ctx, group, name)
+	//Calling StopGraceful with skipShutdown=true to force immediate shutdown. Maintaining current Stop behaviour.
+	err = c.internal.StopGraceful(ctx, group, name, true)
 	return
 }
+
+// skipShutdown: false (default/recommended) = graceful shutdown with guest OS notification
+//
+//	true = force immediate shutdown
+func (c *VirtualMachineClient) StopGraceful(ctx context.Context, group string, name string, skipShutdown bool) (err error) {
+	err = c.internal.StopGraceful(ctx, group, name, skipShutdown)
+	return
+}
+
 func (c *VirtualMachineClient) Restart(ctx context.Context, group string, name string) (err error) {
 	err = c.internal.Stop(ctx, group, name)
 	if err != nil {

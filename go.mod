@@ -36,8 +36,8 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/net v0.44.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.30.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251029180050-ab9386a59fda // indirect
+	golang.org/x/text v0.31.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251111163417-95abcf5c77ba // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -45,7 +45,7 @@ require (
 
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
-	github.com/microsoft/moc => github.com/arg5739/moc v0.37.1-0.20251030202049-256cd7317066
+	github.com/microsoft/moc => github.com/arg5739/moc v0.37.1-0.20251111203912-9bfaf40a27e6
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
 	golang.org/x/crypto => golang.org/x/crypto v0.37.0
 	golang.org/x/image => golang.org/x/image v0.23.0
