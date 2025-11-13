@@ -21,7 +21,7 @@ type Service interface {
 	Delete(context.Context, string, string) error
 	Hydrate(context.Context, string, string, *compute.VirtualMachine) (*compute.VirtualMachine, error)
 	Start(context.Context, string, string) error
-	Stop(context.Context, string, string) error
+	Stop(context.Context, string, string, bool) error
 	Pause(context.Context, string, string) error
 	Save(context.Context, string, string) error
 	RemoveIsoDisk(context.Context, string, string) error
@@ -70,12 +70,12 @@ func (c *VirtualMachineClient) Start(ctx context.Context, group string, name str
 	err = c.internal.Start(ctx, group, name)
 	return
 }
-func (c *VirtualMachineClient) Stop(ctx context.Context, group string, name string) (err error) {
-	err = c.internal.Stop(ctx, group, name)
+func (c *VirtualMachineClient) Stop(ctx context.Context, group string, name string, graceful bool) (err error) {
+	err = c.internal.Stop(ctx, group, name, graceful)
 	return
 }
 func (c *VirtualMachineClient) Restart(ctx context.Context, group string, name string) (err error) {
-	err = c.internal.Stop(ctx, group, name)
+	err = c.internal.Stop(ctx, group, name, true)
 	if err != nil {
 		return
 	}

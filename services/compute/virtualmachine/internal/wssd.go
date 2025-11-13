@@ -123,8 +123,14 @@ func (c *client) Start(ctx context.Context, group, name string) (err error) {
 	return
 }
 
-func (c *client) Stop(ctx context.Context, group, name string) (err error) {
-	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_STOP, name)
+func (c *client) Stop(ctx context.Context, group, name string, graceful bool) (err error) {
+	request := &wssdcompute.VirtualMachineOperationRequest{}
+	if graceful {
+		request, err = c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_STOP_GRACEFUL, name)
+	} else {
+		request, err = c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_STOP, name)
+	}
+
 	if err != nil {
 		return
 	}
