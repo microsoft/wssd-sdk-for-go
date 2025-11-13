@@ -45,7 +45,7 @@ require (
 
 replace (
 	github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2
-	github.com/microsoft/moc => ../moc
+	github.com/microsoft/moc => github.com/jocardeMSFT/moc v0.14.1-0.20251113171427-88cd01fc13d7
 	github.com/miekg/dns => github.com/miekg/dns v1.1.25
 	golang.org/x/crypto => golang.org/x/crypto v0.37.0
 	golang.org/x/image => golang.org/x/image v0.23.0
