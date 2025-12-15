@@ -11,7 +11,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	go.opencensus.io v0.24.0
 	google.golang.org/grpc v1.76.0
-	google.golang.org/protobuf v1.36.10
+	google.golang.org/protobuf v1.36.11
 	k8s.io/klog v1.0.0
 )
 
