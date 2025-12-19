@@ -6,7 +6,7 @@ require (
 	code.cloudfoundry.org/bytefmt v0.53.0
 	github.com/golang/protobuf v1.5.4
 	github.com/google/go-cmp v0.7.0
-	github.com/microsoft/moc v0.35.5
+	github.com/microsoft/moc v0.39.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
 	go.opencensus.io v0.24.0
@@ -36,8 +36,8 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/net v0.44.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
-	golang.org/x/text v0.30.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251022142026-3a174f9686a8 // indirect
+	golang.org/x/text v0.31.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251111163417-95abcf5c77ba // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

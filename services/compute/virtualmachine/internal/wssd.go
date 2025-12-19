@@ -132,6 +132,15 @@ func (c *client) Stop(ctx context.Context, group, name string) (err error) {
 	return
 }
 
+func (c *client) StopGraceful(ctx context.Context, group, name string) (err error) {
+	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_STOP_GRACEFUL, name)
+	if err != nil {
+		return
+	}
+	_, err = c.VirtualMachineAgentClient.Operate(ctx, request)
+	return
+}
+
 func (c *client) Pause(ctx context.Context, group, name string) (err error) {
 	request, err := c.getVirtualMachineOperationRequest(ctx, wssdcommonproto.VirtualMachineOperation_PAUSE, name)
 	if err != nil {
