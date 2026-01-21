@@ -19,12 +19,15 @@ export GO111MODULE=on
 
 LBCLIENTOUT=bin/lbclient.exe
 
-all: format  lbclient build unittest
+all: format tidy lbclient build unittest
 
 nofmt: 
 
+tidy:
+	go mod tidy
+
 clean:
-	rm -rf 	${LBCLIENTOUT} 
+	rm -rf 	${LBCLIENTOUT} go.sum
 lbclient:
 	GOARCH=amd64 GOOS=windows $(GOBUILD) -ldflags $(LDFLAGS) -o ${LBCLIENTOUT} github.com/microsoft/wssd-sdk-for-go/cmd/lbclient
 format:
