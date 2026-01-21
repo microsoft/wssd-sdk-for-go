@@ -27,7 +27,7 @@ tidy:
 	go mod tidy
 
 clean:
-	rm -rf 	${LBCLIENTOUT} go.sum
+	rm -rf ${LBCLIENTOUT} go.sum
 lbclient:
 	GOARCH=amd64 GOOS=windows $(GOBUILD) -ldflags $(LDFLAGS) -o ${LBCLIENTOUT} github.com/microsoft/wssd-sdk-for-go/cmd/lbclient
 format:
