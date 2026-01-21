@@ -42,8 +42,8 @@ build:
 unittest:
 	$(GOTEST) $(TESTDIRECTORIES)
 
-golangci-lint:
-	$(GOCMD) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+golangci-lint: tidy
+	GOTOOLCHAIN=auto $(GOCMD) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	$(GOPATH_BIN)/golangci-lint run --config .golangci.yml
 
 	
