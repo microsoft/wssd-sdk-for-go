@@ -44,6 +44,6 @@ unittest:
 
 golangci-lint: tidy
 	GOTOOLCHAIN=auto $(GOCMD) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	$(GOPATH_BIN)/golangci-lint run --config .golangci.yml
+	$(GOPATH_BIN)/golangci-lint run --config .golangci.yml --go=1.24
 
 	

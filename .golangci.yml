@@ -1,6 +1,9 @@
 run:
   timeout: 15m
   tests: false  # Exclude test files from linting
+  go: "1.24"  # Temporarily set to 1.24 for golangci-lint compatibility
+              # golangci-lint v1.64.8 was built with Go 1.24 and doesn't support Go 1.25 yet
+              # This can be updated once golangci-lint adds Go 1.25 support
 
 # Linter options and descriptions: https://golangci-lint.run/usage/linters/
 linters:
@@ -13,6 +16,8 @@ linters:
     # Disabling these two default linters for now as their checks are not a priority
     - gosimple
     - unused
+    # Disable typecheck temporarily due to Go 1.25 incompatibility with golangci-lint
+    - typecheck
 
 linters-settings:
   staticcheck:
