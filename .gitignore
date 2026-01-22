@@ -340,6 +340,3 @@ vendor/
 
 # Ignore test output
 coverage.out
-
-# Ignore go.sum - generated dynamically by make
-go.sum
