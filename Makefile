@@ -19,12 +19,15 @@ export GO111MODULE=on
 
 LBCLIENTOUT=bin/lbclient.exe
 
-all: format  lbclient build unittest
+all: format lbclient build unittest
 
 nofmt: 
 
+tidy:
+	go mod tidy
+
 clean:
-	rm -rf 	${LBCLIENTOUT} 
+	rm -rf ${LBCLIENTOUT}
 lbclient:
 	GOARCH=amd64 GOOS=windows $(GOBUILD) -ldflags $(LDFLAGS) -o ${LBCLIENTOUT} github.com/microsoft/wssd-sdk-for-go/cmd/lbclient
 format:
@@ -39,8 +42,8 @@ build:
 unittest:
 	$(GOTEST) $(TESTDIRECTORIES)
 
-golangci-lint:
-	$(GOCMD) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	$(GOPATH_BIN)/golangci-lint run --config .golangci.yml
+golangci-lint: tidy
+	GOTOOLCHAIN=auto $(GOCMD) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	$(GOPATH_BIN)/golangci-lint run --config .golangci.yml --go=1.24
 
 	
