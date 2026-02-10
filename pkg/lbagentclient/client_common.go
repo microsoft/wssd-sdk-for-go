@@ -15,6 +15,7 @@ import (
 	lbagent_pb "github.com/microsoft/moc/rpc/lbagent"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/keepalive"
 	log "k8s.io/klog"
 
@@ -87,7 +88,15 @@ func getClientConnection(serverAddress *string, authorizer auth.Authorizer) (*gr
 
 	conn, ok := connectionCache[endpoint]
 	if ok {
-		return conn, nil
+		state := conn.GetState()
+		if state == connectivity.Shutdown || state == connectivity.TransientFailure {
+			// Evict stale connections to prevent accumulated keepalive pings
+			// that trigger GOAWAY ENHANCE_YOUR_CALM from the server.
+			conn.Close()
+			delete(connectionCache, endpoint)
+		} else {
+			return conn, nil
+		}
 	}
 
 	opts := getDefaultDialOption(authorizer)
