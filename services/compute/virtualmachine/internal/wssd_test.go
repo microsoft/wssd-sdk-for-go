@@ -26,3 +26,11 @@ func Test_getVirtualMachineStorageProfileOsDisk(t *testing.T)    {}
 func Test_getVirtualMachineStorageProfileDataDisks(t *testing.T) {}
 func Test_getVirtualMachineNetworkProfile(t *testing.T)          {}
 func Test_getVirtualMachineOSProfile(t *testing.T)               {}
+
+func Test_getVirtualMachineRunCommandResponse_NilResponse(t *testing.T) {
+	c := &client{}
+	_, err := c.getVirtualMachineRunCommandResponse(nil)
+	if err == nil {
+		t.Error("expected error for nil response")
+	}
+}

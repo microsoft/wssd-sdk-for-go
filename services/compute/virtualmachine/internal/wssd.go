@@ -250,6 +250,11 @@ func (c *client) getVirtualMachineOperationRequest(ctx context.Context, opType w
 }
 
 func (c *client) getVirtualMachineRunCommandRequest(ctx context.Context, group, name string, request *compute.VirtualMachineRunCommandRequest) (mocRequest *wssdcompute.VirtualMachineRunCommandRequest, err error) {
+	if request == nil {
+		err = errors.Wrapf(errors.InvalidInput, "RunCommand request is nil")
+		return
+	}
+
 	vms, err := c.get(ctx, group, name)
 	if err != nil {
 		return
@@ -274,13 +279,13 @@ func (c *client) getVirtualMachineRunCommandRequest(ctx context.Context, group, 
 	}
 
 	var scriptSource wssdcommonproto.VirtualMachineRunCommandScriptSource
-	if request.Source.Script != nil {
+	if request.Source != nil && request.Source.Script != nil {
 		scriptSource.Script = *request.Source.Script
 	}
-	if request.Source.ScriptURI != nil {
+	if request.Source != nil && request.Source.ScriptURI != nil {
 		scriptSource.ScriptURI = *request.Source.ScriptURI
 	}
-	if request.Source.CommandID != nil {
+	if request.Source != nil && request.Source.CommandID != nil {
 		scriptSource.CommandID = *request.Source.CommandID
 	}
 
@@ -300,8 +305,13 @@ func (c *client) getVirtualMachineRunCommandRequest(ctx context.Context, group, 
 }
 
 func (c *client) getVirtualMachineRunCommandResponse(mocResponse *wssdcompute.VirtualMachineRunCommandResponse) (*compute.VirtualMachineRunCommandResponse, error) {
+	if mocResponse == nil {
+		return nil, errors.Wrapf(errors.Failed, "RunCommand response is nil")
+	}
+
 	var executionState compute.ExecutionState
-	switch mocResponse.GetInstanceView().ExecutionState {
+	iv := mocResponse.GetInstanceView()
+	switch iv.GetExecutionState() {
 	case wssdcommonproto.VirtualMachineRunCommandExecutionState_ExecutionState_UNKNOWN:
 		executionState = compute.ExecutionStateUnknown
 	case wssdcommonproto.VirtualMachineRunCommandExecutionState_ExecutionState_SUCCEEDED:
@@ -310,11 +320,14 @@ func (c *client) getVirtualMachineRunCommandResponse(mocResponse *wssdcompute.Vi
 		executionState = compute.ExecutionStateFailed
 	}
 
+	exitCode := iv.GetExitCode()
+	output := iv.GetOutput()
+	errMsg := iv.GetError()
 	instanceView := &compute.VirtualMachineRunCommandInstanceView{
 		ExecutionState: executionState,
-		ExitCode:       &mocResponse.GetInstanceView().ExitCode,
-		Output:         &mocResponse.GetInstanceView().Output,
-		Error:          &mocResponse.GetInstanceView().Error,
+		ExitCode:       &exitCode,
+		Output:         &output,
+		Error:          &errMsg,
 	}
 
 	response := &compute.VirtualMachineRunCommandResponse{
