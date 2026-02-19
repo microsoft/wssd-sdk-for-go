@@ -16,10 +16,12 @@ LDFLAGS="-X main.version=$(TAG) -X main.commit=$(COMMIT) -X main.date=$(BUILD_DA
 export GOPRIVATE=github.com/microsoft
 # Active module mode, as we use go modules to manage dependencies
 export GO111MODULE=on
+export GONOSUMCHECK=github.com/microsoft/*
+export GOFLAGS=-mod=mod
 
 LBCLIENTOUT=bin/lbclient.exe
 
-all: format lbclient build unittest
+all: tidy format lbclient build unittest
 
 nofmt: 
 
@@ -34,6 +36,10 @@ format:
 	gofmt -s -w cmd/ pkg/ services/ tools/
 
 .PHONY: vendor
+.PHONY: tidy
+tidy:
+	-go mod tidy -e
+
 vendor:
 	go mod tidy
 build:
