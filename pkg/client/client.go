@@ -23,6 +23,7 @@ import (
 	admin_pb "github.com/microsoft/moc/rpc/common/admin"
 	compute_pb "github.com/microsoft/moc/rpc/nodeagent/compute"
 	network_pb "github.com/microsoft/moc/rpc/nodeagent/network"
+	node_pb "github.com/microsoft/moc/rpc/nodeagent/node"
 	security_pb "github.com/microsoft/moc/rpc/nodeagent/security"
 	storage_pb "github.com/microsoft/moc/rpc/nodeagent/storage"
 )
@@ -397,4 +398,14 @@ func GetAuthenticationClient(serverAddress *string, authorizer auth.Authorizer) 
 	}
 
 	return security_pb.NewAuthenticationAgentClient(conn), nil
+}
+
+// GetMocHostAgentClient returns the host agent client to communicate with the wssdagent
+func GetMocHostAgentClient(serverAddress *string, authorizer auth.Authorizer) (node_pb.MocHostAgentClient, error) {
+	conn, err := getClientConnection(serverAddress, authorizer)
+	if err != nil {
+		log.Fatalf("Unable to get MocHostAgentClient. Failed to dial: %v", err)
+	}
+
+	return node_pb.NewMocHostAgentClient(conn), nil
 }
